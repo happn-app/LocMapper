@@ -25,6 +25,11 @@ func usage<TargetStream : OutputStreamType>(program_name: String, inout stream: 
 	println("      Imports and merge output_file.csv in the given files", &stream)
 }
 
+let strings = XcodeStringsFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/mega.strings")
+print(strings)
+
+exit(0)
+
 
 if Process.arguments.count < 2 {
 	println("Syntax error", &mx_stderr)
