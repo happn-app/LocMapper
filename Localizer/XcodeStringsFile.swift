@@ -10,29 +10,33 @@ import Foundation
 
 
 
-protocol StringsComponent: Streamable {
+protocol StringsComponent {
+	var stringValue: String { get }
 }
 
 class XcodeStringsFile: Streamable {
+	let filepath: String
+	let components: [StringsComponent]
+	
 	class WhiteSpace: StringsComponent {
 		let content: String
+		
+		var stringValue: String {return content}
+		
 		init(_ c: String) {
 			assert(c.rangeOfCharacterFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet) == nil, "Invalid white space string")
 			content = c
-		}
-		func writeTo<Target : OutputStreamType>(inout target: Target) {
-			target.write(content)
 		}
 	}
 	
 	class Comment: StringsComponent {
 		let content: String
+		
+		var stringValue: String {return "/*\(content)*/"}
+		
 		init(_ c: String) {
 			assert(c.rangeOfString("*/") == nil, "Invalid comment string")
 			content = c
-		}
-		func writeTo<Target : OutputStreamType>(inout target: Target) {
-			target.write("/*\(content)*/")
 		}
 	}
 	
@@ -42,6 +46,16 @@ class XcodeStringsFile: Streamable {
 		let value: String
 		let semicolon: String
 		let keyHasQuotes: Bool
+		
+		var stringValue: String {
+			var ret = ""
+			if keyHasQuotes {ret += "\""}
+			ret += key
+			if keyHasQuotes {ret += "\""}
+			ret += "\(equal)\"\(value)\"\(semicolon)"
+			return ret
+		}
+		
 		init(key k: String, keyHasQuotes qfk: Bool, equalSign e: String, value v: String, andSemicolon s: String) {
 			assert(e.componentsSeparatedByString("=").count == 2, "Invalid equal sign")
 			assert(e.componentsSeparatedByString("=")[0].rangeOfCharacterFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet) == nil, "Invalid equal sign")
@@ -52,16 +66,7 @@ class XcodeStringsFile: Streamable {
 			semicolon = s
 			keyHasQuotes = qfk
 		}
-		func writeTo<Target : OutputStreamType>(inout target: Target) {
-			if keyHasQuotes {target.write("\"")}
-			target.write(key)
-			if keyHasQuotes {target.write("\"")}
-			target.write("\(equal)\"\(value)\"\(semicolon)")
-		}
 	}
-	
-	let filepath: String
-	let components: [StringsComponent]
 	
 	convenience init(fromPath path: String) {
 		var encoding: UInt = 0
@@ -278,7 +283,7 @@ class XcodeStringsFile: Streamable {
 	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {
 		for component in components {
-			component.writeTo(&target)
+			component.stringValue.writeTo(&target)
 		}
 	}
 }
