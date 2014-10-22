@@ -68,13 +68,18 @@ class XcodeStringsFile: Streamable {
 		}
 	}
 	
-	convenience init(fromPath path: String) {
+	convenience init?(fromPath path: String, inout error: NSError?) {
 		var encoding: UInt = 0
-		let filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: nil)! /* Currently not possible to correctly handle failure in init */
-		self.init(filepath: path, filecontent: filecontent)
+		let filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: &error)
+		if let fcnn = filecontent {
+			self.init(filepath: path, filecontent: fcnn, error: &error)
+		} else {
+			self.init(filepath: path, components: []) /* Must init before failing an init :P */
+			return nil
+		}
 	}
 	
-	convenience init(filepath path: String, filecontent: String) {
+	convenience init?(filepath path: String, filecontent: String, inout error: NSError?) {
 		/* Let's parse the stream */
 		var components = [StringsComponent]()
 		var idling = true
@@ -269,8 +274,11 @@ class XcodeStringsFile: Streamable {
 			if !ok {break}
 		}
 		
-		assert(ok, "There was an error parsing the file \(path)")
-		assert(idling, "There was an error parsing the file \(path)")
+		if !ok || !idling {
+			error = NSError(domain: "XcodeStringsFileErrDomain", code: 42, userInfo: [NSLocalizedDescriptionKey: "Cannot parse file"])
+			self.init(filepath: path, components: []) /* Must init before failing an init :P */
+			return nil
+		}
 		
 		if !currentWhite.isEmpty {components.append(WhiteSpace(currentWhite))}
 		self.init(filepath: path, components: components)

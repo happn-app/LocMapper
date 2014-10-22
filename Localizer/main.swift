@@ -86,7 +86,13 @@ switch argAtIndexOrExit(1, "Command is required") {
 					}
 					if !is_excluded {
 						/* We have a non-excluded strings file. Let's parse it. */
-						parsed_strings_files.append(XcodeStringsFile(fromPath: cur_file))
+						var err: NSError?
+						let xcodeStringsFileQ = XcodeStringsFile(fromPath: cur_file, error: &err)
+						if let xcodeStringsFile = xcodeStringsFileQ {
+							parsed_strings_files.append(xcodeStringsFile)
+						} else {
+							println("*** Warning: Got error while parsing strings file \(cur_file): \(err)")
+						}
 					}
 				}
 			}
