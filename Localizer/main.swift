@@ -96,7 +96,8 @@ switch argAtIndexOrExit(1, "Command is required") {
 					}
 				}
 			}
-			let csv = happnCSVLocFile(filepath: output, stringsFiles: parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name)
+			var err: NSError?
+			let csv = happnCSVLocFile(filepath: output, stringsFiles: parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name, error: &err)
 			println("CSV:")
 			print(csv)
 			println("All Done")
