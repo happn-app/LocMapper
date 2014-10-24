@@ -110,6 +110,22 @@
             argument = "Espa&#xf1;ol"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "it.lproj"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "Italiano"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "pt.lproj"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "Portugu&#xea;s"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
