@@ -59,7 +59,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "export_xcode"
+            argument = "export_from_xcode"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

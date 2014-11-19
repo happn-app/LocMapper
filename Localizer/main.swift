@@ -12,16 +12,16 @@ func usage<TargetStream : OutputStreamType>(program_name: String, inout stream: 
 	println("Usage: \(program_name) command [args ...]", &stream)
 	println("", &stream)
 	println("Commands are:", &stream)
-	println("   export_xcode root_folder [--exclude=excluded_path ...] output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
+	println("   export_from_xcode root_folder [--exclude=excluded_path ...] output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Exports all the .strings files in the project to output_file.csv, excluding all paths containing any excluded_path", &stream)
 	println("", &stream)
-	println("   import_xcode input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
+	println("   import_to_xcode input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Imports and merge input_file.csv to the existing .strings in the project", &stream)
 	println("", &stream)
-	println("   export_android output_file.csv file_name language_name [file_name language_name ...]", &stream)
+	println("   export_from_android output_file.csv file_name language_name [file_name language_name ...]", &stream)
 	println("      Exports the given files to output_file.csv", &stream)
 	println("", &stream)
-	println("   import_android input_file.csv file_name language_name [file_name language_name ...]", &stream)
+	println("   import_to_android input_file.csv file_name language_name [file_name language_name ...]", &stream)
 	println("      Imports and merge output_file.csv in the given files", &stream)
 }
 
@@ -39,7 +39,7 @@ func argAtIndexOrExit(i: Int, error_message: String) -> String {
 }
 
 switch argAtIndexOrExit(1, "Command is required") {
-	case "export_xcode":
+	case "export_from_xcode":
 		var i = 2
 		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
 		var next_arg = argAtIndexOrExit(i++, "Output is required")
@@ -70,7 +70,7 @@ switch argAtIndexOrExit(1, "Command is required") {
 		println("Exporting from Xcode project...")
 		
 		if !NSFileManager.defaultManager().changeCurrentDirectoryPath(root_folder) {
-			println("Cannot change current directly to path \(root_folder). Cancelling export.")
+			println("Cannot change current directory to path \(root_folder). Cancelling export.")
 			exit(2)
 		}
 		if let e = NSFileManager.defaultManager().enumeratorAtPath(root_folder) {
@@ -105,7 +105,7 @@ switch argAtIndexOrExit(1, "Command is required") {
 			println("Cannot list files at path \(root_folder). Cancelling export.")
 			exit(2)
 		}
-	case "import_xcode":
+	case "import_to_xcode":
 		println("Importing to Xcode project...")
 	default:
 		println("Unknown command \(Process.arguments[1])", &mx_stderr)
