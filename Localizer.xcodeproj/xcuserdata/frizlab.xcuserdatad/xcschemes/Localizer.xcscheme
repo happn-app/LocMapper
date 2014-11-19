@@ -63,15 +63,15 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "&quot;/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/&quot;"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "--exclude=Dependencies/"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--exclude=.git/"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/&quot;"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

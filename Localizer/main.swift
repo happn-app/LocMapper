@@ -8,21 +8,21 @@
 
 import Foundation
 
-func usage<TargetStream : OutputStreamType>(program_name: String, inout stream: TargetStream) {
+func usage<TargetStream: OutputStreamType>(program_name: String, inout stream: TargetStream) {
 	println("Usage: \(program_name) command [args ...]", &stream)
 	println("", &stream)
 	println("Commands are:", &stream)
-	println("   export_from_xcode root_folder [--exclude=excluded_path ...] output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
+	println("   export_from_xcode [--exclude=excluded_path ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Exports all the .strings files in the project to output_file.csv, excluding all paths containing any excluded_path", &stream)
 	println("", &stream)
 	println("   import_to_xcode input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Imports and merge input_file.csv to the existing .strings in the project", &stream)
 	println("", &stream)
-	println("   export_from_android output_file.csv file_name language_name [file_name language_name ...]", &stream)
+	println("   export_from_android [--res-folder=res_folder] [--strings-filename=name ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Exports the given files to output_file.csv", &stream)
 	println("", &stream)
-	println("   import_to_android input_file.csv file_name language_name [file_name language_name ...]", &stream)
-	println("      Imports and merge output_file.csv in the given files", &stream)
+	println("   import_to_android [--res-folder=res_folder] input_file.csv root_folder file_name folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
+	println("      Imports and merge input_file.csv to the existing strings files", &stream)
 }
 
 /* Returns the arg at the given index, or prints "Syntax error: error_message"
@@ -38,35 +38,74 @@ func argAtIndexOrExit(i: Int, error_message: String) -> String {
 	return Process.arguments[i]
 }
 
-switch argAtIndexOrExit(1, "Command is required") {
-	case "export_from_xcode":
-		var i = 2
-		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
-		var next_arg = argAtIndexOrExit(i++, "Output is required")
-		var excluded_paths = [String]()
-		while next_arg.hasPrefix("--exclude=") {
-			var start_idx = next_arg.startIndex
-			for _ in 0..<10 {start_idx = start_idx.successor()} /* There doesn't seem to be any easier way to do this... */
-			excluded_paths.append(next_arg[start_idx..<next_arg.endIndex])
-			next_arg = argAtIndexOrExit(i++, "Output is required")
-		}
-		let output = next_arg
-		var folder_name_to_language_name = [String: String]()
-		while i < Process.arguments.count {
-			let folder_name = argAtIndexOrExit(i++, "INTERNAL ERROR")
-			let language_name = argAtIndexOrExit(i++, "Language name is required for a given folder name")
-			if folder_name_to_language_name[folder_name] != nil {
-				println("Syntax error: Folder name \(folder_name) defined more than once", &mx_stderr)
-				usage(Process.arguments[0], &mx_stderr)
-				exit(1)
-			}
-			folder_name_to_language_name[folder_name] = language_name
-		}
-		if folder_name_to_language_name.count == 0 {
-			println("Syntax error: Expected at least one language. Got none.", &mx_stderr)
+func getFolderToHumanLanguageNamesFromIndex(var i: Int) -> [String: String] {
+	var folder_name_to_language_name = [String: String]()
+	
+	while i < Process.arguments.count {
+		let folder_name = argAtIndexOrExit(i++, "INTERNAL ERROR")
+		let language_name = argAtIndexOrExit(i++, "Language name is required for a given folder name")
+		if folder_name_to_language_name[folder_name] != nil {
+			println("Syntax error: Folder name \(folder_name) defined more than once", &mx_stderr)
 			usage(Process.arguments[0], &mx_stderr)
 			exit(1)
 		}
+		folder_name_to_language_name[folder_name] = language_name
+	}
+	
+	if folder_name_to_language_name.count == 0 {
+		println("Syntax error: Expected at least one language. Got none.", &mx_stderr)
+		usage(Process.arguments[0], &mx_stderr)
+		exit(1)
+	}
+	
+	return folder_name_to_language_name
+}
+
+/* Takes the current arg position in input and a dictionary of long args names
+ * with the corresponding action to execute when the long arg is found.
+ * Returns the new arg position when all long args have been found. */
+func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
+	var i = argIdx
+	
+	func stringByDeletingPrefixIfPresent(prefix: String, from string: String) -> String? {
+		if string.hasPrefix(prefix) {
+			var start_idx = string.startIndex
+			for _ in 0..<countElements(prefix) {start_idx = start_idx.successor()} /* There doesn't seem to be any easier way to do this... */
+			return string[start_idx..<string.endIndex]
+		}
+		
+		return nil
+	}
+	
+	
+	longArgLoop: while true {
+		let arg = argAtIndexOrExit(i++, "Syntax error")
+		
+		for (longArg, action) in longArgs {
+			if let no_prefix = stringByDeletingPrefixIfPresent("--\(longArg)=", from: arg) {
+				action(no_prefix)
+				continue longArgLoop
+			}
+		}
+		
+		if arg != "--" {--i}
+		break
+	}
+	
+	return i
+}
+
+switch argAtIndexOrExit(1, "Command is required") {
+	/* Export from Xcode */
+	case "export_from_xcode":
+		var i = 2
+		
+		var excluded_paths = [String]()
+		i = getLongArgs(i, ["exclude": {(value: String) in excluded_paths.append(value)}])
+		
+		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
+		var output = argAtIndexOrExit(i++, "Output is required")
+		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		println("Exporting from Xcode project...")
 		
 		if !NSFileManager.defaultManager().changeCurrentDirectoryPath(root_folder) {
@@ -105,8 +144,33 @@ switch argAtIndexOrExit(1, "Command is required") {
 			println("Cannot list files at path \(root_folder). Cancelling export.")
 			exit(2)
 		}
+	
+	/* Import to Xcode */
 	case "import_to_xcode":
 		println("Importing to Xcode project...")
+	
+	/* Export from Android */
+	case "export_from_android":
+		var i = 2
+		
+		var res_folder = "res"
+		var strings_filenames = [String]()
+		i = getLongArgs(i, [
+			"res-folder":       {(value: String) in res_folder = value},
+			"strings-filename": {(value: String) in strings_filenames.append(value)}]
+		)
+		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
+		
+		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
+		let output = argAtIndexOrExit(i++, "Root folder is required")
+		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+		println("Exporting from Android project...")
+		
+		if !NSFileManager.defaultManager().changeCurrentDirectoryPath(root_folder) {
+			println("Cannot change current directory to path \(root_folder). Cancelling export.")
+			exit(2)
+		}
+	
 	default:
 		println("Unknown command \(Process.arguments[1])", &mx_stderr)
 		usage(Process.arguments[0], &mx_stderr)
