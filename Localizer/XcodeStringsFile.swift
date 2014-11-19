@@ -10,15 +10,15 @@ import Foundation
 
 
 
-protocol StringsComponent {
+protocol XcodeStringsComponent {
 	var stringValue: String { get }
 }
 
 class XcodeStringsFile: Streamable {
 	let filepath: String
-	let components: [StringsComponent]
+	let components: [XcodeStringsComponent]
 	
-	class WhiteSpace: StringsComponent {
+	class WhiteSpace: XcodeStringsComponent {
 		let content: String
 		
 		var stringValue: String {return content}
@@ -29,7 +29,7 @@ class XcodeStringsFile: Streamable {
 		}
 	}
 	
-	class Comment: StringsComponent {
+	class Comment: XcodeStringsComponent {
 		let content: String
 		
 		var stringValue: String {return "/*\(content)*/"}
@@ -40,7 +40,7 @@ class XcodeStringsFile: Streamable {
 		}
 	}
 	
-	class LocalizedString: StringsComponent {
+	class LocalizedString: XcodeStringsComponent {
 		let key: String
 		let equal: String
 		let value: String
@@ -81,7 +81,7 @@ class XcodeStringsFile: Streamable {
 	
 	convenience init?(filepath path: String, filecontent: String, inout error: NSError?) {
 		/* Let's parse the stream */
-		var components = [StringsComponent]()
+		var components = [XcodeStringsComponent]()
 		var idling = true
 		var currentKey = String()
 		var currentValue = String()
@@ -284,7 +284,7 @@ class XcodeStringsFile: Streamable {
 		self.init(filepath: path, components: components)
 	}
 	
-	init(filepath: String, components: [StringsComponent]) {
+	init(filepath: String, components: [XcodeStringsComponent]) {
 		self.filepath   = filepath
 		self.components = components
 	}
