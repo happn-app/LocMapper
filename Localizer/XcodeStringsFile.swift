@@ -68,9 +68,39 @@ class XcodeStringsFile: Streamable {
 		}
 	}
 	
-	convenience init?(fromPath path: String, inout error: NSError?) {
+	class func stringsFilesInProject(root_folder: String, excluded_paths: [String], inout err: NSError?) -> [XcodeStringsFile]? {
+		let e = NSFileManager.defaultManager().enumeratorAtPath(root_folder)
+		if e == nil {
+			err = NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(root_folder)."])
+			return nil
+		}
+		
+		var parsed_strings_files = [XcodeStringsFile]()
+		fileLoop: while let cur_file = e!.nextObject() as? String {
+			if !cur_file.hasSuffix(".strings") {
+				continue
+			}
+			
+			for excluded in excluded_paths {
+				if cur_file.rangeOfString(excluded) != nil {
+					continue fileLoop
+				}
+			}
+			
+			/* We have a non-excluded strings file. Let's parse it. */
+			var err: NSError?
+			if let xcodeStringsFile = XcodeStringsFile(fromPath: cur_file, relativeToProjectPath: root_folder, error: &err) {
+				parsed_strings_files.append(xcodeStringsFile)
+			} else {
+				println("*** Warning: Got error while parsing strings file \(cur_file): \(err)", &mx_stderr)
+			}
+		}
+		return parsed_strings_files
+	}
+	
+	convenience init?(fromPath path: String, relativeToProjectPath projectPath: String, inout error: NSError?) {
 		var encoding: UInt = 0
-		let filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: &error)
+		let filecontent = NSString(contentsOfFile: projectPath.stringByAppendingPathComponent(path), usedEncoding: &encoding, error: &error)
 		if let fcnn = filecontent {
 			self.init(filepath: path, filecontent: fcnn, error: &error)
 		} else {

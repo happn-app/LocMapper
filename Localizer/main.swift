@@ -13,16 +13,16 @@ func usage<TargetStream: OutputStreamType>(program_name: String, inout stream: T
 	println("", &stream)
 	println("Commands are:", &stream)
 	println("   export_from_xcode [--exclude=excluded_path ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
-	println("      Exports all the .strings files in the project to output_file.csv, excluding all paths containing any excluded_path", &stream)
+	println("      Exports and merges all the .strings files in the project to output_file.csv, excluding all paths containing any excluded_path", &stream)
 	println("", &stream)
 	println("   import_to_xcode input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
-	println("      Imports and merge input_file.csv to the existing .strings in the project", &stream)
+	println("      Imports and merges input_file.csv to the existing .strings in the project", &stream)
 	println("", &stream)
 	println("   export_from_android [--res-folder=res_folder] [--strings-filename=name ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
-	println("      Exports the given files to output_file.csv", &stream)
+	println("      Exports and merges the localization files of the android project to output_file.csv", &stream)
 	println("", &stream)
 	println("   import_to_android [--res-folder=res_folder] input_file.csv root_folder file_name folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
-	println("      Imports and merge input_file.csv to the existing strings files", &stream)
+	println("      Imports and merges input_file.csv to the existing strings files of the android project", &stream)
 }
 
 /* Returns the arg at the given index, or prints "Syntax error: error_message"
@@ -108,41 +108,23 @@ switch argAtIndexOrExit(1, "Command is required") {
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		println("Exporting from Xcode project...")
 		
-		if !NSFileManager.defaultManager().changeCurrentDirectoryPath(root_folder) {
-			println("Cannot change current directory to path \(root_folder). Cancelling export.")
-			exit(2)
-		}
-		if let e = NSFileManager.defaultManager().enumeratorAtPath(root_folder) {
-			var parsed_strings_files = [XcodeStringsFile]()
-			while let cur_file = e.nextObject() as? String {
-				if cur_file.hasSuffix(".strings") {
-					var is_excluded = false
-					for excluded in excluded_paths {
-						if cur_file.rangeOfString(excluded) != nil {
-							is_excluded = true
-							break
-						}
-					}
-					if !is_excluded {
-						/* We have a non-excluded strings file. Let's parse it. */
-						var err: NSError?
-						let xcodeStringsFileQ = XcodeStringsFile(fromPath: cur_file, error: &err)
-						if let xcodeStringsFile = xcodeStringsFileQ {
-							parsed_strings_files.append(xcodeStringsFile)
-						} else {
-							println("*** Warning: Got error while parsing strings file \(cur_file): \(err)")
-						}
-					}
-				}
+		var err: NSError?
+		var got_error = true
+		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths, err: &err) {
+			if let csv = happnCSVLocFile(filepath: output, stringsFiles: parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name, error: &err) {
+/*				if let output_stream = NSFileHandle(forWritingAtPath: output) {
+					got_error = false
+					TODO: write csv here in output_stream
+				}*/
+				got_error = false
+				print(csv)
 			}
-			var err: NSError?
-			let csv = happnCSVLocFile(filepath: output, stringsFiles: parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name, error: &err)
-			println("CSV:")
-			print(csv)
-			println("All Done")
+		}
+		if got_error {
+			println("Cannot parse Xcode strings files. Got error \(err)")
+			exit(err != nil ? Int32(err!.code) : 255)
 		} else {
-			println("Cannot list files at path \(root_folder). Cancelling export.")
-			exit(2)
+			exit(0)
 		}
 	
 	/* Import to Xcode */
