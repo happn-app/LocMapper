@@ -95,6 +95,30 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 	return i
 }
 
+func writeText(text: String, toFile filePath: String, usingEncoding encoding: NSStringEncoding, inout err: NSError?) -> Bool {
+	if let data = text.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+		if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
+			if !NSFileManager.defaultManager().removeItemAtPath(filePath, error: &err) {
+				return false
+			}
+		}
+		if !NSFileManager.defaultManager().createFileAtPath(filePath, contents: nil, attributes: nil) {
+			err = NSError(domain: "LocalizerErrDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot file at path \(filePath)"])
+			return false
+		}
+		if let output_stream = NSFileHandle(forWritingAtPath: filePath) {
+			output_stream.writeData(data)
+			return true
+		} else {
+			err = NSError(domain: "LocalizerErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(filePath) for writing"])
+			return false
+		}
+	} else {
+		err = NSError(domain: "LocalizerErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot convert text to UTF8"])
+		return false
+	}
+}
+
 switch argAtIndexOrExit(1, "Command is required") {
 	/* Export from Xcode */
 	case "export_from_xcode":
@@ -112,12 +136,11 @@ switch argAtIndexOrExit(1, "Command is required") {
 		var got_error = true
 		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths, err: &err) {
 			if let csv = happnCSVLocFile(filepath: output, stringsFiles: parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name, error: &err) {
-/*				if let output_stream = NSFileHandle(forWritingAtPath: output) {
+				var csvText = ""
+				print(csv, &csvText)
+				if writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding, &err) {
 					got_error = false
-					TODO: write csv here in output_stream
-				}*/
-				got_error = false
-				print(csv)
+				}
 			}
 		}
 		if got_error {
