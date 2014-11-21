@@ -176,6 +176,16 @@ switch argAtIndexOrExit(1, "Command is required") {
 			exit(2)
 		}
 	
+	/* Convenient command for debug purposes */
+	case "test_xcode_export":
+		var err: NSError?;
+		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", excluded_paths: ["Dependencies/", ".git/"], err: &err) {
+			if let csv = happnCSVLocFile(filepath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", stringsFiles: parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"], error: &err) {
+				println("CSV: ")
+				print(csv)
+			}
+		}
+	
 	default:
 		println("Unknown command \(Process.arguments[1])", &mx_stderr)
 		usage(Process.arguments[0], &mx_stderr)
