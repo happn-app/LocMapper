@@ -135,7 +135,8 @@ switch argAtIndexOrExit(1, "Command is required") {
 		var err: NSError?
 		var got_error = true
 		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths, err: &err) {
-			if let csv = happnCSVLocFile(filepath: output, stringsFiles: parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name, error: &err) {
+			if let csv = happnCSVLocFile(fromPath: output, error: &err) {
+				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name)
 				var csvText = ""
 				print(csv, &csvText)
 				if writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding, &err) {
@@ -180,7 +181,8 @@ switch argAtIndexOrExit(1, "Command is required") {
 	case "test_xcode_export":
 		var err: NSError?;
 		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", excluded_paths: ["Dependencies/", ".git/"], err: &err) {
-			if let csv = happnCSVLocFile(filepath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", stringsFiles: parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"], error: &err) {
+			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
+				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"])
 				println("CSV: ")
 				print(csv)
 			}

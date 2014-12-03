@@ -37,9 +37,10 @@ extension String {
 
 class happnCSVLocFile: Streamable {
 	let filepath: String
-	let languages: [String]
-	let entries: [LineKey: [String: String]]
+	private var languages: [String]
+	private var entries: [LineKey: [String: String]]
 	
+	/* *************** LineKey struct. Key for each entries in the happn CSV loc file. *************** */
 	struct LineKey: Equatable, Hashable, Comparable {
 		let locKey: String
 		let env: String
@@ -58,11 +59,8 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
+	/* *** Init from path *** */
 	convenience init?(fromPath path: String, inout error: NSError?) {
-		self.init(filepath: path, stringsFiles: [], folderNameToLanguageName: [:], error: &error)
-	}
-	
-	convenience init?(filepath path: String, stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String], inout error: NSError?) {
 		var encoding: UInt = 0
 		var filecontent: String?
 		if NSFileManager.defaultManager().fileExistsAtPath(path) {
@@ -72,14 +70,24 @@ class happnCSVLocFile: Streamable {
 				return nil
 			}
 		}
-		self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), stringsFiles: stringsFiles, folderNameToLanguageName: folderNameToLanguageName, error: &error)
+		self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), error: &error)
 	}
 	
-	convenience init?(filepath path: String, filecontent: String?, stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String], inout error: NSError?) {
-		/* TODO: Parse the given filename, _then_ merge with the strings file */
+	/* *** Init with file content *** */
+	convenience init?(filepath path: String, filecontent: String, inout error: NSError?) {
+		/* TODO: Parse the CSVLoc file */
+		self.init(filepath: path, languages: [], entries: [:])
+	}
+	
+	/* *** Init *** */
+	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]]) {
+		filepath = path
+		languages = l
+		entries = e
+	}
+	
+	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
-		var languages = [String]()
-		var entries = [LineKey: [String: String]]()
 		
 		let env = "Xcode"
 		for stringsFile in stringsFiles {
@@ -128,13 +136,6 @@ class happnCSVLocFile: Streamable {
 				}
 			}
 		}
-		self.init(filepath: path, languages: languages, entries: entries)
-	}
-	
-	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]]) {
-		filepath = path
-		languages = l
-		entries = e
 	}
 	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {
