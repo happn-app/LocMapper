@@ -138,6 +138,9 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
+	func mergeAndroidXMLLocStringsFiles(locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
+	}
+	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {
 		target.write("\(PRIVATE_KEY_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(PRIVATE_ENV_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(PRIVATE_FILENAME_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(PRIVATE_COMMENT_HEADER_NAME.csvCellValue)")
 		target.write("\(CSV_SEPARATOR)\(FILENAME_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(COMMENT_HEADER_NAME.csvCellValue)");

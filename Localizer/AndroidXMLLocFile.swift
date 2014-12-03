@@ -13,16 +13,6 @@ import Foundation
 class AndroidXMLLocFile: Streamable {
 	let filepath: String
 	
-	convenience init?(fromPath path: String, inout error: NSError?) {
-		let url = NSURL(fileURLWithPath: path)
-		if url == nil {
-			self.init()
-			return nil
-		}
-		
-		self.init(fromURL: url!, error: &error)
-	}
-	
 	class ParserDelegate: NSObject, NSXMLParserDelegate {
 		func parserDidStartDocument(parser: NSXMLParser!) {
 			println("did start doc")
@@ -101,21 +91,41 @@ class AndroidXMLLocFile: Streamable {
 		}
 	}
 	
-	convenience init?(fromURL url: NSURL, inout error: NSError?) {
+	class func locFilesInProject(root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String], inout err: NSError?) -> [AndroidXMLLocFile]? {
+		var parsed_loc_files = [AndroidXMLLocFile]()
+		for languageFolder in languageFolderNames {
+			for stringsFilename in stringsFilenames {
+				var err: NSError?
+				let cur_file = resFolder.stringByAppendingPathComponent(languageFolder).stringByAppendingPathComponent(stringsFilename)
+				if let locFile = AndroidXMLLocFile(fromPath: cur_file, relativeToProjectPath: root_folder, error: &err) {
+					parsed_loc_files.append(locFile)
+				} else {
+					println("*** Warning: Got error while parsing strings file \(cur_file): \(err)", &mx_stderr)
+				}
+			}
+		}
+		return parsed_loc_files
+	}
+	
+	convenience init?(fromPath path: String, relativeToProjectPath projectPath: String, inout error: NSError?) {
+		self.init(pathRelativeToProject: path)
+	}
+	
+	convenience init?(pathRelativeToProject: String, fileURL url: NSURL, inout error: NSError?) {
 		let xmlParser: NSXMLParser! = NSXMLParser(contentsOfURL: url)
 		if xmlParser == nil {
 			/* Must init before failing */
-			self.init()
+			self.init(pathRelativeToProject: pathRelativeToProject)
 			return nil
 		}
 		
 		xmlParser.delegate = ParserDelegate()
 		
-		self.init()
+		self.init(pathRelativeToProject: pathRelativeToProject)
 	}
 	
-	init() {
-		filepath = ""
+	init(pathRelativeToProject: String) {
+		filepath = pathRelativeToProject
 	}
 	
 	func writeTo<Target: OutputStreamType>(inout target: Target) {

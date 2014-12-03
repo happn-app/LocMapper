@@ -171,11 +171,6 @@ switch argAtIndexOrExit(1, "Command is required") {
 		let output = argAtIndexOrExit(i++, "Root folder is required")
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		println("Exporting from Android project...")
-		
-		if !NSFileManager.defaultManager().changeCurrentDirectoryPath(root_folder) {
-			println("Cannot change current directory to path \(root_folder). Cancelling export.")
-			exit(2)
-		}
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_export":
@@ -183,6 +178,17 @@ switch argAtIndexOrExit(1, "Command is required") {
 		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", excluded_paths: ["Dependencies/", ".git/"], err: &err) {
 			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
 				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"])
+				println("CSV: ")
+				print(csv)
+			}
+		}
+	
+	/* Convenient command for debug purposes */
+	case "test_android_export":
+		var err: NSError?;
+		if let parsed_loc_files = AndroidXMLLocFile.locFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/HappnAndroid/", resFolder: "res", stringsFilenames: ["strings.xml"], languageFolderNames: ["values", "values-de", "values-es", "values-fr"], err: &err) {
+			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
+				csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español", "values-it": "Italiano", "values-pt": "Português"])
 				println("CSV: ")
 				print(csv)
 			}
