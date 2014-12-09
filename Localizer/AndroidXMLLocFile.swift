@@ -10,72 +10,286 @@ import Foundation
 
 
 
+protocol AndroidLocComponent {
+	var stringValue: String { get }
+}
+
+extension String {
+	var xmlTextValue: String {
+		var v = self
+//		v = v.stringByReplacingOccurrencesOfString("\\", withString: "\\\\", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("\"", withString: "\\\"", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("'", withString: "\\'", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("<", withString: "&lt;", options: NSStringCompareOptions.LiteralSearch)
+		return v
+	}
+	var valueFromXMLText: String {
+		var v = self
+		v = v.stringByReplacingOccurrencesOfString("&lt;", withString: "<", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("&gt;", withString: ">", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("\\'", withString: "'", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("\\\"'", withString: "\"", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("\\\\", withString: "\\", options: NSStringCompareOptions.LiteralSearch)
+		return v
+	}
+}
+
 class AndroidXMLLocFile: Streamable {
 	let filepath: String
+	let components: [AndroidLocComponent]
+	
+	class GroupOpening: AndroidLocComponent {
+		let fullString: String
+		let groupNameAndAttr: (String, [String: String])?
+		
+		var stringValue: String {
+			return fullString
+		}
+		
+		init(fullString: String) {
+			self.fullString = fullString
+		}
+		
+		init(groupName: String, attributes: [String: String]) {
+			self.groupNameAndAttr = (groupName, attributes)
+			
+			var ret = "<\(groupName)"
+			for attr in attributes {
+				ret += " \(attr.0)=\"\(attr.1)\""
+			}
+			ret += ">"
+			self.fullString = ret
+		}
+	}
+	
+	class GroupClosing: AndroidLocComponent {
+		let groupName: String
+		
+		var stringValue: String {
+			return "</\(groupName)>"
+		}
+		
+		init(groupName: String) {
+			self.groupName = groupName
+		}
+	}
+	
+	class WhiteSpace: AndroidLocComponent {
+		let content: String
+		
+		var stringValue: String {return content}
+		
+		init(_ c: String) {
+			assert(c.rangeOfCharacterFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet) == nil, "Invalid white space string")
+			content = c
+		}
+	}
+	
+	class Comment: AndroidLocComponent {
+		let content: String
+		
+		var stringValue: String {return "<!--\(content)-->"}
+		
+		init(_ c: String) {
+			assert(c.rangeOfString("-->") == nil, "Invalid comment string")
+			content = c
+		}
+	}
+	
+	class StringValue: AndroidLocComponent {
+		let key: String
+		let value: String
+		
+		var stringValue: String {
+			return "<string name=\"\(key)\">\(value.xmlTextValue)</string>"
+		}
+		
+		init(key k: String, value v: String) {
+			key = k
+			value = v
+		}
+	}
+	
+	class ArrayItem: AndroidLocComponent {
+		let value: String
+		
+		var stringValue: String {
+			return "<item>\(value.xmlTextValue)</string>"
+		}
+		
+		init(_ v: String) {
+			value = v
+		}
+	}
+	
+	class PluralItem: AndroidLocComponent {
+		let quantity: String
+		let value: String
+		
+		var stringValue: String {
+			return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</string>"
+		}
+		
+		init(quantity q: String, value v: String) {
+			quantity = q
+			value = v
+		}
+	}
 	
 	class ParserDelegate: NSObject, NSXMLParserDelegate {
+		/* Equality comparison does not compare argument values for cases with
+		 * arguments */
+		enum Status: Equatable {
+			case OutStart
+			case InResources
+			case InString(String /* key */)
+			case InArray(String /* key */), InArrayItem
+			case InPlurals(String /* key */), InPluralItem(String /* quantity */)
+			case OutEnd
+			
+			case Error
+			
+			func numericId() -> Int {
+				switch self {
+					case .OutStart:     return 0
+					case .InResources:  return 1
+					case .InString:     return 2
+					case .InArray:      return 3
+					case .InArrayItem:  return 4
+					case .InPlurals:    return 5
+					case .InPluralItem: return 6
+					case .OutEnd:       return 7
+					case .Error:        return 8
+				}
+			}
+		}
+		
+		var currentChars = String()
+		var previousStatus = Status.Error
+		var status: Status = .OutStart {
+			willSet {
+				previousStatus = status
+			}
+		}
+		var components = [AndroidLocComponent]()
+		
 		func parserDidStartDocument(parser: NSXMLParser!) {
-			println("did start doc")
+			assert(status == .OutStart)
 		}
 		
 		func parserDidEndDocument(parser: NSXMLParser!) {
-			println("did end doc")
-		}
-		
-		func parser(parser: NSXMLParser!, foundNotationDeclarationWithName name: String!, publicID: String!, systemID: String!) {
-			println("foundNotationDeclarationWithName \(name) publicID \(publicID) systemID \(systemID)")
-		}
-		
-		func parser(parser: NSXMLParser!, foundUnparsedEntityDeclarationWithName name: String!, publicID: String!, systemID: String!, notationName: String!) {
-			println("foundUnparsedEntityDeclarationWithName \(name) publicID \(publicID) systemID \(systemID) notationName \(notationName)")
-		}
-		
-		func parser(parser: NSXMLParser!, foundAttributeDeclarationWithName attributeName: String!, forElement elementName: String!, type: String!, defaultValue: String!) {
-			println("foundAttributeDeclarationWithName \(attributeName) forElement \(elementName) type \(type) defaultValue \(defaultValue)")
-		}
-		
-		func parser(parser: NSXMLParser!, foundElementDeclarationWithName elementName: String!, model: String!) {
-			println("foundElementDeclarationWithName \(elementName) model \(model)")
-		}
-		
-		func parser(parser: NSXMLParser!, foundInternalEntityDeclarationWithName name: String!, value: String!) {
-			println("foundInternalEntityDeclarationWithName \(name) value \(value)")
-		}
-		
-		func parser(parser: NSXMLParser!, foundExternalEntityDeclarationWithName name: String!, publicID: String!, systemID: String!) {
-			println("foundExternalEntityDeclarationWithName \(name) publicID \(publicID) systemID \(systemID)")
+			if status != Status.OutEnd {
+				parser.abortParsing()
+			}
 		}
 		
 		func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
-			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
+//			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
+			let attrs = attributeDict as [String: String]
+			
+			switch (status, elementName) {
+				case (.OutStart, "resources"):
+					status = .InResources
+				
+				case (.InResources, "string"):
+					if let name = attrs["name"] {status = .InString(name)}
+					else                        {status = .Error}
+				
+				case (.InResources, "string-array"):
+					if let name = attrs["name"] {status = .InArray(name)}
+					else                        {status = .Error}
+				
+				case (.InResources, "plurals"):
+					if let name = attrs["name"] {status = .InPlurals(name)}
+					else                        {status = .Error}
+				
+				case (.InArray, "item"):
+					status = .InArrayItem
+				
+				case (.InPlurals, "item"):
+					if let quantity = attrs["quantity"] {status = .InPluralItem(quantity)}
+					else                                {status = .Error}
+				
+				default:
+					status = .Error
+			}
+			
+			if status == .Error {
+				parser.abortParsing()
+				return
+			}
+			
+			if countElements(currentChars) > 0 {
+				components.append(WhiteSpace(currentChars))
+				currentChars = ""
+			}
+			if elementName != "string" && elementName != "item" {
+				components.append(GroupOpening(groupName: elementName, attributes: attrs))
+			}
 		}
 		
 		func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
-			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
-		}
-		
-		func parser(parser: NSXMLParser!, didStartMappingPrefix prefix: String!, toURI namespaceURI: String!) {
-			println("didStartMappingPrefix \(prefix) toURI \(namespaceURI)")
-		}
-		
-		func parser(parser: NSXMLParser!, didEndMappingPrefix prefix: String!) {
-			println("didEndMappingPrefix \(prefix)")
+//			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
+			switch (status, elementName) {
+				case (.InResources, "resources"):
+					if countElements(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
+					components.append(GroupClosing(groupName: elementName))
+					status = .OutEnd
+				
+				case (.InString(let name), "string"):
+					components.append(StringValue(key: name, value: currentChars.valueFromXMLText))
+					status = .InResources
+				
+				case (.InArray, "string-array"): fallthrough
+				case (.InPlurals, "plurals"):
+					if countElements(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
+					components.append(GroupClosing(groupName: elementName))
+					status = .InResources
+				
+				case (.InArrayItem, "item"):
+					components.append(ArrayItem(currentChars.valueFromXMLText))
+					status = previousStatus
+				
+				case (.InPluralItem(let quantity), "item"):
+					components.append(PluralItem(quantity: quantity, value: currentChars.valueFromXMLText))
+					status = previousStatus
+				
+				default:
+					status = .Error
+			}
+			
+			currentChars = ""
+			
+			if status == .Error {
+				parser.abortParsing()
+				return
+			}
 		}
 		
 		func parser(parser: NSXMLParser!, foundCharacters string: String!) {
-			println("foundCharacters \(string)")
+//			println("foundCharacters \(string)")
+			currentChars += string
 		}
 		
 		func parser(parser: NSXMLParser!, foundIgnorableWhitespace whitespaceString: String!) {
 			println("foundIgnorableWhitespace \(whitespaceString)")
 		}
 		
-		func parser(parser: NSXMLParser!, foundProcessingInstructionWithTarget target: String!, data: String!) {
-			println("foundProcessingInstructionWithTarget \(target) data \(data)")
-		}
-		
 		func parser(parser: NSXMLParser!, foundComment comment: String!) {
-			println("foundComment \(comment)")
+//			println("foundComment \(comment)")
+			switch status {
+				case .InResources: fallthrough
+				case .InArray:     fallthrough
+				case .InPlurals:
+					if countElements(currentChars) > 0 {
+						components.append(WhiteSpace(currentChars))
+						currentChars = ""
+					}
+					components.append(Comment(comment))
+				default:
+					parser.abortParsing()
+					status = .Error
+			}
 		}
 		
 		func parser(parser: NSXMLParser!, foundCDATA CDATABlock: NSData!) {
@@ -84,10 +298,6 @@ class AndroidXMLLocFile: Streamable {
 		
 		func parser(parser: NSXMLParser!, parseErrorOccurred parseError: NSError!) {
 			println("parseErrorOccurred \(parseError)")
-		}
-		
-		func parser(parser: NSXMLParser!, validationErrorOccurred validationError: NSError!) {
-			println("validationErrorOccurred \(validationError)")
 		}
 	}
 	
@@ -108,26 +318,46 @@ class AndroidXMLLocFile: Streamable {
 	}
 	
 	convenience init?(fromPath path: String, relativeToProjectPath projectPath: String, inout error: NSError?) {
-		self.init(pathRelativeToProject: path)
+		if let url = NSURL(fileURLWithPath: projectPath.stringByAppendingPathComponent(path)) {
+			self.init(pathRelativeToProject: path, fileURL: url, error: &error)
+		} else {
+			self.init(pathRelativeToProject: path, components: [])
+			return nil
+		}
 	}
 	
 	convenience init?(pathRelativeToProject: String, fileURL url: NSURL, inout error: NSError?) {
 		let xmlParser: NSXMLParser! = NSXMLParser(contentsOfURL: url)
 		if xmlParser == nil {
 			/* Must init before failing */
-			self.init(pathRelativeToProject: pathRelativeToProject)
+			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
 			return nil
 		}
 		
-		xmlParser.delegate = ParserDelegate()
+		let parserDelegate = ParserDelegate()
+		xmlParser.delegate = parserDelegate
+		xmlParser.parse()
+		if parserDelegate.status != .OutEnd {
+			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
+			return nil
+		}
 		
-		self.init(pathRelativeToProject: pathRelativeToProject)
+		self.init(pathRelativeToProject: pathRelativeToProject, components: parserDelegate.components)
 	}
 	
-	init(pathRelativeToProject: String) {
-		filepath = pathRelativeToProject
+	init(pathRelativeToProject: String, components: [AndroidLocComponent]) {
+		self.filepath   = pathRelativeToProject
+		self.components = components
 	}
 	
 	func writeTo<Target: OutputStreamType>(inout target: Target) {
+		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n".writeTo(&target)
+		for component in components {
+			component.stringValue.writeTo(&target)
+		}
 	}
+}
+
+func ==(val1: AndroidXMLLocFile.ParserDelegate.Status, val2: AndroidXMLLocFile.ParserDelegate.Status) -> Bool {
+	return val1.numericId() == val2.numericId()
 }
