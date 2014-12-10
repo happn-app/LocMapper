@@ -86,37 +86,6 @@ class happnCSVLocFile: Streamable {
 		entries = e
 	}
 	
-	func getLanguageAgnosticFilenameAndAddLanguageToList(filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
-		var found = false
-		var languageName = "(Unknown)"
-		var filenameNoLproj = filename
-		
-		for (fn, ln) in languageMapping {
-			if let range = filenameNoLproj.rangeOfString("/" + fn + "/") {
-				assert(!found)
-				found = true
-				
-				languageName = ln
-				filenameNoLproj.replaceRange(range, with: "//LANGUAGE//")
-			}
-		}
-		
-		if find(languages, languageName) == nil {
-			languages.append(languageName)
-			sort(&languages)
-		}
-		
-		return (filenameNoLproj, languageName)
-	}
-	
-	func getKeyFrom(refKey: LineKey, inout withListOfKeys keys: [LineKey]) -> LineKey {
-		if let idx = find(keys, refKey) {
-			return keys[idx]
-		}
-		keys.append(refKey)
-		return refKey
-	}
-	
 	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
@@ -302,6 +271,37 @@ class happnCSVLocFile: Streamable {
 			}
 			target.write("\n")
 		}
+	}
+	
+	private func getLanguageAgnosticFilenameAndAddLanguageToList(filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
+		var found = false
+		var languageName = "(Unknown)"
+		var filenameNoLproj = filename
+		
+		for (fn, ln) in languageMapping {
+			if let range = filenameNoLproj.rangeOfString("/" + fn + "/") {
+				assert(!found)
+				found = true
+				
+				languageName = ln
+				filenameNoLproj.replaceRange(range, with: "//LANGUAGE//")
+			}
+		}
+		
+		if find(languages, languageName) == nil {
+			languages.append(languageName)
+			sort(&languages)
+		}
+		
+		return (filenameNoLproj, languageName)
+	}
+	
+	private func getKeyFrom(refKey: LineKey, inout withListOfKeys keys: [LineKey]) -> LineKey {
+		if let idx = find(keys, refKey) {
+			return keys[idx]
+		}
+		keys.append(refKey)
+		return refKey
 	}
 }
 
