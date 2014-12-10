@@ -86,23 +86,45 @@ class happnCSVLocFile: Streamable {
 		entries = e
 	}
 	
+	func getLanguageAgnosticFilenameAndAddLanguageToList(filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
+		var found = false
+		var languageName = "(Unknown)"
+		var filenameNoLproj = filename
+		
+		for (fn, ln) in languageMapping {
+			if let range = filenameNoLproj.rangeOfString("/" + fn + "/") {
+				assert(!found)
+				found = true
+				
+				languageName = ln
+				filenameNoLproj.replaceRange(range, with: "//LANGUAGE//")
+			}
+		}
+		
+		if find(languages, languageName) == nil {
+			languages.append(languageName)
+			sort(&languages)
+		}
+		
+		return (filenameNoLproj, languageName)
+	}
+	
+	func getKeyFrom(refKey: LineKey, inout withListOfKeys keys: [LineKey]) -> LineKey {
+		if let idx = find(keys, refKey) {
+			return keys[idx]
+		}
+		keys.append(refKey)
+		return refKey
+	}
+	
 	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
 		let env = "Xcode"
+		var keys = [LineKey]()
 		for stringsFile in stringsFiles {
-			var languageName = "(Unknown)"
-			var filenameNoLproj = stringsFile.filepath
-			for (fn, ln) in folderNameToLanguageName {
-				if let range = filenameNoLproj.rangeOfString("/" + fn + "/") {
-					languageName = ln
-					filenameNoLproj.replaceRange(range, with: "//LANGUAGE//")
-					if find(languages, ln) == nil {
-						languages.append(ln)
-						sort(&languages)
-					}
-				}
-			}
+			let (filenameNoLproj, languageName) = getLanguageAgnosticFilenameAndAddLanguageToList(stringsFile.filepath, withMapping: folderNameToLanguageName)
+			
 			var currentComment = ""
 			var currentUserReadableComment = ""
 			var currentUserReadableGroupComment = ""
@@ -122,11 +144,13 @@ class happnCSVLocFile: Streamable {
 					currentUserReadableComment += comment.content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).stringByReplacingOccurrencesOfString("\n * ", withString: "\n", options: NSStringCompareOptions.LiteralSearch)
 					currentComment += comment.stringValue
 				case let locString as XcodeStringsFile.LocalizedString:
-					let key = LineKey(
+					let refKey = LineKey(
 						locKey: locString.key, env: env, filename: filenameNoLproj, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
+					let key = getKeyFrom(refKey, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
+					else                   {--index}
 					entries[key]![languageName] = locString.value
 					currentComment = ""
 					currentUserReadableComment = ""
@@ -139,6 +163,97 @@ class happnCSVLocFile: Streamable {
 	}
 	
 	func mergeAndroidXMLLocStringsFiles(locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
+		var index = 0
+		
+		let env = "Android"
+		var keys = [LineKey]()
+		for locFile in locFiles {
+			let (filenameNoLanguage, languageName) = getLanguageAgnosticFilenameAndAddLanguageToList(locFile.filepath, withMapping: folderNameToLanguageName)
+			
+			var currentComment = ""
+			var currentUserReadableComment = ""
+			var currentUserReadableGroupComment = ""
+			for component in locFile.components {
+				switch component {
+				case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
+					if whiteSpace.stringValue.rangeOfString("\n\n", options: NSStringCompareOptions.LiteralSearch) != nil && !currentUserReadableComment.isEmpty {
+						if !currentUserReadableGroupComment.isEmpty {
+							currentUserReadableGroupComment += "\n\n\n"
+						}
+						currentUserReadableGroupComment += currentUserReadableComment
+						currentUserReadableComment = ""
+					}
+					currentComment += whiteSpace.stringValue
+				case let comment as AndroidXMLLocFile.Comment:
+					if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
+					currentUserReadableComment += comment.content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).stringByReplacingOccurrencesOfString("\n * ", withString: "\n", options: NSStringCompareOptions.LiteralSearch)
+					currentComment += comment.stringValue
+				case let groupOpening as AndroidXMLLocFile.GroupOpening:
+					let refKey = LineKey(
+						locKey: "o"+groupOpening.fullString, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+					)
+					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					if entries[key] == nil {entries[key] = [String: String]()}
+					else                   {--index}
+					entries[key]![languageName] = "--"
+					currentComment = ""
+					currentUserReadableComment = ""
+					currentUserReadableGroupComment = ""
+				case let groupClosing as AndroidXMLLocFile.GroupClosing:
+					let refKey = LineKey(
+						locKey: "c"+groupClosing.groupName+(groupClosing.nameAttr != nil ? " "+groupClosing.nameAttr! : ""),
+						env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+					)
+					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					if entries[key] == nil {entries[key] = [String: String]()}
+					else                   {--index}
+					entries[key]![languageName] = "--"
+					currentComment = ""
+					currentUserReadableComment = ""
+					currentUserReadableGroupComment = ""
+				case let locString as AndroidXMLLocFile.StringValue:
+					let refKey = LineKey(
+						locKey: "k"+locString.key, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+					)
+					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					if entries[key] == nil {entries[key] = [String: String]()}
+					else                   {--index}
+					entries[key]![languageName] = locString.value
+					currentComment = ""
+					currentUserReadableComment = ""
+					currentUserReadableGroupComment = ""
+				case let arrayItem as AndroidXMLLocFile.ArrayItem:
+					let refKey = LineKey(
+						locKey: "a"+arrayItem.parentName+"\""+String(arrayItem.idx), env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+					)
+					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					if entries[key] == nil {entries[key] = [String: String]()}
+					else                   {--index}
+					entries[key]![languageName] = arrayItem.value
+					currentComment = ""
+					currentUserReadableComment = ""
+					currentUserReadableGroupComment = ""
+				case let pluralItem as AndroidXMLLocFile.PluralItem:
+					let refKey = LineKey(
+						locKey: "p"+pluralItem.parentName+"\""+pluralItem.quantity, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+					)
+					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					if entries[key] == nil {entries[key] = [String: String]()}
+					else                   {--index}
+					entries[key]![languageName] = pluralItem.value
+					currentComment = ""
+					currentUserReadableComment = ""
+					currentUserReadableGroupComment = ""
+				default:
+					println("Got unknown AndroidXMLLocFile component \(component)")
+				}
+			}
+		}
 	}
 	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {

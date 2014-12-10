@@ -64,13 +64,19 @@ class AndroidXMLLocFile: Streamable {
 	
 	class GroupClosing: AndroidLocComponent {
 		let groupName: String
+		let nameAttr: String?
 		
 		var stringValue: String {
 			return "</\(groupName)>"
 		}
 		
-		init(groupName: String) {
+		convenience init(groupName: String) {
+			self.init(groupName: groupName, nameAttributeValue: nil)
+		}
+		
+		init(groupName: String, nameAttributeValue: String?) {
 			self.groupName = groupName
+			self.nameAttr = nameAttributeValue
 		}
 	}
 	
@@ -111,28 +117,34 @@ class AndroidXMLLocFile: Streamable {
 	}
 	
 	class ArrayItem: AndroidLocComponent {
+		let idx: Int
 		let value: String
+		let parentName: String
 		
 		var stringValue: String {
 			return "<item>\(value.xmlTextValue)</string>"
 		}
 		
-		init(_ v: String) {
+		init(value v: String, index: Int, parentName pn: String) {
 			value = v
+			idx = index
+			parentName = pn
 		}
 	}
 	
 	class PluralItem: AndroidLocComponent {
 		let quantity: String
 		let value: String
+		let parentName: String
 		
 		var stringValue: String {
 			return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</string>"
 		}
 		
-		init(quantity q: String, value v: String) {
+		init(quantity q: String, value v: String, parentName pn: String) {
 			quantity = q
 			value = v
+			parentName = pn
 		}
 	}
 	
@@ -164,7 +176,9 @@ class AndroidXMLLocFile: Streamable {
 			}
 		}
 		
+		var currentArrayIdx = 0
 		var currentChars = String()
+		var currentGroupName: String?
 		var previousStatus = Status.Error
 		var status: Status = .OutStart {
 			willSet {
@@ -196,11 +210,11 @@ class AndroidXMLLocFile: Streamable {
 					else                        {status = .Error}
 				
 				case (.InResources, "string-array"):
-					if let name = attrs["name"] {status = .InArray(name)}
+					if let name = attrs["name"] {status = .InArray(name); currentGroupName = name}
 					else                        {status = .Error}
 				
 				case (.InResources, "plurals"):
-					if let name = attrs["name"] {status = .InPlurals(name)}
+					if let name = attrs["name"] {status = .InPlurals(name); currentGroupName = name}
 					else                        {status = .Error}
 				
 				case (.InArray, "item"):
@@ -240,19 +254,32 @@ class AndroidXMLLocFile: Streamable {
 					components.append(StringValue(key: name, value: currentChars.valueFromXMLText))
 					status = .InResources
 				
-				case (.InArray, "string-array"): fallthrough
+				case (.InArray, "string-array"):
+					currentArrayIdx = 0
+					fallthrough
 				case (.InPlurals, "plurals"):
 					if countElements(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
-					components.append(GroupClosing(groupName: elementName))
+					components.append(GroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
+					currentGroupName = nil
 					status = .InResources
 				
 				case (.InArrayItem, "item"):
-					components.append(ArrayItem(currentChars.valueFromXMLText))
-					status = previousStatus
+					switch previousStatus {
+					case .InArray(let arrayName):
+						components.append(ArrayItem(value: currentChars.valueFromXMLText, index: currentArrayIdx++, parentName: arrayName))
+						status = previousStatus
+					default:
+						status = .Error
+					}
 				
 				case (.InPluralItem(let quantity), "item"):
-					components.append(PluralItem(quantity: quantity, value: currentChars.valueFromXMLText))
-					status = previousStatus
+					switch previousStatus {
+					case .InPlurals(let pluralsName):
+						components.append(PluralItem(quantity: quantity, value: currentChars.valueFromXMLText, parentName: pluralsName))
+						status = previousStatus
+					default:
+						status = .Error
+					}
 				
 				default:
 					status = .Error
