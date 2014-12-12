@@ -20,13 +20,12 @@ extension String {
 //		v = v.stringByReplacingOccurrencesOfString("\\", withString: "\\\\", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("\"", withString: "\\\"", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("'", withString: "\\'", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString("&", withString: "&amp;", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("<", withString: "&lt;", options: NSStringCompareOptions.LiteralSearch)
 		return v
 	}
 	var valueFromXMLText: String {
 		var v = self
-		v = v.stringByReplacingOccurrencesOfString("&lt;", withString: "<", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("&gt;", withString: ">", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("\\'", withString: "'", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("\\\"'", withString: "\"", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("\\\\", withString: "\\", options: NSStringCompareOptions.LiteralSearch)
@@ -107,6 +106,9 @@ class AndroidXMLLocFile: Streamable {
 		let value: String
 		
 		var stringValue: String {
+			if value.xmlTextValue.isEmpty {
+				return "<string name=\"\(key)\"/>"
+			}
 			return "<string name=\"\(key)\">\(value.xmlTextValue)</string>"
 		}
 		
@@ -122,7 +124,7 @@ class AndroidXMLLocFile: Streamable {
 		let parentName: String
 		
 		var stringValue: String {
-			return "<item>\(value.xmlTextValue)</string>"
+			return "<item>\(value.xmlTextValue)</item>"
 		}
 		
 		init(value v: String, index: Int, parentName pn: String) {
@@ -138,7 +140,7 @@ class AndroidXMLLocFile: Streamable {
 		let parentName: String
 		
 		var stringValue: String {
-			return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</string>"
+			return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</item>"
 		}
 		
 		init(quantity q: String, value v: String, parentName pn: String) {

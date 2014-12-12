@@ -75,8 +75,86 @@ class happnCSVLocFile: Streamable {
 	
 	/* *** Init with file content *** */
 	convenience init?(filepath path: String, filecontent: String, inout error: NSError?) {
-		/* TODO: Parse the CSVLoc file */
-		self.init(filepath: path, languages: [], entries: [:])
+		if filecontent.isEmpty {
+			self.init(filepath: path, languages: [], entries: [:])
+			return
+		}
+		
+		let parser = CSVParser(source: filecontent, separator: CSV_SEPARATOR, hasHeader: true, fieldNames: nil)
+		if let parsedRows = parser.arrayOfParsedRows() {
+			var languages = [String]()
+			var entries = [LineKey: [String: String]]()
+			
+			/* Retrieving languages from header */
+			for h in parser.fieldNames {
+				if h != PRIVATE_KEY_HEADER_NAME && h != PRIVATE_ENV_HEADER_NAME && h != PRIVATE_FILENAME_HEADER_NAME &&
+					h != PRIVATE_COMMENT_HEADER_NAME && h != FILENAME_HEADER_NAME && h != COMMENT_HEADER_NAME {
+					languages.append(h)
+				}
+			}
+			
+			var i = 0
+			var groupComment = ""
+			for row in parsedRows {
+				let rowKeys = row.keys
+				/* Is the row valid? */
+				if find(row.keys, PRIVATE_KEY_HEADER_NAME) == nil ||
+					find(row.keys, PRIVATE_ENV_HEADER_NAME) == nil ||
+					find(row.keys, PRIVATE_FILENAME_HEADER_NAME) == nil ||
+					find(row.keys, PRIVATE_COMMENT_HEADER_NAME) == nil ||
+					find(row.keys, COMMENT_HEADER_NAME) == nil {
+					println("Warning: Invalid row \(row) found in csv file. Ignoring this row.")
+					continue
+				}
+				
+				/* Does the row have a valid environment? */
+				let env = row[PRIVATE_ENV_HEADER_NAME]!
+				if env.isEmpty {
+					/* If the environment is empty, we may have a group comment row */
+					if let gc = row[COMMENT_HEADER_NAME] {
+						groupComment = gc
+					}
+					continue
+				}
+				
+				/* Let's get the comment */
+				var comment: String!
+				let rawComment = row[PRIVATE_COMMENT_HEADER_NAME]!
+//				if !rawComment.hasPrefix("__") || !rawComment.hasSuffix("__") {
+					comment = rawComment.stringByReplacingOccurrencesOfString(
+						"__", withString: "", options: NSStringCompareOptions.AnchoredSearch
+					).stringByReplacingOccurrencesOfString(
+						"__", withString: "", options: NSStringCompareOptions.AnchoredSearch | NSStringCompareOptions.BackwardsSearch
+					)
+/*				} else {
+					println("Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
+					comment = rawComment
+				}*/
+				
+				/* Let's create the line key */
+				let k = LineKey(
+					locKey: row[PRIVATE_KEY_HEADER_NAME]!,
+					env: env,
+					filename: row[PRIVATE_FILENAME_HEADER_NAME]!,
+					comment: comment,
+					index: i++,
+					userReadableGroupComment: groupComment,
+					userReadableComment: row[COMMENT_HEADER_NAME]!)
+				
+				/* Now let's retrieve the values per language */
+				var values = [String: String]()
+				for l in languages {
+					if let v = row[l] {
+						values[l] = v
+					}
+				}
+				entries[k] = values
+			}
+			self.init(filepath: path, languages: languages, entries: entries)
+		} else {
+			self.init(filepath: path, languages: [], entries: [:])
+			return nil
+		}
 	}
 	
 	/* *** Init *** */
@@ -221,6 +299,109 @@ class happnCSVLocFile: Streamable {
 				default:
 					println("Got unknown AndroidXMLLocFile component \(component)")
 				}
+			}
+		}
+	}
+	
+	func exportToAndroidProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
+		var filenameToComponents = [String: [AndroidLocComponent]]()
+		for entry_key in sorted(entries.keys) {
+			if entry_key.env != "Android" {continue}
+			
+			let value = entries[entry_key]!
+			
+			for (folderName, languageName) in folderNameToLanguageName {
+				let filename = entry_key.filename.stringByReplacingOccurrencesOfString("//LANGUAGE//", withString: "/"+folderName+"/")
+				if filenameToComponents[filename] == nil {
+					filenameToComponents[filename] = [AndroidLocComponent]()
+				}
+				
+				if !entry_key.comment.isEmpty {
+					var white: NSString?
+					let scanner = NSScanner(string: entry_key.comment)
+					scanner.charactersToBeSkipped = NSCharacterSet()
+					if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white!))
+					}
+					if scanner.scanString("<!--", intoString: nil) {
+						var comment: NSString?
+						if scanner.scanUpToString("-->", intoString: &comment) && !scanner.atEnd {
+							filenameToComponents[filename]!.append(AndroidXMLLocFile.Comment(comment!))
+							scanner.scanString("-->", intoString: nil)
+							if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+								filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white!))
+							}
+						}
+					}
+					if !scanner.atEnd {
+						println("Warning: Got invalid comment \"\(entry_key.comment)\"")
+					}
+				}
+				
+				switch entry_key.locKey {
+				case let k where k.hasPrefix("o"):
+					/* We're treating a group opening */
+					filenameToComponents[filename]!.append(AndroidXMLLocFile.GroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
+				case let k where k.hasPrefix("c"):
+					/* We're treating a group closing */
+					let noC = k.substringFromIndex(k.startIndex.successor())
+					let sepBySpace = noC.componentsSeparatedByString(" ")
+					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.GroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
+					} else {
+						println("Warning: Got invalid closing key \(k)")
+					}
+				case let k where k.hasPrefix("k"):
+					/* We're treating a standard string item */
+					if let v = value[languageName] {
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), value: v))
+					} else {
+						println("Warning: Didn't get a value for language \(languageName) for key \(k)")
+					}
+				case let k where k.hasPrefix("a"):
+					/* We're treating an array item */
+					if let v = value[languageName] {
+						let noA = k.substringFromIndex(k.startIndex.successor())
+						let sepByQuote = noA.componentsSeparatedByString("\"")
+						if sepByQuote.count == 2 {
+							if let idx = sepByQuote[1].toInt() {
+								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
+							} else {
+								println("Warning: Invalid key '\(k)': cannot find idx")
+							}
+						} else {
+							println("Warning: Got invalid array item key '\(k)'")
+						}
+					} else {
+						println("Warning: Didn't get a value for language \(languageName) for key \(k)")
+					}
+				case let k where k.hasPrefix("p"):
+					/* We're treating a plural item */
+					if let v = value[languageName] {
+						let noP = k.substringFromIndex(k.startIndex.successor())
+						let sepByQuote = noP.componentsSeparatedByString("\"")
+						if sepByQuote.count == 2 {
+							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralItem(quantity: sepByQuote[1], value: v, parentName: sepByQuote[0]))
+						} else {
+							println("Warning: Got invalid plural key '\(k)'")
+						}
+					} else {
+						println("Warning: Didn't get a value for language \(languageName) for key \(k)")
+					}
+				default:
+					println("Got invalid key \(entry_key.locKey)")
+				}
+			}
+		}
+		for (filename, components) in filenameToComponents {
+			let locFile = AndroidXMLLocFile(pathRelativeToProject: filename, components: components)
+			let fullOutputPath = rootPath.stringByAppendingPathComponent(locFile.filepath)
+			
+			var csvText = ""
+			print(locFile, &csvText)
+			var err: NSError?
+			if !writeText(csvText, toFile: fullOutputPath, usingEncoding: NSUTF8StringEncoding, &err) {
+				println("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
 			}
 		}
 	}

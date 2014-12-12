@@ -194,6 +194,13 @@ switch argAtIndexOrExit(1, "Command is required") {
 			}
 		}
 	
+	/* Convenient command for debug purposes */
+	case "test_android_import":
+		var err: NSError?;
+		if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
+			csv.exportToAndroidProjectWithRoot("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/HappnAndroid/", folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español"/*, "values-it": "Italiano", "values-pt": "Português"*/])
+		}
+	
 	default:
 		println("Unknown command \(Process.arguments[1])", &mx_stderr)
 		usage(Process.arguments[0], &mx_stderr)
