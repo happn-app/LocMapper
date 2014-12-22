@@ -323,5 +323,6 @@ class XcodeStringsFile: Streamable {
 		for component in components {
 			component.stringValue.writeTo(&target)
 		}
+		"\n".writeTo(&target)
 	}
 }

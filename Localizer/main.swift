@@ -21,7 +21,7 @@ func usage<TargetStream: OutputStreamType>(program_name: String, inout stream: T
 	println("   export_from_android [--res-folder=res_folder] [--strings-filename=name ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Exports and merges the localization files of the android project to output_file.csv", &stream)
 	println("", &stream)
-	println("   import_to_android [--res-folder=res_folder] input_file.csv root_folder file_name folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
+	println("   import_to_android [--res-folder=res_folder] [--strings-filename=name ...] input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", &stream)
 	println("      Imports and merges input_file.csv to the existing strings files of the android project", &stream)
 }
 
@@ -96,7 +96,7 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 }
 
 func writeText(text: String, toFile filePath: String, usingEncoding encoding: NSStringEncoding, inout err: NSError?) -> Bool {
-	if let data = text.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+	if let data = text.dataUsingEncoding(encoding, allowLossyConversion: false) {
 		if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
 			if !NSFileManager.defaultManager().removeItemAtPath(filePath, error: &err) {
 				return false
@@ -114,7 +114,7 @@ func writeText(text: String, toFile filePath: String, usingEncoding encoding: NS
 			return false
 		}
 	} else {
-		err = NSError(domain: "LocalizerErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot convert text to UTF8"])
+		err = NSError(domain: "LocalizerErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot convert text to expected encoding"])
 		return false
 	}
 }
@@ -172,6 +172,28 @@ switch argAtIndexOrExit(1, "Command is required") {
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		println("Exporting from Android project...")
 	
+	/* Import to Android */
+	case "import_to_android":
+		var i = 2
+		
+		var res_folder = "res"
+		var strings_filenames = [String]()
+		i = getLongArgs(i, [
+			"res-folder":       {(value: String) in res_folder = value},
+			"strings-filename": {(value: String) in strings_filenames.append(value)}]
+		)
+		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
+		
+		let input_path = argAtIndexOrExit(i++, "Input file (CSV) is required")
+		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
+		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+		
+		println("Importing to Android project...")
+		var err: NSError?;
+		if let csv = happnCSVLocFile(fromPath: input_path, error: &err) {
+			csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
+		}
+	
 	/* Convenient command for debug purposes */
 	case "test_xcode_export":
 		var err: NSError?;
@@ -181,6 +203,13 @@ switch argAtIndexOrExit(1, "Command is required") {
 				println("CSV: ")
 				print(csv)
 			}
+		}
+	
+	/* Convenient command for debug purposes */
+	case "test_xcode_import":
+		var err: NSError?;
+		if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
+			csv.exportToXcodeProjectWithRoot("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano"/*, "pt.lproj": "Português"*/])
 		}
 	
 	/* Convenient command for debug purposes */

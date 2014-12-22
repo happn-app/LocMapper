@@ -103,7 +103,7 @@ class happnCSVLocFile: Streamable {
 					find(row.keys, PRIVATE_FILENAME_HEADER_NAME) == nil ||
 					find(row.keys, PRIVATE_COMMENT_HEADER_NAME) == nil ||
 					find(row.keys, COMMENT_HEADER_NAME) == nil {
-					println("Warning: Invalid row \(row) found in csv file. Ignoring this row.")
+					println("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
 					continue
 				}
 				
@@ -127,7 +127,7 @@ class happnCSVLocFile: Streamable {
 						"__", withString: "", options: NSStringCompareOptions.AnchoredSearch | NSStringCompareOptions.BackwardsSearch
 					)
 /*				} else {
-					println("Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
+					println("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
 					comment = rawComment
 				}*/
 				
@@ -192,7 +192,7 @@ class happnCSVLocFile: Streamable {
 					currentComment += comment.stringValue
 				case let locString as XcodeStringsFile.LocalizedString:
 					let refKey = LineKey(
-						locKey: locString.key, env: env, filename: filenameNoLproj, comment: currentComment, index: index++,
+						locKey: (locString.keyHasQuotes ? "'" : "#")+locString.key, env: env, filename: filenameNoLproj, comment: locString.equal+";"+locString.semicolon+currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, withListOfKeys: &keys)
@@ -205,6 +205,117 @@ class happnCSVLocFile: Streamable {
 				default:
 					println("Got unknown XcodeStringsFile component \(component)")
 				}
+			}
+		}
+	}
+	
+	func exportToXcodeProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
+		var filenameToComponents = [String: [XcodeStringsComponent]]()
+		for entry_key in sorted(entries.keys) {
+			if entry_key.env != "Xcode" {continue}
+			
+			var scannedString: NSString?
+			let keyScanner = NSScanner(string: entry_key.locKey)
+			keyScanner.charactersToBeSkipped = NSCharacterSet() /* No characters should be skipped. */
+			
+			/* Let's see if the key has quotes */
+			if !keyScanner.scanCharactersFromSet(NSCharacterSet(charactersInString: "'#"), intoString: &scannedString) {
+				println("*** Warning: Got invalid key \(entry_key.locKey)")
+				continue
+			}
+			/* If the key in CSV file begins with a simple quotes, the Xcode key has double-quotes */
+			let keyHasQuotes = (scannedString == "'")
+			/* Let's get the Xcode original key */
+			if !keyScanner.scanUpToString("", intoString: &scannedString) {
+				println("*** Warning: Got invalid key \(entry_key.locKey): Cannot scan original key")
+				continue
+			}
+			let k = scannedString!
+			
+			/* Now let's parse the comment to get the equal and semicolon strings */
+			let commentScanner = NSScanner(string: entry_key.comment)
+			commentScanner.charactersToBeSkipped = NSCharacterSet() /* No characters should be skipped. */
+			
+			/* Getting equal string */
+			var equalString = ""
+			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
+				if let white = scannedString {equalString += white}
+			}
+			if !commentScanner.scanString("=", intoString: nil) {
+				println("*** Warning: Got invalid key \(entry_key.locKey): No equal sign in equal string")
+				continue
+			}
+			equalString += "="
+			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
+				if let white = scannedString {equalString += white}
+			}
+			
+			/* Separator between equal and semicolon strings */
+			if !commentScanner.scanString(";", intoString: nil) {
+				println("*** Warning: Got invalid key \(entry_key.locKey): Character after equal string is not a semicolon")
+				continue
+			}
+			
+			/* Getting semicolon string */
+			var semicolonString = ""
+			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
+				if let white = scannedString {semicolonString += white}
+			}
+			if !commentScanner.scanString(";", intoString: nil) {
+				println("*** Warning: Got invalid key \(entry_key.locKey): No semicolon sign in semicolon string")
+				continue
+			}
+			semicolonString += ";"
+			
+			var commentComponents = [XcodeStringsComponent]()
+			while !commentScanner.atEnd {
+				var white: NSString?
+				if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+					commentComponents.append(XcodeStringsFile.WhiteSpace(white!))
+				}
+				if commentScanner.scanString("/*", intoString: nil) {
+					var comment: NSString?
+					if commentScanner.scanUpToString("*/", intoString: &comment) && !commentScanner.atEnd {
+						commentComponents.append(XcodeStringsFile.Comment(comment!))
+						commentScanner.scanString("*/", intoString: nil)
+						if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+							commentComponents.append(XcodeStringsFile.WhiteSpace(white!))
+						}
+					}
+				}
+			}
+			
+			let value = entries[entry_key]!
+			
+			for (folderName, languageName) in folderNameToLanguageName {
+				let filename = entry_key.filename.stringByReplacingOccurrencesOfString("//LANGUAGE//", withString: "/"+folderName+"/")
+				if filenameToComponents[filename] == nil {
+					filenameToComponents[filename] = [XcodeStringsComponent]()
+				}
+				
+				filenameToComponents[filename]! += commentComponents
+				
+				if let v = value[languageName] {
+					filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
+						key: k,
+						keyHasQuotes: keyHasQuotes,
+						equalSign: equalString,
+						value: v,
+						andSemicolon: semicolonString
+					))
+				}
+			}
+		}
+		
+		for (filename, components) in filenameToComponents {
+			let locFile = XcodeStringsFile(filepath: filename, components: components)
+			let fullOutputPath = rootPath.stringByAppendingPathComponent(locFile.filepath)
+			
+			var stringsText = ""
+			print(locFile, &stringsText)
+			var err: NSError?
+			if !writeText(stringsText, toFile: fullOutputPath, usingEncoding: NSUTF16StringEncoding, &err) {
+				println("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
 			}
 		}
 	}
@@ -334,7 +445,7 @@ class happnCSVLocFile: Streamable {
 						}
 					}
 					if !scanner.atEnd {
-						println("Warning: Got invalid comment \"\(entry_key.comment)\"")
+						println("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
 					}
 				}
 				
@@ -349,14 +460,14 @@ class happnCSVLocFile: Streamable {
 					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.GroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
-						println("Warning: Got invalid closing key \(k)")
+						println("*** Warning: Got invalid closing key \(k)")
 					}
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
 					if let v = value[languageName] {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), value: v))
 					} else {
-						println("Warning: Didn't get a value for language \(languageName) for key \(k)")
+						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
@@ -367,13 +478,13 @@ class happnCSVLocFile: Streamable {
 							if let idx = sepByQuote[1].toInt() {
 								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
 							} else {
-								println("Warning: Invalid key '\(k)': cannot find idx")
+								println("*** Warning: Invalid key '\(k)': cannot find idx")
 							}
 						} else {
-							println("Warning: Got invalid array item key '\(k)'")
+							println("*** Warning: Got invalid array item key '\(k)'")
 						}
 					} else {
-						println("Warning: Didn't get a value for language \(languageName) for key \(k)")
+						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("p"):
 					/* We're treating a plural item */
@@ -383,13 +494,13 @@ class happnCSVLocFile: Streamable {
 						if sepByQuote.count == 2 {
 							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralItem(quantity: sepByQuote[1], value: v, parentName: sepByQuote[0]))
 						} else {
-							println("Warning: Got invalid plural key '\(k)'")
+							println("*** Warning: Got invalid plural key '\(k)'")
 						}
 					} else {
-						println("Warning: Didn't get a value for language \(languageName) for key \(k)")
+						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				default:
-					println("Got invalid key \(entry_key.locKey)")
+					println("*** Warning: Got invalid key \(entry_key.locKey)")
 				}
 			}
 		}
@@ -397,10 +508,10 @@ class happnCSVLocFile: Streamable {
 			let locFile = AndroidXMLLocFile(pathRelativeToProject: filename, components: components)
 			let fullOutputPath = rootPath.stringByAppendingPathComponent(locFile.filepath)
 			
-			var csvText = ""
-			print(locFile, &csvText)
+			var xmlText = ""
+			print(locFile, &xmlText)
 			var err: NSError?
-			if !writeText(csvText, toFile: fullOutputPath, usingEncoding: NSUTF8StringEncoding, &err) {
+			if !writeText(xmlText, toFile: fullOutputPath, usingEncoding: NSUTF8StringEncoding, &err) {
 				println("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
 			}
 		}
@@ -479,6 +590,9 @@ class happnCSVLocFile: Streamable {
 	
 	private func getKeyFrom(refKey: LineKey, inout withListOfKeys keys: [LineKey]) -> LineKey {
 		if let idx = find(keys, refKey) {
+			if keys[idx].comment != refKey.comment {
+				println("*** Warning: Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename)): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
+			}
 			return keys[idx]
 		}
 		keys.append(refKey)
