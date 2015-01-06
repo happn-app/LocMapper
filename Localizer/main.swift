@@ -145,7 +145,7 @@ switch argAtIndexOrExit(1, "Command is required") {
 			}
 		}
 		if got_error {
-			println("Cannot parse Xcode strings files. Got error \(err)")
+			println("Got error while exporting: \(err)")
 			exit(err != nil ? Int32(err!.code) : 255)
 		} else {
 			exit(0)
@@ -168,9 +168,28 @@ switch argAtIndexOrExit(1, "Command is required") {
 		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 		
 		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
-		let output = argAtIndexOrExit(i++, "Root folder is required")
+		let output = argAtIndexOrExit(i++, "Output is required")
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		println("Exporting from Android project...")
+		
+		var err: NSError?
+		var got_error = true
+		if let parsed_loc_files = AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: folder_name_to_language_name.keys.array, err: &err) {
+			if let csv = happnCSVLocFile(fromPath: output, error: &err) {
+				csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: folder_name_to_language_name)
+				var csvText = ""
+				print(csv, &csvText)
+				if writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding, &err) {
+					got_error = false
+				}
+			}
+		}
+		if got_error {
+			println("Got error while exporting: \(err)")
+			exit(err != nil ? Int32(err!.code) : 255)
+		} else {
+			exit(0)
+		}
 	
 	/* Import to Android */
 	case "import_to_android":
