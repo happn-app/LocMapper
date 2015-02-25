@@ -11,7 +11,7 @@ import Foundation
 
 
 /* Must be a one-char string */
-let CSV_SEPARATOR = ","
+let CSV_SEPARATOR = ";"
 
 let PRIVATE_KEY_HEADER_NAME = "__Key"
 let PRIVATE_ENV_HEADER_NAME = "__Env"
