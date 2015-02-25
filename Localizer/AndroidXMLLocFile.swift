@@ -227,7 +227,9 @@ class AndroidXMLLocFile: Streamable {
 					else                                {status = .Error}
 				
 				default:
-					status = .Error
+					currentChars += "<\(elementName)>"
+					return
+					//status = .Error
 			}
 			
 			if status == .Error {
@@ -284,7 +286,9 @@ class AndroidXMLLocFile: Streamable {
 					}
 				
 				default:
-					status = .Error
+					currentChars += "</\(elementName)>"
+					return
+					//status = .Error
 			}
 			
 			currentChars = ""

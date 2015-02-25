@@ -219,6 +219,10 @@ switch argAtIndexOrExit(1, "Command is required") {
 		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", excluded_paths: ["Dependencies/", ".git/"], err: &err) {
 			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
 				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"])
+				var csvText = ""
+				print(csv, &csvText)
+				if writeText(csvText, toFile: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", usingEncoding: NSUTF8StringEncoding, &err) {
+				}
 				println("CSV: ")
 				print(csv)
 			}
@@ -237,6 +241,10 @@ switch argAtIndexOrExit(1, "Command is required") {
 		if let parsed_loc_files = AndroidXMLLocFile.locFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/HappnAndroid/", resFolder: "happn-android/Happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: ["values", "values-de", "values-es", "values-fr"], err: &err) {
 			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", error: &err) {
 				csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español", "values-it": "Italiano", "values-pt": "Português"])
+				var csvText = ""
+				print(csv, &csvText)
+				if writeText(csvText, toFile: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", usingEncoding: NSUTF8StringEncoding, &err) {
+				}
 				println("CSV: ")
 				print(csv)
 			}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C72B9558-3F7F-445B-9924-F1A4F70E15BE</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Localizer</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D21C9CCA44B7B4A8991B9B33AA9E6055A413CA5B</key>
+		<string>git.happn.fr:office/localizer.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Localizer.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D21C9CCA44B7B4A8991B9B33AA9E6055A413CA5B</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>git.happn.fr:office/localizer.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D21C9CCA44B7B4A8991B9B33AA9E6055A413CA5B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D21C9CCA44B7B4A8991B9B33AA9E6055A413CA5B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Localizer</string>
+		</dict>
+	</array>
+</dict>
+</plist>
