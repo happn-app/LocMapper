@@ -64,7 +64,7 @@ class happnCSVLocFile: Streamable {
 		var encoding: UInt = 0
 		var filecontent: String?
 		if NSFileManager.defaultManager().fileExistsAtPath(path) {
-			filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: &error)
+			filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: &error) as String?
 			if filecontent == nil {
 				self.init(filepath: path, languages: [], entries: [:])
 				return nil
@@ -239,7 +239,7 @@ class happnCSVLocFile: Streamable {
 			/* Getting equal string */
 			var equalString = ""
 			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
-				if let white = scannedString {equalString += white}
+				if let white = scannedString {equalString += white as String}
 			}
 			if !commentScanner.scanString("=", intoString: nil) {
 				println("*** Warning: Got invalid key \(entry_key.locKey): No equal sign in equal string")
@@ -247,7 +247,7 @@ class happnCSVLocFile: Streamable {
 			}
 			equalString += "="
 			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
-				if let white = scannedString {equalString += white}
+				if let white = scannedString {equalString += white as String}
 			}
 			
 			/* Separator between equal and semicolon strings */
@@ -259,7 +259,7 @@ class happnCSVLocFile: Streamable {
 			/* Getting semicolon string */
 			var semicolonString = ""
 			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
-				if let white = scannedString {semicolonString += white}
+				if let white = scannedString {semicolonString += white as String}
 			}
 			if !commentScanner.scanString(";", intoString: nil) {
 				println("*** Warning: Got invalid key \(entry_key.locKey): No semicolon sign in semicolon string")
@@ -271,15 +271,15 @@ class happnCSVLocFile: Streamable {
 			while !commentScanner.atEnd {
 				var white: NSString?
 				if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
-					commentComponents.append(XcodeStringsFile.WhiteSpace(white!))
+					commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
 				}
 				if commentScanner.scanString("/*", intoString: nil) {
 					var comment: NSString?
 					if commentScanner.scanUpToString("*/", intoString: &comment) && !commentScanner.atEnd {
-						commentComponents.append(XcodeStringsFile.Comment(comment!))
+						commentComponents.append(XcodeStringsFile.Comment(comment! as String))
 						commentScanner.scanString("*/", intoString: nil)
 						if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
-							commentComponents.append(XcodeStringsFile.WhiteSpace(white!))
+							commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
 						}
 					}
 				}
@@ -297,7 +297,7 @@ class happnCSVLocFile: Streamable {
 				
 				if let v = value[languageName] {
 					filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
-						key: k,
+						key: k as String,
 						keyHasQuotes: keyHasQuotes,
 						equalSign: equalString,
 						value: v,
@@ -432,15 +432,15 @@ class happnCSVLocFile: Streamable {
 					let scanner = NSScanner(string: entry_key.comment)
 					scanner.charactersToBeSkipped = NSCharacterSet()
 					if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white!))
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white! as String))
 					}
 					if scanner.scanString("<!--", intoString: nil) {
 						var comment: NSString?
 						if scanner.scanUpToString("-->", intoString: &comment) && !scanner.atEnd {
-							filenameToComponents[filename]!.append(AndroidXMLLocFile.Comment(comment!))
+							filenameToComponents[filename]!.append(AndroidXMLLocFile.Comment(comment! as String))
 							scanner.scanString("-->", intoString: nil)
 							if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
-								filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white!))
+								filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white! as String))
 							}
 						}
 					}

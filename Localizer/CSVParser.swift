@@ -32,19 +32,19 @@ class CSVParser {
 		csvString = str
 		separator = sep
 		
-		let cs: NSMutableCharacterSet = NSCharacterSet.newlineCharacterSet().mutableCopy() as NSMutableCharacterSet
+		let cs: NSMutableCharacterSet = NSCharacterSet.newlineCharacterSet().mutableCopy() as! NSMutableCharacterSet
 		cs.addCharactersInString("\"")
 		cs.addCharactersInString(separator.substringToIndex(separator.startIndex.successor()))
 		endTextCharacterSet = cs
 		
-		separatorIsSingleChar = (countElements(separator) == 1)
+		separatorIsSingleChar = (count(separator) == 1)
 		
 		hasHeader = header
 		if names != nil {_fieldNames = names!}
 		else            {_fieldNames = [String]()}
 		
 		assert(
-			countElements(separator) > 0 &&
+			count(separator) > 0 &&
 				separator.rangeOfString("\"") == nil &&
 				separator.rangeOfCharacterFromSet(NSCharacterSet.newlineCharacterSet()) == nil,
 			"CSV separator string must not be empty and must not contain the double quote character or newline characters.")
@@ -137,7 +137,7 @@ class CSVParser {
 			if fieldNamesCount > fieldCount {
 				fieldName = _fieldNames[fieldCount]
 			} else {
-				fieldName = NSString(format: "FIELD_%d", ++fieldNamesCount)
+				fieldName = NSString(format: "FIELD_%d", ++fieldNamesCount) as String
 				_fieldNames.append(fieldName)
 			}
 			record[fieldName] = field
@@ -227,7 +227,7 @@ class CSVParser {
 	private func parseLineSeparator() -> String? {
 		var matchedNewlines: NSString?
 		scanner.scanCharactersFromSet(NSCharacterSet.newlineCharacterSet(), intoString: &matchedNewlines)
-		return matchedNewlines
+		return matchedNewlines as String?
 	}
 	
 	private func parseTwoDoubleQuotes() -> String? {
@@ -244,7 +244,7 @@ class CSVParser {
 		while true {
 			var fragment: NSString?
 			if scanner.scanUpToCharactersFromSet(endTextCharacterSet, intoString: &fragment) {
-				accumulatedData += fragment!
+				accumulatedData += fragment! as String
 			}
 			
 			/* If the separator is just a single character (common case) then
@@ -265,14 +265,14 @@ class CSVParser {
 				
 				/* We have the first char of the separator but not the whole
 				 * separator, so just append the char and continue */
-				accumulatedData += firstCharOfSeparator!
+				accumulatedData += firstCharOfSeparator! as String
 				continue
 			} else {
 				break
 			}
 		}
 		
-		if countElements(accumulatedData) > 0 {
+		if count(accumulatedData) > 0 {
 			return accumulatedData
 		}
 		

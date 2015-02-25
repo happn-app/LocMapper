@@ -102,7 +102,7 @@ class XcodeStringsFile: Streamable {
 		var encoding: UInt = 0
 		let filecontent = NSString(contentsOfFile: projectPath.stringByAppendingPathComponent(path), usedEncoding: &encoding, error: &error)
 		if let fcnn = filecontent {
-			self.init(filepath: path, filecontent: fcnn, error: &error)
+			self.init(filepath: path, filecontent: fcnn as String, error: &error)
 		} else {
 			self.init(filepath: path, components: []) /* Must init before failing an init :P */
 			return nil

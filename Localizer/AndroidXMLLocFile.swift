@@ -46,6 +46,7 @@ class AndroidXMLLocFile: Streamable {
 		}
 		
 		init(fullString: String) {
+			self.groupNameAndAttr = nil
 			self.fullString = fullString
 		}
 		
@@ -189,19 +190,19 @@ class AndroidXMLLocFile: Streamable {
 		}
 		var components = [AndroidLocComponent]()
 		
-		func parserDidStartDocument(parser: NSXMLParser!) {
+		func parserDidStartDocument(parser: NSXMLParser) {
 			assert(status == .OutStart)
 		}
 		
-		func parserDidEndDocument(parser: NSXMLParser!) {
+		func parserDidEndDocument(parser: NSXMLParser) {
 			if status != Status.OutEnd {
 				parser.abortParsing()
 			}
 		}
 		
-		func parser(parser: NSXMLParser!, didStartElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!, attributes attributeDict: [NSObject : AnyObject]!) {
+		func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
 //			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
-			let attrs = attributeDict as [String: String]
+			let attrs = attributeDict as! [String: String]
 			
 			switch (status, elementName) {
 				case (.OutStart, "resources"):
@@ -237,7 +238,7 @@ class AndroidXMLLocFile: Streamable {
 				return
 			}
 			
-			if countElements(currentChars) > 0 {
+			if count(currentChars) > 0 {
 				components.append(WhiteSpace(currentChars))
 				currentChars = ""
 			}
@@ -246,11 +247,11 @@ class AndroidXMLLocFile: Streamable {
 			}
 		}
 		
-		func parser(parser: NSXMLParser!, didEndElement elementName: String!, namespaceURI: String!, qualifiedName qName: String!) {
+		func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
 //			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
 			switch (status, elementName) {
 				case (.InResources, "resources"):
-					if countElements(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
+					if count(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
 					components.append(GroupClosing(groupName: elementName))
 					status = .OutEnd
 				
@@ -262,7 +263,7 @@ class AndroidXMLLocFile: Streamable {
 					currentArrayIdx = 0
 					fallthrough
 				case (.InPlurals, "plurals"):
-					if countElements(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
+					if count(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
 					components.append(GroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
 					status = .InResources
@@ -299,37 +300,39 @@ class AndroidXMLLocFile: Streamable {
 			}
 		}
 		
-		func parser(parser: NSXMLParser!, foundCharacters string: String!) {
+		func parser(parser: NSXMLParser, foundCharacters string: String?) {
 //			println("foundCharacters \(string)")
-			currentChars += string
+			if let str = string {currentChars += str}
 		}
 		
-		func parser(parser: NSXMLParser!, foundIgnorableWhitespace whitespaceString: String!) {
+		func parser(parser: NSXMLParser, foundIgnorableWhitespace whitespaceString: String) {
 			println("foundIgnorableWhitespace \(whitespaceString)")
 		}
 		
-		func parser(parser: NSXMLParser!, foundComment comment: String!) {
+		func parser(parser: NSXMLParser, foundComment comment: String?) {
 //			println("foundComment \(comment)")
+			if comment == nil {return}
+			
 			switch status {
 				case .InResources: fallthrough
 				case .InArray:     fallthrough
 				case .InPlurals:
-					if countElements(currentChars) > 0 {
+					if count(currentChars) > 0 {
 						components.append(WhiteSpace(currentChars))
 						currentChars = ""
 					}
-					components.append(Comment(comment))
+					components.append(Comment(comment!))
 				default:
 					parser.abortParsing()
 					status = .Error
 			}
 		}
 		
-		func parser(parser: NSXMLParser!, foundCDATA CDATABlock: NSData!) {
+		func parser(parser: NSXMLParser, foundCDATA CDATABlock: NSData) {
 			println("foundCDATA \(CDATABlock)")
 		}
 		
-		func parser(parser: NSXMLParser!, parseErrorOccurred parseError: NSError!) {
+		func parser(parser: NSXMLParser, parseErrorOccurred parseError: NSError) {
 			println("parseErrorOccurred \(parseError)")
 		}
 	}
