@@ -153,7 +153,17 @@ switch argAtIndexOrExit(1, "Command is required") {
 	
 	/* Import to Xcode */
 	case "import_to_xcode":
+		var i = 2
+		
+		let input_path = argAtIndexOrExit(i++, "Input file is required")
+		let root_folder = argAtIndexOrExit(i++, "Root folder is required")
+		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+		
 		println("Importing to Xcode project...")
+		var err: NSError?;
+		if let csv = happnCSVLocFile(fromPath: input_path, error: &err) {
+			csv.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
+		}
 	
 	/* Export from Android */
 	case "export_from_android":
