@@ -10,9 +10,6 @@ import Foundation
 
 
 
-/* Must be a one-char string */
-let CSV_SEPARATOR = ";"
-
 let PRIVATE_KEY_HEADER_NAME = "__Key"
 let PRIVATE_ENV_HEADER_NAME = "__Env"
 let PRIVATE_FILENAME_HEADER_NAME = "__Filename"
@@ -23,8 +20,9 @@ let COMMENT_HEADER_NAME = "Comments"
 
 
 extension String {
-	var csvCellValue: String {
-		if self.rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "\(CSV_SEPARATOR)\"\n\r")) != nil {
+	func csvCellValueWithSeparator(sep: String) -> String {
+		if count(sep) != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
+		if self.rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
 			let doubledDoubleQuotes = self.stringByReplacingOccurrencesOfString("\"", withString: "\"\"")
 			return "\"\(doubledDoubleQuotes)\""
@@ -37,6 +35,7 @@ extension String {
 
 class happnCSVLocFile: Streamable {
 	let filepath: String
+	let csvSeparator: String
 	private var languages: [String]
 	private var entries: [LineKey: [String: String]]
 	
@@ -60,27 +59,27 @@ class happnCSVLocFile: Streamable {
 	}
 	
 	/* *** Init from path *** */
-	convenience init?(fromPath path: String, inout error: NSError?) {
+	convenience init?(fromPath path: String, withCSVSeparator csvSep: String, inout error: NSError?) {
 		var encoding: UInt = 0
 		var filecontent: String?
 		if NSFileManager.defaultManager().fileExistsAtPath(path) {
 			filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: &error) as String?
 			if filecontent == nil {
-				self.init(filepath: path, languages: [], entries: [:])
+				self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
 				return nil
 			}
 		}
-		self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), error: &error)
+		self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep, error: &error)
 	}
 	
 	/* *** Init with file content *** */
-	convenience init?(filepath path: String, filecontent: String, inout error: NSError?) {
+	convenience init?(filepath path: String, filecontent: String, withCSVSeparator csvSep: String, inout error: NSError?) {
 		if filecontent.isEmpty {
-			self.init(filepath: path, languages: [], entries: [:])
+			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
 			return
 		}
 		
-		let parser = CSVParser(source: filecontent, separator: CSV_SEPARATOR, hasHeader: true, fieldNames: nil)
+		let parser = CSVParser(source: filecontent, separator: csvSep, hasHeader: true, fieldNames: nil)
 		if let parsedRows = parser.arrayOfParsedRows() {
 			var languages = [String]()
 			var entries = [LineKey: [String: String]]()
@@ -150,15 +149,17 @@ class happnCSVLocFile: Streamable {
 				}
 				entries[k] = values
 			}
-			self.init(filepath: path, languages: languages, entries: entries)
+			self.init(filepath: path, languages: languages, entries: entries, csvSeparator: csvSep)
 		} else {
-			self.init(filepath: path, languages: [], entries: [:])
+			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
 			return nil
 		}
 	}
 	
 	/* *** Init *** */
-	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]]) {
+	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]], csvSeparator csvSep: String) {
+		if count(csvSep) != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
+		csvSeparator = csvSep
 		filepath = path
 		languages = l
 		entries = e
@@ -518,10 +519,10 @@ class happnCSVLocFile: Streamable {
 	}
 	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {
-		target.write("\(PRIVATE_KEY_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(PRIVATE_ENV_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(PRIVATE_FILENAME_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(PRIVATE_COMMENT_HEADER_NAME.csvCellValue)")
-		target.write("\(CSV_SEPARATOR)\(FILENAME_HEADER_NAME.csvCellValue)\(CSV_SEPARATOR)\(COMMENT_HEADER_NAME.csvCellValue)");
+		target.write("\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))")
+		target.write("\(csvSeparator)\(FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))");
 		for language in languages {
-			target.write("\(CSV_SEPARATOR)\(language.csvCellValue)")
+			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
 		}
 		target.write("\n")
 		var previousBasename: String?
@@ -539,26 +540,26 @@ class happnCSVLocFile: Streamable {
 			if basename != previousBasename {
 				previousBasename = basename
 				target.write("\n")
-				target.write("\(CSV_SEPARATOR)\(CSV_SEPARATOR)\(CSV_SEPARATOR)\(CSV_SEPARATOR)")
-				target.write(("\\o/ \\o/ \\o/ " + previousBasename! + " \\o/ \\o/ \\o/").csvCellValue)
+				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
+				target.write(("\\o/ \\o/ \\o/ " + previousBasename! + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
 				target.write("\n")
 			}
 			
 			/* Writing group comment */
 			if !entry_key.userReadableGroupComment.isEmpty {
-				target.write("\(CSV_SEPARATOR)\(CSV_SEPARATOR)\(CSV_SEPARATOR)\(CSV_SEPARATOR)\(CSV_SEPARATOR)")
-				target.write(entry_key.userReadableGroupComment.csvCellValue)
+				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
+				target.write(entry_key.userReadableGroupComment.csvCellValueWithSeparator(csvSeparator))
 				target.write("\n")
 			}
 			
 			let comment = "__" + entry_key.comment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
-			target.write("\(entry_key.locKey.csvCellValue)\(CSV_SEPARATOR)\(entry_key.env.csvCellValue)\(CSV_SEPARATOR)\(entry_key.filename.csvCellValue)\(CSV_SEPARATOR)\(comment.csvCellValue)")
-			target.write("\(CSV_SEPARATOR)\(basename.csvCellValue)\(CSV_SEPARATOR)\(entry_key.userReadableComment.csvCellValue)")
+			target.write("\(entry_key.locKey.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(entry_key.env.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(entry_key.filename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(comment.csvCellValueWithSeparator(csvSeparator))")
+			target.write("\(csvSeparator)\(basename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator))")
 			for language in languages {
 				if let languageValue = value[language] {
-					target.write("\(CSV_SEPARATOR)\(languageValue.csvCellValue)")
+					target.write("\(csvSeparator)\(languageValue.csvCellValueWithSeparator(csvSeparator))")
 				} else {
-					target.write("\(CSV_SEPARATOR)")
+					target.write("\(csvSeparator)")
 				}
 			}
 			target.write("\n")
