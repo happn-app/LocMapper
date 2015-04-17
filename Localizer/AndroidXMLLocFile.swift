@@ -105,17 +105,26 @@ class AndroidXMLLocFile: Streamable {
 	class StringValue: AndroidLocComponent {
 		let key: String
 		let value: String
+		let isCDATA: Bool
 		
 		var stringValue: String {
 			if value.xmlTextValue.isEmpty {
 				return "<string name=\"\(key)\"/>"
 			}
-			return "<string name=\"\(key)\">\(value.xmlTextValue)</string>"
+			if !isCDATA {return "<string name=\"\(key)\">\(value.xmlTextValue)</string>"}
+			else        {return "<string name=\"\(key)\"><![CDATA[\(value)]]></string>"}
 		}
 		
 		init(key k: String, value v: String) {
 			key = k
 			value = v
+			isCDATA = false
+		}
+		
+		init(key k: String, cDATAValue v: String) {
+			key = k
+			value = v
+			isCDATA = true
 		}
 	}
 	
@@ -182,6 +191,7 @@ class AndroidXMLLocFile: Streamable {
 		var currentArrayIdx = 0
 		var currentChars = String()
 		var currentGroupName: String?
+		var isCurrentCharsCDATA = false
 		var previousStatus = Status.Error
 		var status: Status = .OutStart {
 			willSet {
@@ -256,7 +266,10 @@ class AndroidXMLLocFile: Streamable {
 					status = .OutEnd
 				
 				case (.InString(let name), "string"):
-					components.append(StringValue(key: name, value: currentChars.valueFromXMLText))
+					let stringValue: StringValue
+					if !isCurrentCharsCDATA {stringValue = StringValue(key: name, value: currentChars.valueFromXMLText)}
+					else                    {stringValue = StringValue(key: name, cDATAValue: currentChars)}
+					components.append(stringValue)
 					status = .InResources
 				
 				case (.InArray, "string-array"):
@@ -302,6 +315,14 @@ class AndroidXMLLocFile: Streamable {
 		
 		func parser(parser: NSXMLParser, foundCharacters string: String?) {
 //			println("foundCharacters \(string)")
+			if isCurrentCharsCDATA && count(currentChars) > 0 {
+				println("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", &mx_stderr)
+				parser.abortParsing()
+				status = .Error
+				return
+			}
+			
+			isCurrentCharsCDATA = false
 			if let str = string {currentChars += str}
 		}
 		
@@ -329,7 +350,15 @@ class AndroidXMLLocFile: Streamable {
 		}
 		
 		func parser(parser: NSXMLParser, foundCDATA CDATABlock: NSData) {
-			println("foundCDATA \(CDATABlock)")
+			if !isCurrentCharsCDATA && count(currentChars) > 0 {
+				println("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", &mx_stderr)
+				parser.abortParsing()
+				status = .Error
+				return
+			}
+			
+			isCurrentCharsCDATA = true
+			if let str = NSString(data: CDATABlock, encoding: NSUTF8StringEncoding) as? String {currentChars += str}
 		}
 		
 		func parser(parser: NSXMLParser, parseErrorOccurred parseError: NSError) {

@@ -374,7 +374,7 @@ class happnCSVLocFile: Streamable {
 					currentUserReadableGroupComment = ""
 				case let locString as AndroidXMLLocFile.StringValue:
 					let refKey = LineKey(
-						locKey: "k"+locString.key, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						locKey: (!locString.isCDATA ? "k" : "K") + locString.key, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, withListOfKeys: &keys)
@@ -467,6 +467,13 @@ class happnCSVLocFile: Streamable {
 					/* We're treating a standard string item */
 					if let v = value[languageName] {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), value: v))
+					} else {
+						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+					}
+				case let k where k.hasPrefix("K"):
+					/* We're treating a CDATA string item */
+					if let v = value[languageName] {
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), cDATAValue: v))
 					} else {
 						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
