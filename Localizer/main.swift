@@ -236,45 +236,45 @@ switch argAtIndexOrExit(1, "Command is required") {
 	/* Convenient command for debug purposes */
 	case "test_xcode_export":
 		var err: NSError?;
-		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", excluded_paths: ["Dependencies/", ".git/"], err: &err) {
-			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", withCSVSeparator: ",", error: &err) {
+		if let parsed_strings_files = XcodeStringsFile.stringsFilesInProject("/Users/frizlab/Documents/Projects/Happn/", excluded_paths: ["Dependencies/", ".git/"], err: &err) {
+			if let csv = happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",", error: &err) {
 				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"])
 				var csvText = ""
 				print(csv, &csvText)
-				if writeText(csvText, toFile: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", usingEncoding: NSUTF8StringEncoding, &err) {
+				if writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: NSUTF8StringEncoding, &err) {
 				}
-				println("CSV: ")
-				print(csv)
+//				println("CSV: ")
+//				print(csv)
 			}
 		}
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_import":
 		var err: NSError?;
-		if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", withCSVSeparator: ",", error: &err) {
-			csv.exportToXcodeProjectWithRoot("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/Happn/", folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano"/*, "pt.lproj": "Português"*/])
+		if let csv = happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",", error: &err) {
+			csv.exportToXcodeProjectWithRoot("/Users/frizlab/Documents/Projects/Happn/", folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano"/*, "pt.lproj": "Português"*/])
 		}
 	
 	/* Convenient command for debug purposes */
 	case "test_android_export":
 		var err: NSError?;
-		if let parsed_loc_files = AndroidXMLLocFile.locFilesInProject("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/HappnAndroid/", resFolder: "happn-android/Happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: ["values", "values-de", "values-es", "values-fr"], err: &err) {
-			if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", withCSVSeparator: ",", error: &err) {
+		if let parsed_loc_files = AndroidXMLLocFile.locFilesInProject("/Users/frizlab/Documents/Projects/HappnAndroid/", resFolder: "happn-android/Happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: ["values", "values-de", "values-es", "values-fr"], err: &err) {
+			if let csv = happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",", error: &err) {
 				csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español", "values-it": "Italiano", "values-pt": "Português"])
 				var csvText = ""
 				print(csv, &csvText)
-				if writeText(csvText, toFile: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", usingEncoding: NSUTF8StringEncoding, &err) {
+				if writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: NSUTF8StringEncoding, &err) {
 				}
-				println("CSV: ")
-				print(csv)
+//				println("CSV: ")
+//				print(csv)
 			}
 		}
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
 		var err: NSError?;
-		if let csv = happnCSVLocFile(fromPath: "/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/ loc.csv", withCSVSeparator: ",", error: &err) {
-			csv.exportToAndroidProjectWithRoot("/Volumes/Frizlab HD/Users/frizlab/Work/Doing/FTW and Co/HappnAndroid/", folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español"/*, "values-it": "Italiano", "values-pt": "Português"*/])
+		if let csv = happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",", error: &err) {
+			csv.exportToAndroidProjectWithRoot("/Users/frizlab/Documents/Projects/HappnAndroid/", folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español"/*, "values-it": "Italiano", "values-pt": "Português"*/])
 		}
 	
 	default:
