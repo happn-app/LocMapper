@@ -166,6 +166,11 @@ class happnCSVLocFile: Streamable {
 		entries = e
 	}
 	
+	/* This merge is not usefull at all. It will merge the loc values from the
+	 * Xcode project into the happn CSV loc file, but not the structure of the
+	 * Xcode strings files (comment, line orders, etc.)
+	 * What we want is _exactly_ the opposite! We want the structure to be kept,
+	 * but the values dropped... */
 	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
