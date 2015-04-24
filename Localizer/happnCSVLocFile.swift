@@ -139,6 +139,7 @@ class happnCSVLocFile: Streamable {
 					index: i++,
 					userReadableGroupComment: groupComment,
 					userReadableComment: row[COMMENT_HEADER_NAME]!)
+				groupComment = ""
 				
 				/* Now let's retrieve the values per language */
 				var values = [String: String]()
