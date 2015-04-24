@@ -166,13 +166,11 @@ class happnCSVLocFile: Streamable {
 		entries = e
 	}
 	
-	/* This merge is not usefull at all. It will merge the loc values from the
-	 * Xcode project into the happn CSV loc file, but not the structure of the
-	 * Xcode strings files (comment, line orders, etc.)
-	 * What we want is _exactly_ the opposite! We want the structure to be kept,
-	 * but the values dropped... */
 	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
+		
+		let originalEntries = self.entries
+		self.entries = [:]
 		
 		let env = "Xcode"
 		var keys = [LineKey]()
@@ -213,6 +211,11 @@ class happnCSVLocFile: Streamable {
 					println("Got unknown XcodeStringsFile component \(component)")
 				}
 			}
+		}
+		
+		for (refKey, val) in originalEntries {
+			let key = getKeyFrom(refKey, withListOfKeys: &keys)
+			entries[key] = val
 		}
 	}
 	
@@ -330,6 +333,9 @@ class happnCSVLocFile: Streamable {
 	func mergeAndroidXMLLocStringsFiles(locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
+		let originalEntries = self.entries
+		self.entries = [:]
+		
 		let env = "Android"
 		var keys = [LineKey]()
 		for locFile in locFiles {
@@ -418,6 +424,11 @@ class happnCSVLocFile: Streamable {
 					println("Got unknown AndroidXMLLocFile component \(component)")
 				}
 			}
+		}
+		
+		for (refKey, val) in originalEntries {
+			let key = getKeyFrom(refKey, withListOfKeys: &keys)
+			entries[key] = val
 		}
 	}
 	
