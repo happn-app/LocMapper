@@ -583,7 +583,8 @@ class happnCSVLocFile: Streamable {
 				if let languageValue = value[language] {
 					target.write("\(csvSeparator)\(languageValue.csvCellValueWithSeparator(csvSeparator))")
 				} else {
-					target.write("\(csvSeparator)")
+					let value = "TODOLOC"
+					target.write("\(csvSeparator)\(value.csvCellValueWithSeparator(csvSeparator))")
 				}
 			}
 			target.write("\n")
