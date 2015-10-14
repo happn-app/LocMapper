@@ -15,8 +15,7 @@ import Foundation
 
 
 class CSVParser {
-	private var _fieldNames: [String]
-	var fieldNames: [String] {get {return _fieldNames}}
+	private(set) var fieldNames: [String]
 	
 	private let hasHeader: Bool
 	private let csvString: String
@@ -40,8 +39,8 @@ class CSVParser {
 		separatorIsSingleChar = (count(separator) == 1)
 		
 		hasHeader = header
-		if names != nil {_fieldNames = names!}
-		else            {_fieldNames = [String]()}
+		if names != nil {fieldNames = names!}
+		else            {fieldNames = [String]()}
 		
 		assert(
 			count(separator) > 0 &&
@@ -74,7 +73,7 @@ class CSVParser {
 	private func parseFile() -> [[String: String]]? {
 		if hasHeader {
 			if let fn = parseHeader() {
-				_fieldNames = fn
+				fieldNames = fn
 				if parseLineSeparator() == nil {
 					return nil
 				}
@@ -126,7 +125,7 @@ class CSVParser {
 		}
 		
 		var fieldCount = 0
-		var fieldNamesCount = _fieldNames.count
+		var fieldNamesCount = fieldNames.count
 		
 		var ok = false
 		var record = [String: String]()
@@ -135,10 +134,10 @@ class CSVParser {
 			ok = true
 			var fieldName: String!
 			if fieldNamesCount > fieldCount {
-				fieldName = _fieldNames[fieldCount]
+				fieldName = fieldNames[fieldCount]
 			} else {
 				fieldName = NSString(format: "FIELD_%d", ++fieldNamesCount) as String
-				_fieldNames.append(fieldName)
+				fieldNames.append(fieldName)
 			}
 			record[fieldName] = field
 			++fieldCount
