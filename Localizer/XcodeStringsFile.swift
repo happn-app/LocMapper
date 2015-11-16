@@ -68,16 +68,14 @@ class XcodeStringsFile: Streamable {
 		}
 	}
 	
-	class func stringsFilesInProject(root_folder: String, excluded_paths: [String], inout err: NSError?) -> [XcodeStringsFile]? {
-		let e = NSFileManager.defaultManager().enumeratorAtPath(root_folder)
-		if e == nil {
-			err = NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(root_folder)."])
-			return nil
+	class func stringsFilesInProject(root_folder: String, excluded_paths: [String]) throws -> [XcodeStringsFile] {
+		guard let e = NSFileManager.defaultManager().enumeratorAtPath(root_folder) else {
+			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(root_folder)."])
 		}
 		
 		var parsed_strings_files = [XcodeStringsFile]()
-		fileLoop: while let cur_file = e!.nextObject() as? String {
-			if !cur_file.hasSuffix(".strings") {
+		fileLoop: while let cur_file = e.nextObject() as? String {
+			guard cur_file.hasSuffix(".strings") else {
 				continue
 			}
 			
@@ -88,28 +86,23 @@ class XcodeStringsFile: Streamable {
 			}
 			
 			/* We have a non-excluded strings file. Let's parse it. */
-			var err: NSError?
-			if let xcodeStringsFile = XcodeStringsFile(fromPath: cur_file, relativeToProjectPath: root_folder, error: &err) {
+			do {
+				let xcodeStringsFile = try XcodeStringsFile(fromPath: cur_file, relativeToProjectPath: root_folder)
 				parsed_strings_files.append(xcodeStringsFile)
-			} else {
-				println("*** Warning: Got error while parsing strings file \(cur_file): \(err)", &mx_stderr)
+			} catch let error as NSError {
+				print("*** Warning: Got error while parsing strings file (skipping) \(cur_file): \(error)", toStream: &mx_stderr)
 			}
 		}
 		return parsed_strings_files
 	}
 	
-	convenience init?(fromPath path: String, relativeToProjectPath projectPath: String, inout error: NSError?) {
+	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
 		var encoding: UInt = 0
-		let filecontent = NSString(contentsOfFile: projectPath.stringByAppendingPathComponent(path), usedEncoding: &encoding, error: &error)
-		if let fcnn = filecontent {
-			self.init(filepath: path, filecontent: fcnn as String, error: &error)
-		} else {
-			self.init(filepath: path, components: []) /* Must init before failing an init :P */
-			return nil
-		}
+		let filecontent = try NSString(contentsOfFile: (projectPath as NSString).stringByAppendingPathComponent(path), usedEncoding: &encoding)
+		try self.init(filepath: path, filecontent: filecontent as String)
 	}
 	
-	convenience init?(filepath path: String, filecontent: String, inout error: NSError?) {
+	convenience init(filepath path: String, filecontent: String) throws {
 		/* Let's parse the stream */
 		var components = [XcodeStringsComponent]()
 		var idling = true
@@ -122,36 +115,23 @@ class XcodeStringsFile: Streamable {
 		var currentKeyHasQuote = true
 		
 		var engine: ((Character) -> Bool)!
-		var treat_key_char_ptr: ((Character) -> Bool)!
-		var treat_idle_char_ptr: ((Character) -> Bool)!
-		var wait_end_comment_ptr: ((Character) -> Bool)!
-		var treat_value_char_ptr: ((Character) -> Bool)!
-		var confirm_end_comment_ptr: ((Character) -> Bool)!
-		var treat_semicolon_char_ptr: ((Character) -> Bool)!
-		var confirm_comment_start_ptr: ((Character) -> Bool)!
-		var treat_key_escaped_char_ptr: ((Character) -> Bool)!
-		var treat_value_escaped_char_ptr: ((Character) -> Bool)!
-		var treat_after_equal_between_char_ptr: ((Character) -> Bool)!
-		var treat_before_equal_between_char_ptr: ((Character) -> Bool)!
-		var treat_key_char_no_double_quotes_ptr: ((Character) -> Bool)!
 		
 		/* Confirm End Comment */
 		func confirm_end_comment(c: Character) -> Bool {
 			if c == "/" {
 				components.append(Comment(currentComment))
 				idling = true
-				engine = treat_idle_char_ptr
+				engine = treat_idle_char
 			} else {
 				currentComment.append("*" as Character)
 				if c != "*" {
 					currentComment.append(c)
-					engine = wait_end_comment_ptr
+					engine = wait_end_comment
 				}
 			}
 			
 			return true
 		}
-		confirm_end_comment_ptr = confirm_end_comment
 		
 		/* Confirm End Comment */
 		func wait_end_comment(c: Character) -> Bool {
@@ -159,19 +139,17 @@ class XcodeStringsFile: Streamable {
 				currentComment.append(c)
 				return true
 			}
-			engine = confirm_end_comment_ptr
+			engine = confirm_end_comment
 			return true
 		}
-		wait_end_comment_ptr = wait_end_comment
 		
 		func confirm_comment_start(c: Character) -> Bool {
 			if c != "*" {return false}
 			
 			currentComment = String()
-			engine = wait_end_comment_ptr
+			engine = wait_end_comment
 			return true
 		}
-		confirm_comment_start_ptr = confirm_comment_start
 		
 		func treat_semicolon_char(c: Character) -> Bool {
 			if c == "\n" || c == "\t" || c == " " {
@@ -182,32 +160,29 @@ class XcodeStringsFile: Streamable {
 				currentSemicolon.append(c)
 				components.append(LocalizedString(key: currentKey, keyHasQuotes: currentKeyHasQuote, equalSign: currentEqual, value: currentValue, andSemicolon: currentSemicolon))
 				idling = true
-				engine = treat_idle_char_ptr
+				engine = treat_idle_char
 				return true
 			}
 			return false
 		}
-		treat_semicolon_char_ptr = treat_semicolon_char
 		
 		func treat_value_escaped_char(c: Character) -> Bool {
 			currentValue.append("\\" as Character)
 			currentValue.append(c)
-			engine = treat_value_char_ptr
+			engine = treat_value_char
 			return true
 		}
-		treat_value_escaped_char_ptr = treat_value_escaped_char
 		
 		func treat_value_char(c: Character) -> Bool {
-			if      c == "\\" {engine = treat_value_escaped_char_ptr}
+			if      c == "\\" {engine = treat_value_escaped_char}
 			else if c != "\"" {currentValue.append(c)}
-			else              {engine = treat_semicolon_char_ptr}
+			else              {engine = treat_semicolon_char}
 			return true
 		}
-		treat_value_char_ptr = treat_value_char
 		
 		func treat_after_equal_between_char(c: Character) -> Bool {
 			if c == "\"" {
-				engine = treat_value_char_ptr
+				engine = treat_value_char
 				return true
 			}
 			if c == "\n" || c == "\t" || c == " " {
@@ -216,11 +191,10 @@ class XcodeStringsFile: Streamable {
 			}
 			return false
 		}
-		treat_after_equal_between_char_ptr = treat_after_equal_between_char
 		
 		func treat_before_equal_between_char(c: Character) -> Bool {
 			if c == "=" {
-				engine = treat_after_equal_between_char_ptr
+				engine = treat_after_equal_between_char
 				currentEqual.append(c)
 				return true
 			}
@@ -230,23 +204,20 @@ class XcodeStringsFile: Streamable {
 			}
 			return false
 		}
-		treat_before_equal_between_char_ptr = treat_before_equal_between_char
 		
 		func treat_key_escaped_char(c: Character) -> Bool {
 			currentKey.append("\\" as Character)
 			currentKey.append(c)
-			engine = treat_key_char_ptr
+			engine = treat_key_char
 			return true
 		}
-		treat_key_escaped_char_ptr = treat_key_escaped_char
 		
 		func treat_key_char(c: Character) -> Bool {
-			if      c == "\\" {engine = treat_key_escaped_char_ptr}
-			else if c == "\"" {engine = treat_before_equal_between_char_ptr}
+			if      c == "\\" {engine = treat_key_escaped_char}
+			else if c == "\"" {engine = treat_before_equal_between_char}
 			else              {currentKey.append(c)}
 			return true
 		}
-		treat_key_char_ptr = treat_key_char
 		
 		func treat_key_char_no_double_quotes(c: Character) -> Bool {
 			if (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") {
@@ -255,13 +226,12 @@ class XcodeStringsFile: Streamable {
 			}
 			if c == "\n" || c == "\t" || c == " " {
 				currentEqual.append(c)
-				engine = treat_before_equal_between_char_ptr
+				engine = treat_before_equal_between_char
 				return true
 			}
 			
 			return false
 		}
-		treat_key_char_no_double_quotes_ptr = treat_key_char_no_double_quotes
 		
 		func treat_idle_char(c: Character) -> Bool {
 			if c == "\n" || c == "\t" || c == " " {
@@ -271,7 +241,7 @@ class XcodeStringsFile: Streamable {
 				components.append(WhiteSpace(currentWhite))
 				currentWhite = String()
 				idling = false
-				engine = confirm_comment_start_ptr
+				engine = confirm_comment_start
 				return true
 			} else if c == "\"" {
 				components.append(WhiteSpace(currentWhite))
@@ -279,7 +249,7 @@ class XcodeStringsFile: Streamable {
 				currentKeyHasQuote = true
 				currentKey = String(); currentEqual = String(); currentValue = String(); currentSemicolon = String()
 				idling = false
-				engine = treat_key_char_ptr
+				engine = treat_key_char
 				return true
 			} else if (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") {
 				components.append(WhiteSpace(currentWhite))
@@ -287,27 +257,22 @@ class XcodeStringsFile: Streamable {
 				currentKeyHasQuote = false
 				currentKey = String(c); currentEqual = String(); currentValue = String(); currentSemicolon = String()
 				idling = false
-				engine = treat_key_char_no_double_quotes_ptr
+				engine = treat_key_char_no_double_quotes
 				return true
 			}
 			
 			return false
 		}
-		treat_idle_char_ptr = treat_idle_char
 		
-		
-		var i = 0
-		var ok = true
 		engine = treat_idle_char
-		for c in filecontent {
-			ok = engine(c)
-			if !ok {break}
+		for c in filecontent.characters {
+			guard engine(c) else {
+				throw NSError(domain: "XcodeStringsFileErrDomain", code: 42, userInfo: [NSLocalizedDescriptionKey: "Cannot parse file (syntax error)"])
+			}
 		}
 		
-		if !ok || !idling {
-			error = NSError(domain: "XcodeStringsFileErrDomain", code: 42, userInfo: [NSLocalizedDescriptionKey: "Cannot parse file"])
-			self.init(filepath: path, components: []) /* Must init before failing an init :P */
-			return nil
+		guard idling else {
+			throw NSError(domain: "XcodeStringsFileErrDomain", code: 42, userInfo: [NSLocalizedDescriptionKey: "Cannot parse file (early EOF)"])
 		}
 		
 		if !currentWhite.isEmpty {components.append(WhiteSpace(currentWhite))}

@@ -210,9 +210,9 @@ class AndroidXMLLocFile: Streamable {
 			}
 		}
 		
-		func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [NSObject : AnyObject]) {
+		func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
 //			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
-			let attrs = attributeDict as! [String: String]
+			let attrs = attributeDict 
 			
 			switch (status, elementName) {
 				case (.OutStart, "resources"):
@@ -248,7 +248,7 @@ class AndroidXMLLocFile: Streamable {
 				return
 			}
 			
-			if count(currentChars) > 0 {
+			if currentChars.characters.count > 0 {
 				components.append(WhiteSpace(currentChars))
 				currentChars = ""
 			}
@@ -261,7 +261,7 @@ class AndroidXMLLocFile: Streamable {
 //			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
 			switch (status, elementName) {
 				case (.InResources, "resources"):
-					if count(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
+					if currentChars.characters.count > 0 {components.append(WhiteSpace(currentChars))}
 					components.append(GroupClosing(groupName: elementName))
 					status = .OutEnd
 				
@@ -276,7 +276,7 @@ class AndroidXMLLocFile: Streamable {
 					currentArrayIdx = 0
 					fallthrough
 				case (.InPlurals, "plurals"):
-					if count(currentChars) > 0 {components.append(WhiteSpace(currentChars))}
+					if currentChars.characters.count > 0 {components.append(WhiteSpace(currentChars))}
 					components.append(GroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
 					status = .InResources
@@ -313,36 +313,35 @@ class AndroidXMLLocFile: Streamable {
 			}
 		}
 		
-		func parser(parser: NSXMLParser, foundCharacters string: String?) {
+		func parser(parser: NSXMLParser, foundCharacters string: String) {
 //			println("foundCharacters \(string)")
-			if isCurrentCharsCDATA && count(currentChars) > 0 {
-				println("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", &mx_stderr)
+			if isCurrentCharsCDATA && currentChars.characters.count > 0 {
+				print("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", toStream: &mx_stderr)
 				parser.abortParsing()
 				status = .Error
 				return
 			}
 			
 			isCurrentCharsCDATA = false
-			if let str = string {currentChars += str}
+			currentChars += string
 		}
 		
 		func parser(parser: NSXMLParser, foundIgnorableWhitespace whitespaceString: String) {
-			println("foundIgnorableWhitespace \(whitespaceString)")
+			print("foundIgnorableWhitespace \(whitespaceString)")
 		}
 		
-		func parser(parser: NSXMLParser, foundComment comment: String?) {
+		func parser(parser: NSXMLParser, foundComment comment: String) {
 //			println("foundComment \(comment)")
-			if comment == nil {return}
 			
 			switch status {
 				case .InResources: fallthrough
 				case .InArray:     fallthrough
 				case .InPlurals:
-					if count(currentChars) > 0 {
+					if currentChars.characters.count > 0 {
 						components.append(WhiteSpace(currentChars))
 						currentChars = ""
 					}
-					components.append(Comment(comment!))
+					components.append(Comment(comment))
 				default:
 					parser.abortParsing()
 					status = .Error
@@ -350,8 +349,8 @@ class AndroidXMLLocFile: Streamable {
 		}
 		
 		func parser(parser: NSXMLParser, foundCDATA CDATABlock: NSData) {
-			if !isCurrentCharsCDATA && count(currentChars) > 0 {
-				println("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", &mx_stderr)
+			if !isCurrentCharsCDATA && currentChars.characters.count > 0 {
+				print("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", toStream: &mx_stderr)
 				parser.abortParsing()
 				status = .Error
 				return
@@ -362,41 +361,40 @@ class AndroidXMLLocFile: Streamable {
 		}
 		
 		func parser(parser: NSXMLParser, parseErrorOccurred parseError: NSError) {
-			println("parseErrorOccurred \(parseError)")
+			print("parseErrorOccurred \(parseError)")
 		}
 	}
 	
-	class func locFilesInProject(root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String], inout err: NSError?) -> [AndroidXMLLocFile]? {
+	class func locFilesInProject(root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
 		var parsed_loc_files = [AndroidXMLLocFile]()
 		for languageFolder in languageFolderNames {
 			for stringsFilename in stringsFilenames {
 				var err: NSError?
-				let cur_file = resFolder.stringByAppendingPathComponent(languageFolder).stringByAppendingPathComponent(stringsFilename)
-				if let locFile = AndroidXMLLocFile(fromPath: cur_file, relativeToProjectPath: root_folder, error: &err) {
+				let cur_file = ((resFolder as NSString).stringByAppendingPathComponent(languageFolder) as NSString).stringByAppendingPathComponent(stringsFilename)
+				do {
+					let locFile = try AndroidXMLLocFile(fromPath: cur_file, relativeToProjectPath: root_folder)
 					parsed_loc_files.append(locFile)
-				} else {
-					println("*** Warning: Got error while parsing strings file \(cur_file): \(err)", &mx_stderr)
+				} catch let error as NSError {
+					err = error
+					print("*** Warning: Got error while parsing strings file \(cur_file): \(err)", toStream: &mx_stderr)
 				}
 			}
 		}
 		return parsed_loc_files
 	}
 	
-	convenience init?(fromPath path: String, relativeToProjectPath projectPath: String, inout error: NSError?) {
-		if let url = NSURL(fileURLWithPath: projectPath.stringByAppendingPathComponent(path)) {
-			self.init(pathRelativeToProject: path, fileURL: url, error: &error)
-		} else {
-			self.init(pathRelativeToProject: path, components: [])
-			return nil
-		}
+	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
+		let url = NSURL(fileURLWithPath: (projectPath as NSString).stringByAppendingPathComponent(path))
+		try self.init(pathRelativeToProject: path, fileURL: url)
 	}
 	
-	convenience init?(pathRelativeToProject: String, fileURL url: NSURL, inout error: NSError?) {
+	convenience init(pathRelativeToProject: String, fileURL url: NSURL) throws {
+		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
 		let xmlParser: NSXMLParser! = NSXMLParser(contentsOfURL: url)
 		if xmlParser == nil {
 			/* Must init before failing */
 			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
-			return nil
+			throw error
 		}
 		
 		let parserDelegate = ParserDelegate()
@@ -404,7 +402,7 @@ class AndroidXMLLocFile: Streamable {
 		xmlParser.parse()
 		if parserDelegate.status != .OutEnd {
 			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
-			return nil
+			throw error
 		}
 		
 		self.init(pathRelativeToProject: pathRelativeToProject, components: parserDelegate.components)

@@ -21,7 +21,7 @@ let COMMENT_HEADER_NAME = "Comments"
 
 extension String {
 	func csvCellValueWithSeparator(sep: String) -> String {
-		if count(sep) != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
+		if sep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
 		if self.rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
 			let doubledDoubleQuotes = self.stringByReplacingOccurrencesOfString("\"", withString: "\"\"")
@@ -59,21 +59,18 @@ class happnCSVLocFile: Streamable {
 	}
 	
 	/* *** Init from path *** */
-	convenience init?(fromPath path: String, withCSVSeparator csvSep: String, inout error: NSError?) {
+	convenience init(fromPath path: String, withCSVSeparator csvSep: String) throws {
 		var encoding: UInt = 0
 		var filecontent: String?
 		if NSFileManager.defaultManager().fileExistsAtPath(path) {
-			filecontent = NSString(contentsOfFile: path, usedEncoding: &encoding, error: &error) as String?
-			if filecontent == nil {
-				self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
-				return nil
-			}
+			filecontent = try NSString(contentsOfFile: path, usedEncoding: &encoding) as String
 		}
-		self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep, error: &error)
+		try self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep)
 	}
 	
 	/* *** Init with file content *** */
-	convenience init?(filepath path: String, filecontent: String, withCSVSeparator csvSep: String, inout error: NSError?) {
+	convenience init(filepath path: String, filecontent: String, withCSVSeparator csvSep: String) throws {
+		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
 		if filecontent.isEmpty {
 			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
 			return
@@ -97,12 +94,12 @@ class happnCSVLocFile: Streamable {
 			for row in parsedRows {
 				let rowKeys = row.keys
 				/* Is the row valid? */
-				if find(row.keys, PRIVATE_KEY_HEADER_NAME) == nil ||
-					find(row.keys, PRIVATE_ENV_HEADER_NAME) == nil ||
-					find(row.keys, PRIVATE_FILENAME_HEADER_NAME) == nil ||
-					find(row.keys, PRIVATE_COMMENT_HEADER_NAME) == nil ||
-					find(row.keys, COMMENT_HEADER_NAME) == nil {
-					println("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
+				if rowKeys.indexOf(PRIVATE_KEY_HEADER_NAME) == nil ||
+					rowKeys.indexOf(PRIVATE_ENV_HEADER_NAME) == nil ||
+					rowKeys.indexOf(PRIVATE_FILENAME_HEADER_NAME) == nil ||
+					rowKeys.indexOf(PRIVATE_COMMENT_HEADER_NAME) == nil ||
+					rowKeys.indexOf(COMMENT_HEADER_NAME) == nil {
+					print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
 					continue
 				}
 				
@@ -123,7 +120,7 @@ class happnCSVLocFile: Streamable {
 					comment = rawComment.stringByReplacingOccurrencesOfString(
 						"__", withString: "", options: NSStringCompareOptions.AnchoredSearch
 					).stringByReplacingOccurrencesOfString(
-						"__", withString: "", options: NSStringCompareOptions.AnchoredSearch | NSStringCompareOptions.BackwardsSearch
+						"__", withString: "", options: [NSStringCompareOptions.AnchoredSearch, NSStringCompareOptions.BackwardsSearch]
 					)
 /*				} else {
 					println("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
@@ -153,13 +150,13 @@ class happnCSVLocFile: Streamable {
 			self.init(filepath: path, languages: languages, entries: entries, csvSeparator: csvSep)
 		} else {
 			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
-			return nil
+			throw error
 		}
 	}
 	
 	/* *** Init *** */
 	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]], csvSeparator csvSep: String) {
-		if count(csvSep) != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
+		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		filepath = path
 		languages = l
@@ -208,7 +205,7 @@ class happnCSVLocFile: Streamable {
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
 				default:
-					println("Got unknown XcodeStringsFile component \(component)")
+					print("Got unknown XcodeStringsFile component \(component)")
 				}
 			}
 		}
@@ -221,7 +218,7 @@ class happnCSVLocFile: Streamable {
 	
 	func exportToXcodeProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [XcodeStringsComponent]]()
-		for entry_key in sorted(entries.keys) {
+		for entry_key in entries.keys.sort() {
 			if entry_key.env != "Xcode" {continue}
 			
 			var scannedString: NSString?
@@ -230,14 +227,14 @@ class happnCSVLocFile: Streamable {
 			
 			/* Let's see if the key has quotes */
 			if !keyScanner.scanCharactersFromSet(NSCharacterSet(charactersInString: "'#"), intoString: &scannedString) {
-				println("*** Warning: Got invalid key \(entry_key.locKey)")
+				print("*** Warning: Got invalid key \(entry_key.locKey)")
 				continue
 			}
 			/* If the key in CSV file begins with a simple quotes, the Xcode key has double-quotes */
 			let keyHasQuotes = (scannedString == "'")
 			/* Let's get the Xcode original key */
 			if !keyScanner.scanUpToString("", intoString: &scannedString) {
-				println("*** Warning: Got invalid key \(entry_key.locKey): Cannot scan original key")
+				print("*** Warning: Got invalid key \(entry_key.locKey): Cannot scan original key")
 				continue
 			}
 			let k = scannedString!
@@ -252,7 +249,7 @@ class happnCSVLocFile: Streamable {
 				if let white = scannedString {equalString += white as String}
 			}
 			if !commentScanner.scanString("=", intoString: nil) {
-				println("*** Warning: Got invalid key \(entry_key.locKey): No equal sign in equal string")
+				print("*** Warning: Got invalid key \(entry_key.locKey): No equal sign in equal string")
 				continue
 			}
 			equalString += "="
@@ -262,7 +259,7 @@ class happnCSVLocFile: Streamable {
 			
 			/* Separator between equal and semicolon strings */
 			if !commentScanner.scanString(";", intoString: nil) {
-				println("*** Warning: Got invalid key \(entry_key.locKey): Character after equal string is not a semicolon")
+				print("*** Warning: Got invalid key \(entry_key.locKey): Character after equal string is not a semicolon")
 				continue
 			}
 			
@@ -272,7 +269,7 @@ class happnCSVLocFile: Streamable {
 				if let white = scannedString {semicolonString += white as String}
 			}
 			if !commentScanner.scanString(";", intoString: nil) {
-				println("*** Warning: Got invalid key \(entry_key.locKey): No semicolon sign in semicolon string")
+				print("*** Warning: Got invalid key \(entry_key.locKey): No semicolon sign in semicolon string")
 				continue
 			}
 			semicolonString += ";"
@@ -319,13 +316,16 @@ class happnCSVLocFile: Streamable {
 		
 		for (filename, components) in filenameToComponents {
 			let locFile = XcodeStringsFile(filepath: filename, components: components)
-			let fullOutputPath = rootPath.stringByAppendingPathComponent(locFile.filepath)
+			let fullOutputPath = (rootPath as NSString).stringByAppendingPathComponent(locFile.filepath)
 			
 			var stringsText = ""
-			print(locFile, &stringsText)
+			print(locFile, terminator: "", toStream: &stringsText)
 			var err: NSError?
-			if !writeText(stringsText, toFile: fullOutputPath, usingEncoding: NSUTF16StringEncoding, &err) {
-				println("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
+			do {
+				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: NSUTF16StringEncoding)
+			} catch let error as NSError {
+				err = error
+				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
 			}
 		}
 	}
@@ -421,7 +421,7 @@ class happnCSVLocFile: Streamable {
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
 				default:
-					println("Got unknown AndroidXMLLocFile component \(component)")
+					print("Got unknown AndroidXMLLocFile component \(component)")
 				}
 			}
 		}
@@ -434,7 +434,7 @@ class happnCSVLocFile: Streamable {
 	
 	func exportToAndroidProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [AndroidLocComponent]]()
-		for entry_key in sorted(entries.keys) {
+		for entry_key in entries.keys.sort() {
 			if entry_key.env != "Android" {continue}
 			
 			let value = entries[entry_key]!
@@ -463,7 +463,7 @@ class happnCSVLocFile: Streamable {
 						}
 					}
 					if !scanner.atEnd {
-						println("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
+						print("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
 					}
 				}
 				
@@ -478,21 +478,21 @@ class happnCSVLocFile: Streamable {
 					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.GroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
-						println("*** Warning: Got invalid closing key \(k)")
+						print("*** Warning: Got invalid closing key \(k)")
 					}
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
 					if let v = value[languageName] {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), value: v))
 					} else {
-						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("K"):
 					/* We're treating a CDATA string item */
 					if let v = value[languageName] {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), cDATAValue: v))
 					} else {
-						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
@@ -500,16 +500,16 @@ class happnCSVLocFile: Streamable {
 						let noA = k.substringFromIndex(k.startIndex.successor())
 						let sepByQuote = noA.componentsSeparatedByString("\"")
 						if sepByQuote.count == 2 {
-							if let idx = sepByQuote[1].toInt() {
+							if let idx = Int(sepByQuote[1]) {
 								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
 							} else {
-								println("*** Warning: Invalid key '\(k)': cannot find idx")
+								print("*** Warning: Invalid key '\(k)': cannot find idx")
 							}
 						} else {
-							println("*** Warning: Got invalid array item key '\(k)'")
+							print("*** Warning: Got invalid array item key '\(k)'")
 						}
 					} else {
-						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("p"):
 					/* We're treating a plural item */
@@ -519,25 +519,28 @@ class happnCSVLocFile: Streamable {
 						if sepByQuote.count == 2 {
 							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralItem(quantity: sepByQuote[1], value: v, parentName: sepByQuote[0]))
 						} else {
-							println("*** Warning: Got invalid plural key '\(k)'")
+							print("*** Warning: Got invalid plural key '\(k)'")
 						}
 					} else {
-						println("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				default:
-					println("*** Warning: Got invalid key \(entry_key.locKey)")
+					print("*** Warning: Got invalid key \(entry_key.locKey)")
 				}
 			}
 		}
 		for (filename, components) in filenameToComponents {
 			let locFile = AndroidXMLLocFile(pathRelativeToProject: filename, components: components)
-			let fullOutputPath = rootPath.stringByAppendingPathComponent(locFile.filepath)
+			let fullOutputPath = (rootPath as NSString).stringByAppendingPathComponent(locFile.filepath)
 			
 			var xmlText = ""
-			print(locFile, &xmlText)
+			print(locFile, terminator: "", toStream: &xmlText)
 			var err: NSError?
-			if !writeText(xmlText, toFile: fullOutputPath, usingEncoding: NSUTF8StringEncoding, &err) {
-				println("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
+			do {
+				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: NSUTF8StringEncoding)
+			} catch let error as NSError {
+				err = error
+				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
 			}
 		}
 	}
@@ -550,7 +553,7 @@ class happnCSVLocFile: Streamable {
 		}
 		target.write("\n")
 		var previousBasename: String?
-		for entry_key in sorted(entries.keys) {
+		for entry_key in entries.keys.sort() {
 			let value = entries[entry_key]!
 			
 			var basename = entry_key.filename
@@ -559,7 +562,7 @@ class happnCSVLocFile: Streamable {
 					basename = basename.substringFromIndex(slashRange.startIndex.successor())
 				}
 			}
-			if basename.hasSuffix(".strings") {basename = basename.stringByDeletingPathExtension}
+			if basename.hasSuffix(".strings") {basename = (basename as NSString).stringByDeletingPathExtension}
 			
 			if basename != previousBasename {
 				previousBasename = basename
@@ -606,18 +609,18 @@ class happnCSVLocFile: Streamable {
 			}
 		}
 		
-		if find(languages, languageName) == nil {
+		if languages.indexOf(languageName) == nil {
 			languages.append(languageName)
-			sort(&languages)
+			languages.sortInPlace()
 		}
 		
 		return (filenameNoLproj, languageName)
 	}
 	
 	private func getKeyFrom(refKey: LineKey, inout withListOfKeys keys: [LineKey]) -> LineKey {
-		if let idx = find(keys, refKey) {
+		if let idx = keys.indexOf(refKey) {
 			if keys[idx].comment != refKey.comment {
-				println("*** Warning: Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename)): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
+				print("*** Warning: Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename)): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
 			}
 			return keys[idx]
 		}

@@ -36,14 +36,14 @@ class CSVParser {
 		cs.addCharactersInString(separator.substringToIndex(separator.startIndex.successor()))
 		endTextCharacterSet = cs
 		
-		separatorIsSingleChar = (count(separator) == 1)
+		separatorIsSingleChar = (separator.characters.count == 1)
 		
 		hasHeader = header
 		if names != nil {fieldNames = names!}
 		else            {fieldNames = [String]()}
 		
 		assert(
-			count(separator) > 0 &&
+			separator.characters.count > 0 &&
 				separator.rangeOfString("\"") == nil &&
 				separator.rangeOfCharacterFromSet(NSCharacterSet.newlineCharacterSet()) == nil,
 			"CSV separator string must not be empty and must not contain the double quote character or newline characters.")
@@ -271,7 +271,7 @@ class CSVParser {
 			}
 		}
 		
-		if count(accumulatedData) > 0 {
+		if accumulatedData.characters.count > 0 {
 			return accumulatedData
 		}
 		
