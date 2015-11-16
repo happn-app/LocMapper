@@ -281,7 +281,14 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		var err: NSError?;
 		do {
 			let csv = try happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",")
-			csv.exportToXcodeProjectWithRoot("/Users/frizlab/Documents/Projects/Happn/", folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano"/*, "pt.lproj": "Português"*/])
+			csv.exportToXcodeProjectWithRoot("/Users/frizlab/Documents/Projects/Happn/", folderNameToLanguageName: [
+				"en.lproj": "English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
+				"it.lproj": "Italiano — Italian", "es.lproj": "Español — Spanish", "pt.lproj": "Português brasileiro — Portuguese (Brasil)",
+				"pt-PT.lproj": "Português europeu — Portuguese (Portugal)", "tr.lproj": "Türkçe — Turkish",
+				"zh-Hant.lproj": "中文(香港) — Chinese (Traditional)", "th.lproj": "ภาษาไทย — Thai", "ja.lproj": "日本語 — Japanese",
+				"pl.lproj": "Polszczyzna — Polish", "hu.lproj": "Magyar — Hungarian", "ru.lproj": "Русский язык — Russian",
+				"he.lproj": "עברית — Hebrew", "ko.lproj": "한국어 — Korean"
+			])
 		} catch var error as NSError {
 			err = error
 		}
