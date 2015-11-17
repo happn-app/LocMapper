@@ -96,23 +96,40 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 }
 
 func writeText(text: String, toFile filePath: String, usingEncoding encoding: NSStringEncoding) throws {
-	if let data = text.dataUsingEncoding(encoding, allowLossyConversion: false) {
-		if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
-			try NSFileManager.defaultManager().removeItemAtPath(filePath)
-		}
-		if !NSFileManager.defaultManager().createFileAtPath(filePath, contents: nil, attributes: nil) {
-			throw NSError(domain: "LocalizerErrDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot file at path \(filePath)"])
-		}
-		if let output_stream = NSFileHandle(forWritingAtPath: filePath) {
-			output_stream.writeData(data)
-			return
-		} else {
-			throw NSError(domain: "LocalizerErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(filePath) for writing"])
-		}
-	} else {
+	guard let data = text.dataUsingEncoding(encoding, allowLossyConversion: false) else {
 		throw NSError(domain: "LocalizerErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot convert text to expected encoding"])
 	}
+	
+	if NSFileManager.defaultManager().fileExistsAtPath(filePath) {
+		try NSFileManager.defaultManager().removeItemAtPath(filePath)
+	}
+	if !NSFileManager.defaultManager().createFileAtPath(filePath, contents: nil, attributes: nil) {
+		throw NSError(domain: "LocalizerErrDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot file at path \(filePath)"])
+	}
+	
+	if let output_stream = NSFileHandle(forWritingAtPath: filePath) {
+		defer {output_stream.closeFile()}
+		
+		/* This line actually raises an exception if cannot write... We should
+		 * handle that! (In Swift? How...) */
+		output_stream.writeData(data)
+	} else {
+		throw NSError(domain: "LocalizerErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(filePath) for writing"])
+	}
 }
+
+let folderNameToLanguageNameForTests = [
+	"en.lproj": "English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
+	"it.lproj": "Italiano — Italian", "es.lproj": "Español — Spanish", "pt.lproj": "Português brasileiro — Portuguese (Brasil)",
+	"pt-PT.lproj": "Português europeu — Portuguese (Portugal)", "tr.lproj": "Türkçe — Turkish",
+	"zh-Hant.lproj": "中文(香港) — Chinese (Traditional)", "th.lproj": "ภาษาไทย — Thai", "ja.lproj": "日本語 — Japanese",
+	"pl.lproj": "Polszczyzna — Polish", "hu.lproj": "Magyar — Hungarian", "ru.lproj": "Русский язык — Russian",
+	"he.lproj": "עברית — Hebrew", "ko.lproj": "한국어 — Korean"
+]
+let androidLanguageFolderNamesForTests = [
+	"values": "English", "values-fr": "Français — French", "values-de": "Deutsch — German",
+	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt": "Português brasileiro — Portuguese (Brasil)"
+]
 
 var csvSeparator = ","
 switch argAtIndexOrExit(1, error_message: "Command is required") {
@@ -129,35 +146,20 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		let root_folder = argAtIndexOrExit(i++, error_message: "Root folder is required")
 		var output = argAtIndexOrExit(i++, error_message: "Output is required")
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-		print("Exporting from Xcode project...")
 		
-		var err: NSError?
-		var got_error = true
+		print("Exporting from Xcode project...")
 		do {
 			let parsed_strings_files = try XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths)
-			do {
-				let csv = try happnCSVLocFile(fromPath: output, withCSVSeparator: csvSeparator)
-				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name)
-				var csvText = ""
-				print(csv, terminator: "", toStream: &csvText)
-				do {
-					try writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding)
-					got_error = false
-				} catch var error as NSError {
-					err = error
-				}
-			} catch var error as NSError {
-				err = error
-			}
-		} catch var error as NSError {
-			err = error
+			let csv = try happnCSVLocFile(fromPath: output, withCSVSeparator: csvSeparator)
+			csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name)
+			var csvText = ""
+			print(csv, terminator: "", toStream: &csvText)
+			try writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding)
+		} catch let error as NSError {
+			print("Got error while exporting: \(error)")
+			exit(Int32(error.code))
 		}
-		if got_error {
-			print("Got error while exporting: \(err)")
-			exit(err != nil ? Int32(err!.code) : 255)
-		} else {
-			exit(0)
-		}
+		exit(0)
 	
 	/* Import to Xcode */
 	case "import_to_xcode":
@@ -170,13 +172,14 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		
 		print("Importing to Xcode project...")
-		var err: NSError?;
 		do {
 			let csv = try happnCSVLocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
 			csv.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
-		} catch var error as NSError {
-			err = error
+		} catch let error as NSError {
+			print("Got error while importing: \(error)")
+			exit(Int32(error.code))
 		}
+		exit(0)
 	
 	/* Export from Android */
 	case "export_from_android":
@@ -194,35 +197,20 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		let root_folder = argAtIndexOrExit(i++, error_message: "Root folder is required")
 		let output = argAtIndexOrExit(i++, error_message: "Output is required")
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-		print("Exporting from Android project...")
 		
-		var err: NSError?
-		var got_error = true
+		print("Exporting from Android project...")
 		do {
 			let parsed_loc_files = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
-			do {
-				let csv = try happnCSVLocFile(fromPath: output, withCSVSeparator: csvSeparator)
-				csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: folder_name_to_language_name)
-				var csvText = ""
-				print(csv, terminator: "", toStream: &csvText)
-				do {
-					try writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding)
-					got_error = false
-				} catch var error as NSError {
-					err = error
-				}
-			} catch var error as NSError {
-				err = error
-			}
-		} catch var error as NSError {
-			err = error
+			let csv = try happnCSVLocFile(fromPath: output, withCSVSeparator: csvSeparator)
+			csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: folder_name_to_language_name)
+			var csvText = ""
+			print(csv, terminator: "", toStream: &csvText)
+			try writeText(csvText, toFile: output, usingEncoding: NSUTF8StringEncoding)
+		} catch let error as NSError {
+			print("Got error while exporting: \(error)")
+			exit(Int32(error.code))
 		}
-		if got_error {
-			print("Got error while exporting: \(err)")
-			exit(err != nil ? Int32(err!.code) : 255)
-		} else {
-			exit(0)
-		}
+		exit(0)
 	
 	/* Import to Android */
 	case "import_to_android":
@@ -242,88 +230,68 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		
 		print("Importing to Android project...")
-		var err: NSError?;
 		do {
 			let csv = try happnCSVLocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
 			csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
-		} catch var error as NSError {
-			err = error
+		} catch let error as NSError {
+			print("Got error while importing: \(error)")
+			exit(Int32(error.code))
 		}
+		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_export":
-		var err: NSError?;
-		do {
-			let parsed_strings_files = try XcodeStringsFile.stringsFilesInProject("/Users/frizlab/Documents/Projects/Happn/", excluded_paths: ["Dependencies/", ".git/"])
-			do {
-				let csv = try happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",")
-				csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: ["en.lproj": "English", "fr.lproj": "Français", "de.lproj": "Deutsch", "es.lproj": "Español", "it.lproj": "Italiano", "pt.lproj": "Português"])
-				var csvText = ""
-				print(csv, terminator: "", toStream: &csvText)
-				do {
-					try writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: NSUTF8StringEncoding)
-				} catch var error as NSError {
-					err = error
-				}
-//				println("CSV: ")
-//				print(csv)
-			} catch var error as NSError {
-				err = error
-			}
-		} catch var error as NSError {
-			err = error
+		guard let parsed_strings_files = try? XcodeStringsFile.stringsFilesInProject("/Users/frizlab/Documents/Projects/Happn/", excluded_paths: ["Dependencies/", ".git/"]) else {
+			print("Error reading Xcode strings files", toStream: &mx_stderr)
+			exit(255)
 		}
+		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+			print("Error reading CSV Loc file", toStream: &mx_stderr)
+			exit(255)
+		}
+		csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folderNameToLanguageNameForTests)
+		print("CSV: ")
+		print(csv, terminator: "")
+		var csvText = ""
+		print(csv, terminator: "", toStream: &csvText)
+		_ = try? writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: NSUTF8StringEncoding)
+		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_import":
-		var err: NSError?;
-		do {
-			let csv = try happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",")
-			csv.exportToXcodeProjectWithRoot("/Users/frizlab/Documents/Projects/Happn/", folderNameToLanguageName: [
-				"en.lproj": "English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
-				"it.lproj": "Italiano — Italian", "es.lproj": "Español — Spanish", "pt.lproj": "Português brasileiro — Portuguese (Brasil)",
-				"pt-PT.lproj": "Português europeu — Portuguese (Portugal)", "tr.lproj": "Türkçe — Turkish",
-				"zh-Hant.lproj": "中文(香港) — Chinese (Traditional)", "th.lproj": "ภาษาไทย — Thai", "ja.lproj": "日本語 — Japanese",
-				"pl.lproj": "Polszczyzna — Polish", "hu.lproj": "Magyar — Hungarian", "ru.lproj": "Русский язык — Russian",
-				"he.lproj": "עברית — Hebrew", "ko.lproj": "한국어 — Korean"
-			])
-		} catch var error as NSError {
-			err = error
+		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+			print("Error reading CSV Loc file", toStream: &mx_stderr)
+			exit(255)
 		}
+		csv.exportToXcodeProjectWithRoot("/Users/frizlab/Documents/Projects/Happn/", folderNameToLanguageName: folderNameToLanguageNameForTests)
+		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_export":
-		var err: NSError?;
-		do {
-			let parsed_loc_files = try AndroidXMLLocFile.locFilesInProject("/Users/frizlab/Documents/Projects/HappnAndroid/", resFolder: "happn-android/Happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: ["values", "values-de", "values-es", "values-fr"])
-			do {
-				let csv = try happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",")
-				csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español", "values-it": "Italiano", "values-pt": "Português"])
-				var csvText = ""
-				print(csv, terminator: "", toStream: &csvText)
-				do {
-					try writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: NSUTF8StringEncoding)
-				} catch var error as NSError {
-					err = error
-				}
-//				println("CSV: ")
-//				print(csv)
-			} catch var error as NSError {
-				err = error
-			}
-		} catch var error as NSError {
-			err = error
+		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("/Users/frizlab/Documents/Projects/HappnAndroid/", resFolder: "happn-android/Happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys)) else {
+			print("Error reading Xcode strings files", toStream: &mx_stderr)
+			exit(255)
 		}
+		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+			print("Error reading CSV Loc file", toStream: &mx_stderr)
+			exit(255)
+		}
+		csv.mergeAndroidXMLLocStringsFiles(parsed_strings_files, folderNameToLanguageName: folderNameToLanguageNameForTests)
+		print("CSV: ")
+		print(csv, terminator: "")
+		var csvText = ""
+		print(csv, terminator: "", toStream: &csvText)
+		_ = try? writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: NSUTF8StringEncoding)
+		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		var err: NSError?;
-		do {
-			let csv = try happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",")
-			csv.exportToAndroidProjectWithRoot("/Users/frizlab/Documents/Projects/HappnAndroid/", folderNameToLanguageName: ["values": "English", "values-fr": "Français", "values-de": "Deutsch", "values-es": "Español"/*, "values-it": "Italiano", "values-pt": "Português"*/])
-		} catch var error as NSError {
-			err = error
+		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+			print("Error reading CSV Loc file", toStream: &mx_stderr)
+			exit(255)
 		}
+		csv.exportToAndroidProjectWithRoot("/Users/frizlab/Documents/Projects/HappnAndroid/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
+		exit(0)
 	
 	default:
 		print("Unknown command \(Process.arguments[1])", toStream: &mx_stderr)
