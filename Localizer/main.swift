@@ -71,9 +71,7 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 	
 	func stringByDeletingPrefixIfPresent(prefix: String, from string: String) -> String? {
 		if string.hasPrefix(prefix) {
-			var start_idx = string.startIndex
-			for _ in 0..<prefix.characters.count {start_idx = start_idx.successor()} /* There doesn't seem to be any easier way to do this... */
-			return string[start_idx..<string.endIndex]
+			return string[string.startIndex.advancedBy(prefix.characters.count)..<string.endIndex]
 		}
 		
 		return nil
