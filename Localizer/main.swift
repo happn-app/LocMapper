@@ -31,7 +31,7 @@ func usage<TargetStream: OutputStreamType>(program_name: String, inout stream: T
  * and the usage, then exits with syntax error if there is not enough arguments
  * given to the program */
 func argAtIndexOrExit(i: Int, error_message: String) -> String {
-	if Process.arguments.count <= i {
+	guard Process.arguments.count > i else {
 		print("Syntax error: \(error_message)", toStream: &mx_stderr)
 		usage(Process.arguments[0], stream: &mx_stderr)
 		exit(1)
@@ -46,7 +46,7 @@ func getFolderToHumanLanguageNamesFromIndex(var i: Int) -> [String: String] {
 	while i < Process.arguments.count {
 		let folder_name = argAtIndexOrExit(i++, error_message: "INTERNAL ERROR")
 		let language_name = argAtIndexOrExit(i++, error_message: "Language name is required for a given folder name")
-		if folder_name_to_language_name[folder_name] != nil {
+		guard folder_name_to_language_name[folder_name] == nil else {
 			print("Syntax error: Folder name \(folder_name) defined more than once", toStream: &mx_stderr)
 			usage(Process.arguments[0], stream: &mx_stderr)
 			exit(1)
@@ -54,7 +54,7 @@ func getFolderToHumanLanguageNamesFromIndex(var i: Int) -> [String: String] {
 		folder_name_to_language_name[folder_name] = language_name
 	}
 	
-	if folder_name_to_language_name.count == 0 {
+	guard folder_name_to_language_name.count > 0 else {
 		print("Syntax error: Expected at least one language. Got none.", toStream: &mx_stderr)
 		usage(Process.arguments[0], stream: &mx_stderr)
 		exit(1)
