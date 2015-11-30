@@ -37,7 +37,7 @@ class AndroidXMLLocFile: Streamable {
 	let filepath: String
 	let components: [AndroidLocComponent]
 	
-	class GroupOpening: AndroidLocComponent {
+	class GenericGroupOpening: AndroidLocComponent {
 		let fullString: String
 		let groupNameAndAttr: (String, [String: String])?
 		
@@ -62,7 +62,7 @@ class AndroidXMLLocFile: Streamable {
 		}
 	}
 	
-	class GroupClosing: AndroidLocComponent {
+	class GenericGroupClosing: AndroidLocComponent {
 		let groupName: String
 		let nameAttr: String?
 		
@@ -147,16 +147,48 @@ class AndroidXMLLocFile: Streamable {
 	class PluralItem: AndroidLocComponent {
 		let quantity: String
 		let value: String
-		let parentName: String
+		let isCDATA: Bool
 		
 		var stringValue: String {
-			return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</item>"
+			if value.xmlTextValue.isEmpty {
+				return "<item quantity=\"\(quantity)\"/>"
+			}
+			if !isCDATA {return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</item>"}
+			else        {return "<item quantity=\"\(quantity)\"><![CDATA[\(value)]]></item>"}
 		}
 		
-		init(quantity q: String, value v: String, parentName pn: String) {
+		init(quantity q: String, value v: String) {
 			quantity = q
 			value = v
-			parentName = pn
+			isCDATA = false
+		}
+		
+		init(quantity q: String, cDATAValue v: String) {
+			quantity = q
+			value = v
+			isCDATA = true
+		}
+	}
+	
+	class PluralGroup: AndroidLocComponent {
+		let name: String
+		let values: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], PluralItem)?]
+		
+		var stringValue: String {
+			var ret = "<plurals name=\"\(name)\">"
+			for (quantity, value) in values where value != nil {
+				let (spaces, pluralItem) = value!
+				assert(pluralItem.quantity == quantity)
+				
+				for component in spaces {ret += component.stringValue}
+				ret += pluralItem.stringValue
+			}
+			return ret
+		}
+		
+		init(name n: String, values v: [String /* Quantity */: ([AndroidLocComponent], PluralItem)?]) {
+			name = n
+			values = v
 		}
 	}
 	
@@ -200,6 +232,16 @@ class AndroidXMLLocFile: Streamable {
 		}
 		var components = [AndroidLocComponent]()
 		
+		var currentPluralSpaces = [AndroidLocComponent]()
+		var currentPluralValues = [String /* Quantity */: ([AndroidLocComponent], PluralItem)?]()
+		
+		private var addingSpacesToPlural = false
+		private func addSpaceComponent(space: AndroidLocComponent) {
+			assert(space is WhiteSpace || space is Comment)
+			if !addingSpacesToPlural {components.append(space)}
+			else                     {currentPluralSpaces.append(space)}
+		}
+		
 		func parserDidStartDocument(parser: NSXMLParser) {
 			assert(status == .OutStart)
 		}
@@ -214,6 +256,11 @@ class AndroidXMLLocFile: Streamable {
 //			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
 			let attrs = attributeDict 
 			
+			if currentChars.characters.count > 0 {
+				addSpaceComponent(WhiteSpace(currentChars))
+				currentChars = ""
+			}
+			
 			switch (status, elementName) {
 				case (.OutStart, "resources"):
 					status = .InResources
@@ -227,7 +274,7 @@ class AndroidXMLLocFile: Streamable {
 					else                        {status = .Error}
 				
 				case (.InResources, "plurals"):
-					if let name = attrs["name"] {status = .InPlurals(name); currentGroupName = name}
+					if let name = attrs["name"] {status = .InPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues.removeAll()}
 					else                        {status = .Error}
 				
 				case (.InArray, "item"):
@@ -248,12 +295,8 @@ class AndroidXMLLocFile: Streamable {
 				return
 			}
 			
-			if currentChars.characters.count > 0 {
-				components.append(WhiteSpace(currentChars))
-				currentChars = ""
-			}
-			if elementName != "string" && elementName != "item" {
-				components.append(GroupOpening(groupName: elementName, attributes: attrs))
+			if elementName != "string" && elementName != "plurals" && elementName != "item" {
+				components.append(GenericGroupOpening(groupName: elementName, attributes: attrs))
 			}
 		}
 		
@@ -261,8 +304,8 @@ class AndroidXMLLocFile: Streamable {
 //			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
 			switch (status, elementName) {
 				case (.InResources, "resources"):
-					if currentChars.characters.count > 0 {components.append(WhiteSpace(currentChars))}
-					components.append(GroupClosing(groupName: elementName))
+					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
+					components.append(GenericGroupClosing(groupName: elementName))
 					status = .OutEnd
 				
 				case (.InString(let name), "string"):
@@ -274,10 +317,18 @@ class AndroidXMLLocFile: Streamable {
 				
 				case (.InArray, "string-array"):
 					currentArrayIdx = 0
-					fallthrough
-				case (.InPlurals, "plurals"):
-					if currentChars.characters.count > 0 {components.append(WhiteSpace(currentChars))}
-					components.append(GroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
+					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
+					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
+					currentGroupName = nil
+					status = .InResources
+				
+				case (.InPlurals(let pluralsName), "plurals"):
+					components.append(PluralGroup(name: pluralsName, values: currentPluralValues))
+					addingSpacesToPlural = false
+					currentPluralValues.removeAll()
+					
+					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
+					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
 					status = .InResources
 				
@@ -293,7 +344,17 @@ class AndroidXMLLocFile: Streamable {
 				case (.InPluralItem(let quantity), "item"):
 					switch previousStatus {
 					case .InPlurals(let pluralsName):
-						components.append(PluralItem(quantity: quantity, value: currentChars.valueFromXMLText, parentName: pluralsName))
+						if currentPluralValues[quantity] != nil {
+							print("*** Warning: Got more than one value for quantity \(quantity) of plurals named \(pluralsName)...")
+							print("             Choosing the latest one found.")
+						}
+						currentPluralValues[quantity] = (
+							currentPluralSpaces,
+							isCurrentCharsCDATA ?
+								PluralItem(quantity: quantity, cDATAValue: currentChars) :
+								PluralItem(quantity: quantity, value: currentChars.valueFromXMLText)
+						)
+						currentPluralSpaces.removeAll()
 						status = previousStatus
 					default:
 						status = .Error
@@ -338,10 +399,10 @@ class AndroidXMLLocFile: Streamable {
 				case .InArray:     fallthrough
 				case .InPlurals:
 					if currentChars.characters.count > 0 {
-						components.append(WhiteSpace(currentChars))
+						addSpaceComponent(WhiteSpace(currentChars))
 						currentChars = ""
 					}
-					components.append(Comment(comment))
+					addSpaceComponent(Comment(comment))
 				default:
 					parser.abortParsing()
 					status = .Error

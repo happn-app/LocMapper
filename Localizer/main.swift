@@ -119,7 +119,7 @@ func writeText(text: String, toFile filePath: String, usingEncoding encoding: NS
 }
 
 let folderNameToLanguageNameForTests = [
-	"en.lproj": "English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
+	"en.lproj": " English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
 	"it.lproj": "Italiano — Italian", "es.lproj": "Español — Spanish", "pt.lproj": "Português brasileiro — Portuguese (Brasil)",
 	"pt-PT.lproj": "Português europeu — Portuguese (Portugal)", "tr.lproj": "Türkçe — Turkish",
 	"zh-Hant.lproj": "中文(香港) — Chinese (Traditional)", "th.lproj": "ภาษาไทย — Thai", "ja.lproj": "日本語 — Japanese",
@@ -127,8 +127,12 @@ let folderNameToLanguageNameForTests = [
 	"he.lproj": "עברית — Hebrew", "ko.lproj": "한국어 — Korean"
 ]
 let androidLanguageFolderNamesForTests = [
-	"values": "English", "values-fr": "Français — French", "values-de": "Deutsch — German",
-	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt": "Português brasileiro — Portuguese (Brasil)"
+	"values": " English", "values-fr": "Français — French", "values-de": "Deutsch — German",
+	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt-rBR": "Português brasileiro — Portuguese (Brasil)",
+	"values-pt": "Português europeu — Portuguese (Portugal)", "values-tr": "Türkçe — Turkish",
+	"values-zh-rTW": "中文(香港) — Chinese (Traditional)", "values-th": "ภาษาไทย — Thai", "values-ja": "日本語 — Japanese",
+	"values-pl": "Polszczyzna — Polish" /*, "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",
+	"values-he": "עברית — Hebrew", "values-ko": "한국어 — Korean"*/
 ]
 
 var csvSeparator = ","
@@ -268,15 +272,15 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_android_export":
-		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("/Users/frizlab/Documents/Projects/HappnAndroid/", resFolder: "happn-android/Happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys)) else {
-			print("Error reading Xcode strings files", toStream: &mx_stderr)
+		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("/Users/frizlab/Documents/Projects/HappnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys)) else {
+			print("Error reading Android strings files", toStream: &mx_stderr)
 			exit(255)
 		}
 		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", toStream: &mx_stderr)
 			exit(255)
 		}
-		csv.mergeAndroidXMLLocStringsFiles(parsed_strings_files, folderNameToLanguageName: folderNameToLanguageNameForTests)
+		csv.mergeAndroidXMLLocStringsFiles(parsed_strings_files, folderNameToLanguageName: androidLanguageFolderNamesForTests)
 		print("CSV: ")
 		print(csv, terminator: "")
 		var csvText = ""

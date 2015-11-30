@@ -37,7 +37,7 @@ class happnCSVLocFile: Streamable {
 	let filepath: String
 	let csvSeparator: String
 	private var languages: [String]
-	private var entries: [LineKey: [String: String]]
+	private var entries: [LineKey: [String /* Language */: String /* Value */]]
 	
 	/* *************** LineKey struct. Key for each entries in the happn CSV loc file. *************** */
 	struct LineKey: Equatable, Hashable, Comparable {
@@ -54,7 +54,7 @@ class happnCSVLocFile: Streamable {
 		let userReadableComment: String
 		
 		var hashValue: Int {
-			return locKey.hashValue &+ env.hashValue &+ filename.hashValue &+ (comment.isEmpty ? 0 : 1)
+			return locKey.hashValue &+ env.hashValue &+ filename.hashValue
 		}
 	}
 	
@@ -197,7 +197,7 @@ class happnCSVLocFile: Streamable {
 						locKey: (locString.keyHasQuotes ? "'" : "#")+locString.key, env: env, filename: filenameNoLproj, comment: locString.equal+";"+locString.semicolon+currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
-					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
 					else                   {--index}
 					entries[key]![languageName] = locString.value
@@ -211,7 +211,7 @@ class happnCSVLocFile: Streamable {
 		}
 		
 		for (refKey, val) in originalEntries {
-			let key = getKeyFrom(refKey, withListOfKeys: &keys)
+			let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 			entries[key] = val
 		}
 	}
@@ -344,40 +344,49 @@ class happnCSVLocFile: Streamable {
 			var currentComment = ""
 			var currentUserReadableComment = ""
 			var currentUserReadableGroupComment = ""
+			
+			func handleWhiteSpace(whiteSpace: AndroidXMLLocFile.WhiteSpace) {
+				if whiteSpace.stringValue.rangeOfString("\n\n", options: NSStringCompareOptions.LiteralSearch) != nil && !currentUserReadableComment.isEmpty {
+					if !currentUserReadableGroupComment.isEmpty {
+						currentUserReadableGroupComment += "\n\n\n"
+					}
+					currentUserReadableGroupComment += currentUserReadableComment
+					currentUserReadableComment = ""
+				}
+				currentComment += whiteSpace.stringValue
+			}
+			
+			func handleComment(comment: AndroidXMLLocFile.Comment) {
+				if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
+				currentUserReadableComment += comment.content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).stringByReplacingOccurrencesOfString("\n * ", withString: "\n", options: NSStringCompareOptions.LiteralSearch)
+				currentComment += comment.stringValue
+			}
+			
 			for component in locFile.components {
 				switch component {
 				case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
-					if whiteSpace.stringValue.rangeOfString("\n\n", options: NSStringCompareOptions.LiteralSearch) != nil && !currentUserReadableComment.isEmpty {
-						if !currentUserReadableGroupComment.isEmpty {
-							currentUserReadableGroupComment += "\n\n\n"
-						}
-						currentUserReadableGroupComment += currentUserReadableComment
-						currentUserReadableComment = ""
-					}
-					currentComment += whiteSpace.stringValue
+					handleWhiteSpace(whiteSpace)
 				case let comment as AndroidXMLLocFile.Comment:
-					if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-					currentUserReadableComment += comment.content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).stringByReplacingOccurrencesOfString("\n * ", withString: "\n", options: NSStringCompareOptions.LiteralSearch)
-					currentComment += comment.stringValue
-				case let groupOpening as AndroidXMLLocFile.GroupOpening:
+					handleComment(comment)
+				case let groupOpening as AndroidXMLLocFile.GenericGroupOpening:
 					let refKey = LineKey(
 						locKey: "o"+groupOpening.fullString, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
-					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
 					else                   {--index}
 					entries[key]![languageName] = "--"
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
-				case let groupClosing as AndroidXMLLocFile.GroupClosing:
+				case let groupClosing as AndroidXMLLocFile.GenericGroupClosing:
 					let refKey = LineKey(
 						locKey: "c"+groupClosing.groupName+(groupClosing.nameAttr != nil ? " "+groupClosing.nameAttr! : ""),
 						env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
-					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
 					else                   {--index}
 					entries[key]![languageName] = "--"
@@ -389,7 +398,7 @@ class happnCSVLocFile: Streamable {
 						locKey: (!locString.isCDATA ? "k" : "K") + locString.key, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
-					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
 					else                   {--index}
 					entries[key]![languageName] = locString.value
@@ -401,25 +410,52 @@ class happnCSVLocFile: Streamable {
 						locKey: "a"+arrayItem.parentName+"\""+String(arrayItem.idx), env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
-					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
 					else                   {--index}
 					entries[key]![languageName] = arrayItem.value
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
-				case let pluralItem as AndroidXMLLocFile.PluralItem:
+				case let pluralGroup as AndroidXMLLocFile.PluralGroup:
 					let refKey = LineKey(
-						locKey: "p"+pluralItem.parentName+"\""+pluralItem.quantity, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+						locKey: "s"+pluralGroup.name, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
-					let key = getKeyFrom(refKey, withListOfKeys: &keys)
+					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 					if entries[key] == nil {entries[key] = [String: String]()}
 					else                   {--index}
-					entries[key]![languageName] = pluralItem.value
+					entries[key]![languageName] = "--"
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
+					for quantity in ["zero", "one", "two", "few", "many", "other"] {
+						if let info = pluralGroup.values[quantity], (spaces, _) = info {
+							for space in spaces {
+								switch space {
+								case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
+									handleWhiteSpace(whiteSpace)
+								case let comment as AndroidXMLLocFile.Comment:
+									handleComment(comment)
+								default:
+									fatalError("Invalid space: \(space)")
+								}
+							}
+						}
+						let pluralItem = pluralGroup.values[quantity]??.1
+						let prefix = (pluralItem != nil && pluralItem!.isCDATA ? "P" : "p")
+						let refKey = LineKey(
+							locKey: prefix+pluralGroup.name+"\""+quantity, env: env, filename: filenameNoLanguage, comment: currentComment, index: index++,
+							userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+						)
+						let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: true, withListOfKeys: &keys)
+						if entries[key] == nil {entries[key] = [String: String]()}
+						else                   {--index}
+						entries[key]![languageName] = (pluralItem?.value ?? "--")
+						currentComment = ""
+						currentUserReadableComment = ""
+						currentUserReadableGroupComment = ""
+					}
 				default:
 					print("Got unknown AndroidXMLLocFile component \(component)")
 				}
@@ -427,7 +463,7 @@ class happnCSVLocFile: Streamable {
 		}
 		
 		for (refKey, val) in originalEntries {
-			let key = getKeyFrom(refKey, withListOfKeys: &keys)
+			let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 			entries[key] = val
 		}
 	}
@@ -470,13 +506,17 @@ class happnCSVLocFile: Streamable {
 				switch entry_key.locKey {
 				case let k where k.hasPrefix("o"):
 					/* We're treating a group opening */
-					filenameToComponents[filename]!.append(AndroidXMLLocFile.GroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
+					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
+				case let k where k.hasPrefix("s"):
+					/* We're treating a plural group opening */
+//					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
+					()
 				case let k where k.hasPrefix("c"):
 					/* We're treating a group closing */
 					let noC = k.substringFromIndex(k.startIndex.successor())
 					let sepBySpace = noC.componentsSeparatedByString(" ")
 					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.GroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
 						print("*** Warning: Got invalid closing key \(k)")
 					}
@@ -517,7 +557,7 @@ class happnCSVLocFile: Streamable {
 						let noP = k.substringFromIndex(k.startIndex.successor())
 						let sepByQuote = noP.componentsSeparatedByString("\"")
 						if sepByQuote.count == 2 {
-							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralItem(quantity: sepByQuote[1], value: v, parentName: sepByQuote[0]))
+//							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralItem(quantity: sepByQuote[1], value: v, parentName: sepByQuote[0]))
 						} else {
 							print("*** Warning: Got invalid plural key '\(k)'")
 						}
@@ -562,6 +602,7 @@ class happnCSVLocFile: Streamable {
 					basename = basename.substringFromIndex(slashRange.startIndex.successor())
 				}
 			}
+			if basename.hasSuffix(".xml") {basename = (basename as NSString).stringByDeletingPathExtension}
 			if basename.hasSuffix(".strings") {basename = (basename as NSString).stringByDeletingPathExtension}
 			
 			if basename != previousBasename {
@@ -617,10 +658,25 @@ class happnCSVLocFile: Streamable {
 		return (filenameNoLproj, languageName)
 	}
 	
-	private func getKeyFrom(refKey: LineKey, inout withListOfKeys keys: [LineKey]) -> LineKey {
+	private func getKeyFrom(refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, inout withListOfKeys keys: [LineKey]) -> LineKey {
 		if let idx = keys.indexOf(refKey) {
 			if keys[idx].comment != refKey.comment {
-				print("*** Warning: Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename)): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
+				if useNonEmptyCommentIfOneEmptyTheOtherNot && (keys[idx].comment.characters.count == 0 || refKey.comment.characters.count == 0) {
+					/* We use the non-empty comment because one of the two comments
+					 * compared is empty; the other not (both are different and one
+					 * of them is empty) */
+					if keys[idx].comment.characters.count == 0 {
+						let newKey = LineKey(
+							locKey: keys[idx].locKey, env: keys[idx].env, filename: keys[idx].filename,
+							comment: refKey.comment, index: keys[idx].index,
+							userReadableGroupComment: refKey.userReadableGroupComment,
+							userReadableComment: refKey.userReadableComment
+						)
+						keys[idx] = newKey
+					}
+				} else {
+					print("*** Warning: Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename)): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
+				}
 			}
 			return keys[idx]
 		}
