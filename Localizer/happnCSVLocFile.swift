@@ -610,7 +610,7 @@ class happnCSVLocFile: Streamable {
 				target.write("\n")
 				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
 				target.write(("\\o/ \\o/ \\o/ " + previousBasename! + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
-				target.write("\n")
+				target.write("\(csvSeparator)\n")
 			}
 			
 			/* Writing group comment */
