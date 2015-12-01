@@ -470,10 +470,34 @@ class happnCSVLocFile: Streamable {
 	
 	func exportToAndroidProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [AndroidLocComponent]]()
+		var spaces = [AndroidLocComponent /* Only WhiteSpace and Comment */]()
+		var currentPluralsValueByFilename: [String /* Language */: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], AndroidXMLLocFile.PluralGroup.PluralItem)?]] = [:]
 		for entry_key in entries.keys.sort() {
 			if entry_key.env != "Android" {continue}
 			
 			let value = entries[entry_key]!
+			
+			if !entry_key.comment.isEmpty {
+				var white: NSString?
+				let scanner = NSScanner(string: entry_key.comment)
+				scanner.charactersToBeSkipped = NSCharacterSet()
+				if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+					spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
+				}
+				if scanner.scanString("<!--", intoString: nil) {
+					var comment: NSString?
+					if scanner.scanUpToString("-->", intoString: &comment) && !scanner.atEnd {
+						spaces.append(AndroidXMLLocFile.Comment(comment! as String))
+						scanner.scanString("-->", intoString: nil)
+						if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+							spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
+						}
+					}
+				}
+				if !scanner.atEnd {
+					print("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
+				}
+			}
 			
 			for (folderName, languageName) in folderNameToLanguageName {
 				let filename = entry_key.filename.stringByReplacingOccurrencesOfString("//LANGUAGE//", withString: "/"+folderName+"/")
@@ -481,40 +505,31 @@ class happnCSVLocFile: Streamable {
 					filenameToComponents[filename] = [AndroidLocComponent]()
 				}
 				
-				if !entry_key.comment.isEmpty {
-					var white: NSString?
-					let scanner = NSScanner(string: entry_key.comment)
-					scanner.charactersToBeSkipped = NSCharacterSet()
-					if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white! as String))
-					}
-					if scanner.scanString("<!--", intoString: nil) {
-						var comment: NSString?
-						if scanner.scanUpToString("-->", intoString: &comment) && !scanner.atEnd {
-							filenameToComponents[filename]!.append(AndroidXMLLocFile.Comment(comment! as String))
-							scanner.scanString("-->", intoString: nil)
-							if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
-								filenameToComponents[filename]!.append(AndroidXMLLocFile.WhiteSpace(white! as String))
-							}
-						}
-					}
-					if !scanner.atEnd {
-						print("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
-					}
-				}
-				
 				switch entry_key.locKey {
 				case let k where k.hasPrefix("o"):
 					/* We're treating a group opening */
+					filenameToComponents[filename]!.appendContentsOf(spaces)
 					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
 				case let k where k.hasPrefix("s"):
 					/* We're treating a plural group opening */
-//					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
-					()
+					filenameToComponents[filename]!.appendContentsOf(spaces)
+					currentPluralsValueByFilename[filename] = [:]
 				case let k where k.hasPrefix("c"):
 					/* We're treating a group closing */
 					let noC = k.substringFromIndex(k.startIndex.successor())
 					let sepBySpace = noC.componentsSeparatedByString(" ")
+					if let plurals = currentPluralsValueByFilename[filename] {
+						/* We have a plural group being contructed. We've reached it's
+						 * closing component: let's add the finished plural to the
+						 * components. */
+						if sepBySpace.count == 2 && sepBySpace[0] == "plurals" {
+							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralGroup(name: sepBySpace[1], values: plurals))
+						} else {
+							print("*** Warning: Got invalid plural closing key \(k). Dropping whole plurals group.")
+						}
+						currentPluralsValueByFilename.removeValueForKey(filename)
+					}
+					filenameToComponents[filename]!.appendContentsOf(spaces)
 					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
@@ -522,6 +537,7 @@ class happnCSVLocFile: Streamable {
 					}
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
+					filenameToComponents[filename]!.appendContentsOf(spaces)
 					if let v = value[languageName] {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), value: v))
 					} else {
@@ -529,6 +545,7 @@ class happnCSVLocFile: Streamable {
 					}
 				case let k where k.hasPrefix("K"):
 					/* We're treating a CDATA string item */
+					filenameToComponents[filename]!.appendContentsOf(spaces)
 					if let v = value[languageName] {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), cDATAValue: v))
 					} else {
@@ -536,6 +553,7 @@ class happnCSVLocFile: Streamable {
 					}
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
+					filenameToComponents[filename]!.appendContentsOf(spaces)
 					if let v = value[languageName] {
 						let noA = k.substringFromIndex(k.startIndex.successor())
 						let sepByQuote = noA.componentsSeparatedByString("\"")
@@ -551,23 +569,36 @@ class happnCSVLocFile: Streamable {
 					} else {
 						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
-				case let k where k.hasPrefix("p"):
+				case let k where k.hasPrefix("p") || k.hasPrefix("P"):
+					let isCData = k.hasPrefix("P")
 					/* We're treating a plural item */
-					if let v = value[languageName] {
+					if let v = value[languageName] where v != "--" && currentPluralsValueByFilename[filename] != nil {
 						let noP = k.substringFromIndex(k.startIndex.successor())
 						let sepByQuote = noP.componentsSeparatedByString("\"")
 						if sepByQuote.count == 2 {
-//							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralItem(quantity: sepByQuote[1], value: v, parentName: sepByQuote[0]))
+							let quantity = sepByQuote[1]
+							let p = isCData ?
+								AndroidXMLLocFile.PluralGroup.PluralItem(quantity: quantity, cDATAValue: v) :
+								AndroidXMLLocFile.PluralGroup.PluralItem(quantity: quantity, value: v)
+							
+							if currentPluralsValueByFilename[filename]![quantity] != nil {
+								print("*** Warning: Got multiple plurals value for quantity '\(quantity)' (key: '\(k)')")
+							}
+							currentPluralsValueByFilename[filename]![quantity] = (spaces, p)
 						} else {
-							print("*** Warning: Got invalid plural key '\(k)'")
+							print("*** Warning: Got invalid plural key '\(k)' (either malformed or misplaced)")
 						}
 					} else {
-						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						if value[languageName] == nil {
+							print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						}
 					}
 				default:
 					print("*** Warning: Got invalid key \(entry_key.locKey)")
 				}
 			}
+			
+			spaces.removeAll()
 		}
 		for (filename, components) in filenameToComponents {
 			let locFile = AndroidXMLLocFile(pathRelativeToProject: filename, components: components)

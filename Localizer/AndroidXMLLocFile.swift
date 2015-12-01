@@ -22,6 +22,7 @@ extension String {
 		v = v.stringByReplacingOccurrencesOfString("'", withString: "\\'", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("&", withString: "&amp;", options: NSStringCompareOptions.LiteralSearch)
 		v = v.stringByReplacingOccurrencesOfString("<", withString: "&lt;", options: NSStringCompareOptions.LiteralSearch)
+		v = v.stringByReplacingOccurrencesOfString(">", withString: "&gt;", options: NSStringCompareOptions.LiteralSearch) /* Shouldn't be needed... */
 		return v
 	}
 	var valueFromXMLText: String {
@@ -144,33 +145,33 @@ class AndroidXMLLocFile: Streamable {
 		}
 	}
 	
-	class PluralItem: AndroidLocComponent {
-		let quantity: String
-		let value: String
-		let isCDATA: Bool
-		
-		var stringValue: String {
-			if value.xmlTextValue.isEmpty {
-				return "<item quantity=\"\(quantity)\"/>"
-			}
-			if !isCDATA {return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</item>"}
-			else        {return "<item quantity=\"\(quantity)\"><![CDATA[\(value)]]></item>"}
-		}
-		
-		init(quantity q: String, value v: String) {
-			quantity = q
-			value = v
-			isCDATA = false
-		}
-		
-		init(quantity q: String, cDATAValue v: String) {
-			quantity = q
-			value = v
-			isCDATA = true
-		}
-	}
-	
 	class PluralGroup: AndroidLocComponent {
+		class PluralItem: AndroidLocComponent {
+			let quantity: String
+			let value: String
+			let isCDATA: Bool
+			
+			var stringValue: String {
+				if value.xmlTextValue.isEmpty {
+					return "<item quantity=\"\(quantity)\"/>"
+				}
+				if !isCDATA {return "<item quantity=\"\(quantity)\">\(value.xmlTextValue)</item>"}
+				else        {return "<item quantity=\"\(quantity)\"><![CDATA[\(value)]]></item>"}
+			}
+			
+			init(quantity q: String, value v: String) {
+				quantity = q
+				value = v
+				isCDATA = false
+			}
+			
+			init(quantity q: String, cDATAValue v: String) {
+				quantity = q
+				value = v
+				isCDATA = true
+			}
+		}
+		
 		let name: String
 		let values: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], PluralItem)?]
 		
@@ -233,7 +234,7 @@ class AndroidXMLLocFile: Streamable {
 		var components = [AndroidLocComponent]()
 		
 		var currentPluralSpaces = [AndroidLocComponent]()
-		var currentPluralValues = [String /* Quantity */: ([AndroidLocComponent], PluralItem)?]()
+		var currentPluralValues: [String /* Quantity */: ([AndroidLocComponent], PluralGroup.PluralItem)?]?
 		
 		private var addingSpacesToPlural = false
 		private func addSpaceComponent(space: AndroidLocComponent) {
@@ -274,7 +275,7 @@ class AndroidXMLLocFile: Streamable {
 					else                        {status = .Error}
 				
 				case (.InResources, "plurals"):
-					if let name = attrs["name"] {status = .InPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues.removeAll()}
+					if let name = attrs["name"] {status = .InPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues = [:]}
 					else                        {status = .Error}
 				
 				case (.InArray, "item"):
@@ -323,9 +324,9 @@ class AndroidXMLLocFile: Streamable {
 					status = .InResources
 				
 				case (.InPlurals(let pluralsName), "plurals"):
-					components.append(PluralGroup(name: pluralsName, values: currentPluralValues))
+					components.append(PluralGroup(name: pluralsName, values: currentPluralValues!))
 					addingSpacesToPlural = false
-					currentPluralValues.removeAll()
+					currentPluralValues = nil
 					
 					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
@@ -344,15 +345,15 @@ class AndroidXMLLocFile: Streamable {
 				case (.InPluralItem(let quantity), "item"):
 					switch previousStatus {
 					case .InPlurals(let pluralsName):
-						if currentPluralValues[quantity] != nil {
+						if currentPluralValues![quantity] != nil {
 							print("*** Warning: Got more than one value for quantity \(quantity) of plurals named \(pluralsName)...")
 							print("             Choosing the latest one found.")
 						}
-						currentPluralValues[quantity] = (
+						currentPluralValues![quantity] = (
 							currentPluralSpaces,
 							isCurrentCharsCDATA ?
-								PluralItem(quantity: quantity, cDATAValue: currentChars) :
-								PluralItem(quantity: quantity, value: currentChars.valueFromXMLText)
+								PluralGroup.PluralItem(quantity: quantity, cDATAValue: currentChars) :
+								PluralGroup.PluralItem(quantity: quantity, value: currentChars.valueFromXMLText)
 						)
 						currentPluralSpaces.removeAll()
 						status = previousStatus
