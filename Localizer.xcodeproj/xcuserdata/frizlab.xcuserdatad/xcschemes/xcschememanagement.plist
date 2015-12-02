@@ -9,10 +9,20 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>happn CSV Editor.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>7B6E259E19D4157A001934ED</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7B837D7E1C0EF3DB0020E86B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
