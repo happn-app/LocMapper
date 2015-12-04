@@ -77,81 +77,81 @@ class happnCSVLocFile: Streamable {
 		}
 		
 		let parser = CSVParser(source: filecontent, separator: csvSep, hasHeader: true, fieldNames: nil)
-		if let parsedRows = parser.arrayOfParsedRows() {
-			var languages = [String]()
-			var entries = [LineKey: [String: String]]()
-			
-			/* Retrieving languages from header */
-			for h in parser.fieldNames {
-				if h != PRIVATE_KEY_HEADER_NAME && h != PRIVATE_ENV_HEADER_NAME && h != PRIVATE_FILENAME_HEADER_NAME &&
-					h != PRIVATE_COMMENT_HEADER_NAME && h != FILENAME_HEADER_NAME && h != COMMENT_HEADER_NAME {
-					languages.append(h)
-				}
-			}
-			
-			var i = 0
-			var groupComment = ""
-			for row in parsedRows {
-				let rowKeys = row.keys
-				/* Is the row valid? */
-				if rowKeys.indexOf(PRIVATE_KEY_HEADER_NAME) == nil ||
-					rowKeys.indexOf(PRIVATE_ENV_HEADER_NAME) == nil ||
-					rowKeys.indexOf(PRIVATE_FILENAME_HEADER_NAME) == nil ||
-					rowKeys.indexOf(PRIVATE_COMMENT_HEADER_NAME) == nil ||
-					rowKeys.indexOf(COMMENT_HEADER_NAME) == nil {
-					print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
-					continue
-				}
-				
-				/* Does the row have a valid environment? */
-				let env = row[PRIVATE_ENV_HEADER_NAME]!
-				if env.isEmpty {
-					/* If the environment is empty, we may have a group comment row */
-					if let gc = row[COMMENT_HEADER_NAME] {
-						groupComment = gc
-					}
-					continue
-				}
-				
-				/* Let's get the comment */
-				var comment: String!
-				let rawComment = row[PRIVATE_COMMENT_HEADER_NAME]!
-//				if !rawComment.hasPrefix("__") || !rawComment.hasSuffix("__") {
-					comment = rawComment.stringByReplacingOccurrencesOfString(
-						"__", withString: "", options: NSStringCompareOptions.AnchoredSearch
-					).stringByReplacingOccurrencesOfString(
-						"__", withString: "", options: [NSStringCompareOptions.AnchoredSearch, NSStringCompareOptions.BackwardsSearch]
-					)
-/*				} else {
-					println("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
-					comment = rawComment
-				}*/
-				
-				/* Let's create the line key */
-				let k = LineKey(
-					locKey: row[PRIVATE_KEY_HEADER_NAME]!,
-					env: env,
-					filename: row[PRIVATE_FILENAME_HEADER_NAME]!,
-					comment: comment,
-					index: i++,
-					userReadableGroupComment: groupComment,
-					userReadableComment: row[COMMENT_HEADER_NAME]!)
-				groupComment = ""
-				
-				/* Now let's retrieve the values per language */
-				var values = [String: String]()
-				for l in languages {
-					if let v = row[l] {
-						values[l] = v
-					}
-				}
-				entries[k] = values
-			}
-			self.init(filepath: path, languages: languages, entries: entries, csvSeparator: csvSep)
-		} else {
+		guard let parsedRows = parser.arrayOfParsedRows() else {
 			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
 			throw error
 		}
+		
+		var languages = [String]()
+		var entries = [LineKey: [String: String]]()
+		
+		/* Retrieving languages from header */
+		for h in parser.fieldNames {
+			if h != PRIVATE_KEY_HEADER_NAME && h != PRIVATE_ENV_HEADER_NAME && h != PRIVATE_FILENAME_HEADER_NAME &&
+				h != PRIVATE_COMMENT_HEADER_NAME && h != FILENAME_HEADER_NAME && h != COMMENT_HEADER_NAME {
+				languages.append(h)
+			}
+		}
+		
+		var i = 0
+		var groupComment = ""
+		for row in parsedRows {
+			let rowKeys = row.keys
+			/* Is the row valid? */
+			if rowKeys.indexOf(PRIVATE_KEY_HEADER_NAME) == nil ||
+				rowKeys.indexOf(PRIVATE_ENV_HEADER_NAME) == nil ||
+				rowKeys.indexOf(PRIVATE_FILENAME_HEADER_NAME) == nil ||
+				rowKeys.indexOf(PRIVATE_COMMENT_HEADER_NAME) == nil ||
+				rowKeys.indexOf(COMMENT_HEADER_NAME) == nil {
+				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
+				continue
+			}
+			
+			/* Does the row have a valid environment? */
+			let env = row[PRIVATE_ENV_HEADER_NAME]!
+			if env.isEmpty {
+				/* If the environment is empty, we may have a group comment row */
+				if let gc = row[COMMENT_HEADER_NAME] {
+					groupComment = gc
+				}
+				continue
+			}
+			
+			/* Let's get the comment */
+			var comment: String!
+			let rawComment = row[PRIVATE_COMMENT_HEADER_NAME]!
+//			if !rawComment.hasPrefix("__") || !rawComment.hasSuffix("__") {
+				comment = rawComment.stringByReplacingOccurrencesOfString(
+					"__", withString: "", options: NSStringCompareOptions.AnchoredSearch
+				).stringByReplacingOccurrencesOfString(
+					"__", withString: "", options: [NSStringCompareOptions.AnchoredSearch, NSStringCompareOptions.BackwardsSearch]
+				)
+/*			} else {
+				println("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
+				comment = rawComment
+			}*/
+			
+			/* Let's create the line key */
+			let k = LineKey(
+				locKey: row[PRIVATE_KEY_HEADER_NAME]!,
+				env: env,
+				filename: row[PRIVATE_FILENAME_HEADER_NAME]!,
+				comment: comment,
+				index: i++,
+				userReadableGroupComment: groupComment,
+				userReadableComment: row[COMMENT_HEADER_NAME]!)
+			groupComment = ""
+			
+			/* Now let's retrieve the values per language */
+			var values = [String: String]()
+			for l in languages {
+				if let v = row[l] {
+					values[l] = v
+				}
+			}
+			entries[k] = values
+		}
+		self.init(filepath: path, languages: languages, entries: entries, csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
