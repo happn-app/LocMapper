@@ -17,6 +17,15 @@
 		7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B837D871C0EF3DB0020E86B /* Assets.xcassets */; };
 		7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B837D891C0EF3DB0020E86B /* Main.storyboard */; };
 		7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B87D4D91A3AECD500C151A8 /* CSVParser.swift */; };
+		7B9BD4DF1C108344007A096D /* happnCSVLocKeyMappingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */; };
+		7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
+		7B9BD4E11C1087B7007A096D /* XcodeStringsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */; };
+		7B9BD4E21C1087B9007A096D /* stderr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A919D417BD001934ED /* stderr.swift */; };
+		7B9BD4E31C1087BC007A096D /* AndroidXMLLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */; };
+		7B9BD4E41C1087BF007A096D /* CSVParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B87D4D91A3AECD500C151A8 /* CSVParser.swift */; };
+		7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
+		7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
+		7BABB9591C11D99800DACD85 /* happnCSVLocKeyMappingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */; };
 		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +55,8 @@
 		7B837D8A1C0EF3DB0020E86B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7B837D8C1C0EF3DB0020E86B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B87D4D91A3AECD500C151A8 /* CSVParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVParser.swift; sourceTree = "<group>"; };
+		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMappingComponents.swift; sourceTree = "<group>"; };
+		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,9 +100,11 @@
 			isa = PBXGroup;
 			children = (
 				7B6E25A919D417BD001934ED /* stderr.swift */,
+				7BABB9561C11C92C00DACD85 /* IOUtils.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
 				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
 				7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */,
+				7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */,
 				7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */,
 				7B87D4D91A3AECD500C151A8 /* CSVParser.swift */,
 			);
@@ -204,11 +217,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
+				7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */,
 				7B74908E1A1600FE0021E10F /* AndroidXMLLocFile.swift in Sources */,
 				7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */,
 				7B6E25AA19D417BD001934ED /* stderr.swift in Sources */,
 				7B6E25AC19D430C5001934ED /* XcodeStringsFile.swift in Sources */,
 				7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */,
+				7B9BD4DF1C108344007A096D /* happnCSVLocKeyMappingComponents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,8 +232,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */,
+				7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */,
 				7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */,
+				7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */,
+				7B9BD4E41C1087BF007A096D /* CSVParser.swift in Sources */,
+				7B9BD4E21C1087B9007A096D /* stderr.swift in Sources */,
 				7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */,
+				7B9BD4E31C1087BC007A096D /* AndroidXMLLocFile.swift in Sources */,
+				7BABB9591C11D99800DACD85 /* happnCSVLocKeyMappingComponents.swift in Sources */,
+				7B9BD4E11C1087B7007A096D /* XcodeStringsFile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

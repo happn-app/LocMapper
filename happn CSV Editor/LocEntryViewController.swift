@@ -10,10 +10,7 @@ import Cocoa
 
 
 
-class LocEntryViewController: NSViewController {
-	
-	@IBOutlet var constraintContextTextHeight: NSLayoutConstraint!
-	@IBOutlet var textViewContext: NSTextView!
+class LocEntryViewController: NSTabViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -23,20 +20,6 @@ class LocEntryViewController: NSViewController {
 		didSet {
 		// Update the view, if already loaded.
 		}
-	}
-	
-	override func updateViewConstraints() {
-		if let
-			textContainer = textViewContext.textContainer,
-			layoutManagers = textViewContext.textStorage?.layoutManagers where layoutManagers.count >= 1 {
-				if layoutManagers.count > 1 {
-					print("*** Warning: Got more than one layout manager for text view \(textViewContext)")
-				}
-				let layoutManager = layoutManagers[0]
-				constraintContextTextHeight.constant = min(layoutManager.usedRectForTextContainer(textContainer).size.height, 150)
-		}
-		
-		super.updateViewConstraints()
 	}
 	
 }

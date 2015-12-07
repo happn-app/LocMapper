@@ -14,6 +14,7 @@ let PRIVATE_KEY_HEADER_NAME = "__Key"
 let PRIVATE_ENV_HEADER_NAME = "__Env"
 let PRIVATE_FILENAME_HEADER_NAME = "__Filename"
 let PRIVATE_COMMENT_HEADER_NAME = "__Comments"
+let PRIVATE_MAPPINGS_HEADER_NAME = "__Mappings"
 let FILENAME_HEADER_NAME = "File"
 let COMMENT_HEADER_NAME = "Comments"
 
@@ -37,6 +38,7 @@ class happnCSVLocFile: Streamable {
 	let filepath: String
 	let csvSeparator: String
 	private var languages: [String]
+	private var mappings: [LineKey: happnCSVLocKeyMapping]
 	private var entries: [LineKey: [String /* Language */: String /* Value */]]
 	
 	/* *************** LineKey struct. Key for each entries in the happn CSV loc file. *************** */
@@ -58,6 +60,63 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
+	/* *************** Key Mapping. *************** */
+	class happnCSVLocKeyMapping {
+		
+		let originalStringRepresentation: String
+		var components: [happnCSVLocKeyMappingComponent]?
+		
+		convenience init(stringRepresentation: String) {
+			guard let
+				data = stringRepresentation.dataUsingEncoding(NSUTF8StringEncoding),
+				serializedComponent_s = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+				else {
+					if stringRepresentation.characters.count > 0 { /* No need to print a warning for empty strings. We know. */
+						print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
+					}
+					self.init(components: nil, stringRepresentation: stringRepresentation)
+					return
+			}
+			let serializedComponents: [[String: AnyObject]]
+			if      let array = serializedComponent_s as? [[String: AnyObject]] {serializedComponents = array}
+			else if let simple = serializedComponent_s as? [String: AnyObject]  {serializedComponents = [simple]}
+			else {
+				print("*** Warning: Invalid mapping; cannot convert string to array of dictionary: \"\(stringRepresentation)\"")
+				self.init(components: nil, stringRepresentation: stringRepresentation)
+				return
+			}
+			
+			self.init(components: serializedComponents.map {return happnCSVLocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
+		}
+		
+		convenience init(components: [happnCSVLocKeyMappingComponent]) {
+			self.init(components: components, stringRepresentation: happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components))
+		}
+		
+		init(components c: [happnCSVLocKeyMappingComponent]?, stringRepresentation: String) {
+			components = c
+			originalStringRepresentation = stringRepresentation
+		}
+		
+		func stringRepresentation() -> String {
+			if let components = components {
+				return happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components)
+			} else {
+				return originalStringRepresentation
+			}
+		}
+		
+		private static func stringRepresentationFromComponentsList(components: [happnCSVLocKeyMappingComponent]) -> String {
+			let allSerialized = components.map {return $0.serialize()}
+			return try! String(data: NSJSONSerialization.dataWithJSONObject(
+				(allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
+				options: [.PrettyPrinted]),
+				encoding: NSUTF8StringEncoding
+			)!
+		}
+		
+	}
+	
 	/* *** Init from path *** */
 	convenience init(fromPath path: String, withCSVSeparator csvSep: String) throws {
 		var encoding: UInt = 0
@@ -72,23 +131,24 @@ class happnCSVLocFile: Streamable {
 	convenience init(filepath path: String, filecontent: String, withCSVSeparator csvSep: String) throws {
 		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
 		if filecontent.isEmpty {
-			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
+			self.init(filepath: path, languages: [], entries: [:], mappings: [:], csvSeparator: csvSep)
 			return
 		}
 		
 		let parser = CSVParser(source: filecontent, separator: csvSep, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
-			self.init(filepath: path, languages: [], entries: [:], csvSeparator: csvSep)
 			throw error
 		}
 		
 		var languages = [String]()
 		var entries = [LineKey: [String: String]]()
+		var mappings = [LineKey: happnCSVLocKeyMapping]()
 		
 		/* Retrieving languages from header */
 		for h in parser.fieldNames {
 			if h != PRIVATE_KEY_HEADER_NAME && h != PRIVATE_ENV_HEADER_NAME && h != PRIVATE_FILENAME_HEADER_NAME &&
-				h != PRIVATE_COMMENT_HEADER_NAME && h != FILENAME_HEADER_NAME && h != COMMENT_HEADER_NAME {
+				h != PRIVATE_COMMENT_HEADER_NAME && h != PRIVATE_MAPPINGS_HEADER_NAME && h != FILENAME_HEADER_NAME &&
+				h != COMMENT_HEADER_NAME {
 				languages.append(h)
 			}
 		}
@@ -102,6 +162,7 @@ class happnCSVLocFile: Streamable {
 				rowKeys.indexOf(PRIVATE_ENV_HEADER_NAME) == nil ||
 				rowKeys.indexOf(PRIVATE_FILENAME_HEADER_NAME) == nil ||
 				rowKeys.indexOf(PRIVATE_COMMENT_HEADER_NAME) == nil ||
+				rowKeys.indexOf(PRIVATE_MAPPINGS_HEADER_NAME) == nil ||
 				rowKeys.indexOf(COMMENT_HEADER_NAME) == nil {
 				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
 				continue
@@ -142,6 +203,9 @@ class happnCSVLocFile: Streamable {
 				userReadableComment: row[COMMENT_HEADER_NAME]!)
 			groupComment = ""
 			
+			/* Let's get the mappings for this key. */
+			mappings[k] = happnCSVLocKeyMapping(stringRepresentation: row[PRIVATE_MAPPINGS_HEADER_NAME]!)
+			
 			/* Now let's retrieve the values per language */
 			var values = [String: String]()
 			for l in languages {
@@ -151,16 +215,17 @@ class happnCSVLocFile: Streamable {
 			}
 			entries[k] = values
 		}
-		self.init(filepath: path, languages: languages, entries: entries, csvSeparator: csvSep)
+		self.init(filepath: path, languages: languages, entries: entries, mappings: mappings, csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
-	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]], csvSeparator csvSep: String) {
+	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], csvSeparator csvSep: String) {
 		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		filepath = path
 		languages = l
 		entries = e
+		mappings = m
 	}
 	
 	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
@@ -617,8 +682,17 @@ class happnCSVLocFile: Streamable {
 	}
 	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {
-		target.write("\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))")
-		target.write("\(csvSeparator)\(FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))");
+		target.write(
+			"\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
+		)
+		target.write(
+			"\(csvSeparator)\(FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))" +
+			"\(csvSeparator)\(COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
+		)
 		for language in languages {
 			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
 		}
@@ -639,21 +713,31 @@ class happnCSVLocFile: Streamable {
 			if basename != previousBasename {
 				previousBasename = basename
 				target.write("\n")
-				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
+				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
 				target.write(("\\o/ \\o/ \\o/ " + previousBasename! + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
 				target.write("\(csvSeparator)\n")
 			}
 			
 			/* Writing group comment */
 			if !entry_key.userReadableGroupComment.isEmpty {
-				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
+				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
 				target.write(entry_key.userReadableGroupComment.csvCellValueWithSeparator(csvSeparator))
 				target.write("\n")
 			}
 			
+			let mappingStr = mappings[entry_key]?.stringRepresentation() ?? ""
 			let comment = "__" + entry_key.comment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
-			target.write("\(entry_key.locKey.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(entry_key.env.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(entry_key.filename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(comment.csvCellValueWithSeparator(csvSeparator))")
-			target.write("\(csvSeparator)\(basename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)\(entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator))")
+			target.write(
+				"\(entry_key.locKey.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+				"\(entry_key.env.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+				"\(entry_key.filename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+				"\(comment.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+				"\(mappingStr.csvCellValueWithSeparator(csvSeparator))"
+			)
+			target.write(
+				"\(csvSeparator)\(basename.csvCellValueWithSeparator(csvSeparator))" +
+				"\(csvSeparator)\(entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator))"
+			)
 			for language in languages {
 				if let languageValue = value[language] {
 					target.write("\(csvSeparator)\(languageValue.csvCellValueWithSeparator(csvSeparator))")
