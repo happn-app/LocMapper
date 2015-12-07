@@ -26,6 +26,7 @@
 		7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
 		7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
 		7BABB9591C11D99800DACD85 /* happnCSVLocKeyMappingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */; };
+		7BBF5FE21C15C2A90024318C /* XibLocHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */; };
 		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 		7B87D4D91A3AECD500C151A8 /* CSVParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVParser.swift; sourceTree = "<group>"; };
 		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMappingComponents.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
+		7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLocHelper.swift; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,6 +104,7 @@
 				7B6E25A919D417BD001934ED /* stderr.swift */,
 				7BABB9561C11C92C00DACD85 /* IOUtils.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
+				7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */,
 				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
 				7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */,
 				7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */,
@@ -224,6 +227,7 @@
 				7B6E25AC19D430C5001934ED /* XcodeStringsFile.swift in Sources */,
 				7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */,
 				7B9BD4DF1C108344007A096D /* happnCSVLocKeyMappingComponents.swift in Sources */,
+				7BBF5FE21C15C2A90024318C /* XibLocHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
