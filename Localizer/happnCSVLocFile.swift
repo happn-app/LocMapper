@@ -807,8 +807,8 @@ func ==(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 }
 
 func <=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
-	if k1.env      < k2.env      {return true}
-	if k1.env      > k2.env      {return false}
+	if k1.env      > k2.env      {return true}
+	if k1.env      < k2.env      {return false}
 	if k1.filename < k2.filename {return true}
 	if k1.filename > k2.filename {return false}
 	if k1.index    < k2.index    {return true}
@@ -817,8 +817,8 @@ func <=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 }
 
 func >=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
-	if k1.env      > k2.env      {return true}
-	if k1.env      < k2.env      {return false}
+	if k1.env      < k2.env      {return true}
+	if k1.env      > k2.env      {return false}
 	if k1.filename > k2.filename {return true}
 	if k1.filename < k2.filename {return false}
 	if k1.index    > k2.index    {return true}
@@ -827,8 +827,8 @@ func >=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 }
 
 func <(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
-	if k1.env      < k2.env      {return true}
-	if k1.env      > k2.env      {return false}
+	if k1.env      > k2.env      {return true}
+	if k1.env      < k2.env      {return false}
 	if k1.filename < k2.filename {return true}
 	if k1.filename > k2.filename {return false}
 	if k1.index    < k2.index    {return true}
@@ -837,8 +837,8 @@ func <(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 }
 
 func >(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
-	if k1.env      > k2.env      {return true}
-	if k1.env      < k2.env      {return false}
+	if k1.env      < k2.env      {return true}
+	if k1.env      > k2.env      {return false}
 	if k1.filename > k2.filename {return true}
 	if k1.filename < k2.filename {return false}
 	if k1.index    > k2.index    {return true}
