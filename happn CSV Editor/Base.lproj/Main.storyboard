@@ -672,7 +672,7 @@
                 <splitViewController title="Loaded Doc" id="ct4-wk-7SH" customClass="happnLocCSVDocContentSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="pQ1-ad-IWO"/>
-                        <splitViewItem id="RyI-Ha-ETJ"/>
+                        <splitViewItem canCollapse="YES" holdingPriority="260" behavior="sidebar" id="RyI-Ha-ETJ"/>
                     </splitViewItems>
                     <splitView key="splitView" dividerStyle="thin" id="2YT-KH-9BI">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
@@ -762,7 +762,7 @@
             <objects>
                 <splitViewController id="EeL-Ny-Gtb" customClass="happnLocCSVDocOptionsSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
-                        <splitViewItem id="Hc1-0c-bdQ"/>
+                        <splitViewItem canCollapse="YES" holdingPriority="260" behavior="sidebar" id="Hc1-0c-bdQ"/>
                         <splitViewItem id="NFu-rf-yKA"/>
                     </splitViewItems>
                     <splitView key="splitView" dividerStyle="thin" vertical="YES" id="zbf-k1-u1K">
@@ -805,7 +805,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="n3b-ZV-g19">
-                                            <rect key="frame" x="0.0" y="0.0" width="185" height="294"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="185" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -952,13 +952,13 @@
         <!--Loc Entry View Controller-->
         <scene sceneID="r7B-F7-LLj">
             <objects>
-                <tabViewController id="Y9e-9e-EPZ" customClass="LocEntryViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController tabStyle="unspecified" id="Y9e-9e-EPZ" customClass="LocEntryViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="" id="551-Mg-qbo"/>
                         <tabViewItem id="WPL-ZU-yBx"/>
                         <tabViewItem id="xbE-Uc-8td"/>
                     </tabViewItems>
-                    <tabView key="tabView" controlSize="mini" type="noTabsNoBorder" id="0P6-g6-vF8">
+                    <tabView key="tabView" drawsBackground="NO" controlSize="mini" id="0P6-g6-vF8">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <animations/>
