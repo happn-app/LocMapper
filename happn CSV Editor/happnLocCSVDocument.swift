@@ -44,6 +44,10 @@ class happnLocCSVDocument: NSDocument {
 	}
 	
 	override func dataOfType(typeName: String) throws -> NSData {
+		guard let csvLocFile = csvLocFile else {
+			return NSData()
+		}
+		
 		var strData = ""
 		print(csvLocFile, terminator: "", toStream: &strData)
 		guard let data = strData.dataUsingEncoding(NSUTF8StringEncoding) else {
