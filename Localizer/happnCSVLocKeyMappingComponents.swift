@@ -57,7 +57,7 @@ class happnCSVLocKeyMappingComponent {
 		preconditionFailure("This method is abstract")
 	}
 	
-	func applyWithCurrentValue(currentValue: String, language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		preconditionFailure("This method is abstract")
 	}
 }
@@ -76,7 +76,7 @@ class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
 		return invalidSerialization
 	}
 	
-	override func applyWithCurrentValue(currentValue: String, language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		return nil
 	}
 }
@@ -102,7 +102,7 @@ class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 		return ["constant": constant]
 	}
 	
-	override func applyWithCurrentValue(currentValue: String, language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		return constant
 	}
 }
@@ -164,7 +164,7 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 		]
 	}
 	
-	override func applyWithCurrentValue(currentValue: String, language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		var result = entries[sourceKey]?[language]
 		for subTransform in subTransformComponents {
 			result = subTransform.applyToValue(result, withLanguage: language)

@@ -12,7 +12,14 @@ import Cocoa
 
 class happnLocCSVDocument: NSDocument {
 	
-	var csvLocFile: happnCSVLocFile
+	/** If nil, the file is loading. */
+	var csvLocFile: happnCSVLocFile? {
+		didSet {
+			sendRepresentedObjectToSubControllers()
+		}
+	}
+	
+	private var mainWindowController: NSWindowController?
 	
 	override init() {
 		csvLocFile = happnCSVLocFile()
@@ -21,7 +28,6 @@ class happnLocCSVDocument: NSDocument {
 	
 	override func windowControllerDidLoadNib(aController: NSWindowController) {
 		super.windowControllerDidLoadNib(aController)
-		// Add any code here that needs to be executed once the windowController has loaded the document's window.
 	}
 	
 	override class func autosavesInPlace() -> Bool {
@@ -33,6 +39,8 @@ class happnLocCSVDocument: NSDocument {
 		let storyboard = NSStoryboard(name: "Main", bundle: nil)
 		let windowController = storyboard.instantiateControllerWithIdentifier("Document Window Controller") as! NSWindowController
 		self.addWindowController(windowController)
+		
+		sendRepresentedObjectToSubControllers()
 	}
 	
 	override func dataOfType(typeName: String) throws -> NSData {
@@ -49,7 +57,27 @@ class happnLocCSVDocument: NSDocument {
 			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
 		}
 		
-		csvLocFile = try happnCSVLocFile(filecontent: fileContentStr, withCSVSeparator: ",")
+		csvLocFile = nil
+		dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
+			do {
+				let locFile = try happnCSVLocFile(filecontent: fileContentStr, withCSVSeparator: ",")
+				dispatch_async(dispatch_get_main_queue()) {
+					self.csvLocFile = locFile
+				}
+			} catch {
+				dispatch_async(dispatch_get_main_queue()) {
+					let alert = NSAlert(error: error as NSError)
+					alert.runModal()
+					self.close()
+				}
+			}
+		}
+	}
+	
+	private func sendRepresentedObjectToSubControllers() {
+		for v in self.windowControllers {
+			v.contentViewController?.representedObject = csvLocFile
+		}
 	}
 	
 }

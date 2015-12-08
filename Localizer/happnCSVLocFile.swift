@@ -36,9 +36,9 @@ extension String {
 
 class happnCSVLocFile: Streamable {
 	let csvSeparator: String
-	private var languages: [String]
-	private var mappings: [LineKey: happnCSVLocKeyMapping]
-	private var entries: [LineKey: [String /* Language */: String /* Value */]]
+	private(set) var languages: [String]
+	private(set) var mappings: [LineKey: happnCSVLocKeyMapping]
+	private(set) var entries: [LineKey: [String /* Language */: String /* Value */]]
 	
 	/* *************** LineKey struct. Key for each entries in the happn CSV loc file. *************** */
 	struct LineKey: Equatable, Hashable, Comparable {
