@@ -12,9 +12,11 @@ import Cocoa
 
 class happnLocCSVDocument: NSDocument {
 	
+	var csvLocFile: happnCSVLocFile
+	
 	override init() {
+		csvLocFile = happnCSVLocFile()
 		super.init()
-		// Add your subclass-specific initialization here.
 	}
 	
 	override func windowControllerDidLoadNib(aController: NSWindowController) {
@@ -23,7 +25,7 @@ class happnLocCSVDocument: NSDocument {
 	}
 	
 	override class func autosavesInPlace() -> Bool {
-		return true
+		return false
 	}
 	
 	override func makeWindowControllers() {
@@ -34,16 +36,20 @@ class happnLocCSVDocument: NSDocument {
 	}
 	
 	override func dataOfType(typeName: String) throws -> NSData {
-		// Insert code here to write your document to data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning nil.
-		// You can also choose to override fileWrapperOfType:error:, writeToURL:ofType:error:, or writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-		throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+		var strData = ""
+		print(csvLocFile, terminator: "", toStream: &strData)
+		guard let data = strData.dataUsingEncoding(NSUTF8StringEncoding) else {
+			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot convert data to UTF8."])
+		}
+		return data
 	}
 	
 	override func readFromData(data: NSData, ofType typeName: String) throws {
-		// Insert code here to read your document from the given data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning false.
-		// You can also choose to override readFromFileWrapper:ofType:error: or readFromURL:ofType:error: instead.
-		// If you override either of these, you should also override -isEntireFileLoaded to return false if the contents are lazily loaded.
-		throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+		guard let fileContentStr = String(data: data, encoding: NSUTF8StringEncoding) else {
+			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
+		}
+		
+		csvLocFile = try happnCSVLocFile(filecontent: fileContentStr, withCSVSeparator: ",")
 	}
 	
 }

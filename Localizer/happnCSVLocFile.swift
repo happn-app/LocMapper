@@ -35,7 +35,6 @@ extension String {
 }
 
 class happnCSVLocFile: Streamable {
-	let filepath: String
 	let csvSeparator: String
 	private var languages: [String]
 	private var mappings: [LineKey: happnCSVLocKeyMapping]
@@ -117,6 +116,10 @@ class happnCSVLocFile: Streamable {
 		
 	}
 	
+	convenience init() {
+		self.init(languages: [], entries: [:], mappings: [:], csvSeparator: ",")
+	}
+	
 	/* *** Init from path *** */
 	convenience init(fromPath path: String, withCSVSeparator csvSep: String) throws {
 		var encoding: UInt = 0
@@ -124,14 +127,14 @@ class happnCSVLocFile: Streamable {
 		if NSFileManager.defaultManager().fileExistsAtPath(path) {
 			filecontent = try NSString(contentsOfFile: path, usedEncoding: &encoding) as String
 		}
-		try self.init(filepath: path, filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep)
+		try self.init(filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep)
 	}
 	
 	/* *** Init with file content *** */
-	convenience init(filepath path: String, filecontent: String, withCSVSeparator csvSep: String) throws {
+	convenience init(filecontent: String, withCSVSeparator csvSep: String) throws {
 		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
 		if filecontent.isEmpty {
-			self.init(filepath: path, languages: [], entries: [:], mappings: [:], csvSeparator: csvSep)
+			self.init(languages: [], entries: [:], mappings: [:], csvSeparator: csvSep)
 			return
 		}
 		
@@ -215,14 +218,13 @@ class happnCSVLocFile: Streamable {
 			}
 			entries[k] = values
 		}
-		self.init(filepath: path, languages: languages, entries: entries, mappings: mappings, csvSeparator: csvSep)
+		self.init(languages: languages, entries: entries, mappings: mappings, csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
-	init(filepath path: String, languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], csvSeparator csvSep: String) {
+	init(languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], csvSeparator csvSep: String) {
 		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
-		filepath = path
 		languages = l
 		entries = e
 		mappings = m
