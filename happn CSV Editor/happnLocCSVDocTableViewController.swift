@@ -134,6 +134,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			tfc.wraps = true
 			tc.dataCell = tfc
 			tc.width = 350
+			tc.resizingMask = .UserResizingMask
 			tableView.addTableColumn(tc)
 		}
 		
