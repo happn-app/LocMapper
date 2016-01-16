@@ -21,6 +21,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	private var sortedKeys: [happnCSVLocFile.LineKey]?
+	private let cachedRowsHeights = NSCache()
 	
 	override var representedObject: AnyObject? {
 		didSet {
@@ -51,11 +52,48 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	func tableView(tableView: NSTableView, setObjectValue object: AnyObject?, forTableColumn tableColumn: NSTableColumn?, row: Int) {
-		/* TODO */
+		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return}
+		guard let tableColumn = tableColumn else {return}
+		
+		guard let strValue = object as? String else {return}
+//		csvLocFile.entries[key]?[tableColumn.identifier] = strValue.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
 	}
 	
 	func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-		return 150
+		/* Based on https://gist.github.com/billymeltdown/9084884 */
+		let minimumHeight = CGFloat(3)
+		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return minimumHeight}
+		
+		/* Check the cache to avoid unnecessary recalculation */
+		if let cachedRowHeight = cachedRowsHeights.objectForKey(key.filename + key.locKey) as? CGFloat {
+			return cachedRowHeight
+		}
+		
+		var height = minimumHeight
+		for column in tableView.tableColumns {
+			guard let str = csvLocFile.entries[key]?[column.identifier]?.stringByReplacingOccurrencesOfString("\\n", withString: "\n") else {
+				continue
+			}
+			
+			let cell = column.dataCell as! NSCell
+			cell.stringValue = str
+			let rect = NSMakeRect(0, 0, column.width, CGFloat.max)
+			height = max(height, cell.cellSizeForBounds(rect).height)
+		}
+		/* To have height being a multiple of minimum height, use this:
+		if (height > minimumHeight) {
+			let remainder = fmod(height, minimumHeight);
+			height -= remainder;
+			if remainder > 0 {height += minimumHeight}
+		}*/
+		
+		/* Add small margin to make things a little more beautiful. */
+		height += 2*2
+		
+		/* Let’s cache the result. */
+		cachedRowsHeights.setObject(height, forKey: key.filename + key.locKey)
+		
+		return height
 	}
 	
 	/* If we were view-based... but we're not (cell-based is still faster). */
@@ -93,6 +131,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			tc.title = l
 			let tfc = NSTextFieldCell(textCell: "TODOLOC")
 			tfc.editable = true
+			tfc.wraps = true
 			tc.dataCell = tfc
 			tc.width = 350
 			tableView.addTableColumn(tc)
