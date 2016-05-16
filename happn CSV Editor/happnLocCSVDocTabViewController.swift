@@ -16,7 +16,6 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		
 	}
 	
 	override var representedObject: AnyObject? {

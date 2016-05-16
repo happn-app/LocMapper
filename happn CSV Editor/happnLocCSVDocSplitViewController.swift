@@ -20,4 +20,9 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 		}
 	}
 	
+	@IBAction func showEntryDetails(sender: AnyObject!) {
+		let dividerIndex = 0
+		self.splitView.setPosition(self.view.bounds.size.height - 150, ofDividerAtIndex: dividerIndex)
+	}
+	
 }
