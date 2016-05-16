@@ -20,7 +20,7 @@ let COMMENT_HEADER_NAME = "Comments"
 
 
 
-extension String {
+private extension String {
 	func csvCellValueWithSeparator(sep: String) -> String {
 		if sep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
 		if self.rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "\(sep)\"\n\r")) != nil {
@@ -34,13 +34,21 @@ extension String {
 	}
 }
 
+/* *******
+   MARK: -
+   ******* */
+
 class happnCSVLocFile: Streamable {
 	let csvSeparator: String
 	private(set) var languages: [String]
 	private(set) var mappings: [LineKey: happnCSVLocKeyMapping]
 	private(set) var entries: [LineKey: [String /* Language */: String /* Value */]]
 	
-	/* *************** LineKey struct. Key for each entries in the happn CSV loc file. *************** */
+	/* *******************************************************
+	   MARK: - LineKey Struct
+	           Key for each entries in the happn CSV loc file.
+	   ******************************************************* */
+	
 	struct LineKey: Equatable, Hashable, Comparable {
 		let locKey: String
 		let env: String
@@ -59,7 +67,10 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
-	/* *************** Key Mapping. *************** */
+	/* *******************
+	   MARK: - Key Mapping
+	   ******************* */
+	
 	class happnCSVLocKeyMapping {
 		
 		let originalStringRepresentation: String
@@ -116,6 +127,10 @@ class happnCSVLocFile: Streamable {
 		}
 		
 	}
+	
+	/* ********************
+	   MARK: - Initializers
+	   ******************** */
 	
 	convenience init() {
 		self.init(languages: [], entries: [:], mappings: [:], csvSeparator: ",")
@@ -229,6 +244,23 @@ class happnCSVLocFile: Streamable {
 		entries = e
 		mappings = m
 	}
+	
+	/* *******************************************
+	   MARK: - Manual Modification of CSV Loc File
+	   ******************************************* */
+	
+	/** Sets the given value for the given key and language.
+	
+	- important: If the key does not exist, this function will NOP. The key will
+	**NOT** be created. However, if the given key never had a value for the given
+	language, the value for the given language WILL be set. */
+	func setValue(val: String, forKey key: LineKey, withLanguage language: String) {
+		entries[key]?[language] = val
+	}
+	
+	/* ***********************************
+	   MARK: - Xcode Strings Files Support
+	   *********************************** */
 	
 	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
@@ -395,6 +427,10 @@ class happnCSVLocFile: Streamable {
 			}
 		}
 	}
+	
+	/* ***************************************
+	   MARK: - Android XML Loc Strings Support
+	   *************************************** */
 	
 	func mergeAndroidXMLLocStringsFiles(locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
@@ -676,6 +712,10 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
+	/* *********************************
+	   MARK: - Streamable Implementation
+	   ********************************* */
+	
 	func writeTo<Target : OutputStreamType>(inout target: Target) {
 		target.write(
 			"\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
@@ -745,6 +785,10 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
+	/* ***************
+	   MARK: - Private
+	   *************** */
+	
 	private func getLanguageAgnosticFilenameAndAddLanguageToList(filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
 		var found = false
 		var languageName = "(Unknown)"
@@ -793,7 +837,12 @@ class happnCSVLocFile: Streamable {
 		keys.append(refKey)
 		return refKey
 	}
+	
 }
+
+/* *************************
+   MARK: - LineKey Operators
+   ************************* */
 
 func ==(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	return k1.locKey == k2.locKey && k1.env == k2.env && k1.filename == k2.filename
