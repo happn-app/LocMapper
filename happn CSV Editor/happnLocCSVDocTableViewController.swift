@@ -28,6 +28,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entries.keys.sort()}
 			else                           {sortedKeys = nil}
 			
+			tableColumnsCreated = false
 			createTableViewColumnsIfNeeded()
 		}
 	}
