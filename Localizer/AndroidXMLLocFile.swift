@@ -336,8 +336,9 @@ class AndroidXMLLocFile: Streamable {
 				case (.InArrayItem, "item"):
 					switch previousStatus {
 					case .InArray(let arrayName):
-						components.append(ArrayItem(value: currentChars.valueFromXMLText, index: currentArrayIdx++, parentName: arrayName))
+						components.append(ArrayItem(value: currentChars.valueFromXMLText, index: currentArrayIdx, parentName: arrayName))
 						status = previousStatus
+						currentArrayIdx += 1
 					default:
 						status = .Error
 					}

@@ -136,11 +136,12 @@ class CSVParser {
 			if fieldNamesCount > fieldCount {
 				fieldName = fieldNames[fieldCount]
 			} else {
-				fieldName = NSString(format: "FIELD_%d", ++fieldNamesCount) as String
+				fieldNamesCount += 1
+				fieldName = NSString(format: "FIELD_%d", fieldNamesCount) as String
 				fieldNames.append(fieldName)
 			}
 			record[fieldName] = field
-			++fieldCount
+			fieldCount += 1
 			if parseSeparator() == nil {
 				break
 			}
