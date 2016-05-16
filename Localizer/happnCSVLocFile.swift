@@ -69,12 +69,13 @@ class happnCSVLocFile: Streamable {
 			guard let
 				data = stringRepresentation.dataUsingEncoding(NSUTF8StringEncoding),
 				serializedComponent_s = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
-				else {
-					if stringRepresentation.characters.count > 0 { /* No need to print a warning for empty strings. We know. */
-						print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
-					}
-					self.init(components: nil, stringRepresentation: stringRepresentation)
-					return
+				else
+			{
+				if stringRepresentation.characters.count > 0 { /* No need to print a warning for empty strings. We know. */
+					print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
+				}
+				self.init(components: nil, stringRepresentation: stringRepresentation)
+				return
 			}
 			let serializedComponents: [[String: AnyObject]]
 			if      let array = serializedComponent_s as? [[String: AnyObject]] {serializedComponents = array}
@@ -85,7 +86,7 @@ class happnCSVLocFile: Streamable {
 				return
 			}
 			
-			self.init(components: serializedComponents.map {return happnCSVLocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
+			self.init(components: serializedComponents.map {happnCSVLocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
 		}
 		
 		convenience init(components: [happnCSVLocKeyMappingComponent]) {
@@ -106,7 +107,7 @@ class happnCSVLocFile: Streamable {
 		}
 		
 		private static func stringRepresentationFromComponentsList(components: [happnCSVLocKeyMappingComponent]) -> String {
-			let allSerialized = components.map {return $0.serialize()}
+			let allSerialized = components.map {$0.serialize()}
 			return try! String(data: NSJSONSerialization.dataWithJSONObject(
 				(allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
 				options: [.PrettyPrinted]),
@@ -132,7 +133,7 @@ class happnCSVLocFile: Streamable {
 	
 	/* *** Init with file content *** */
 	convenience init(filecontent: String, withCSVSeparator csvSep: String) throws {
-		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
+		let error = NSError(domain: "Migrator", code: 0, userInfo: nil)
 		if filecontent.isEmpty {
 			self.init(languages: [], entries: [:], mappings: [:], csvSeparator: csvSep)
 			return
@@ -159,57 +160,54 @@ class happnCSVLocFile: Streamable {
 		var i = 0
 		var groupComment = ""
 		for row in parsedRows {
-			let rowKeys = row.keys
 			/* Is the row valid? */
-			if rowKeys.indexOf(PRIVATE_KEY_HEADER_NAME) == nil ||
-				rowKeys.indexOf(PRIVATE_ENV_HEADER_NAME) == nil ||
-				rowKeys.indexOf(PRIVATE_FILENAME_HEADER_NAME) == nil ||
-				rowKeys.indexOf(PRIVATE_COMMENT_HEADER_NAME) == nil ||
-				rowKeys.indexOf(PRIVATE_MAPPINGS_HEADER_NAME) == nil ||
-				rowKeys.indexOf(COMMENT_HEADER_NAME) == nil {
+			guard let
+				locKey              = row[PRIVATE_KEY_HEADER_NAME],
+				env                 = row[PRIVATE_ENV_HEADER_NAME],
+				filename            = row[PRIVATE_FILENAME_HEADER_NAME],
+				rawComment          = row[PRIVATE_COMMENT_HEADER_NAME],
+				currentMappings     = row[PRIVATE_MAPPINGS_HEADER_NAME],
+				userReadableComment = row[COMMENT_HEADER_NAME] else
+			{
 				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
 				continue
 			}
 			
 			/* Does the row have a valid environment? */
-			let env = row[PRIVATE_ENV_HEADER_NAME]!
 			if env.isEmpty {
 				/* If the environment is empty, we may have a group comment row */
-				if let gc = row[COMMENT_HEADER_NAME] {
-					groupComment = gc
-				}
+				groupComment = userReadableComment
 				continue
 			}
 			
 			/* Let's get the comment */
-			var comment: String!
-			let rawComment = row[PRIVATE_COMMENT_HEADER_NAME]!
-//			if !rawComment.hasPrefix("__") || !rawComment.hasSuffix("__") {
+			var comment: String
+			if rawComment.hasPrefix("__") && rawComment.hasSuffix("__") {
 				comment = rawComment.stringByReplacingOccurrencesOfString(
 					"__", withString: "", options: NSStringCompareOptions.AnchoredSearch
 				).stringByReplacingOccurrencesOfString(
 					"__", withString: "", options: [NSStringCompareOptions.AnchoredSearch, NSStringCompareOptions.BackwardsSearch]
 				)
-/*			} else {
-				println("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Adding setting raw comment as comment, but expect troubles.")
+			} else {
+				print("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
 				comment = rawComment
-			}*/
+			}
 			
 			/* Let's create the line key */
 			let k = LineKey(
-				locKey: row[PRIVATE_KEY_HEADER_NAME]!,
+				locKey: locKey,
 				env: env,
-				filename: row[PRIVATE_FILENAME_HEADER_NAME]!,
+				filename: filename,
 				comment: comment,
 				index: i,
 				userReadableGroupComment: groupComment,
-				userReadableComment: row[COMMENT_HEADER_NAME]!
+				userReadableComment: userReadableComment
 			)
 			i += 1
 			groupComment = ""
 			
 			/* Let's get the mappings for this key. */
-			mappings[k] = happnCSVLocKeyMapping(stringRepresentation: row[PRIVATE_MAPPINGS_HEADER_NAME]!)
+			mappings[k] = happnCSVLocKeyMapping(stringRepresentation: currentMappings)
 			
 			/* Now let's retrieve the values per language */
 			var values = [String: String]()
@@ -287,7 +285,7 @@ class happnCSVLocFile: Streamable {
 	func exportToXcodeProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [XcodeStringsComponent]]()
 		for entry_key in entries.keys.sort() {
-			if entry_key.env != "Xcode" {continue}
+			guard entry_key.env == "Xcode" else {continue}
 			
 			var scannedString: NSString?
 			let keyScanner = NSScanner(string: entry_key.locKey)
@@ -535,7 +533,7 @@ class happnCSVLocFile: Streamable {
 		var spaces = [AndroidLocComponent /* Only WhiteSpace and Comment */]()
 		var currentPluralsValueByFilename: [String /* Language */: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], AndroidXMLLocFile.PluralGroup.PluralItem)?]] = [:]
 		for entry_key in entries.keys.sort() {
-			if entry_key.env != "Android" {continue}
+			guard entry_key.env == "Android" else {continue}
 			
 			let value = entries[entry_key]!
 			

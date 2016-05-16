@@ -89,8 +89,6 @@ class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 	
 	init(serialization: [String: AnyObject]) throws {
 		guard let c = serialization["constant"] as? String else {
-			constant = "" /* Won't be needed in Swift 2.2? */
-			super.init() /* Won't be needed in Swift 2.2? */
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Key \"constant\" is either undefined or not a String."])
 		}
 		
@@ -122,21 +120,12 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 			locKey       = serialization["loc_key"] as? String,
 			dtransform_s = serialization["transforms"] else
 		{
-			/* The three lines below won't be needed in Swift 2.2? */
-			subTransformComponents = []
-			sourceKey = happnCSVLocFile.LineKey(locKey: "", env: "", filename: "", comment: "", index: 0, userReadableGroupComment: "", userReadableComment:  "") /* Won't be needed in Swift 2.1 */
-			super.init()
-			
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Some keys are missing or invalid."])
 		}
 		let dtransforms: [[String: AnyObject]]
 		if      let array = dtransform_s as? [[String: AnyObject]] {dtransforms = array}
 		else if let simple = dtransform_s as? [String: AnyObject]  {dtransforms = [simple]}
 		else {
-			/* The three lines below won't be needed in Swift 2.2? */
-			subTransformComponents = []
-			sourceKey = happnCSVLocFile.LineKey(locKey: "", env: "", filename: "", comment: "", index: 0, userReadableGroupComment: "", userReadableComment:  "") /* Won't be needed in Swift 2.1 */
-			super.init()
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot convert transforms to array of dictionary from serialization: \"\(serialization)\"."])
 		}
 		
@@ -255,8 +244,6 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 	
 	init(serialization: [String: AnyObject]) throws {
 		guard let r = serialization["replacements"] as? [String: String] else {
-			replacements = [:] /* Won't be needed in Swift 2.2? */
-			super.init() /* Won't be needed in Swift 2.2? */
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Key \"replacements\" is either undefined or not [String: String]."])
 		}
 		
@@ -297,12 +284,6 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 			cd  = serialization["close_delimiter"] as? String,
 			cdr = serialization["close_delimiter_replacement"] as? String else
 		{
-			openDelim = "" /* Won't be needed in Swift 2.2? */
-			openDelimReplacement = "" /* Won't be needed in Swift 2.2? */
-			closeDelim = "" /* Won't be needed in Swift 2.2? */
-			closeDelimReplacement = "" /* Won't be needed in Swift 2.2? */
-			escapeToken = nil /* Won't be needed in Swift 2.2? */
-			super.init() /* Won't be needed in Swift 2.2? */
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing either open_delimiter, open_delimiter_replacement, close_delimiter or close_delimiter_replacement."])
 		}
 		
