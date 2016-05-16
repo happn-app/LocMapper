@@ -56,8 +56,15 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return}
 		guard let tableColumn = tableColumn else {return}
 		
-		guard let strValue = object as? String else {return}
-//		csvLocFile.entries[key]?[tableColumn.identifier] = strValue.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+		guard let strValue = (object as? String)?.stringByReplacingOccurrencesOfString("\n", withString: "\\n") else {return}
+		csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
+		
+		dispatch_async(dispatch_get_main_queue()) {
+			tableView.beginUpdates()
+			self.cachedRowsHeights.removeObjectForKey(key.filename + key.locKey)
+			tableView.noteHeightOfRowsWithIndexesChanged(NSIndexSet(index: row))
+			tableView.endUpdates()
+		}
 	}
 	
 	func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
