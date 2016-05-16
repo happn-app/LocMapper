@@ -1066,16 +1066,23 @@
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SG9-XE-EUa">
                                 <rect key="frame" x="35" y="271" width="92" height="26"/>
-                                <popUpButtonCell key="cell" type="push" title="Windows" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="KQB-b9-WBv" id="Cci-kh-LMm">
+                                <popUpButtonCell key="cell" type="push" title="Ref" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AAi-YX-qXo" id="Cci-kh-LMm">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="Ope-Is-FgB">
                                         <items>
                                             <menuItem title="None" id="bPl-Cl-pjM"/>
                                             <menuItem isSeparatorItem="YES" id="enV-ny-pQS"/>
-                                            <menuItem title="Xcode" id="2eo-xE-eKm"/>
-                                            <menuItem title="Android" id="bZx-mi-LVP"/>
-                                            <menuItem title="Windows" state="on" id="KQB-b9-WBv">
+                                            <menuItem title="Ref" state="on" id="AAi-YX-qXo">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
+                                            <menuItem title="Xcode" id="2eo-xE-eKm">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
+                                            <menuItem title="Android" id="bZx-mi-LVP">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
+                                            <menuItem title="Windows" id="KQB-b9-WBv">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                             </menuItem>
                                         </items>
