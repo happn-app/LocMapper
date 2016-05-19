@@ -119,9 +119,11 @@ class happnCSVLocFile: Streamable {
 		
 		private static func stringRepresentationFromComponentsList(components: [happnCSVLocKeyMappingComponent]) -> String {
 			let allSerialized = components.map {$0.serialize()}
-			return try! String(data: NSJSONSerialization.dataWithJSONObject(
-				(allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
-				options: [.PrettyPrinted]),
+			return try! String(
+				data: NSJSONSerialization.dataWithJSONObject(
+					(allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
+					options: [.PrettyPrinted]
+				),
 				encoding: NSUTF8StringEncoding
 			)!
 		}
