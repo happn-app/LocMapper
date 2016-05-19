@@ -43,10 +43,9 @@ class CSVParser {
 		else            {fieldNames = [String]()}
 		
 		assert(
-			separator.characters.count > 0 &&
-				separator.rangeOfString("\"") == nil &&
-				separator.rangeOfCharacterFromSet(NSCharacterSet.newlineCharacterSet()) == nil,
-			"CSV separator string must not be empty and must not contain the double quote character or newline characters.")
+			separator.characters.count > 0 && separator.rangeOfString("\"") == nil && separator.rangeOfCharacterFromSet(NSCharacterSet.newlineCharacterSet()) == nil,
+			"CSV separator string must not be empty and must not contain the double quote character or newline characters."
+		)
 	}
 	
 	func arrayOfParsedRows() -> [[String: String]]? {
@@ -54,21 +53,6 @@ class CSVParser {
 		scanner.charactersToBeSkipped = NSCharacterSet()
 		return parseFile()
 	}
-	
-/*	- (void)parseRowsForReceiver:(id)aReceiver selector:(SEL)aSelector
-	{
-		scanner = [[NSScanner alloc] initWithString:csvString];
-		[scanner setCharactersToBeSkipped:[[[NSCharacterSet alloc] init] autorelease]];
-		receiver = [aReceiver retain];
-		receiverSelector = aSelector;
-	
-		[self parseFile];
-	
-		[scanner release];
-		scanner = nil;
-		[receiver release];
-		receiver = nil;
-	}*/
 	
 	private func parseFile() -> [[String: String]]? {
 		if hasHeader {
@@ -116,12 +100,12 @@ class CSVParser {
 	 *
 	 * Returns the parsed record as a dictionary, or nil on failure. */
 	private func parseRecord() -> [String: String]? {
-		/*
-		 * Special case: return nil if the line is blank. Without this special case,
-		 * it would parse as a single blank field.
-		 */
-		if parseLineSeparator() != nil || scanner.atEnd {
+		if scanner.atEnd {
 			return nil
+		}
+		if let newlines = parseLineSeparator() {
+			scanner.scanLocation -= newlines.characters.count /* ish... actually not 100% true because NSScanner uses UTF-16 view of the string, Swift uses actual character count. */
+			return [:]
 		}
 		
 		var fieldCount = 0
@@ -155,12 +139,12 @@ class CSVParser {
 	}
 	
 	private func parseField() -> String? {
-		if let escaped = parseEscaped() {
+		if let escaped = parseQuoted() {
 			return escaped
 		}
 		
-		if let nonEscaped = parseNonEscaped() {
-			return nonEscaped
+		if let nonQuoted = parseNonQuoted() {
+			return nonQuoted
 		}
 		
 		/* Special case: if the current location is immediately
@@ -171,41 +155,33 @@ class CSVParser {
 			return ""
 		}
 		
-		return nil;
+		return nil
 	}
 	
-	private func parseEscaped() -> String? {
-		if parseDoubleQuote() == nil {
+	private func parseQuoted() -> String? {
+		guard parseDoubleQuote() != nil else {
 			return nil
 		}
 		
 		var accumulatedData = String()
 		while true {
-			var fragment = parseTextData()
-			if fragment == nil {
-				fragment = parseSeparator()
-				if fragment == nil {
-					fragment = parseLineSeparator()
-					if fragment == nil {
-						if parseTwoDoubleQuotes() != nil {
-							fragment = "\""
-						} else {
-							break
-						}
-					}
-				}
-			}
-			accumulatedData += fragment!
+			let fragment: String
+			if      let s = parseTextData()        {fragment = s}
+			else if let s = parseSeparator()       {fragment = s}
+			else if let s = parseLineSeparator()   {fragment = s}
+			else if let _ = parseTwoDoubleQuotes() {fragment = "\""}
+			else                                   {break}
+			accumulatedData += fragment
 		}
 		
-		if parseDoubleQuote() == nil {
+		guard parseDoubleQuote() != nil else {
 			return nil
 		}
 		
 		return accumulatedData;
 	}
 	
-	private func parseNonEscaped() -> String? {
+	private func parseNonQuoted() -> String? {
 		return parseTextData()
 	}
 	
@@ -226,8 +202,19 @@ class CSVParser {
 	
 	private func parseLineSeparator() -> String? {
 		var matchedNewlines: NSString?
-		scanner.scanCharactersFromSet(NSCharacterSet.newlineCharacterSet(), intoString: &matchedNewlines)
-		return matchedNewlines as String?
+		let scanLocation = scanner.scanLocation
+		guard scanner.scanCharactersFromSet(NSCharacterSet.newlineCharacterSet(), intoString: &matchedNewlines) else {
+			return nil
+		}
+		
+		/* newlines will contains all new lines from scanLocation. We only want
+		 * one new line. */
+		let newlines = matchedNewlines! as String
+		if newlines.hasPrefix("\r\n") {scanner.scanLocation = scanLocation + 2; return "\r\n"}
+		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
+		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
+		print("*** Warning: Unknown new line! oO (\(newlines))")
+		return newlines
 	}
 	
 	private func parseTwoDoubleQuotes() -> String? {
