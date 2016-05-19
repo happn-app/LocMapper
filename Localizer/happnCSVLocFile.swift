@@ -43,6 +43,7 @@ class happnCSVLocFile: Streamable {
 	private(set) var languages: [String]
 	private(set) var mappings: [LineKey: happnCSVLocKeyMapping]
 	private(set) var entries: [LineKey: [String /* Language */: String /* Value */]]
+	private(set) var metadata: [String: String]
 	
 	/* *******************************************************
 	   MARK: - LineKey Struct
@@ -135,7 +136,7 @@ class happnCSVLocFile: Streamable {
 	   ******************** */
 	
 	convenience init() {
-		self.init(languages: [], entries: [:], mappings: [:], csvSeparator: ",")
+		self.init(languages: [], entries: [:], mappings: [:], metadata: [:], csvSeparator: ",")
 	}
 	
 	/* *** Init from path *** */
@@ -152,7 +153,7 @@ class happnCSVLocFile: Streamable {
 	convenience init(filecontent: String, withCSVSeparator csvSep: String) throws {
 		let error = NSError(domain: "Migrator", code: 0, userInfo: nil)
 		if filecontent.isEmpty {
-			self.init(languages: [], entries: [:], mappings: [:], csvSeparator: csvSep)
+			self.init(languages: [], entries: [:], mappings: [:], metadata: [:], csvSeparator: csvSep)
 			return
 		}
 		
@@ -164,6 +165,7 @@ class happnCSVLocFile: Streamable {
 		var languages = [String]()
 		var entries = [LineKey: [String: String]]()
 		var mappings = [LineKey: happnCSVLocKeyMapping]()
+		var metadata = [String: String]()
 		
 		/* Retrieving languages from header */
 		for h in parser.fieldNames {
@@ -176,8 +178,25 @@ class happnCSVLocFile: Streamable {
 		
 		var i = 0
 		var groupComment = ""
+		var foundEmptyLine = false
 		for row in parsedRows {
-			/* Is the row valid? */
+			/* Is the row empty? The first empty row signal the start of the actual
+			 * data (metadata/data separation). */
+			guard row != [:] else {foundEmptyLine = true; continue}
+			
+			/* If we did not find the empty line, we're still in the metadata. */
+			guard foundEmptyLine else {
+				if let
+					jsonData = row[PRIVATE_KEY_HEADER_NAME]?.dataUsingEncoding(NSUTF8StringEncoding),
+					parsedJSON = (try? NSJSONSerialization.JSONObjectWithData(jsonData, options: [])) as? [String: String]
+				{
+					if !metadata.isEmpty {print("*** Warning: Got more than one line of metadata. Merging values, last line wins if key is defined more than once.")}
+					parsedJSON.forEach {metadata[$0] = $1}
+				}
+				continue
+			}
+			
+			/* An empty line has been found. We're in the actual data. */
 			guard let
 				locKey              = row[PRIVATE_KEY_HEADER_NAME],
 				env                 = row[PRIVATE_ENV_HEADER_NAME],
@@ -234,16 +253,17 @@ class happnCSVLocFile: Streamable {
 			}
 			entries[k] = values
 		}
-		self.init(languages: languages, entries: entries, mappings: mappings, csvSeparator: csvSep)
+		self.init(languages: languages, entries: entries, mappings: mappings, metadata: metadata, csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
-	init(languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], csvSeparator csvSep: String) {
+	init(languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], metadata md: [String: String], csvSeparator csvSep: String) {
 		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		languages = l
 		entries = e
 		mappings = m
+		metadata = md
 	}
 	
 	/* *******************************************
@@ -731,6 +751,10 @@ class happnCSVLocFile: Streamable {
 		)
 		for language in languages {
 			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
+		}
+		if !metadata.isEmpty, let jsonData = try? NSJSONSerialization.dataWithJSONObject(metadata, options: []), jsonStr = String(data: jsonData, encoding: NSUTF8StringEncoding) {
+			/* Let's write the metadata */
+			target.write("\n\(jsonStr.csvCellValueWithSeparator(csvSeparator))")
 		}
 		target.write("\n")
 		var previousBasename: String?
