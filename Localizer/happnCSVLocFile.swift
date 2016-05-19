@@ -181,7 +181,6 @@ class happnCSVLocFile: Streamable {
 				env                 = row[PRIVATE_ENV_HEADER_NAME],
 				filename            = row[PRIVATE_FILENAME_HEADER_NAME],
 				rawComment          = row[PRIVATE_COMMENT_HEADER_NAME],
-				currentMappings     = row[PRIVATE_MAPPINGS_HEADER_NAME],
 				userReadableComment = row[COMMENT_HEADER_NAME] else
 			{
 				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
@@ -222,7 +221,7 @@ class happnCSVLocFile: Streamable {
 			groupComment = ""
 			
 			/* Let's get the mappings for this key. */
-			mappings[k] = happnCSVLocKeyMapping(stringRepresentation: currentMappings)
+			mappings[k] = happnCSVLocKeyMapping(stringRepresentation: row[PRIVATE_MAPPINGS_HEADER_NAME] ?? "")
 			
 			/* Now let's retrieve the values per language */
 			var values = [String: String]()
