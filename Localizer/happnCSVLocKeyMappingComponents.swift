@@ -272,25 +272,22 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 /* ***** */
 class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	let openDelim: String
-	let openDelimReplacement: String
+	let replacement: String
 	let closeDelim: String
-	let closeDelimReplacement: String
 	let escapeToken: String?
 	
 	init(serialization: [String: AnyObject]) throws {
 		guard let
-			od  = serialization["open_delimiter"] as? String,
-			odr = serialization["open_delimiter_replacement"] as? String,
-			cd  = serialization["close_delimiter"] as? String,
-			cdr = serialization["close_delimiter_replacement"] as? String else
+			od = serialization["open_delimiter"] as? String,
+			r  = serialization["replacement"] as? String,
+			cd = serialization["close_delimiter"] as? String else
 		{
-			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing either open_delimiter, open_delimiter_replacement, close_delimiter or close_delimiter_replacement."])
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing either open_delimiter, replacement or close_delimiter."])
 		}
 		
 		openDelim = od
-		openDelimReplacement = odr
+		replacement = r
 		closeDelim = cd
-		closeDelimReplacement = cdr
 		if let e = serialization["escape_token"] as? String where e.characters.count >= 1 {escapeToken = e}
 		else                                                                              {escapeToken = nil}
 		super.init()
@@ -299,9 +296,8 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	override func serializePrivateData() -> [String: AnyObject] {
 		var ret = [
 			"open_delimiter": openDelim,
-			"open_delimiter_replacement": openDelimReplacement,
-			"close_delimiter": closeDelim,
-			"close_delimiter_replacement": closeDelimReplacement
+			"replacement": replacement,
+			"close_delimiter": closeDelim
 		]
 		if let e = escapeToken {ret["escape_token"] = e}
 		return ret
