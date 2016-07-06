@@ -69,6 +69,7 @@
 		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMappingComponents.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
 		7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLocHelper.swift; sourceTree = "<group>"; };
+		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -131,6 +132,7 @@
 		7B6E259619D4157A001934ED = {
 			isa = PBXGroup;
 			children = (
+				7BCB27A91D2D4020005CFEB9 /* Readme.txt */,
 				7B6E25A119D4157A001934ED /* Localizer */,
 				7B837D801C0EF3DB0020E86B /* happn CSV Editor */,
 				7B6E25A019D4157A001934ED /* Products */,
