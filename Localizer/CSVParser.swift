@@ -31,7 +31,8 @@ class CSVParser {
 		csvString = str
 		separator = sep
 		
-		var cs = CharacterSet.newlines
+		/* Note: Should be CharacterSet.newlines, but crash when doing that. */
+		var cs = NSCharacterSet.newlines
 		cs.insert(charactersIn: "\"")
 		cs.insert(charactersIn: separator.substring(to: separator.index(after: separator.startIndex)))
 		endTextCharacterSet = cs as CharacterSet

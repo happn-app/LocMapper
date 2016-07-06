@@ -99,6 +99,9 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 }
 
 
+//let basePathForTests = "/Users/frizlab/Documents/Projects"
+let basePathForTests = "/Users/frizlab/Work/Doing/FTW and Co"
+
 let folderNameToLanguageNameForTests = [
 	"en.lproj": " English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
 	"it.lproj": "Italiano — Italian", "es.lproj": "Español — Spanish", "pt.lproj": "Português brasileiro — Portuguese (Brasil)",
@@ -226,11 +229,11 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_export":
-		guard let parsed_strings_files = try? XcodeStringsFile.stringsFilesInProject("/Users/frizlab/Documents/Projects/happn/", excluded_paths: ["Dependencies/", ".git/"]) else {
+		guard let parsed_strings_files = try? XcodeStringsFile.stringsFilesInProject("\(basePathForTests)/happn/", excluded_paths: ["Dependencies/", ".git/"]) else {
 			print("Error reading Xcode strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -239,25 +242,25 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print(csv, terminator: "")
 		var csvText = ""
 		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: String.Encoding.utf8)
+		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
-		csv.exportToXcodeProjectWithRoot("/Users/frizlab/Documents/Projects/happn/", folderNameToLanguageName: folderNameToLanguageNameForTests)
+		csv.exportToXcodeProjectWithRoot("\(basePathForTests)/happn/", folderNameToLanguageName: folderNameToLanguageNameForTests)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_export":
-		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("/Users/frizlab/Documents/Projects/HappnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys)) else {
+		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("\(basePathForTests)/HappnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys)) else {
 			print("Error reading Android strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -266,16 +269,16 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print(csv, terminator: "")
 		var csvText = ""
 		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "/Users/frizlab/Documents/Projects/ loc.csv", usingEncoding: String.Encoding.utf8)
+		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "/Users/frizlab/Documents/Projects/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
-		csv.exportToAndroidProjectWithRoot("/Users/frizlab/Documents/Projects/HappnAndroid/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
+		csv.exportToAndroidProjectWithRoot("\(basePathForTests)/HappnAndroid/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
 		exit(0)
 	
 	default:
