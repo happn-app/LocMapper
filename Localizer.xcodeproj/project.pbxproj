@@ -32,6 +32,8 @@
 		7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
 		7BABB9591C11D99800DACD85 /* happnCSVLocKeyMappingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */; };
 		7BBF5FE21C15C2A90024318C /* XibLocHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */; };
+		7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */; };
+		7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */; };
 		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +72,7 @@
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
 		7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLocHelper.swift; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
+		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationLocFile.swift; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -155,10 +158,11 @@
 				7BABB9561C11C92C00DACD85 /* IOUtils.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
 				7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */,
-				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
 				7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */,
 				7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */,
+				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
 				7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */,
+				7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */,
 				7B87D4D91A3AECD500C151A8 /* CSVParser.swift */,
 			);
 			path = Localizer;
@@ -273,6 +277,7 @@
 				7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */,
 				7B74908E1A1600FE0021E10F /* AndroidXMLLocFile.swift in Sources */,
 				7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */,
+				7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift in Sources */,
 				7B6E25AA19D417BD001934ED /* stderr.swift in Sources */,
 				7B6E25AC19D430C5001934ED /* XcodeStringsFile.swift in Sources */,
 				7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */,
@@ -293,6 +298,7 @@
 				7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */,
 				7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */,
 				7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */,
+				7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift in Sources */,
 				7B9BD4E41C1087BF007A096D /* CSVParser.swift in Sources */,
 				7B9BD4E21C1087B9007A096D /* stderr.swift in Sources */,
 				7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */,
