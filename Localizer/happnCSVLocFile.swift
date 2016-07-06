@@ -151,7 +151,7 @@ class happnCSVLocFile: Streamable {
 	
 	/* *** Init with file content *** */
 	convenience init(filecontent: String, withCSVSeparator csvSep: String) throws {
-		let error = NSError(domain: "Migrator", code: 0, userInfo: nil)
+		let error = NSError(domain: "Migrator", code: 1, userInfo: nil)
 		if filecontent.isEmpty {
 			self.init(languages: [], entries: [:], mappings: [:], metadata: [:], csvSeparator: csvSep)
 			return
