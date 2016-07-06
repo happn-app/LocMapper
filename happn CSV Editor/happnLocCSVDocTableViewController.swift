@@ -104,6 +104,10 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		return height
 	}
 	
+	func tableViewSelectionDidChange(notification: NSNotification) {
+		print("hello")
+	}
+	
 	/* If we were view-based... but we're not (cell-based is still faster). */
 //	func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
 //		guard let tableColumn = tableColumn else {return nil}
