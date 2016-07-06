@@ -107,6 +107,9 @@
                                         <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
                                         <menuItem title="Import Reference Translations…" keyEquivalent="I" id="hjE-p6-IXV">
                                             <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="importReferenceTranslationsWithSender:" target="Ady-hI-5gd" id="xuc-qw-1K9"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem title="Import Key Structure from Project…" keyEquivalent="I" id="Q0b-8V-e6j"/>
                                         <menuItem isSeparatorItem="YES" id="LKY-jV-u5N"/>
@@ -663,7 +666,7 @@
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="happn_CSV_Editor" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-261.5" y="107"/>
+            <point key="canvasLocation" x="-707" y="-124"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11163.2" systemVersion="16A239j" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11163.2"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="xD2-Qm-19O">
+            <rect key="frame" x="0.0" y="0.0" width="483" height="62"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vag-EP-FOh">
+                    <rect key="frame" x="18" y="23" width="120" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Languages Names:" id="IGf-0c-gmO">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <tokenField verticalHuggingPriority="750" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="qNm-gg-r5l">
+                    <rect key="frame" x="144" y="20" width="319" height="22"/>
+                    <tokenFieldCell key="cell" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" allowsEditingTextAttributes="YES" id="Rkh-yq-sI0">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </tokenFieldCell>
+                </tokenField>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="qNm-gg-r5l" secondAttribute="trailing" constant="20" id="KSc-zr-PA6"/>
+                <constraint firstAttribute="bottom" secondItem="qNm-gg-r5l" secondAttribute="bottom" constant="20" id="cPS-xp-dFf"/>
+                <constraint firstItem="vag-EP-FOh" firstAttribute="leading" secondItem="xD2-Qm-19O" secondAttribute="leading" constant="20" id="gXn-3z-XTI"/>
+                <constraint firstItem="qNm-gg-r5l" firstAttribute="leading" secondItem="vag-EP-FOh" secondAttribute="trailing" constant="8" id="umc-bS-Tl3"/>
+                <constraint firstItem="qNm-gg-r5l" firstAttribute="baseline" secondItem="vag-EP-FOh" secondAttribute="baseline" id="w79-MG-Xvq"/>
+                <constraint firstItem="qNm-gg-r5l" firstAttribute="top" secondItem="xD2-Qm-19O" secondAttribute="top" constant="20" id="xYw-3O-uyG"/>
+            </constraints>
+            <point key="canvasLocation" x="-236" y="56"/>
+        </customView>
+    </objects>
+</document>

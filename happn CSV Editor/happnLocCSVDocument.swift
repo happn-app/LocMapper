@@ -38,7 +38,7 @@ class happnLocCSVDocument: NSDocument {
 		// Returns the Storyboard that contains your Document window.
 		let storyboard = NSStoryboard(name: "Main", bundle: nil)
 		let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
-		self.addWindowController(windowController)
+		addWindowController(windowController)
 		
 		sendRepresentedObjectToSubControllers()
 	}
@@ -78,8 +78,48 @@ class happnLocCSVDocument: NSDocument {
 		}
 	}
 	
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
+	@IBAction func importReferenceTranslations(sender: AnyObject) {
+		/* Getting accessory view. */
+		var objects: NSArray = []
+		Bundle.main.loadNibNamed("AccessoryViewForImportReferenceTranslations", owner: nil, topLevelObjects: &objects)
+		let accessoryView = (objects.filter {$0 is NSView} as! [NSView]).first!
+		let tokenField = accessoryView.viewWithTag(1) as! NSTokenField
+		
+		tokenField.stringValue = "English,Deutsch — German,Français — French" /* TODO: Fetch this in happn CSV Loc file metadata if available, or use a default value. */
+		
+		let openPanel = NSOpenPanel()
+		openPanel.canChooseFiles = true
+		openPanel.allowedFileTypes = ["csv"]
+		openPanel.canChooseDirectories = false
+		
+		/* Configuring accessory view. */
+		openPanel.accessoryView = accessoryView
+		openPanel.isAccessoryViewDisclosed = true
+		if let superview = accessoryView.superview {
+			/* Adjust size of accessory view. */
+			accessoryView.frame.origin.x = superview.bounds.minX
+			accessoryView.frame.size.width = superview.bounds.width
+			accessoryView.autoresizingMask = [.viewWidthSizable] /* Doesn't work though :( */
+		}
+		
+		openPanel.beginSheetModal(for: windowForSheet!) { response in
+			guard response == NSFileHandlingPanelOKButton else {return}
+			
+			let languages = tokenField.stringValue.characters.split(separator: ",").map(String.init)
+			Swift.print(languages)
+		}
+	}
+	
+	/* ***************
+	   MARK: - Private
+	   *************** */
+	
 	private func sendRepresentedObjectToSubControllers() {
-		for v in self.windowControllers {
+		for v in windowControllers {
 			v.contentViewController?.representedObject = csvLocFile
 		}
 	}

@@ -34,6 +34,7 @@
 		7BBF5FE21C15C2A90024318C /* XibLocHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */; };
 		7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */; };
 		7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */; };
+		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
 		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +74,7 @@
 		7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLocHelper.swift; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationLocFile.swift; sourceTree = "<group>"; };
+		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -101,6 +103,7 @@
 				7B560D641C17022F001DD2B0 /* Misc. View Controllers */,
 				7B560D651C170273001DD2B0 /* Main View Controller */,
 				7B560D661C170280001DD2B0 /* Selection Info View Controllers */,
+				7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */,
 			);
 			name = "happn CSV Loc Document";
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */,
+				7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */,
 				7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
