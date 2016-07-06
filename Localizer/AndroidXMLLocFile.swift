@@ -18,18 +18,18 @@ extension String {
 	var xmlTextValue: String {
 		var v = self
 //		v = v.stringByReplacingOccurrencesOfString("\\", withString: "\\\\", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("\"", withString: "\\\"", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("'", withString: "\\'", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("&", withString: "&amp;", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("<", withString: "&lt;", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString(">", withString: "&gt;", options: NSStringCompareOptions.LiteralSearch) /* Shouldn't be needed... */
+		v = v.replacingOccurrences(of: "\"", with: "\\\"", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "'", with: "\\'", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "&", with: "&amp;", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "<", with: "&lt;", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: ">", with: "&gt;", options: NSString.CompareOptions.literal) /* Shouldn't be needed... */
 		return v
 	}
 	var valueFromXMLText: String {
 		var v = self
-		v = v.stringByReplacingOccurrencesOfString("\\'", withString: "'", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("\\\"'", withString: "\"", options: NSStringCompareOptions.LiteralSearch)
-		v = v.stringByReplacingOccurrencesOfString("\\\\", withString: "\\", options: NSStringCompareOptions.LiteralSearch)
+		v = v.replacingOccurrences(of: "\\'", with: "'", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "\\\"'", with: "\"", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: NSString.CompareOptions.literal)
 		return v
 	}
 }
@@ -87,7 +87,7 @@ class AndroidXMLLocFile: Streamable {
 		var stringValue: String {return content}
 		
 		init(_ c: String) {
-			assert(c.rangeOfCharacterFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet().invertedSet) == nil, "Invalid white space string")
+			assert(c.rangeOfCharacter(from: CharacterSet.whitespacesAndNewlines.inverted) == nil, "Invalid white space string")
 			content = c
 		}
 	}
@@ -98,7 +98,7 @@ class AndroidXMLLocFile: Streamable {
 		var stringValue: String {return "<!--\(content)-->"}
 		
 		init(_ c: String) {
-			assert(c.rangeOfString("-->") == nil, "Invalid comment string")
+			assert(c.range(of: "-->") == nil, "Invalid comment string")
 			content = c
 		}
 	}
@@ -193,30 +193,30 @@ class AndroidXMLLocFile: Streamable {
 		}
 	}
 	
-	class ParserDelegate: NSObject, NSXMLParserDelegate {
+	class ParserDelegate: NSObject, XMLParserDelegate {
 		/* Equality comparison does not compare argument values for cases with
 		 * arguments */
 		enum Status: Equatable {
-			case OutStart
-			case InResources
-			case InString(String /* key */)
-			case InArray(String /* key */), InArrayItem
-			case InPlurals(String /* key */), InPluralItem(String /* quantity */)
-			case OutEnd
+			case outStart
+			case inResources
+			case inString(String /* key */)
+			case inArray(String /* key */), inArrayItem
+			case inPlurals(String /* key */), inPluralItem(String /* quantity */)
+			case outEnd
 			
-			case Error
+			case error
 			
 			func numericId() -> Int {
 				switch self {
-					case .OutStart:     return 0
-					case .InResources:  return 1
-					case .InString:     return 2
-					case .InArray:      return 3
-					case .InArrayItem:  return 4
-					case .InPlurals:    return 5
-					case .InPluralItem: return 6
-					case .OutEnd:       return 7
-					case .Error:        return 8
+					case .outStart:     return 0
+					case .inResources:  return 1
+					case .inString:     return 2
+					case .inArray:      return 3
+					case .inArrayItem:  return 4
+					case .inPlurals:    return 5
+					case .inPluralItem: return 6
+					case .outEnd:       return 7
+					case .error:        return 8
 				}
 			}
 		}
@@ -225,8 +225,8 @@ class AndroidXMLLocFile: Streamable {
 		var currentChars = String()
 		var currentGroupName: String?
 		var isCurrentCharsCDATA = false
-		var previousStatus = Status.Error
-		var status: Status = .OutStart {
+		var previousStatus = Status.error
+		var status: Status = .outStart {
 			willSet {
 				previousStatus = status
 			}
@@ -237,23 +237,23 @@ class AndroidXMLLocFile: Streamable {
 		var currentPluralValues: [String /* Quantity */: ([AndroidLocComponent], PluralGroup.PluralItem)?]?
 		
 		private var addingSpacesToPlural = false
-		private func addSpaceComponent(space: AndroidLocComponent) {
+		private func addSpaceComponent(_ space: AndroidLocComponent) {
 			assert(space is WhiteSpace || space is Comment)
 			if !addingSpacesToPlural {components.append(space)}
 			else                     {currentPluralSpaces.append(space)}
 		}
 		
-		func parserDidStartDocument(parser: NSXMLParser) {
-			assert(status == .OutStart)
+		func parserDidStartDocument(_ parser: XMLParser) {
+			assert(status == .outStart)
 		}
 		
-		func parserDidEndDocument(parser: NSXMLParser) {
-			if status != Status.OutEnd {
+		func parserDidEndDocument(_ parser: XMLParser) {
+			if status != Status.outEnd {
 				parser.abortParsing()
 			}
 		}
 		
-		func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
+		func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
 //			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
 			let attrs = attributeDict 
 			
@@ -263,27 +263,27 @@ class AndroidXMLLocFile: Streamable {
 			}
 			
 			switch (status, elementName) {
-				case (.OutStart, "resources"):
-					status = .InResources
+				case (.outStart, "resources"):
+					status = .inResources
 				
-				case (.InResources, "string"):
-					if let name = attrs["name"] {status = .InString(name)}
-					else                        {status = .Error}
+				case (.inResources, "string"):
+					if let name = attrs["name"] {status = .inString(name)}
+					else                        {status = .error}
 				
-				case (.InResources, "string-array"):
-					if let name = attrs["name"] {status = .InArray(name); currentGroupName = name}
-					else                        {status = .Error}
+				case (.inResources, "string-array"):
+					if let name = attrs["name"] {status = .inArray(name); currentGroupName = name}
+					else                        {status = .error}
 				
-				case (.InResources, "plurals"):
-					if let name = attrs["name"] {status = .InPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues = [:]}
-					else                        {status = .Error}
+				case (.inResources, "plurals"):
+					if let name = attrs["name"] {status = .inPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues = [:]}
+					else                        {status = .error}
 				
-				case (.InArray, "item"):
-					status = .InArrayItem
+				case (.inArray, "item"):
+					status = .inArrayItem
 				
-				case (.InPlurals, "item"):
-					if let quantity = attrs["quantity"] {status = .InPluralItem(quantity)}
-					else                                {status = .Error}
+				case (.inPlurals, "item"):
+					if let quantity = attrs["quantity"] {status = .inPluralItem(quantity)}
+					else                                {status = .error}
 				
 				default:
 					currentChars += "<\(elementName)>"
@@ -291,7 +291,7 @@ class AndroidXMLLocFile: Streamable {
 					//status = .Error
 			}
 			
-			if status == .Error {
+			if status == .error {
 				parser.abortParsing()
 				return
 			}
@@ -301,29 +301,29 @@ class AndroidXMLLocFile: Streamable {
 			}
 		}
 		
-		func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+		func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
 //			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
 			switch (status, elementName) {
-				case (.InResources, "resources"):
+				case (.inResources, "resources"):
 					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName))
-					status = .OutEnd
+					status = .outEnd
 				
-				case (.InString(let name), "string"):
+				case (.inString(let name), "string"):
 					let stringValue: StringValue
 					if !isCurrentCharsCDATA {stringValue = StringValue(key: name, value: currentChars.valueFromXMLText)}
 					else                    {stringValue = StringValue(key: name, cDATAValue: currentChars)}
 					components.append(stringValue)
-					status = .InResources
+					status = .inResources
 				
-				case (.InArray, "string-array"):
+				case (.inArray, "string-array"):
 					currentArrayIdx = 0
 					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
-					status = .InResources
+					status = .inResources
 				
-				case (.InPlurals(let pluralsName), "plurals"):
+				case (.inPlurals(let pluralsName), "plurals"):
 					components.append(PluralGroup(name: pluralsName, values: currentPluralValues!))
 					addingSpacesToPlural = false
 					currentPluralValues = nil
@@ -331,21 +331,21 @@ class AndroidXMLLocFile: Streamable {
 					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
-					status = .InResources
+					status = .inResources
 				
-				case (.InArrayItem, "item"):
+				case (.inArrayItem, "item"):
 					switch previousStatus {
-					case .InArray(let arrayName):
+					case .inArray(let arrayName):
 						components.append(ArrayItem(value: currentChars.valueFromXMLText, index: currentArrayIdx, parentName: arrayName))
 						status = previousStatus
 						currentArrayIdx += 1
 					default:
-						status = .Error
+						status = .error
 					}
 				
-				case (.InPluralItem(let quantity), "item"):
+				case (.inPluralItem(let quantity), "item"):
 					switch previousStatus {
-					case .InPlurals(let pluralsName):
+					case .inPlurals(let pluralsName):
 						if currentPluralValues![quantity] != nil {
 							print("*** Warning: Got more than one value for quantity \(quantity) of plurals named \(pluralsName)...")
 							print("             Choosing the latest one found.")
@@ -359,7 +359,7 @@ class AndroidXMLLocFile: Streamable {
 						currentPluralSpaces.removeAll()
 						status = previousStatus
 					default:
-						status = .Error
+						status = .error
 					}
 				
 				default:
@@ -370,18 +370,18 @@ class AndroidXMLLocFile: Streamable {
 			
 			currentChars = ""
 			
-			if status == .Error {
+			if status == .error {
 				parser.abortParsing()
 				return
 			}
 		}
 		
-		func parser(parser: NSXMLParser, foundCharacters string: String) {
+		func parser(_ parser: XMLParser, foundCharacters string: String) {
 //			println("foundCharacters \(string)")
 			if isCurrentCharsCDATA && currentChars.characters.count > 0 {
-				print("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", toStream: &mx_stderr)
+				print("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", to: &mx_stderr)
 				parser.abortParsing()
-				status = .Error
+				status = .error
 				return
 			}
 			
@@ -389,17 +389,17 @@ class AndroidXMLLocFile: Streamable {
 			currentChars += string
 		}
 		
-		func parser(parser: NSXMLParser, foundIgnorableWhitespace whitespaceString: String) {
+		func parser(_ parser: XMLParser, foundIgnorableWhitespace whitespaceString: String) {
 			print("foundIgnorableWhitespace \(whitespaceString)")
 		}
 		
-		func parser(parser: NSXMLParser, foundComment comment: String) {
+		func parser(_ parser: XMLParser, foundComment comment: String) {
 //			println("foundComment \(comment)")
 			
 			switch status {
-				case .InResources: fallthrough
-				case .InArray:     fallthrough
-				case .InPlurals:
+				case .inResources: fallthrough
+				case .inArray:     fallthrough
+				case .inPlurals:
 					if currentChars.characters.count > 0 {
 						addSpaceComponent(WhiteSpace(currentChars))
 						currentChars = ""
@@ -407,39 +407,39 @@ class AndroidXMLLocFile: Streamable {
 					addSpaceComponent(Comment(comment))
 				default:
 					parser.abortParsing()
-					status = .Error
+					status = .error
 			}
 		}
 		
-		func parser(parser: NSXMLParser, foundCDATA CDATABlock: NSData) {
+		func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
 			if !isCurrentCharsCDATA && currentChars.characters.count > 0 {
-				print("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", toStream: &mx_stderr)
+				print("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", to: &mx_stderr)
 				parser.abortParsing()
-				status = .Error
+				status = .error
 				return
 			}
 			
 			isCurrentCharsCDATA = true
-			if let str = NSString(data: CDATABlock, encoding: NSUTF8StringEncoding) as? String {currentChars += str}
+			if let str = NSString(data: CDATABlock, encoding: String.Encoding.utf8.rawValue) as? String {currentChars += str}
 		}
 		
-		func parser(parser: NSXMLParser, parseErrorOccurred parseError: NSError) {
+		func parser(_ parser: XMLParser, parseErrorOccurred parseError: NSError) {
 			print("parseErrorOccurred \(parseError)")
 		}
 	}
 	
-	class func locFilesInProject(root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
+	class func locFilesInProject(_ root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
 		var parsed_loc_files = [AndroidXMLLocFile]()
 		for languageFolder in languageFolderNames {
 			for stringsFilename in stringsFilenames {
 				var err: NSError?
-				let cur_file = ((resFolder as NSString).stringByAppendingPathComponent(languageFolder) as NSString).stringByAppendingPathComponent(stringsFilename)
+				let cur_file = ((resFolder as NSString).appendingPathComponent(languageFolder) as NSString).appendingPathComponent(stringsFilename)
 				do {
 					let locFile = try AndroidXMLLocFile(fromPath: cur_file, relativeToProjectPath: root_folder)
 					parsed_loc_files.append(locFile)
 				} catch let error as NSError {
 					err = error
-					print("*** Warning: Got error while parsing strings file \(cur_file): \(err)", toStream: &mx_stderr)
+					print("*** Warning: Got error while parsing strings file \(cur_file): \(err)", to: &mx_stderr)
 				}
 			}
 		}
@@ -447,13 +447,13 @@ class AndroidXMLLocFile: Streamable {
 	}
 	
 	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
-		let url = NSURL(fileURLWithPath: (projectPath as NSString).stringByAppendingPathComponent(path))
+		let url = URL(fileURLWithPath: (projectPath as NSString).appendingPathComponent(path))
 		try self.init(pathRelativeToProject: path, fileURL: url)
 	}
 	
-	convenience init(pathRelativeToProject: String, fileURL url: NSURL) throws {
+	convenience init(pathRelativeToProject: String, fileURL url: URL) throws {
 		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-		let xmlParser: NSXMLParser! = NSXMLParser(contentsOfURL: url)
+		let xmlParser: XMLParser! = XMLParser(contentsOf: url)
 		if xmlParser == nil {
 			/* Must init before failing */
 			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
@@ -463,7 +463,7 @@ class AndroidXMLLocFile: Streamable {
 		let parserDelegate = ParserDelegate()
 		xmlParser.delegate = parserDelegate
 		xmlParser.parse()
-		if parserDelegate.status != .OutEnd {
+		if parserDelegate.status != .outEnd {
 			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
 			throw error
 		}
@@ -476,10 +476,10 @@ class AndroidXMLLocFile: Streamable {
 		self.components = components
 	}
 	
-	func writeTo<Target: OutputStreamType>(inout target: Target) {
-		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n".writeTo(&target)
+	func write<Target: OutputStream>(to target: inout Target) {
+		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n".write(to: &target)
 		for component in components {
-			component.stringValue.writeTo(&target)
+			component.stringValue.write(to: &target)
 		}
 	}
 }

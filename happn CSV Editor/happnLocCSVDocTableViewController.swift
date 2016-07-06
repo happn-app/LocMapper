@@ -21,11 +21,11 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	private var sortedKeys: [happnCSVLocFile.LineKey]?
-	private let cachedRowsHeights = NSCache()
+	private let cachedRowsHeights = Cache<NSString, NSNumber>()
 	
 	override var representedObject: AnyObject? {
 		didSet {
-			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entries.keys.sort()}
+			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entries.keys.sorted()}
 			else                           {sortedKeys = nil}
 			
 			tableColumnsCreated = false
@@ -39,54 +39,54 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		createTableViewColumnsIfNeeded()
 	}
 	
-	func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+	func numberOfRows(in tableView: NSTableView) -> Int {
 		precondition(tableView == self.tableView)
 		
 		if let sortedKeys = sortedKeys {return sortedKeys.count}
 		return 0
 	}
 	
-	func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
 		guard let tableColumn = tableColumn else {return nil}
 		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return nil}
-		return csvLocFile.entries[key]?[tableColumn.identifier]?.stringByReplacingOccurrencesOfString("\\n", withString: "\n") ?? "TODOLOC"
+		return csvLocFile.entries[key]?[tableColumn.identifier]?.replacingOccurrences(of: "\\n", with: "\n") ?? "TODOLOC"
 	}
 	
-	func tableView(tableView: NSTableView, setObjectValue object: AnyObject?, forTableColumn tableColumn: NSTableColumn?, row: Int) {
+	func tableView(_ tableView: NSTableView, setObjectValue object: AnyObject?, for tableColumn: NSTableColumn?, row: Int) {
 		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return}
 		guard let tableColumn = tableColumn else {return}
 		
-		guard let strValue = (object as? String)?.stringByReplacingOccurrencesOfString("\n", withString: "\\n") else {return}
+		guard let strValue = (object as? String)?.replacingOccurrences(of: "\n", with: "\\n") else {return}
 		csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
 		
-		dispatch_async(dispatch_get_main_queue()) {
+		DispatchQueue.main.async {
 			tableView.beginUpdates()
-			self.cachedRowsHeights.removeObjectForKey(key.filename + key.locKey)
-			tableView.noteHeightOfRowsWithIndexesChanged(NSIndexSet(index: row))
+			self.cachedRowsHeights.removeObject(forKey: key.filename + key.locKey)
+			tableView.noteHeightOfRows(withIndexesChanged: IndexSet(integer: row))
 			tableView.endUpdates()
 		}
 	}
 	
-	func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+	func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
 		/* Based on https://gist.github.com/billymeltdown/9084884 */
 		let minimumHeight = CGFloat(3)
 		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return minimumHeight}
 		
 		/* Check the cache to avoid unnecessary recalculation */
-		if let cachedRowHeight = cachedRowsHeights.objectForKey(key.filename + key.locKey) as? CGFloat {
+		if let cachedRowHeight = cachedRowsHeights.object(forKey: key.filename + key.locKey) as? CGFloat {
 			return cachedRowHeight
 		}
 		
 		var height = minimumHeight
 		for column in tableView.tableColumns {
-			guard let str = csvLocFile.entries[key]?[column.identifier]?.stringByReplacingOccurrencesOfString("\\n", withString: "\n") else {
+			guard let str = csvLocFile.entries[key]?[column.identifier]?.replacingOccurrences(of: "\\n", with: "\n") else {
 				continue
 			}
 			
 			let cell = column.dataCell as! NSCell
 			cell.stringValue = str
-			let rect = NSMakeRect(0, 0, column.width, CGFloat.max)
-			height = max(height, cell.cellSizeForBounds(rect).height)
+			let rect = NSMakeRect(0, 0, column.width, CGFloat.greatestFiniteMagnitude)
+			height = max(height, cell.cellSize(forBounds: rect).height)
 		}
 		/* To have height being a multiple of minimum height, use this:
 		if (height > minimumHeight) {
@@ -104,7 +104,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		return height
 	}
 	
-	func tableViewSelectionDidChange(notification: NSNotification) {
+	func tableViewSelectionDidChange(_ notification: Notification) {
 		print("hello")
 	}
 	
@@ -142,11 +142,11 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			let tc = NSTableColumn(identifier: l)
 			tc.title = l
 			let tfc = NSTextFieldCell(textCell: "TODOLOC")
-			tfc.editable = true
+			tfc.isEditable = true
 			tfc.wraps = true
 			tc.dataCell = tfc
 			tc.width = 350
-			tc.resizingMask = .UserResizingMask
+			tc.resizingMask = .userResizingMask
 			tableView.addTableColumn(tc)
 		}
 		

@@ -19,7 +19,7 @@ class happnCSVLocKeyMappingComponent {
 	`CSVLocKeyMappingComponentInvalid` that will simply hold the serialization
 	and will not do any transform. This allows storing the given invalid
 	transform so it is not lost when the transform is serialized back. */
-	static func createCSVLocKeyMappingFromSerialization(serialization: [String: AnyObject]) -> happnCSVLocKeyMappingComponent {
+	static func createCSVLocKeyMappingFromSerialization(_ serialization: [String: AnyObject]) -> happnCSVLocKeyMappingComponent {
 		do {
 			guard let type = serialization["__type"] as? String else {
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid mapping component: Key __type is undefined or not a string."])
@@ -57,7 +57,7 @@ class happnCSVLocKeyMappingComponent {
 		preconditionFailure("This method is abstract")
 	}
 	
-	func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		preconditionFailure("This method is abstract")
 	}
 }
@@ -76,7 +76,7 @@ class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
 		return invalidSerialization
 	}
 	
-	override func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		return nil
 	}
 }
@@ -100,7 +100,7 @@ class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 		return ["constant": constant]
 	}
 	
-	override func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		return constant
 	}
 }
@@ -153,7 +153,7 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 		]
 	}
 	
-	override func applyWithCurrentValue(language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		var result = entries[sourceKey]?[language]
 		for subTransform in subTransformComponents {
 			result = subTransform.applyToValue(result, withLanguage: language)
@@ -173,7 +173,7 @@ class LocValueTransformer {
 	LocValueTransformerInvalid that will simply hold the serialization and will
 	not do any transform. This allows storing the given invalid transform so it
 	is not lost when the transform is serialized back. */
-	static func createComponentTransformFromSerialization(serialization: [String: AnyObject]) -> LocValueTransformer {
+	static func createComponentTransformFromSerialization(_ serialization: [String: AnyObject]) -> LocValueTransformer {
 		do {
 			guard let type = serialization["__type"] as? String else {
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid loc value transformer component: Key __type is undefined or not a string."])
@@ -211,7 +211,7 @@ class LocValueTransformer {
 		preconditionFailure("This method is abstract")
 	}
 	
-	func applyToValue(value: String?, withLanguage: String) -> String? {
+	func applyToValue(_ value: String?, withLanguage: String) -> String? {
 		preconditionFailure("This method is abstract")
 	}
 }
@@ -230,7 +230,7 @@ class LocValueTransformerInvalid : LocValueTransformer {
 		return invalidSerialization
 	}
 	
-	override func applyToValue(value: String?, withLanguage: String) -> String? {
+	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
 		/* The transform is invalid; we don't know what to do, let's do nothing. */
 		return value
 	}
@@ -255,13 +255,13 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 		return ["replacements": replacements]
 	}
 	
-	override func applyToValue(value: String?, withLanguage: String) -> String? {
+	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
 		guard var ret = value else {
 			return nil
 		}
 		
 		for (r, v) in replacements {
-			ret = ret.stringByReplacingOccurrencesOfString(r, withString: v)
+			ret = ret.replacingOccurrences(of: r, with: v)
 		}
 		return ret
 	}
@@ -303,8 +303,8 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		return ret
 	}
 	
-	override func applyToValue(value: String?, withLanguage: String) -> String? {
-		guard var ret = value else {
+	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
+		guard let ret = value else {
 			return nil
 		}
 		

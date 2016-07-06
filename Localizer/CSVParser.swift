@@ -22,19 +22,19 @@ class CSVParser {
 	
 	private let separator: String
 	private let separatorIsSingleChar: Bool
-	private let endTextCharacterSet: NSCharacterSet
+	private let endTextCharacterSet: CharacterSet
 	
-	private var scanner: NSScanner!
+	private var scanner: Scanner!
 	
 	/* fieldNames is ignored if hasHeader is true */
 	init(source str: String, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
 		csvString = str
 		separator = sep
 		
-		let cs: NSMutableCharacterSet = NSCharacterSet.newlineCharacterSet().mutableCopy() as! NSMutableCharacterSet
-		cs.addCharactersInString("\"")
-		cs.addCharactersInString(separator.substringToIndex(separator.startIndex.successor()))
-		endTextCharacterSet = cs
+		var cs = CharacterSet.newlines
+		cs.insert(charactersIn: "\"")
+		cs.insert(charactersIn: separator.substring(to: separator.index(after: separator.startIndex)))
+		endTextCharacterSet = cs as CharacterSet
 		
 		separatorIsSingleChar = (separator.characters.count == 1)
 		
@@ -43,14 +43,14 @@ class CSVParser {
 		else            {fieldNames = [String]()}
 		
 		assert(
-			separator.characters.count > 0 && separator.rangeOfString("\"") == nil && separator.rangeOfCharacterFromSet(NSCharacterSet.newlineCharacterSet()) == nil,
+			separator.characters.count > 0 && separator.range(of: "\"") == nil && separator.rangeOfCharacter(from: CharacterSet.newlines) == nil,
 			"CSV separator string must not be empty and must not contain the double quote character or newline characters."
 		)
 	}
 	
 	func arrayOfParsedRows() -> [[String: String]]? {
-		scanner = NSScanner(string: csvString)
-		scanner.charactersToBeSkipped = NSCharacterSet()
+		scanner = Scanner(string: csvString)
+		scanner.charactersToBeSkipped = CharacterSet()
 		return parseFile()
 	}
 	
@@ -100,7 +100,7 @@ class CSVParser {
 	 *
 	 * Returns the parsed record as a dictionary, or nil on failure. */
 	private func parseRecord() -> [String: String]? {
-		if scanner.atEnd {
+		if scanner.isAtEnd {
 			return nil
 		}
 		if let newlines = parseLineSeparator() {
@@ -150,7 +150,7 @@ class CSVParser {
 		/* Special case: if the current location is immediately
 		 * followed by a separator, then the field is a valid, empty string. */
 		let currentLocation = scanner.scanLocation
-		if parseSeparator() != nil || parseLineSeparator() != nil || scanner.atEnd {
+		if parseSeparator() != nil || parseLineSeparator() != nil || scanner.isAtEnd {
 			scanner.scanLocation = currentLocation
 			return ""
 		}
@@ -187,14 +187,14 @@ class CSVParser {
 	
 	private func parseDoubleQuote() -> String? {
 		let dq = "\""
-		if scanner.scanString(dq, intoString: nil) {
+		if scanner.scanString(dq, into: nil) {
 			return dq
 		}
 		return nil
 	}
 	
 	private func parseSeparator() -> String? {
-		if scanner.scanString(separator, intoString: nil) {
+		if scanner.scanString(separator, into: nil) {
 			return separator
 		}
 		return nil;
@@ -203,7 +203,7 @@ class CSVParser {
 	private func parseLineSeparator() -> String? {
 		var matchedNewlines: NSString?
 		let scanLocation = scanner.scanLocation
-		guard scanner.scanCharactersFromSet(NSCharacterSet.newlineCharacterSet(), intoString: &matchedNewlines) else {
+		guard scanner.scanCharacters(from: CharacterSet.newlines, into: &matchedNewlines) else {
 			return nil
 		}
 		
@@ -219,7 +219,7 @@ class CSVParser {
 	
 	private func parseTwoDoubleQuotes() -> String? {
 		let dq = "\"\""
-		if scanner.scanString(dq, intoString: nil) {
+		if scanner.scanString(dq, into: nil) {
 			return dq
 		}
 		return nil
@@ -230,7 +230,7 @@ class CSVParser {
 		
 		while true {
 			var fragment: NSString?
-			if scanner.scanUpToCharactersFromSet(endTextCharacterSet, intoString: &fragment) {
+			if scanner.scanUpToCharacters(from: endTextCharacterSet, into: &fragment) {
 				accumulatedData += fragment! as String
 			}
 			
@@ -244,8 +244,8 @@ class CSVParser {
 			 * of the separator is matched but we don't have the full separator. */
 			let location = scanner.scanLocation
 			var firstCharOfSeparator: NSString?
-			if scanner.scanString(separator.substringToIndex(separator.startIndex.successor()), intoString: &firstCharOfSeparator) {
-				if scanner.scanString(separator.substringFromIndex(separator.startIndex.successor()), intoString: nil) {
+			if scanner.scanString(separator.substring(to: separator.characters.index(after: separator.startIndex)), into: &firstCharOfSeparator) {
+				if scanner.scanString(separator.substring(from: separator.characters.index(after: separator.startIndex)), into: nil) {
 					scanner.scanLocation = location
 					break
 				}

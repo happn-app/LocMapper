@@ -21,11 +21,11 @@ let COMMENT_HEADER_NAME = "Comments"
 
 
 private extension String {
-	func csvCellValueWithSeparator(sep: String) -> String {
-		if sep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
-		if self.rangeOfCharacterFromSet(NSCharacterSet(charactersInString: "\(sep)\"\n\r")) != nil {
+	func csvCellValueWithSeparator(_ sep: String) -> String {
+		if sep.characters.count != 1 {NSException(name: "Invalid Separator" as NSExceptionName, reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
+		if self.rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
-			let doubledDoubleQuotes = self.stringByReplacingOccurrencesOfString("\"", withString: "\"\"")
+			let doubledDoubleQuotes = self.replacingOccurrences(of: "\"", with: "\"\"")
 			return "\"\(doubledDoubleQuotes)\""
 		} else {
 			/* Double quotes not needed */
@@ -79,8 +79,8 @@ class happnCSVLocFile: Streamable {
 		
 		convenience init(stringRepresentation: String) {
 			guard let
-				data = stringRepresentation.dataUsingEncoding(NSUTF8StringEncoding),
-				serializedComponent_s = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+				data = stringRepresentation.data(using: String.Encoding.utf8),
+				serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: [])
 				else
 			{
 				if stringRepresentation.characters.count > 0 { /* No need to print a warning for empty strings. We know. */
@@ -118,14 +118,14 @@ class happnCSVLocFile: Streamable {
 			}
 		}
 		
-		private static func stringRepresentationFromComponentsList(components: [happnCSVLocKeyMappingComponent]) -> String {
+		private static func stringRepresentationFromComponentsList(_ components: [happnCSVLocKeyMappingComponent]) -> String {
 			let allSerialized = components.map {$0.serialize()}
 			return try! String(
-				data: NSJSONSerialization.dataWithJSONObject(
-					(allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
-					options: [.PrettyPrinted]
+				data: JSONSerialization.data(
+					withJSONObject: (allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
+					options: [.prettyPrinted]
 				),
-				encoding: NSUTF8StringEncoding
+				encoding: String.Encoding.utf8
 			)!
 		}
 		
@@ -143,7 +143,7 @@ class happnCSVLocFile: Streamable {
 	convenience init(fromPath path: String, withCSVSeparator csvSep: String) throws {
 		var encoding: UInt = 0
 		var filecontent: String?
-		if NSFileManager.defaultManager().fileExistsAtPath(path) {
+		if FileManager.default.fileExists(atPath: path) {
 			filecontent = try NSString(contentsOfFile: path, usedEncoding: &encoding) as String
 		}
 		try self.init(filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep)
@@ -187,8 +187,8 @@ class happnCSVLocFile: Streamable {
 			/* If we did not find the empty line, we're still in the metadata. */
 			guard foundEmptyLine else {
 				if let
-					jsonData = row[PRIVATE_KEY_HEADER_NAME]?.dataUsingEncoding(NSUTF8StringEncoding),
-					parsedJSON = (try? NSJSONSerialization.JSONObjectWithData(jsonData, options: [])) as? [String: String]
+					jsonData = row[PRIVATE_KEY_HEADER_NAME]?.data(using: String.Encoding.utf8),
+					parsedJSON = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? [String: String]
 				{
 					if !metadata.isEmpty {print("*** Warning: Got more than one line of metadata. Merging values, last line wins if key is defined more than once.")}
 					parsedJSON.forEach {metadata[$0] = $1}
@@ -218,10 +218,10 @@ class happnCSVLocFile: Streamable {
 			/* Let's get the comment */
 			var comment: String
 			if rawComment.hasPrefix("__") && rawComment.hasSuffix("__") {
-				comment = rawComment.stringByReplacingOccurrencesOfString(
-					"__", withString: "", options: NSStringCompareOptions.AnchoredSearch
-				).stringByReplacingOccurrencesOfString(
-					"__", withString: "", options: [NSStringCompareOptions.AnchoredSearch, NSStringCompareOptions.BackwardsSearch]
+				comment = rawComment.replacingOccurrences(
+					of: "__", with: "", options: NSString.CompareOptions.anchored
+				).replacingOccurrences(
+					of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards]
 				)
 			} else {
 				print("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
@@ -258,7 +258,7 @@ class happnCSVLocFile: Streamable {
 	
 	/* *** Init *** */
 	init(languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], metadata md: [String: String], csvSeparator csvSep: String) {
-		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator", reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
+		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator" as NSExceptionName, reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		languages = l
 		entries = e
@@ -275,7 +275,7 @@ class happnCSVLocFile: Streamable {
 	- important: If the key does not exist, this function will NOP. The key will
 	**NOT** be created. However, if the given key never had a value for the given
 	language, the value for the given language WILL be set. */
-	func setValue(val: String, forKey key: LineKey, withLanguage language: String) {
+	func setValue(_ val: String, forKey key: LineKey, withLanguage language: String) {
 		entries[key]?[language] = val
 	}
 	
@@ -283,7 +283,7 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Xcode Strings Files Support
 	   *********************************** */
 	
-	func mergeXcodeStringsFiles(stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
+	func mergeXcodeStringsFiles(_ stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
 		let originalEntries = self.entries
@@ -300,7 +300,7 @@ class happnCSVLocFile: Streamable {
 			for component in stringsFile.components {
 				switch component {
 				case let whiteSpace as XcodeStringsFile.WhiteSpace:
-					if whiteSpace.stringValue.rangeOfString("\n\n", options: NSStringCompareOptions.LiteralSearch) != nil && !currentUserReadableComment.isEmpty {
+					if whiteSpace.stringValue.range(of: "\n\n", options: NSString.CompareOptions.literal) != nil && !currentUserReadableComment.isEmpty {
 						if !currentUserReadableGroupComment.isEmpty {
 							currentUserReadableGroupComment += "\n\n\n"
 						}
@@ -310,7 +310,7 @@ class happnCSVLocFile: Streamable {
 					currentComment += whiteSpace.stringValue
 				case let comment as XcodeStringsFile.Comment:
 					if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-					currentUserReadableComment += comment.content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).stringByReplacingOccurrencesOfString("\n * ", withString: "\n", options: NSStringCompareOptions.LiteralSearch)
+					currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
 					currentComment += comment.stringValue
 				case let locString as XcodeStringsFile.LocalizedString:
 					let refKey = LineKey(
@@ -335,76 +335,76 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
-	func exportToXcodeProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
+	func exportToXcodeProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [XcodeStringsComponent]]()
-		for entry_key in entries.keys.sort() {
+		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Xcode" else {continue}
 			
 			var scannedString: NSString?
-			let keyScanner = NSScanner(string: entry_key.locKey)
-			keyScanner.charactersToBeSkipped = NSCharacterSet() /* No characters should be skipped. */
+			let keyScanner = Scanner(string: entry_key.locKey)
+			keyScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
 			
 			/* Let's see if the key has quotes */
-			if !keyScanner.scanCharactersFromSet(NSCharacterSet(charactersInString: "'#"), intoString: &scannedString) {
+			if !keyScanner.scanCharacters(from: CharacterSet(charactersIn: "'#"), into: &scannedString) {
 				print("*** Warning: Got invalid key \(entry_key.locKey)")
 				continue
 			}
 			/* If the key in CSV file begins with a simple quotes, the Xcode key has double-quotes */
 			let keyHasQuotes = (scannedString == "'")
 			/* Let's get the Xcode original key */
-			if !keyScanner.scanUpToString("", intoString: &scannedString) {
+			if !keyScanner.scanUpTo("", into: &scannedString) {
 				print("*** Warning: Got invalid key \(entry_key.locKey): Cannot scan original key")
 				continue
 			}
 			let k = scannedString!
 			
 			/* Now let's parse the comment to get the equal and semicolon strings */
-			let commentScanner = NSScanner(string: entry_key.comment)
-			commentScanner.charactersToBeSkipped = NSCharacterSet() /* No characters should be skipped. */
+			let commentScanner = Scanner(string: entry_key.comment)
+			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
 			
 			/* Getting equal string */
 			var equalString = ""
-			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
+			if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &scannedString) {
 				if let white = scannedString {equalString += white as String}
 			}
-			if !commentScanner.scanString("=", intoString: nil) {
+			if !commentScanner.scanString("=", into: nil) {
 				print("*** Warning: Got invalid key \(entry_key.locKey): No equal sign in equal string")
 				continue
 			}
 			equalString += "="
-			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
+			if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &scannedString) {
 				if let white = scannedString {equalString += white as String}
 			}
 			
 			/* Separator between equal and semicolon strings */
-			if !commentScanner.scanString(";", intoString: nil) {
+			if !commentScanner.scanString(";", into: nil) {
 				print("*** Warning: Got invalid key \(entry_key.locKey): Character after equal string is not a semicolon")
 				continue
 			}
 			
 			/* Getting semicolon string */
 			var semicolonString = ""
-			if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &scannedString) {
+			if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &scannedString) {
 				if let white = scannedString {semicolonString += white as String}
 			}
-			if !commentScanner.scanString(";", intoString: nil) {
+			if !commentScanner.scanString(";", into: nil) {
 				print("*** Warning: Got invalid key \(entry_key.locKey): No semicolon sign in semicolon string")
 				continue
 			}
 			semicolonString += ";"
 			
 			var commentComponents = [XcodeStringsComponent]()
-			while !commentScanner.atEnd {
+			while !commentScanner.isAtEnd {
 				var white: NSString?
-				if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+				if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
 					commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
 				}
-				if commentScanner.scanString("/*", intoString: nil) {
+				if commentScanner.scanString("/*", into: nil) {
 					var comment: NSString?
-					if commentScanner.scanUpToString("*/", intoString: &comment) && !commentScanner.atEnd {
+					if commentScanner.scanUpTo("*/", into: &comment) && !commentScanner.isAtEnd {
 						commentComponents.append(XcodeStringsFile.Comment(comment! as String))
-						commentScanner.scanString("*/", intoString: nil)
-						if commentScanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+						commentScanner.scanString("*/", into: nil)
+						if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
 							commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
 						}
 					}
@@ -414,7 +414,7 @@ class happnCSVLocFile: Streamable {
 			let value = entries[entry_key]!
 			
 			for (folderName, languageName) in folderNameToLanguageName {
-				let filename = entry_key.filename.stringByReplacingOccurrencesOfString("//LANGUAGE//", withString: "/"+folderName+"/")
+				let filename = entry_key.filename.replacingOccurrences(of: "//LANGUAGE//", with: "/"+folderName+"/")
 				if filenameToComponents[filename] == nil {
 					filenameToComponents[filename] = [XcodeStringsComponent]()
 				}
@@ -435,13 +435,13 @@ class happnCSVLocFile: Streamable {
 		
 		for (filename, components) in filenameToComponents {
 			let locFile = XcodeStringsFile(filepath: filename, components: components)
-			let fullOutputPath = (rootPath as NSString).stringByAppendingPathComponent(locFile.filepath)
+			let fullOutputPath = (rootPath as NSString).appendingPathComponent(locFile.filepath)
 			
 			var stringsText = ""
-			print(locFile, terminator: "", toStream: &stringsText)
+			print(locFile, terminator: "", to: &stringsText)
 			var err: NSError?
 			do {
-				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: NSUTF16StringEncoding)
+				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: String.Encoding.utf16)
 			} catch let error as NSError {
 				err = error
 				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
@@ -453,7 +453,7 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Android XML Loc Strings Support
 	   *************************************** */
 	
-	func mergeAndroidXMLLocStringsFiles(locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
+	func mergeAndroidXMLLocStringsFiles(_ locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
 		let originalEntries = self.entries
@@ -468,8 +468,8 @@ class happnCSVLocFile: Streamable {
 			var currentUserReadableComment = ""
 			var currentUserReadableGroupComment = ""
 			
-			func handleWhiteSpace(whiteSpace: AndroidXMLLocFile.WhiteSpace) {
-				if whiteSpace.stringValue.rangeOfString("\n\n", options: NSStringCompareOptions.LiteralSearch) != nil && !currentUserReadableComment.isEmpty {
+			func handleWhiteSpace(_ whiteSpace: AndroidXMLLocFile.WhiteSpace) {
+				if whiteSpace.stringValue.range(of: "\n\n", options: NSString.CompareOptions.literal) != nil && !currentUserReadableComment.isEmpty {
 					if !currentUserReadableGroupComment.isEmpty {
 						currentUserReadableGroupComment += "\n\n\n"
 					}
@@ -479,9 +479,9 @@ class happnCSVLocFile: Streamable {
 				currentComment += whiteSpace.stringValue
 			}
 			
-			func handleComment(comment: AndroidXMLLocFile.Comment) {
+			func handleComment(_ comment: AndroidXMLLocFile.Comment) {
 				if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-				currentUserReadableComment += comment.content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).stringByReplacingOccurrencesOfString("\n * ", withString: "\n", options: NSStringCompareOptions.LiteralSearch)
+				currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
 				currentComment += comment.stringValue
 			}
 			
@@ -585,39 +585,39 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
-	func exportToAndroidProjectWithRoot(rootPath: String, folderNameToLanguageName: [String: String]) {
+	func exportToAndroidProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [AndroidLocComponent]]()
 		var spaces = [AndroidLocComponent /* Only WhiteSpace and Comment */]()
 		var currentPluralsValueByFilename: [String /* Language */: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], AndroidXMLLocFile.PluralGroup.PluralItem)?]] = [:]
-		for entry_key in entries.keys.sort() {
+		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Android" else {continue}
 			
 			let value = entries[entry_key]!
 			
 			if !entry_key.comment.isEmpty {
 				var white: NSString?
-				let scanner = NSScanner(string: entry_key.comment)
-				scanner.charactersToBeSkipped = NSCharacterSet()
-				if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+				let scanner = Scanner(string: entry_key.comment)
+				scanner.charactersToBeSkipped = CharacterSet()
+				if scanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
 					spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
 				}
-				if scanner.scanString("<!--", intoString: nil) {
+				if scanner.scanString("<!--", into: nil) {
 					var comment: NSString?
-					if scanner.scanUpToString("-->", intoString: &comment) && !scanner.atEnd {
+					if scanner.scanUpTo("-->", into: &comment) && !scanner.isAtEnd {
 						spaces.append(AndroidXMLLocFile.Comment(comment! as String))
-						scanner.scanString("-->", intoString: nil)
-						if scanner.scanCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet(), intoString: &white) {
+						scanner.scanString("-->", into: nil)
+						if scanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
 							spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
 						}
 					}
 				}
-				if !scanner.atEnd {
+				if !scanner.isAtEnd {
 					print("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
 				}
 			}
 			
 			for (folderName, languageName) in folderNameToLanguageName {
-				let filename = entry_key.filename.stringByReplacingOccurrencesOfString("//LANGUAGE//", withString: "/"+folderName+"/")
+				let filename = entry_key.filename.replacingOccurrences(of: "//LANGUAGE//", with: "/"+folderName+"/")
 				if filenameToComponents[filename] == nil {
 					filenameToComponents[filename] = [AndroidLocComponent]()
 				}
@@ -625,16 +625,16 @@ class happnCSVLocFile: Streamable {
 				switch entry_key.locKey {
 				case let k where k.hasPrefix("o"):
 					/* We're treating a group opening */
-					filenameToComponents[filename]!.appendContentsOf(spaces)
-					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substringFromIndex(k.startIndex.successor())))
+					filenameToComponents[filename]!.append(contentsOf: spaces)
+					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substring(from: k.characters.index(after: k.startIndex))))
 				case let k where k.hasPrefix("s"):
 					/* We're treating a plural group opening */
-					filenameToComponents[filename]!.appendContentsOf(spaces)
+					filenameToComponents[filename]!.append(contentsOf: spaces)
 					currentPluralsValueByFilename[filename] = [:]
 				case let k where k.hasPrefix("c"):
 					/* We're treating a group closing */
-					let noC = k.substringFromIndex(k.startIndex.successor())
-					let sepBySpace = noC.componentsSeparatedByString(" ")
+					let noC = k.substring(from: k.characters.index(after: k.startIndex))
+					let sepBySpace = noC.components(separatedBy: " ")
 					if let plurals = currentPluralsValueByFilename[filename] {
 						/* We have a plural group being contructed. We've reached it's
 						 * closing component: let's add the finished plural to the
@@ -644,9 +644,9 @@ class happnCSVLocFile: Streamable {
 						} else {
 							print("*** Warning: Got invalid plural closing key \(k). Dropping whole plurals group.")
 						}
-						currentPluralsValueByFilename.removeValueForKey(filename)
+						currentPluralsValueByFilename.removeValue(forKey: filename)
 					}
-					filenameToComponents[filename]!.appendContentsOf(spaces)
+					filenameToComponents[filename]!.append(contentsOf: spaces)
 					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
@@ -654,26 +654,26 @@ class happnCSVLocFile: Streamable {
 					}
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
-					filenameToComponents[filename]!.appendContentsOf(spaces)
+					filenameToComponents[filename]!.append(contentsOf: spaces)
 					if let v = value[languageName] {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), value: v))
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v))
 					} else {
 						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("K"):
 					/* We're treating a CDATA string item */
-					filenameToComponents[filename]!.appendContentsOf(spaces)
+					filenameToComponents[filename]!.append(contentsOf: spaces)
 					if let v = value[languageName] {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substringFromIndex(k.startIndex.successor()), cDATAValue: v))
+						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v))
 					} else {
 						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 					}
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
-					filenameToComponents[filename]!.appendContentsOf(spaces)
+					filenameToComponents[filename]!.append(contentsOf: spaces)
 					if let v = value[languageName] {
-						let noA = k.substringFromIndex(k.startIndex.successor())
-						let sepByQuote = noA.componentsSeparatedByString("\"")
+						let noA = k.substring(from: k.characters.index(after: k.startIndex))
+						let sepByQuote = noA.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
 							if let idx = Int(sepByQuote[1]) {
 								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
@@ -690,8 +690,8 @@ class happnCSVLocFile: Streamable {
 					let isCData = k.hasPrefix("P")
 					/* We're treating a plural item */
 					if let v = value[languageName] where v != "--" && currentPluralsValueByFilename[filename] != nil {
-						let noP = k.substringFromIndex(k.startIndex.successor())
-						let sepByQuote = noP.componentsSeparatedByString("\"")
+						let noP = k.substring(from: k.characters.index(after: k.startIndex))
+						let sepByQuote = noP.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
 							let quantity = sepByQuote[1]
 							let p = isCData ?
@@ -719,13 +719,13 @@ class happnCSVLocFile: Streamable {
 		}
 		for (filename, components) in filenameToComponents {
 			let locFile = AndroidXMLLocFile(pathRelativeToProject: filename, components: components)
-			let fullOutputPath = (rootPath as NSString).stringByAppendingPathComponent(locFile.filepath)
+			let fullOutputPath = (rootPath as NSString).appendingPathComponent(locFile.filepath)
 			
 			var xmlText = ""
-			print(locFile, terminator: "", toStream: &xmlText)
+			print(locFile, terminator: "", to: &xmlText)
 			var err: NSError?
 			do {
-				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: NSUTF8StringEncoding)
+				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: String.Encoding.utf8)
 			} catch let error as NSError {
 				err = error
 				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
@@ -737,7 +737,7 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Streamable Implementation
 	   ********************************* */
 	
-	func writeTo<Target : OutputStreamType>(inout target: Target) {
+	func write<Target : OutputStream>(to target: inout Target) {
 		target.write(
 			"\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
 			"\(PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
@@ -752,23 +752,23 @@ class happnCSVLocFile: Streamable {
 		for language in languages {
 			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
 		}
-		if !metadata.isEmpty, let jsonData = try? NSJSONSerialization.dataWithJSONObject(metadata, options: []), jsonStr = String(data: jsonData, encoding: NSUTF8StringEncoding) {
+		if !metadata.isEmpty, let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []), jsonStr = String(data: jsonData, encoding: String.Encoding.utf8) {
 			/* Let's write the metadata */
 			target.write("\n\(jsonStr.csvCellValueWithSeparator(csvSeparator))")
 		}
 		target.write("\n")
 		var previousBasename: String?
-		for entry_key in entries.keys.sort() {
+		for entry_key in entries.keys.sorted() {
 			let value = entries[entry_key]!
 			
 			var basename = entry_key.filename
-			if let slashRange = basename.rangeOfString("/", options: NSStringCompareOptions.BackwardsSearch) {
-				if slashRange.startIndex != basename.endIndex {
-					basename = basename.substringFromIndex(slashRange.startIndex.successor())
+			if let slashRange = basename.range(of: "/", options: NSString.CompareOptions.backwards) {
+				if slashRange.lowerBound != basename.endIndex {
+					basename = basename.substring(from: basename.index(after: slashRange.lowerBound))
 				}
 			}
-			if basename.hasSuffix(".xml") {basename = (basename as NSString).stringByDeletingPathExtension}
-			if basename.hasSuffix(".strings") {basename = (basename as NSString).stringByDeletingPathExtension}
+			if basename.hasSuffix(".xml") {basename = (basename as NSString).deletingPathExtension}
+			if basename.hasSuffix(".strings") {basename = (basename as NSString).deletingPathExtension}
 			
 			if basename != previousBasename {
 				previousBasename = basename
@@ -809,31 +809,31 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Private
 	   *************** */
 	
-	private func getLanguageAgnosticFilenameAndAddLanguageToList(filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
+	private func getLanguageAgnosticFilenameAndAddLanguageToList(_ filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
 		var found = false
 		var languageName = "(Unknown)"
 		var filenameNoLproj = filename
 		
 		for (fn, ln) in languageMapping {
-			if let range = filenameNoLproj.rangeOfString("/" + fn + "/") {
+			if let range = filenameNoLproj.range(of: "/" + fn + "/") {
 				assert(!found)
 				found = true
 				
 				languageName = ln
-				filenameNoLproj.replaceRange(range, with: "//LANGUAGE//")
+				filenameNoLproj.replaceSubrange(range, with: "//LANGUAGE//")
 			}
 		}
 		
-		if languages.indexOf(languageName) == nil {
+		if languages.index(of: languageName) == nil {
 			languages.append(languageName)
-			languages.sortInPlace()
+			languages.sort()
 		}
 		
 		return (filenameNoLproj, languageName)
 	}
 	
-	private func getKeyFrom(refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, inout withListOfKeys keys: [LineKey]) -> LineKey {
-		if let idx = keys.indexOf(refKey) {
+	private func getKeyFrom(_ refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, withListOfKeys keys: inout [LineKey]) -> LineKey {
+		if let idx = keys.index(of: refKey) {
 			if keys[idx].comment != refKey.comment {
 				if useNonEmptyCommentIfOneEmptyTheOtherNot && (keys[idx].comment.characters.count == 0 || refKey.comment.characters.count == 0) {
 					/* We use the non-empty comment because one of the two comments

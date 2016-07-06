@@ -26,7 +26,7 @@ class happnLocCSVDocument: NSDocument {
 		super.init()
 	}
 	
-	override func windowControllerDidLoadNib(aController: NSWindowController) {
+	override func windowControllerDidLoadNib(_ aController: NSWindowController) {
 		super.windowControllerDidLoadNib(aController)
 	}
 	
@@ -37,39 +37,39 @@ class happnLocCSVDocument: NSDocument {
 	override func makeWindowControllers() {
 		// Returns the Storyboard that contains your Document window.
 		let storyboard = NSStoryboard(name: "Main", bundle: nil)
-		let windowController = storyboard.instantiateControllerWithIdentifier("Document Window Controller") as! NSWindowController
+		let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
 		self.addWindowController(windowController)
 		
 		sendRepresentedObjectToSubControllers()
 	}
 	
-	override func dataOfType(typeName: String) throws -> NSData {
+	override func data(ofType typeName: String) throws -> Data {
 		guard let csvLocFile = csvLocFile else {
-			return NSData()
+			return Data()
 		}
 		
 		var strData = ""
-		print(csvLocFile, terminator: "", toStream: &strData)
-		guard let data = strData.dataUsingEncoding(NSUTF8StringEncoding) else {
+		Swift.print(csvLocFile, terminator: "", to: &strData)
+		guard let data = strData.data(using: String.Encoding.utf8) else {
 			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot convert data to UTF8."])
 		}
 		return data
 	}
 	
-	override func readFromData(data: NSData, ofType typeName: String) throws {
-		guard let fileContentStr = String(data: data, encoding: NSUTF8StringEncoding) else {
+	override func read(from data: Data, ofType typeName: String) throws {
+		guard let fileContentStr = String(data: data, encoding: String.Encoding.utf8) else {
 			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
 		}
 		
 		csvLocFile = nil
-		dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
+		DispatchQueue.global(attributes: .qosUserInitiated).async {
 			do {
 				let locFile = try happnCSVLocFile(filecontent: fileContentStr, withCSVSeparator: ",")
-				dispatch_async(dispatch_get_main_queue()) {
+				DispatchQueue.main.async {
 					self.csvLocFile = locFile
 				}
 			} catch {
-				dispatch_async(dispatch_get_main_queue()) {
+				DispatchQueue.main.async {
 					let alert = NSAlert(error: error as NSError)
 					alert.runModal()
 					self.close()

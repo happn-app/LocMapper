@@ -21,12 +21,12 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 		}
 	}
 	
-	@IBAction func showFilters(sender: AnyObject!) {
+	@IBAction func showFilters(_ sender: AnyObject!) {
 		let dividerIndex = 0
-		self.splitView.setPosition(150, ofDividerAtIndex: dividerIndex)
+		self.splitView.setPosition(150, ofDividerAt: dividerIndex)
 	}
 	
-	@IBAction func showEntryDetails(sender: AnyObject!) {
+	@IBAction func showEntryDetails(_ sender: AnyObject!) {
 		(splitItemContent.viewController as? happnLocCSVDocContentSplitViewController)?.showEntryDetails(sender)
 	}
 	
