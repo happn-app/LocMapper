@@ -257,7 +257,7 @@ class AndroidXMLLocFile: Streamable {
 //			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
 			let attrs = attributeDict 
 			
-			if currentChars.characters.count > 0 {
+			if !currentChars.isEmpty {
 				addSpaceComponent(WhiteSpace(currentChars))
 				currentChars = ""
 			}
@@ -305,7 +305,7 @@ class AndroidXMLLocFile: Streamable {
 //			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
 			switch (status, elementName) {
 				case (.inResources, "resources"):
-					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
+					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName))
 					status = .outEnd
 				
@@ -318,7 +318,7 @@ class AndroidXMLLocFile: Streamable {
 				
 				case (.inArray, "string-array"):
 					currentArrayIdx = 0
-					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
+					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
 					status = .inResources
@@ -328,7 +328,7 @@ class AndroidXMLLocFile: Streamable {
 					addingSpacesToPlural = false
 					currentPluralValues = nil
 					
-					if currentChars.characters.count > 0 {addSpaceComponent(WhiteSpace(currentChars))}
+					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
 					components.append(GenericGroupClosing(groupName: elementName, nameAttributeValue: currentGroupName))
 					currentGroupName = nil
 					status = .inResources
@@ -378,7 +378,7 @@ class AndroidXMLLocFile: Streamable {
 		
 		func parser(_ parser: XMLParser, foundCharacters string: String) {
 //			println("foundCharacters \(string)")
-			if isCurrentCharsCDATA && currentChars.characters.count > 0 {
+			if isCurrentCharsCDATA && !currentChars.isEmpty {
 				print("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", to: &mx_stderr)
 				parser.abortParsing()
 				status = .error
@@ -400,7 +400,7 @@ class AndroidXMLLocFile: Streamable {
 				case .inResources: fallthrough
 				case .inArray:     fallthrough
 				case .inPlurals:
-					if currentChars.characters.count > 0 {
+					if !currentChars.isEmpty {
 						addSpaceComponent(WhiteSpace(currentChars))
 						currentChars = ""
 					}
@@ -412,7 +412,7 @@ class AndroidXMLLocFile: Streamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
-			if !isCurrentCharsCDATA && currentChars.characters.count > 0 {
+			if !isCurrentCharsCDATA && !currentChars.isEmpty {
 				print("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", to: &mx_stderr)
 				parser.abortParsing()
 				status = .error

@@ -44,7 +44,7 @@ class CSVParser {
 		else            {fieldNames = [String]()}
 		
 		assert(
-			separator.characters.count > 0 && separator.range(of: "\"") == nil && separator.rangeOfCharacter(from: CharacterSet.newlines) == nil,
+			!separator.isEmpty && separator.range(of: "\"") == nil && separator.rangeOfCharacter(from: CharacterSet.newlines) == nil,
 			"CSV separator string must not be empty and must not contain the double quote character or newline characters."
 		)
 	}
@@ -179,7 +179,7 @@ class CSVParser {
 			return nil
 		}
 		
-		return accumulatedData;
+		return accumulatedData
 	}
 	
 	private func parseNonQuoted() -> String? {
@@ -198,7 +198,7 @@ class CSVParser {
 		if scanner.scanString(separator, into: nil) {
 			return separator
 		}
-		return nil;
+		return nil
 	}
 	
 	private func parseLineSeparator() -> String? {
@@ -260,10 +260,10 @@ class CSVParser {
 			}
 		}
 		
-		if accumulatedData.characters.count > 0 {
+		if !accumulatedData.isEmpty {
 			return accumulatedData
 		}
 		
-		return nil;
+		return nil
 	}
 }

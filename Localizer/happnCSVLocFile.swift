@@ -83,7 +83,7 @@ class happnCSVLocFile: Streamable {
 				serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: [])
 				else
 			{
-				if stringRepresentation.characters.count > 0 { /* No need to print a warning for empty strings. We know. */
+				if !stringRepresentation.isEmpty { /* No need to print a warning for empty strings. We know. */
 					print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
 				}
 				self.init(components: nil, stringRepresentation: stringRepresentation)
@@ -835,11 +835,11 @@ class happnCSVLocFile: Streamable {
 	private func getKeyFrom(_ refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, withListOfKeys keys: inout [LineKey]) -> LineKey {
 		if let idx = keys.index(of: refKey) {
 			if keys[idx].comment != refKey.comment {
-				if useNonEmptyCommentIfOneEmptyTheOtherNot && (keys[idx].comment.characters.count == 0 || refKey.comment.characters.count == 0) {
+				if useNonEmptyCommentIfOneEmptyTheOtherNot && (keys[idx].comment.isEmpty || refKey.comment.isEmpty) {
 					/* We use the non-empty comment because one of the two comments
 					 * compared is empty; the other not (both are different and one
 					 * of them is empty) */
-					if keys[idx].comment.characters.count == 0 {
+					if keys[idx].comment.isEmpty {
 						let newKey = LineKey(
 							locKey: keys[idx].locKey, env: keys[idx].env, filename: keys[idx].filename,
 							comment: refKey.comment, index: keys[idx].index,
