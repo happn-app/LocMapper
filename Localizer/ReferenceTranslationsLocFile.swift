@@ -1,5 +1,5 @@
 /*
- * ReferenceTranslationLocFile.swift
+ * ReferenceTranslationsLocFile.swift
  * Localizer
  *
  * Created by François Lamboley on 7/6/16.
@@ -10,7 +10,7 @@ import Foundation
 
 
 
-class ReferenceTranslationLocFile {
+class ReferenceTranslationsLocFile {
 	
 	typealias Key = String
 	typealias Value = String
@@ -26,7 +26,7 @@ class ReferenceTranslationLocFile {
 	}
 	
 	init(filecontent: String, languages sourceLanguages: [Language], csvSeparator: String = ",") throws {
-		let error = NSError(domain: "ReferenceTranslationLocFile", code: 1, userInfo: nil)
+		let error = NSError(domain: "ReferenceTranslationsLocFile", code: 1, userInfo: nil)
 		let parser = CSVParser(source: filecontent, separator: csvSeparator, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
 			throw error
