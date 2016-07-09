@@ -1,8 +1,7 @@
 Localization Process:
 	- Refresh the local DB with the reference translations in the drive.
 	  Currently you have to download a CSV from the drive and import it in your
-	  local DB with File -> Import Reference Translations…, checking the option
-	  to erase all previous keys in this environment.
+	  local DB with File -> Import Reference Translations…
 	  In the future, there will be a Refresh Reference Translations… menu entry,
 	  which will ask you to login to the drive provider the first time it's used,
 	  then will automatically fetch and merge an up-to-date translations from the

@@ -10,7 +10,7 @@ import Cocoa
 
 
 
-class happnLocCSVDocument: NSDocument {
+class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	
 	/** If nil, the file is loading. */
 	var csvLocFile: happnCSVLocFile? {
@@ -94,6 +94,7 @@ class happnLocCSVDocument: NSDocument {
 		let accessoryView = (objects.filter {$0 is NSView} as! [NSView]).first!
 		let tokenField = accessoryView.viewWithTag(1) as! NSTokenField
 		
+		tokenField.setDelegate(self)
 		tokenField.stringValue = csvLocFile.languages.joined(separator: ",")
 		
 		let openPanel = NSOpenPanel()
@@ -112,11 +113,25 @@ class happnLocCSVDocument: NSDocument {
 		}
 		
 		openPanel.beginSheetModal(for: windowForSheet!) { response in
-			guard response == NSFileHandlingPanelOKButton else {return}
+			guard response == NSFileHandlingPanelOKButton, let url = openPanel.url else {return}
 			
 			let languages = tokenField.stringValue.characters.split(separator: ",").map(String.init)
-			Swift.print(languages)
+			do {
+				let referenceTranslations = try ReferenceTranslationsLocFile(fromURL: url, languages: languages, csvSeparator: ",")
+				csvLocFile.replaceReferenceTranslationsWithLocFile(referenceTranslations)
+			} catch let error {
+				NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
+			}
 		}
+	}
+	
+	/* ****************************
+	   MARK: - Token Field Delegate
+	   **************************** */
+	
+	/* Implementing this method disables the whitespace-trimming behavior. */
+	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> AnyObject {
+		return editingString
 	}
 	
 	/* ***************

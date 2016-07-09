@@ -23,9 +23,9 @@ let COMMENT_HEADER_NAME = "Comments"
 private extension String {
 	func csvCellValueWithSeparator(_ sep: String) -> String {
 		if sep.characters.count != 1 {NSException(name: "Invalid Separator" as NSExceptionName, reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
-		if self.rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
+		if rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
-			let doubledDoubleQuotes = self.replacingOccurrences(of: "\"", with: "\"\"")
+			let doubledDoubleQuotes = replacingOccurrences(of: "\"", with: "\"\"")
 			return "\"\(doubledDoubleQuotes)\""
 		} else {
 			/* Double quotes not needed */
@@ -286,8 +286,8 @@ class happnCSVLocFile: Streamable {
 	func mergeXcodeStringsFiles(_ stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
-		let originalEntries = self.entries
-		self.entries = [:]
+		let originalEntries = entries
+		entries = [:]
 		
 		let env = "Xcode"
 		var keys = [LineKey]()
@@ -456,8 +456,8 @@ class happnCSVLocFile: Streamable {
 	func mergeAndroidXMLLocStringsFiles(_ locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
-		let originalEntries = self.entries
-		self.entries = [:]
+		let originalEntries = entries
+		entries = [:]
 		
 		let env = "Android"
 		var keys = [LineKey]()
@@ -730,6 +730,24 @@ class happnCSVLocFile: Streamable {
 				err = error
 				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
 			}
+		}
+	}
+	
+	/* ***************************************
+	   MARK: - Reference Translations Loc File
+	   *************************************** */
+	
+	func replaceReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
+		for key in entries.keys {
+			guard key.env == "RefLoc" else {continue}
+			entries.removeValue(forKey: key)
+		}
+		
+		var isFirst = true
+		for (refKey, refVals) in locFile.entries {
+			let key = LineKey(locKey: refKey, env: "RefLoc", filename: "ReferencesTranslations.csv", comment: "", index: isFirst ? 0 : 1, userReadableGroupComment: isFirst ? "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••" : "", userReadableComment: "REF TRAD. DO NOT MODIFY.")
+			entries[key] = refVals
+			isFirst = false
 		}
 	}
 	
