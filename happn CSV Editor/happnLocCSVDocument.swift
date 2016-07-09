@@ -83,13 +83,18 @@ class happnLocCSVDocument: NSDocument {
 	   *************** */
 	
 	@IBAction func importReferenceTranslations(sender: AnyObject) {
+		guard let csvLocFile = csvLocFile else {
+			NSBeep()
+			return
+		}
+		
 		/* Getting accessory view. */
 		var objects: NSArray = []
 		Bundle.main.loadNibNamed("AccessoryViewForImportReferenceTranslations", owner: nil, topLevelObjects: &objects)
 		let accessoryView = (objects.filter {$0 is NSView} as! [NSView]).first!
 		let tokenField = accessoryView.viewWithTag(1) as! NSTokenField
 		
-		tokenField.stringValue = "English,Deutsch — German,Français — French" /* TODO: Fetch this in happn CSV Loc file metadata if available, or use a default value. */
+		tokenField.stringValue = csvLocFile.languages.joined(separator: ",")
 		
 		let openPanel = NSOpenPanel()
 		openPanel.canChooseFiles = true
