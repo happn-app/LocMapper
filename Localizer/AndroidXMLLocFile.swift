@@ -46,20 +46,20 @@ class AndroidXMLLocFile: Streamable {
 			return fullString
 		}
 		
-		init(fullString: String) {
-			self.groupNameAndAttr = nil
-			self.fullString = fullString
+		init(fullString str: String) {
+			groupNameAndAttr = nil
+			fullString = str
 		}
 		
 		init(groupName: String, attributes: [String: String]) {
-			self.groupNameAndAttr = (groupName, attributes)
+			groupNameAndAttr = (groupName, attributes)
 			
 			var ret = "<\(groupName)"
 			for attr in attributes {
 				ret += " \(attr.0)=\"\(attr.1)\""
 			}
 			ret += ">"
-			self.fullString = ret
+			fullString = ret
 		}
 	}
 	
@@ -75,9 +75,9 @@ class AndroidXMLLocFile: Streamable {
 			self.init(groupName: groupName, nameAttributeValue: nil)
 		}
 		
-		init(groupName: String, nameAttributeValue: String?) {
-			self.groupName = groupName
-			self.nameAttr = nameAttributeValue
+		init(groupName grpName: String, nameAttributeValue: String?) {
+			groupName = grpName
+			nameAttr = nameAttributeValue
 		}
 	}
 	
@@ -471,9 +471,9 @@ class AndroidXMLLocFile: Streamable {
 		self.init(pathRelativeToProject: pathRelativeToProject, components: parserDelegate.components)
 	}
 	
-	init(pathRelativeToProject: String, components: [AndroidLocComponent]) {
-		self.filepath   = pathRelativeToProject
-		self.components = components
+	init(pathRelativeToProject: String, components c: [AndroidLocComponent]) {
+		filepath   = pathRelativeToProject
+		components = c
 	}
 	
 	func write<Target: OutputStream>(to target: inout Target) {
