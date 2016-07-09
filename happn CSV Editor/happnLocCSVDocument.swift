@@ -119,6 +119,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			do {
 				let referenceTranslations = try ReferenceTranslationsLocFile(fromURL: url, languages: languages, csvSeparator: ",")
 				csvLocFile.replaceReferenceTranslationsWithLocFile(referenceTranslations)
+				self.updateChangeCount(.changeDone)
 			} catch let error {
 				NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
 			}
