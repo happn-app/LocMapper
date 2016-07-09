@@ -330,6 +330,9 @@ class happnCSVLocFile: Streamable {
 		}
 		
 		for (refKey, val) in originalEntries {
+			/* Dropping keys not in given strings files. */
+			guard refKey.env != env || keys.contains(refKey) else {continue}
+			
 			let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 			entries[key] = val
 		}
@@ -580,6 +583,9 @@ class happnCSVLocFile: Streamable {
 		}
 		
 		for (refKey, val) in originalEntries {
+			/* Dropping keys not in given strings files. */
+			guard refKey.env != env || keys.contains(refKey) else {continue}
+			
 			let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
 			entries[key] = val
 		}
