@@ -80,7 +80,7 @@ class XcodeStringsFile: Streamable {
 			}
 			
 			for excluded in excluded_paths {
-				if cur_file.range(of: excluded) != nil {
+				guard cur_file.range(of: excluded) == nil else {
 					continue fileLoop
 				}
 			}
