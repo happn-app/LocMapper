@@ -21,6 +21,8 @@
 		7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */; };
 		7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B837D871C0EF3DB0020E86B /* Assets.xcassets */; };
 		7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B837D891C0EF3DB0020E86B /* Main.storyboard */; };
+		7B878D691D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */; };
+		7B878D6D1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */; };
 		7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B87D4D91A3AECD500C151A8 /* CSVParser.swift */; };
 		7B9BD4DF1C108344007A096D /* happnCSVLocKeyMappingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */; };
 		7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
@@ -68,6 +70,8 @@
 		7B837D871C0EF3DB0020E86B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7B837D8A1C0EF3DB0020E86B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7B837D8C1C0EF3DB0020E86B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportKeyStructure.xib; sourceTree = "<group>"; };
+		7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportKeyStructurePanelController.swift; sourceTree = "<group>"; };
 		7B87D4D91A3AECD500C151A8 /* CSVParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVParser.swift; sourceTree = "<group>"; };
 		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMappingComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMappingComponents.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
@@ -100,10 +104,12 @@
 			isa = PBXGroup;
 			children = (
 				7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */,
+				7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */,
 				7B560D641C17022F001DD2B0 /* Misc. View Controllers */,
 				7B560D651C170273001DD2B0 /* Main View Controller */,
 				7B560D661C170280001DD2B0 /* Selection Info View Controllers */,
 				7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */,
+				7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */,
 			);
 			name = "happn CSV Loc Document";
 			sourceTree = "<group>";
@@ -266,6 +272,7 @@
 			files = (
 				7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */,
 				7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */,
+				7B878D691D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib in Resources */,
 				7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -299,6 +306,7 @@
 				7B637D241C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift in Sources */,
 				7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */,
 				7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */,
+				7B878D6D1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift in Sources */,
 				7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */,
 				7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */,
 				7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */,
@@ -428,7 +436,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "happn CSV Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.happn.happn-CSV-Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -446,7 +454,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "happn CSV Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.happn.happn-CSV-Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

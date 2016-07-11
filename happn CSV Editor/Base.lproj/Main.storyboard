@@ -111,7 +111,11 @@
                                                 <action selector="importReferenceTranslationsWithSender:" target="Ady-hI-5gd" id="xuc-qw-1K9"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Import Key Structure from Project…" keyEquivalent="I" id="Q0b-8V-e6j"/>
+                                        <menuItem title="Import Key Structure from Project…" keyEquivalent="I" id="Q0b-8V-e6j">
+                                            <connections>
+                                                <action selector="importKeyStructureWithSender:" target="Ady-hI-5gd" id="Exz-oD-z53"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="LKY-jV-u5N"/>
                                         <menuItem title="Page Setup…" keyEquivalent="P" id="qIS-W8-SiK">
                                             <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>

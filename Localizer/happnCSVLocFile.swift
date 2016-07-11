@@ -279,6 +279,19 @@ class happnCSVLocFile: Streamable {
 		entries[key]?[language] = val
 	}
 	
+	func intMetadataValueForKey(_ key: String) -> Int? {
+		guard let strVal = metadata[key] else {return nil}
+		return Int(strVal)
+	}
+	
+	func setMetadataValue(_ value: Int, forKey key: String) {
+		metadata[key] = String(value)
+	}
+	
+	func setMetadataValue(_ value: String, forKey key: String) {
+		metadata[key] = value
+	}
+	
 	/* ***********************************
 	   MARK: - Xcode Strings Files Support
 	   *********************************** */

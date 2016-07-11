@@ -83,7 +83,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   *************** */
 	
 	@IBAction func importReferenceTranslations(sender: AnyObject) {
-		guard let csvLocFile = csvLocFile else {
+		guard currentOpenPanel == nil, let csvLocFile = csvLocFile else {
 			NSBeep()
 			return
 		}
@@ -98,21 +98,16 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		tokenField.stringValue = csvLocFile.languages.joined(separator: ",")
 		
 		let openPanel = NSOpenPanel()
+		currentOpenPanel = openPanel
+		
 		openPanel.canChooseFiles = true
 		openPanel.allowedFileTypes = ["csv"]
 		openPanel.canChooseDirectories = false
 		
-		/* Configuring accessory view. */
-		openPanel.accessoryView = accessoryView
-		openPanel.isAccessoryViewDisclosed = true
-		if let superview = accessoryView.superview {
-			/* Adjust size of accessory view. */
-			accessoryView.frame.origin.x = superview.bounds.minX
-			accessoryView.frame.size.width = superview.bounds.width
-			accessoryView.autoresizingMask = [.viewWidthSizable] /* Doesn't work though :( */
-		}
+		configureAccessoryView(accessoryView, forOpenPanel: openPanel)
 		
 		openPanel.beginSheetModal(for: windowForSheet!) { response in
+			self.currentOpenPanel = nil
 			guard response == NSFileHandlingPanelOKButton, let url = openPanel.url else {return}
 			
 			let languages = tokenField.stringValue.characters.split(separator: ",").map(String.init)
@@ -122,6 +117,38 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 				self.updateChangeCount(.changeDone)
 			} catch let error {
 				NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
+			}
+		}
+	}
+	
+	@IBAction func importKeyStructure(sender: AnyObject) {
+		guard currentOpenPanel == nil, let csvLocFile = csvLocFile else {
+			NSBeep()
+			return
+		}
+		
+		let openPanel = NSOpenPanel()
+		
+		/* Getting accessory view. */
+		let controller = ImportKeyStructurePanelController(nibName: "AccessoryViewForImportKeyStructure", bundle: nil, csvLocFile: csvLocFile, openPanel: openPanel)!
+		
+		currentOpenPanel = openPanel
+		configureAccessoryView(controller.view, forOpenPanel: openPanel)
+		
+		openPanel.beginSheetModal(for: windowForSheet!) { response in
+			self.currentOpenPanel = nil
+			guard response == NSFileHandlingPanelOKButton else {return}
+			
+			controller.saveImportSettings()
+			self.updateChangeCount(.changeDone)
+			
+			switch controller.selectedImportType {
+			case .Xcode:
+//				let excludedPaths = tokenFieldExcludedPaths.stringValue.characters.split(separator: ",").map(String.init)
+				()
+				
+			case .Android:
+				()
 			}
 		}
 	}
@@ -139,9 +166,22 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   MARK: - Private
 	   *************** */
 	
+	private var currentOpenPanel: NSOpenPanel?
+	
 	private func sendRepresentedObjectToSubControllers() {
 		for v in windowControllers {
 			v.contentViewController?.representedObject = csvLocFile
+		}
+	}
+	
+	private func configureAccessoryView(_ accessoryView: NSView, forOpenPanel openPanel: NSOpenPanel) {
+		openPanel.accessoryView = accessoryView
+		openPanel.isAccessoryViewDisclosed = true
+		if let superview = accessoryView.superview {
+			/* Adjust size of accessory view. */
+			accessoryView.frame.origin.x = superview.bounds.minX
+			accessoryView.frame.size.width = superview.bounds.width
+			accessoryView.autoresizingMask = [.viewWidthSizable] /* Doesn't work though :( */
 		}
 	}
 	
