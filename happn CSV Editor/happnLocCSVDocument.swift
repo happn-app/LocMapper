@@ -110,13 +110,26 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			self.currentOpenPanel = nil
 			guard response == NSFileHandlingPanelOKButton, let url = openPanel.url else {return}
 			
+			let loadingWindow = UINavigationUtilities.createLoadingWindow()
+			self.windowForSheet?.beginSheet(loadingWindow, completionHandler: nil)
+			
 			let languages = tokenField.stringValue.characters.split(separator: ",").map(String.init)
-			do {
-				let referenceTranslations = try ReferenceTranslationsLocFile(fromURL: url, languages: languages, csvSeparator: ",")
-				csvLocFile.replaceReferenceTranslationsWithLocFile(referenceTranslations)
-				self.updateChangeCount(.changeDone)
-			} catch let error {
-				NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
+			DispatchQueue.global().async {
+				defer {
+					DispatchQueue.main.async {
+						self.windowForSheet?.endSheet(loadingWindow)
+						self.updateChangeCount(.changeDone)
+					}
+				}
+				
+				do {
+					let referenceTranslations = try ReferenceTranslationsLocFile(fromURL: url, languages: languages, csvSeparator: ",")
+					csvLocFile.replaceReferenceTranslationsWithLocFile(referenceTranslations)
+				} catch let error {
+					DispatchQueue.main.async {
+						NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
+					}
+				}
 			}
 		}
 	}
