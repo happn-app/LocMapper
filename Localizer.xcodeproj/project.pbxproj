@@ -37,6 +37,8 @@
 		7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
 		7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
+		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
+		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
 		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +81,8 @@
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationsLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
+		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
+		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -180,10 +184,12 @@
 		7B837D801C0EF3DB0020E86B /* happn CSV Editor */ = {
 			isa = PBXGroup;
 			children = (
+				7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */,
 				7B837D811C0EF3DB0020E86B /* AppDelegate.swift */,
 				7B560D631C170219001DD2B0 /* happn CSV Loc Document */,
 				7B837D871C0EF3DB0020E86B /* Assets.xcassets */,
 				7B837D891C0EF3DB0020E86B /* Main.storyboard */,
+				7BF4B1961D34305A0062A605 /* LoadingWindow.xib */,
 				7B837D8C1C0EF3DB0020E86B /* Info.plist */,
 			);
 			path = "happn CSV Editor";
@@ -271,6 +277,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */,
+				7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */,
 				7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */,
 				7B878D691D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib in Resources */,
 				7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */,
@@ -307,6 +314,7 @@
 				7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */,
 				7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */,
 				7B878D6D1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift in Sources */,
+				7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */,
 				7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */,
 				7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */,
 				7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */,

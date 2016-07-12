@@ -68,7 +68,8 @@ class XcodeStringsFile: Streamable {
 		}
 	}
 	
-	class func stringsFilesInProject(_ root_folder: String, excluded_paths: [String]) throws -> [XcodeStringsFile] {
+	/* If included_paths is nil (default), no inclusion check will be done. */
+	class func stringsFilesInProject(_ root_folder: String, excluded_paths: [String], included_paths: [String]? = nil) throws -> [XcodeStringsFile] {
 		guard let e = FileManager.default.enumerator(atPath: root_folder) else {
 			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(root_folder)."])
 		}
@@ -77,6 +78,17 @@ class XcodeStringsFile: Streamable {
 		fileLoop: while let cur_file = e.nextObject() as? String {
 			guard cur_file.hasSuffix(".strings") else {
 				continue
+			}
+			
+			if let included_paths = included_paths {
+				var found = false
+				for included in included_paths {
+					if cur_file.range(of: included) != nil {
+						found = true
+						break
+					}
+				}
+				if !found {continue fileLoop}
 			}
 			
 			for excluded in excluded_paths {

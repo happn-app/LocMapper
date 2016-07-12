@@ -10,7 +10,7 @@ import AppKit
 
 
 
-class ImportKeyStructurePanelController : NSViewController {
+class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate {
 	
 	enum ImportType: Int {
 		case Xcode = 1
@@ -30,6 +30,18 @@ class ImportKeyStructurePanelController : NSViewController {
 	@IBOutlet var textFieldImportedLanguageName: NSTextField!
 	
 	private(set) var selectedImportType: ImportType
+	
+	var excludedPaths: [String] {
+		return tokenFieldExcludedPaths.stringValue.characters.split(separator: ",").map(String.init)
+	}
+	
+	var importedFolderForXcode: String {
+		return textFieldImportedFolderName.stringValue.isEmpty ? textFieldImportedFolderName.placeholderString ?? "" : textFieldImportedFolderName.stringValue
+	}
+	
+	var importedLanguageName: String {
+		return textFieldImportedLanguageName.stringValue.isEmpty ? textFieldImportedLanguageName.placeholderString ?? "" : textFieldImportedLanguageName.stringValue
+	}
 	
 	init?(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?, csvLocFile f: happnCSVLocFile, openPanel op: NSOpenPanel) {
 		openPanel = op
@@ -53,6 +65,8 @@ class ImportKeyStructurePanelController : NSViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		configureOpenPanelForXcode()
 		
 		popUpButtonEnvironment.selectItem(withTag: selectedImportType.rawValue)
 		
@@ -109,6 +123,15 @@ class ImportKeyStructurePanelController : NSViewController {
 		}
 	}
 	
+	/* ****************************
+	   MARK: - Token Field Delegate
+	   **************************** */
+	
+	/* Implementing this method disables the whitespace-trimming behavior. */
+	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> AnyObject {
+		return editingString
+	}
+	
 	/* ***************
 	   MARK: - Private
 	   *************** */
@@ -144,10 +167,7 @@ class ImportKeyStructurePanelController : NSViewController {
 		
 		switch selectedImportType {
 		case .Xcode:
-			openPanel.allowedFileTypes = nil
-			openPanel.canChooseFiles = false
-			openPanel.canChooseDirectories = true
-			openPanel.allowsMultipleSelection = false
+			configureOpenPanelForXcode()
 			
 			textFieldImportedLanguageName.stringValue = importedLanguageNameForXcode
 			
@@ -157,10 +177,7 @@ class ImportKeyStructurePanelController : NSViewController {
 			updateFrameHeight()
 			
 		case .Android:
-			openPanel.allowedFileTypes = ["xml"]
-			openPanel.canChooseFiles = true
-			openPanel.canChooseDirectories = false
-			openPanel.allowsMultipleSelection = true
+			configureOpenPanelForAndroid()
 			
 			textFieldImportedLanguageName.stringValue = importedLanguageNameForAndroid
 			
@@ -175,6 +192,20 @@ class ImportKeyStructurePanelController : NSViewController {
 			
 			updateFrameHeight()
 		}
+	}
+	
+	private func configureOpenPanelForXcode() {
+		openPanel.allowedFileTypes = nil
+		openPanel.canChooseFiles = false
+		openPanel.canChooseDirectories = true
+		openPanel.allowsMultipleSelection = false
+	}
+	
+	private func configureOpenPanelForAndroid() {
+		openPanel.allowedFileTypes = ["xml"]
+		openPanel.canChooseFiles = true
+		openPanel.canChooseDirectories = false
+		openPanel.allowsMultipleSelection = true
 	}
 	
 	private func updateFrameHeight() {

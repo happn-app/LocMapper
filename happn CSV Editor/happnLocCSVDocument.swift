@@ -15,7 +15,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	/** If nil, the file is loading. */
 	var csvLocFile: happnCSVLocFile? {
 		didSet {
-			sendRepresentedObjectToSubControllers()
+			sendRepresentedObjectToSubControllers(csvLocFile)
 		}
 	}
 	
@@ -40,7 +40,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
 		addWindowController(windowController)
 		
-		sendRepresentedObjectToSubControllers()
+		sendRepresentedObjectToSubControllers(csvLocFile)
 	}
 	
 	override func data(ofType typeName: String) throws -> Data {
@@ -136,19 +136,50 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		configureAccessoryView(controller.view, forOpenPanel: openPanel)
 		
 		openPanel.beginSheetModal(for: windowForSheet!) { response in
+			assert(Thread.isMainThread)
+			
+			openPanel.accessoryView = nil /* Fixes a crash... (macOS 10.12 (16A239j) */
 			self.currentOpenPanel = nil
+			
 			guard response == NSFileHandlingPanelOKButton else {return}
 			
 			controller.saveImportSettings()
 			self.updateChangeCount(.changeDone)
 			
-			switch controller.selectedImportType {
-			case .Xcode:
-//				let excludedPaths = tokenFieldExcludedPaths.stringValue.characters.split(separator: ",").map(String.init)
-				()
+			/* Let's fetch all the data from the controller before dispatching
+			 * async as we want the controller to be released on the main thread
+			 * (to avoid a CATransaction warning in the logs). */
+			let selectedImportType = controller.selectedImportType
+			let excludedPaths = controller.excludedPaths
+			let languageName = controller.importedLanguageName
+			let importedFolder = controller.importedFolderForXcode
+			
+			let loadingWindow = UINavigationUtilities.createLoadingWindow()
+			self.windowForSheet?.beginSheet(loadingWindow, completionHandler: nil)
+			
+			DispatchQueue.global().async {
+				defer {
+					DispatchQueue.main.async {
+						self.windowForSheet?.endSheet(loadingWindow)
+						self.updateChangeCount(.changeDone)
+					}
+				}
 				
-			case .Android:
-				()
+				do {
+					switch selectedImportType {
+					case .Xcode:
+						guard let url = openPanel.url else {return}
+						let stringsFiles = try XcodeStringsFile.stringsFilesInProject(url.absoluteURL!.path!, excluded_paths: excludedPaths, included_paths: ["/"+importedFolder+"/"])
+						csvLocFile.mergeXcodeStringsFiles(stringsFiles, folderNameToLanguageName: [importedFolder: languageName])
+						
+					case .Android:
+						()
+					}
+				} catch {
+					DispatchQueue.main.async {
+						NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
+					}
+				}
 			}
 		}
 	}
@@ -168,9 +199,25 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	
 	private var currentOpenPanel: NSOpenPanel?
 	
-	private func sendRepresentedObjectToSubControllers() {
+	private var mainViewController: happnLocCSVDocTabViewController! {
+		return windowControllers.first?.contentViewController as? happnLocCSVDocTabViewController
+	}
+	
+	private var optionsSplitViewController: happnLocCSVDocOptionsSplitViewController! {
+		return mainViewController.tabViewItemDocContent.viewController as? happnLocCSVDocOptionsSplitViewController
+	}
+	
+	private var contentSplitViewController: happnLocCSVDocContentSplitViewController! {
+		return optionsSplitViewController.splitItemContent.viewController as? happnLocCSVDocContentSplitViewController
+	}
+	
+	private var tableViewController: happnLocCSVDocTableViewController! {
+		return contentSplitViewController.splitItemTableView.viewController as? happnLocCSVDocTableViewController
+	}
+	
+	private func sendRepresentedObjectToSubControllers(_ object: AnyObject?) {
 		for v in windowControllers {
-			v.contentViewController?.representedObject = csvLocFile
+			v.contentViewController?.representedObject = object
 		}
 	}
 	
