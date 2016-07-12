@@ -762,6 +762,14 @@ class happnCSVLocFile: Streamable {
 			entries.removeValue(forKey: key)
 		}
 		
+		/* Adding languages in reference translations. But not removing languages
+		 * not in reference translations! */
+		for l in locFile.languages {
+			if !languages.contains(l) {
+				languages.append(l)
+			}
+		}
+		
 		var isFirst = true
 		for (refKey, refVals) in locFile.entries {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: "ReferencesTranslations.csv", comment: "", index: isFirst ? 0 : 1, userReadableGroupComment: isFirst ? "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••" : "", userReadableComment: "REF TRAD. DO NOT MODIFY.")
