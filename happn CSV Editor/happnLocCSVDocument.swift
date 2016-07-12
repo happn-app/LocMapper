@@ -186,7 +186,16 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 						csvLocFile.mergeXcodeStringsFiles(stringsFiles, folderNameToLanguageName: [importedFolder: languageName])
 						
 					case .Android:
-						()
+						for url in openPanel.urls {
+							if let
+								noFilename = try? url.deletingLastPathComponent(),
+								folderName = noFilename.lastPathComponent,
+								noFolderName = try? noFilename.deletingLastPathComponent(),
+								androidXMLLocFile = try? AndroidXMLLocFile(fromPath: url.absoluteURL!.path!, relativeToProjectPath: noFolderName.absoluteURL!.path!)
+							{
+								csvLocFile.mergeAndroidXMLLocStringsFiles([androidXMLLocFile], folderNameToLanguageName: [folderName: languageName])
+							}
+						}
 					}
 				} catch {
 					DispatchQueue.main.async {
