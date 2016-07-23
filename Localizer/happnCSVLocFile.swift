@@ -332,8 +332,9 @@ class happnCSVLocFile: Streamable {
 		let created: Bool
 		var entriesForKey: [String: String]
 		if case .some(.entries(let e)) = entries[key] {created = false;               entriesForKey = e}
-		else                                          {created = entries[key] == nil; entriesForKey = [:]; entries[key] = .entries(entriesForKey)}
+		else                                          {created = entries[key] == nil; entriesForKey = [:]}
 		entriesForKey[language] = val
+		entries[key] = .entries(entriesForKey)
 		return created
 	}
 	
