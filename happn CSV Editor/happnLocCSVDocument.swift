@@ -94,7 +94,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		let accessoryView = (objects.filter {$0 is NSView} as! [NSView]).first!
 		let tokenField = accessoryView.viewWithTag(1) as! NSTokenField
 		
-		tokenField.setDelegate(self)
+		tokenField.delegate = self
 		tokenField.stringValue = csvLocFile.languages.joined(separator: ",")
 		
 		let openPanel = NSOpenPanel()
@@ -187,11 +187,11 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 						
 					case .Android:
 						for url in openPanel.urls {
-							if let
-								noFilename = try? url.deletingLastPathComponent(),
-								folderName = noFilename.lastPathComponent,
-								noFolderName = try? noFilename.deletingLastPathComponent(),
-								androidXMLLocFile = try? AndroidXMLLocFile(fromPath: url.absoluteURL!.path!, relativeToProjectPath: noFolderName.absoluteURL!.path!)
+							if
+								let noFilename = try? url.deletingLastPathComponent(),
+								let folderName = noFilename.lastPathComponent,
+								let noFolderName = try? noFilename.deletingLastPathComponent(),
+								let androidXMLLocFile = try? AndroidXMLLocFile(fromPath: url.absoluteURL!.path!, relativeToProjectPath: noFolderName.absoluteURL!.path!)
 							{
 								csvLocFile.mergeAndroidXMLLocStringsFiles([androidXMLLocFile], folderNameToLanguageName: [folderName: languageName])
 							}

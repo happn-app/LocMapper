@@ -39,11 +39,15 @@ private extension String {
    ******* */
 
 class happnCSVLocFile: Streamable {
+	
 	let csvSeparator: String
+	private var metadata: [String: String]
+	
 	private(set) var languages: [String]
-	private(set) var mappings: [LineKey: happnCSVLocKeyMapping]
-	private(set) var entries: [LineKey: [String /* Language */: String /* Value */]]
-	private(set) var metadata: [String: String]
+	private var entries: [LineKey: LineValue]
+	var entryKeys: [LineKey] {
+		return Array(entries.keys)
+	}
 	
 	/* *******************************************************
 	   MARK: - LineKey Struct
@@ -68,6 +72,37 @@ class happnCSVLocFile: Streamable {
 		}
 	}
 	
+	/* ***********************************************************
+	   MARK: - LineValue Enum
+	           Either a mapping or a dictionary of language/value.
+	   *********************************************************** */
+	
+	enum LineValue {
+		case mapping(happnCSVLocKeyMapping)
+		case entries([String /* Language */: String /* Value */])
+		
+		var mapping: happnCSVLocKeyMapping? {
+			switch self {
+			case .mapping(let mapping): return mapping
+			default:                    return nil
+			}
+		}
+		
+		var entries: [String: String]? {
+			switch self {
+			case .entries(let entries): return entries
+			default:                    return nil
+			}
+		}
+		
+		/* Crashes the compiler (Xcode 8b3 (8S174q) with default Swift).
+		 * Fortunately I don't really need this method... */
+//		func entryForLanguage(_ language: String) -> String? {
+//			guard let entries = entries else {return nil}
+//			return entries[language]
+//		}
+	}
+	
 	/* *******************
 	   MARK: - Key Mapping
 	   ******************* */
@@ -77,15 +112,21 @@ class happnCSVLocFile: Streamable {
 		let originalStringRepresentation: String
 		var components: [happnCSVLocKeyMappingComponent]?
 		
-		convenience init(stringRepresentation: String) {
-			guard let
-				data = stringRepresentation.data(using: String.Encoding.utf8),
-				serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: [])
+		/** Inits a happn CSV Loc Key Mapping from a string representation (JSON).
+		
+		If the string is empty, returns nil.
+		
+		If the string representation is invalid (invalid JSON, etc.), a fully
+		inited object is returned with nil components. */
+		convenience init?(stringRepresentation: String) {
+			guard !stringRepresentation.isEmpty else {return nil}
+			
+			guard
+				let data = stringRepresentation.data(using: String.Encoding.utf8),
+				let serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: [])
 				else
 			{
-				if !stringRepresentation.isEmpty { /* No need to print a warning for empty strings. We know. */
-					print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
-				}
+				print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
 				self.init(components: nil, stringRepresentation: stringRepresentation)
 				return
 			}
@@ -136,7 +177,7 @@ class happnCSVLocFile: Streamable {
 	   ******************** */
 	
 	convenience init() {
-		self.init(languages: [], entries: [:], mappings: [:], metadata: [:], csvSeparator: ",")
+		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: ",")
 	}
 	
 	/* *** Init from path *** */
@@ -151,21 +192,20 @@ class happnCSVLocFile: Streamable {
 	
 	/* *** Init with file content *** */
 	convenience init(filecontent: String, withCSVSeparator csvSep: String) throws {
-		let error = NSError(domain: "Migrator", code: 1, userInfo: nil)
+		let defaultError = NSError(domain: "Migrator", code: 1, userInfo: nil)
 		if filecontent.isEmpty {
-			self.init(languages: [], entries: [:], mappings: [:], metadata: [:], csvSeparator: csvSep)
+			self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep)
 			return
 		}
 		
 		let parser = CSVParser(source: filecontent, separator: csvSep, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
-			throw error
+			throw defaultError
 		}
 		
-		var languages = [String]()
-		var entries = [LineKey: [String: String]]()
-		var mappings = [LineKey: happnCSVLocKeyMapping]()
 		var metadata = [String: String]()
+		var languages = [String]()
+		var entries = [LineKey: LineValue]()
 		
 		/* Retrieving languages from header */
 		for h in parser.fieldNames {
@@ -186,9 +226,9 @@ class happnCSVLocFile: Streamable {
 			
 			/* If we did not find the empty line, we're still in the metadata. */
 			guard foundEmptyLine else {
-				if let
-					jsonData = row[PRIVATE_KEY_HEADER_NAME]?.data(using: String.Encoding.utf8),
-					parsedJSON = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? [String: String]
+				if
+					let jsonData = row[PRIVATE_KEY_HEADER_NAME]?.data(using: String.Encoding.utf8),
+					let parsedJSON = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? [String: String]
 				{
 					if !metadata.isEmpty {print("*** Warning: Got more than one line of metadata. Merging values, last line wins if key is defined more than once.")}
 					parsedJSON.forEach {metadata[$0] = $1}
@@ -197,12 +237,13 @@ class happnCSVLocFile: Streamable {
 			}
 			
 			/* An empty line has been found. We're in the actual data. */
-			guard let
-				locKey              = row[PRIVATE_KEY_HEADER_NAME],
-				env                 = row[PRIVATE_ENV_HEADER_NAME],
-				filename            = row[PRIVATE_FILENAME_HEADER_NAME],
-				rawComment          = row[PRIVATE_COMMENT_HEADER_NAME],
-				userReadableComment = row[COMMENT_HEADER_NAME] else
+			guard
+				let locKey              = row[PRIVATE_KEY_HEADER_NAME],
+				let env                 = row[PRIVATE_ENV_HEADER_NAME],
+				let filename            = row[PRIVATE_FILENAME_HEADER_NAME],
+				let rawComment          = row[PRIVATE_COMMENT_HEADER_NAME],
+				let userReadableComment = row[COMMENT_HEADER_NAME]
+				else
 			{
 				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
 				continue
@@ -241,28 +282,31 @@ class happnCSVLocFile: Streamable {
 			i += 1
 			groupComment = ""
 			
-			/* Let's get the mappings for this key. */
-			mappings[k] = happnCSVLocKeyMapping(stringRepresentation: row[PRIVATE_MAPPINGS_HEADER_NAME] ?? "")
-			
-			/* Now let's retrieve the values per language */
-			var values = [String: String]()
-			for l in languages {
-				if let v = row[l] {
-					values[l] = v
+			if let mappingStr = row[PRIVATE_MAPPINGS_HEADER_NAME], let mapping = happnCSVLocKeyMapping(stringRepresentation: mappingStr) {
+				/* We have a mapping (may be invalid though). Let's set it for the
+				 * current line key. */
+				entries[k] = .mapping(mapping)
+			} else {
+				/* No valid mapping. Value for current line key is dictionary of
+				 * language/value. */
+				var values = [String: String]()
+				for l in languages {
+					if let v = row[l] {
+						values[l] = v
+					}
 				}
+				entries[k] = .entries(values)
 			}
-			entries[k] = values
 		}
-		self.init(languages: languages, entries: entries, mappings: mappings, metadata: metadata, csvSeparator: csvSep)
+		self.init(languages: languages, entries: entries, metadata: metadata, csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
-	init(languages l: [String], entries e: [LineKey: [String: String]], mappings m: [LineKey: happnCSVLocKeyMapping], metadata md: [String: String], csvSeparator csvSep: String) {
+	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: [String: String], csvSeparator csvSep: String) {
 		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator" as NSExceptionName, reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		languages = l
 		entries = e
-		mappings = m
 		metadata = md
 	}
 	
@@ -270,13 +314,31 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Manual Modification of CSV Loc File
 	   ******************************************* */
 	
+	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) -> String? {
+		guard let v = entries[key] else {return nil}
+		switch v {
+		case .entries(let entries): return entries[language]
+		case .mapping(_): return "TODO: MAPPING RESOLVING"
+		}
+	}
+	
 	/** Sets the given value for the given key and language.
 	
-	- important: If the key does not exist, this function will NOP. The key will
-	**NOT** be created. However, if the given key never had a value for the given
-	language, the value for the given language WILL be set. */
-	func setValue(_ val: String, forKey key: LineKey, withLanguage language: String) {
-		entries[key]?[language] = val
+	- important: If the key had a mapping, the mapping is **dropped**.
+	
+	- returns: `true` if the key had to be added to the list of entries, `false`
+	if the key was already present and was only modified. */
+	func setValue(_ val: String, forKey key: LineKey, withLanguage language: String) -> Bool {
+		let created: Bool
+		var entriesForKey: [String: String]
+		if case .some(.entries(let e)) = entries[key] {created = false;               entriesForKey = e}
+		else                                          {created = entries[key] == nil; entriesForKey = [:]; entries[key] = .entries(entriesForKey)}
+		entriesForKey[language] = val
+		return created
+	}
+	
+	func stringMetadataValueForKey(_ key: String) -> String? {
+		return metadata[key]
 	}
 	
 	func intMetadataValueForKey(_ key: String) -> Int? {
@@ -284,12 +346,12 @@ class happnCSVLocFile: Streamable {
 		return Int(strVal)
 	}
 	
-	func setMetadataValue(_ value: Int, forKey key: String) {
-		metadata[key] = String(value)
-	}
-	
 	func setMetadataValue(_ value: String, forKey key: String) {
 		metadata[key] = value
+	}
+	
+	func setMetadataValue(_ value: Int, forKey key: String) {
+		metadata[key] = String(value)
 	}
 	
 	/* ***********************************
@@ -331,8 +393,7 @@ class happnCSVLocFile: Streamable {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if entries[key] == nil {entries[key] = [:]; index += 1}
-					entries[key]![languageName] = locString.value
+					if setValue(locString.value, forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
@@ -427,8 +488,6 @@ class happnCSVLocFile: Streamable {
 				}
 			}
 			
-			let value = entries[entry_key]!
-			
 			for (folderName, languageName) in folderNameToLanguageName {
 				let filename = entry_key.filename.replacingOccurrences(of: "//LANGUAGE//", with: "/"+folderName+"/")
 				if filenameToComponents[filename] == nil {
@@ -437,7 +496,7 @@ class happnCSVLocFile: Streamable {
 				
 				filenameToComponents[filename]! += commentComponents
 				
-				if let v = value[languageName] {
+				if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
 					filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
 						key: k as String,
 						keyHasQuotes: keyHasQuotes,
@@ -513,8 +572,7 @@ class happnCSVLocFile: Streamable {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if entries[key] == nil {entries[key] = [:]; index += 1}
-					entries[key]![languageName] = "--"
+					if setValue("--", forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
@@ -525,8 +583,7 @@ class happnCSVLocFile: Streamable {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if entries[key] == nil {entries[key] = [:]; index += 1}
-					entries[key]![languageName] = "--"
+					if setValue("--", forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
@@ -536,8 +593,7 @@ class happnCSVLocFile: Streamable {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if entries[key] == nil {entries[key] = [:]; index += 1}
-					entries[key]![languageName] = locString.value
+					if setValue(locString.value, forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
@@ -547,8 +603,7 @@ class happnCSVLocFile: Streamable {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if entries[key] == nil {entries[key] = [:]; index += 1}
-					entries[key]![languageName] = arrayItem.value
+					if setValue(arrayItem.value, forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
@@ -558,13 +613,12 @@ class happnCSVLocFile: Streamable {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if entries[key] == nil {entries[key] = [:]; index += 1}
-					entries[key]![languageName] = "--"
+					if setValue("--", forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
 					for quantity in ["zero", "one", "two", "few", "many", "other"] {
-						if let info = pluralGroup.values[quantity], (spaces, _) = info {
+						if let info = pluralGroup.values[quantity], let (spaces, _) = info {
 							for space in spaces {
 								switch space {
 								case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
@@ -583,8 +637,7 @@ class happnCSVLocFile: Streamable {
 							userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 						)
 						let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: true, withListOfKeys: &keys)
-						if entries[key] == nil {entries[key] = [:]; index += 1}
-						entries[key]![languageName] = (pluralItem?.value ?? "--")
+						if setValue((pluralItem?.value ?? "--"), forKey: key, withLanguage: languageName) {index += 1}
 						currentComment = ""
 						currentUserReadableComment = ""
 						currentUserReadableGroupComment = ""
@@ -610,8 +663,6 @@ class happnCSVLocFile: Streamable {
 		var currentPluralsValueByFilename: [String /* Language */: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], AndroidXMLLocFile.PluralGroup.PluralItem)?]] = [:]
 		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Android" else {continue}
-			
-			let value = entries[entry_key]!
 			
 			if !entry_key.comment.isEmpty {
 				var white: NSString?
@@ -674,7 +725,7 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let v = value[languageName] {
+					if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v))
 					} else {
 						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
@@ -682,7 +733,7 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("K"):
 					/* We're treating a CDATA string item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let v = value[languageName] {
+					if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v))
 					} else {
 						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
@@ -690,7 +741,7 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let v = value[languageName] {
+					if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
 						let noA = k.substring(from: k.characters.index(after: k.startIndex))
 						let sepByQuote = noA.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
@@ -708,7 +759,8 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("p") || k.hasPrefix("P"):
 					let isCData = k.hasPrefix("P")
 					/* We're treating a plural item */
-					if let v = value[languageName] where v != "--" && currentPluralsValueByFilename[filename] != nil {
+					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					if let v = v, v != "--" && currentPluralsValueByFilename[filename] != nil {
 						let noP = k.substring(from: k.characters.index(after: k.startIndex))
 						let sepByQuote = noP.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
@@ -725,7 +777,7 @@ class happnCSVLocFile: Streamable {
 							print("*** Warning: Got invalid plural key '\(k)' (either malformed or misplaced)")
 						}
 					} else {
-						if value[languageName] == nil {
+						if v == nil {
 							print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 						}
 					}
@@ -773,7 +825,7 @@ class happnCSVLocFile: Streamable {
 		var isFirst = true
 		for (refKey, refVals) in locFile.entries {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: "ReferencesTranslations.csv", comment: "", index: isFirst ? 0 : 1, userReadableGroupComment: isFirst ? "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••" : "", userReadableComment: "REF TRAD. DO NOT MODIFY.")
-			entries[key] = refVals
+			entries[key] = .entries(refVals)
 			isFirst = false
 		}
 	}
@@ -797,7 +849,7 @@ class happnCSVLocFile: Streamable {
 		for language in languages {
 			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
 		}
-		if !metadata.isEmpty, let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []), jsonStr = String(data: jsonData, encoding: String.Encoding.utf8) {
+		if !metadata.isEmpty, let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []), let jsonStr = String(data: jsonData, encoding: String.Encoding.utf8) {
 			/* Let's write the metadata */
 			target.write("\n\(jsonStr.csvCellValueWithSeparator(csvSeparator))")
 		}
@@ -830,21 +882,22 @@ class happnCSVLocFile: Streamable {
 				target.write("\n")
 			}
 			
-			let mappingStr = mappings[entry_key]?.stringRepresentation() ?? ""
 			let comment = "__" + entry_key.comment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
 			target.write(
 				"\(entry_key.locKey.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
 				"\(entry_key.env.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
 				"\(entry_key.filename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-				"\(comment.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-				"\(mappingStr.csvCellValueWithSeparator(csvSeparator))"
+				"\(comment.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)"
 			)
+			if case .mapping(let mapping) = value {target.write(csvSeparator + mapping.stringRepresentation().csvCellValueWithSeparator(csvSeparator))}
 			target.write(
 				"\(csvSeparator)\(basename.csvCellValueWithSeparator(csvSeparator))" +
 				"\(csvSeparator)\(entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator))"
 			)
-			for language in languages {
-				target.write("\(csvSeparator)\((value[language] ?? "TODOLOC").csvCellValueWithSeparator(csvSeparator))")
+			if case .entries(let entries) = value {
+				for language in languages {
+					target.write("\(csvSeparator)\((entries[language] ?? "TODOLOC").csvCellValueWithSeparator(csvSeparator))")
+				}
 			}
 			target.write("\n")
 		}

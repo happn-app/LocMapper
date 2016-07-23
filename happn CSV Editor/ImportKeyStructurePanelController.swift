@@ -53,8 +53,8 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 			selectedImportType = .Xcode
 		}
 		
-		importedLanguageNameForXcode = csvLocFile.metadata[metadataKeyForImportedLanguageForXcode] ?? ""
-		importedLanguageNameForAndroid = csvLocFile.metadata[metadataKeyForImportedLanguageForAndroid] ?? ""
+		importedLanguageNameForXcode = csvLocFile.stringMetadataValueForKey(metadataKeyForImportedLanguageForXcode) ?? ""
+		importedLanguageNameForAndroid = csvLocFile.stringMetadataValueForKey(metadataKeyForImportedLanguageForAndroid) ?? ""
 		
 		super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
 	}
@@ -70,8 +70,8 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 		
 		popUpButtonEnvironment.selectItem(withTag: selectedImportType.rawValue)
 		
-		tokenFieldExcludedPaths.stringValue = csvLocFile.metadata[metadataKeyForExcludedPathsForXcode] ?? ""
-		textFieldImportedFolderName.stringValue = csvLocFile.metadata[metadataKeyForImportedFolderForXcode] ?? ""
+		tokenFieldExcludedPaths.stringValue = csvLocFile.stringMetadataValueForKey(metadataKeyForExcludedPathsForXcode) ?? ""
+		textFieldImportedFolderName.stringValue = csvLocFile.stringMetadataValueForKey(metadataKeyForImportedFolderForXcode) ?? ""
 		textFieldImportedLanguageName.stringValue = importedLanguageNameForXcode
 		
 		gridView = NSGridView(views: [
@@ -182,7 +182,7 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 			textFieldImportedLanguageName.stringValue = importedLanguageNameForAndroid
 			
 			for v in [tokenFieldExcludedPaths, textFieldImportedFolderName] {
-				if let v = v, row = gridView.cell(for: v)?.row {
+				if let v = v, let row = gridView.cell(for: v)?.row {
 					gridView.removeRow(at: gridView.index(of: row))
 				}
 			}

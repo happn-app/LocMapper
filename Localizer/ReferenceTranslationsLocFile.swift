@@ -34,7 +34,7 @@ class ReferenceTranslationsLocFile {
 		
 		var entriesBuilding = [Key: [Language: Value]]()
 		for row in parsedRows {
-			guard let key = row["KEY"] where !key.isEmpty else {continue}
+			guard let key = row["KEY"], !key.isEmpty else {continue}
 			if entriesBuilding[key] != nil {
 				print("*** Warning: Found duplicated key \(key) when parsing reference translation loc file. The latest one wins.")
 			}

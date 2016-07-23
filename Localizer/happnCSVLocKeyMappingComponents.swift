@@ -114,11 +114,12 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 	let subTransformComponents: [LocValueTransformer]
 	
 	init(serialization: [String: AnyObject]) throws {
-		guard let
-			env          = serialization["env"] as? String,
-			filename     = serialization["filename"] as? String,
-			locKey       = serialization["loc_key"] as? String,
-			dtransform_s = serialization["transforms"] else
+		guard
+			let env          = serialization["env"] as? String,
+			let filename     = serialization["filename"] as? String,
+			let locKey       = serialization["loc_key"] as? String,
+			let dtransform_s = serialization["transforms"]
+			else
 		{
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Some keys are missing or invalid."])
 		}
@@ -277,10 +278,11 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	let escapeToken: String?
 	
 	init(serialization: [String: AnyObject]) throws {
-		guard let
-			od = serialization["open_delimiter"] as? String,
-			r  = serialization["replacement"] as? String,
-			cd = serialization["close_delimiter"] as? String else
+		guard
+			let od = serialization["open_delimiter"] as? String,
+			let r  = serialization["replacement"] as? String,
+			let cd = serialization["close_delimiter"] as? String
+			else
 		{
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing either open_delimiter, replacement or close_delimiter."])
 		}
@@ -288,8 +290,8 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		openDelim = od
 		replacement = r
 		closeDelim = cd
-		if let e = serialization["escape_token"] as? String where e.characters.count >= 1 {escapeToken = e}
-		else                                                                              {escapeToken = nil}
+		if let e = serialization["escape_token"] as? String, e.characters.count >= 1 {escapeToken = e}
+		else                                                                         {escapeToken = nil}
 		super.init()
 	}
 	

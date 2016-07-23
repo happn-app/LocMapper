@@ -25,7 +25,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	
 	override var representedObject: AnyObject? {
 		didSet {
-			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entries.keys.sorted()}
+			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys.sorted()}
 			else                           {sortedKeys = nil}
 			
 			tableColumnsCreated = false
@@ -48,16 +48,16 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
 		guard let tableColumn = tableColumn else {return nil}
-		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return nil}
-		return csvLocFile.entries[key]?[tableColumn.identifier]?.replacingOccurrences(of: "\\n", with: "\n") ?? "TODOLOC"
+		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
+		return csvLocFile.resolvedValueForKey(key, withLanguage: tableColumn.identifier)?.replacingOccurrences(of: "\\n", with: "\n") ?? "TODOLOC"
 	}
 	
 	func tableView(_ tableView: NSTableView, setObjectValue object: AnyObject?, for tableColumn: NSTableColumn?, row: Int) {
-		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return}
+		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return}
 		guard let tableColumn = tableColumn else {return}
 		
 		guard let strValue = (object as? String)?.replacingOccurrences(of: "\n", with: "\\n") else {return}
-		csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
+		_ = csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
 		
 		DispatchQueue.main.async {
 			tableView.beginUpdates()
@@ -70,7 +70,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
 		/* Based on https://gist.github.com/billymeltdown/9084884 */
 		let minimumHeight = CGFloat(3)
-		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return minimumHeight}
+		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return minimumHeight}
 		
 		/* Check the cache to avoid unnecessary recalculation */
 		if let cachedRowHeight = cachedRowsHeights.object(forKey: key.filename + key.locKey) as? CGFloat {
@@ -79,7 +79,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		
 		var height = minimumHeight
 		for column in tableView.tableColumns {
-			guard let str = csvLocFile.entries[key]?[column.identifier]?.replacingOccurrences(of: "\\n", with: "\n") else {
+			guard let str = csvLocFile.resolvedValueForKey(key, withLanguage: column.identifier)?.replacingOccurrences(of: "\\n", with: "\n") else {
 				continue
 			}
 			
