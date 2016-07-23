@@ -14,7 +14,7 @@ import Foundation
 
 protocol ParsableXibStr {
 	var _xibstr_length: Int {get}
-	func _xibstr_hasPrefix(prefix: String) -> Bool
+	func _xibstr_hasPrefix(_ prefix: String) -> Bool
 	
 	func _xibstr_mutable() -> MutableParsableXibStr
 }
@@ -23,7 +23,7 @@ protocol MutableParsableXibStr {
 }
 
 extension String: ParsableXibStr, MutableParsableXibStr {
-	func _xibstr_hasPrefix(prefix: String) -> Bool {
+	func _xibstr_hasPrefix(_ prefix: String) -> Bool {
 		return self.hasPrefix(prefix)
 	}
 	
@@ -37,7 +37,7 @@ extension String: ParsableXibStr, MutableParsableXibStr {
 }
 
 extension AttributedString: ParsableXibStr {
-	func _xibstr_hasPrefix(prefix: String) -> Bool {
+	func _xibstr_hasPrefix(_ prefix: String) -> Bool {
 		return self.string.hasPrefix(prefix)
 	}
 	

@@ -63,12 +63,16 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "test_android_export"
+            argument = "test_xcode_export"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "test_xcode_export"
+            argument = "test_xcode_import"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "test_android_export"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "test_android_import"
