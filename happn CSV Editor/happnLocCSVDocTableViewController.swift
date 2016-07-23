@@ -49,7 +49,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
 		guard let tableColumn = tableColumn else {return nil}
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
-		return csvLocFile.resolvedValueForKey(key, withLanguage: tableColumn.identifier)?.replacingOccurrences(of: "\\n", with: "\n") ?? "TODOLOC"
+		return csvLocFile.resolvedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
 	}
 	
 	func tableView(_ tableView: NSTableView, setObjectValue object: AnyObject?, for tableColumn: NSTableColumn?, row: Int) {
@@ -79,10 +79,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		
 		var height = minimumHeight
 		for column in tableView.tableColumns {
-			guard let str = csvLocFile.resolvedValueForKey(key, withLanguage: column.identifier)?.replacingOccurrences(of: "\\n", with: "\n") else {
-				continue
-			}
-			
+			let str = csvLocFile.resolvedValueForKey(key, withLanguage: column.identifier).replacingOccurrences(of: "\\n", with: "\n")
 			let cell = column.dataCell as! NSCell
 			cell.stringValue = str
 			let rect = NSMakeRect(0, 0, column.width, CGFloat.greatestFiniteMagnitude)

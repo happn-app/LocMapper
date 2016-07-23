@@ -314,10 +314,11 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Manual Modification of CSV Loc File
 	   ******************************************* */
 	
-	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) -> String? {
-		guard let v = entries[key] else {return nil}
+	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
+		let defaultValue = "TODOLOC"
+		guard let v = entries[key] else {return defaultValue}
 		switch v {
-		case .entries(let entries): return entries[language]
+		case .entries(let entries): return entries[language] ?? defaultValue
 		case .mapping(_): return "TODO: MAPPING RESOLVING"
 		}
 	}
@@ -497,15 +498,13 @@ class happnCSVLocFile: Streamable {
 				
 				filenameToComponents[filename]! += commentComponents
 				
-				if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
-					filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
-						key: k as String,
-						keyHasQuotes: keyHasQuotes,
-						equalSign: equalString,
-						value: v,
-						andSemicolon: semicolonString
-					))
-				}
+				filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
+					key: k as String,
+					keyHasQuotes: keyHasQuotes,
+					equalSign: equalString,
+					value: resolvedValueForKey(entry_key, withLanguage: languageName),
+					andSemicolon: semicolonString
+				))
 			}
 		}
 		
@@ -726,42 +725,33 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v))
-					} else {
-						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
-					}
+					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v))
 				case let k where k.hasPrefix("K"):
 					/* We're treating a CDATA string item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v))
-					} else {
-						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
-					}
+					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v))
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let v = resolvedValueForKey(entry_key, withLanguage: languageName) {
-						let noA = k.substring(from: k.characters.index(after: k.startIndex))
-						let sepByQuote = noA.components(separatedBy: "\"")
-						if sepByQuote.count == 2 {
-							if let idx = Int(sepByQuote[1]) {
-								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
-							} else {
-								print("*** Warning: Invalid key '\(k)': cannot find idx")
-							}
+					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					let noA = k.substring(from: k.characters.index(after: k.startIndex))
+					let sepByQuote = noA.components(separatedBy: "\"")
+					if sepByQuote.count == 2 {
+						if let idx = Int(sepByQuote[1]) {
+							filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
 						} else {
-							print("*** Warning: Got invalid array item key '\(k)'")
+							print("*** Warning: Invalid key '\(k)': cannot find idx")
 						}
 					} else {
-						print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
+						print("*** Warning: Got invalid array item key '\(k)'")
 					}
 				case let k where k.hasPrefix("p") || k.hasPrefix("P"):
 					let isCData = k.hasPrefix("P")
 					/* We're treating a plural item */
 					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
-					if let v = v, v != "--" && currentPluralsValueByFilename[filename] != nil {
+					if v != "--" && currentPluralsValueByFilename[filename] != nil {
 						let noP = k.substring(from: k.characters.index(after: k.startIndex))
 						let sepByQuote = noP.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
@@ -776,10 +766,6 @@ class happnCSVLocFile: Streamable {
 							currentPluralsValueByFilename[filename]![quantity] = (spaces, p)
 						} else {
 							print("*** Warning: Got invalid plural key '\(k)' (either malformed or misplaced)")
-						}
-					} else {
-						if v == nil {
-							print("*** Warning: Didn't get a value for language \(languageName) for key \(k)")
 						}
 					}
 				default:
