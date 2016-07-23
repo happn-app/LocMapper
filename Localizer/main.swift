@@ -233,7 +233,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 			print("Error reading Xcode strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -242,12 +242,12 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print(csv, terminator: "")
 		var csvText = ""
 		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
+		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.hppnloccsv", usingEncoding: String.Encoding.utf8)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -260,7 +260,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 			print("Error reading Android strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -269,12 +269,12 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print(csv, terminator: "")
 		var csvText = ""
 		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
+		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.hppnloccsv", usingEncoding: String.Encoding.utf8)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
