@@ -314,6 +314,10 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Manual Modification of CSV Loc File
 	   ******************************************* */
 	
+	func lineValueForKey(_ key: LineKey) -> LineValue? {
+		return entries[key]
+	}
+	
 	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
 		let defaultValue = "TODOLOC"
 		guard let v = entries[key] else {return defaultValue}

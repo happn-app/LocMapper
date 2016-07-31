@@ -12,6 +12,10 @@ import Cocoa
 
 class LocEntryViewController: NSTabViewController {
 	
+	@IBOutlet var tabViewItemContext: NSTabViewItem!
+	@IBOutlet var tabViewItemMapping: NSTabViewItem!
+	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
+	
 	class LocEntry {
 		let lineKey: happnCSVLocFile.LineKey
 		let lineValue: happnCSVLocFile.LineValue
@@ -24,11 +28,16 @@ class LocEntryViewController: NSTabViewController {
 	
 	override var representedObject: AnyObject? {
 		didSet {
+			locEntryContextViewController.representedObject = representedObject
 		}
 	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+	}
+	
+	private var locEntryContextViewController: LocEntryContextViewController! {
+		return tabViewItemContext.viewController as? LocEntryContextViewController
 	}
 	
 }

@@ -25,7 +25,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	var handlerNotifyDocumentModification: (() -> Void)?
-	var handlerSetEntryViewSelection: ((newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)) -> Void)?
+	var handlerSetEntryViewSelection: ((newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
@@ -98,7 +98,11 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	func tableViewSelectionDidChange(_ notification: Notification) {
-		print("hello")
+		guard tableView.selectedRow >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], let value = csvLocFile.lineValueForKey(key) else {
+			handlerSetEntryViewSelection?(newSelection: nil)
+			return
+		}
+		handlerSetEntryViewSelection?(newSelection: (key, value))
 	}
 	
 	/* If we were view-based... but we're not (cell-based is still faster). */

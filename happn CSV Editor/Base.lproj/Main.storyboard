@@ -967,6 +967,9 @@
                         <tabViewItems/>
                     </tabView>
                     <connections>
+                        <outlet property="tabViewItemAdvancedMapping" destination="xbE-Uc-8td" id="lMv-1Z-obv"/>
+                        <outlet property="tabViewItemContext" destination="551-Mg-qbo" id="reP-5f-Olr"/>
+                        <outlet property="tabViewItemMapping" destination="WPL-ZU-yBx" id="UoZ-4m-u7Q"/>
                         <segue destination="LlL-Ny-Ucy" kind="relationship" relationship="tabItems" id="rBd-HP-91N"/>
                         <segue destination="vy9-Jp-xEg" kind="relationship" relationship="tabItems" id="ntd-AS-46y"/>
                         <segue destination="Pxz-rI-HMY" kind="relationship" relationship="tabItems" id="sjE-ya-V3g"/>
@@ -979,7 +982,7 @@
         <!--Context-->
         <scene sceneID="iPi-lh-0KH">
             <objects>
-                <viewController title="Context" id="LlL-Ny-Ucy" sceneMemberID="viewController">
+                <viewController title="Context" id="LlL-Ny-Ucy" customClass="LocEntryContextViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="4Lw-82-IgK">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="165"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1051,6 +1054,10 @@
                             <constraint firstItem="G5y-Lm-I3v" firstAttribute="leading" secondItem="4Lw-82-IgK" secondAttribute="leading" constant="10" id="yZL-KV-NBR"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="labelGeneralInfo" destination="oh1-yi-z5V" id="0WS-h3-cmc"/>
+                        <outlet property="textViewContext" destination="8Nh-Ot-zly" id="Kw9-e4-F5b"/>
+                    </connections>
                 </viewController>
                 <customObject id="p8v-JJ-fs2" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>

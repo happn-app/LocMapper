@@ -32,7 +32,8 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 		
 		/* We assume the table view controller will not change later. */
 		tableViewController.handlerSetEntryViewSelection = { [weak self] keyVal in
-			self?.locEntryViewController.representedObject = LocEntryViewController.LocEntry(lineKey: keyVal.0, lineValue: keyVal.1)
+			if let keyVal = keyVal {self?.locEntryViewController.representedObject = LocEntryViewController.LocEntry(lineKey: keyVal.0, lineValue: keyVal.1)}
+			else                   {self?.locEntryViewController.representedObject = nil}
 		}
 	}
 	
