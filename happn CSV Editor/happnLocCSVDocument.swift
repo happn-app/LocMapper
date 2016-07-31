@@ -40,6 +40,10 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
 		addWindowController(windowController)
 		
+		mainViewController.handlerNotifyDocumentModification = { [weak self] in
+			self?.updateChangeCount(.changeDone)
+		}
+		
 		sendRepresentedObjectToSubControllers(csvLocFile)
 	}
 	
@@ -238,8 +242,8 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	}
 	
 	private func sendRepresentedObjectToSubControllers(_ object: AnyObject?) {
-		for v in windowControllers {
-			v.contentViewController?.representedObject = object
+		for w in windowControllers {
+			w.contentViewController?.representedObject = csvLocFile
 		}
 	}
 	

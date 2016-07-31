@@ -14,16 +14,27 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	
 	@IBOutlet var tabViewItemDocContent: NSTabViewItem!
 	
+	override var representedObject: AnyObject? {
+		didSet {
+			optionsSplitViewController.representedObject = representedObject
+			if representedObject == nil {self.selectedTabViewItemIndex = 0}
+			else                        {self.selectedTabViewItemIndex = 1}
+		}
+	}
+	
+	/** Changes after view did load are ignored. */
+	var handlerNotifyDocumentModification: (() -> Void)? {
+		didSet {
+			optionsSplitViewController.handlerNotifyDocumentModification = handlerNotifyDocumentModification
+		}
+	}
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 	}
 	
-	override var representedObject: AnyObject? {
-		didSet {
-			tabViewItemDocContent.viewController?.representedObject = representedObject
-			if representedObject == nil {self.selectedTabViewItemIndex = 0}
-			else                        {self.selectedTabViewItemIndex = 1}
-		}
+	private var optionsSplitViewController: happnLocCSVDocOptionsSplitViewController! {
+		return tabViewItemDocContent.viewController as? happnLocCSVDocOptionsSplitViewController
 	}
 	
 }

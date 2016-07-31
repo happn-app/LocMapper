@@ -14,15 +14,6 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	
 	@IBOutlet var tableView: NSTableView!
 	
-	private var tableColumnsCreated = false
-	
-	private var csvLocFile: happnCSVLocFile? {
-		return representedObject as? happnCSVLocFile
-	}
-	
-	private var sortedKeys: [happnCSVLocFile.LineKey]?
-	private let cachedRowsHeights = Cache<NSString, NSNumber>()
-	
 	override var representedObject: AnyObject? {
 		didSet {
 			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys.sorted()}
@@ -32,6 +23,9 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			createTableViewColumnsIfNeeded()
 		}
 	}
+	
+	var handlerNotifyDocumentModification: (() -> Void)?
+	var handlerSetEntryViewSelection: ((newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)) -> Void)?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
@@ -60,6 +54,8 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		_ = csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
 		
 		DispatchQueue.main.async {
+			self.handlerNotifyDocumentModification?()
+			
 			tableView.beginUpdates()
 			self.cachedRowsHeights.removeObject(forKey: key.filename + key.locKey)
 			tableView.noteHeightOfRows(withIndexesChanged: IndexSet(integer: row))
@@ -124,6 +120,19 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 //		result.stringValue = csvLocFile.entries[key]?[tableColumn.identifier] ?? "TODOLOC"
 //		return result
 //	}
+	
+	/* ***************
+	   MARK: - Private
+	   *************** */
+	
+	private var tableColumnsCreated = false
+	
+	private var csvLocFile: happnCSVLocFile? {
+		return representedObject as? happnCSVLocFile
+	}
+	
+	private var sortedKeys: [happnCSVLocFile.LineKey]?
+	private let cachedRowsHeights = Cache<NSString, NSNumber>()
 	
 	private func createTableViewColumnsIfNeeded() {
 		guard !tableColumnsCreated else {return}

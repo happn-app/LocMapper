@@ -17,7 +17,15 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	
 	override var representedObject: AnyObject? {
 		didSet {
-			splitItemContent.viewController.representedObject = representedObject
+			optionsViewController.representedObject = representedObject
+			contentViewController.representedObject = representedObject
+		}
+	}
+	
+	var handlerNotifyDocumentModification: (() -> Void)? {
+		didSet {
+			optionsViewController.handlerNotifyDocumentModification = handlerNotifyDocumentModification
+			contentViewController.handlerNotifyDocumentModification = handlerNotifyDocumentModification
 		}
 	}
 	
@@ -27,7 +35,15 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	}
 	
 	@IBAction func showEntryDetails(_ sender: AnyObject!) {
-		(splitItemContent.viewController as? happnLocCSVDocContentSplitViewController)?.showEntryDetails(sender)
+		contentViewController.showEntryDetails(sender)
+	}
+	
+	private var optionsViewController: happnLocCSVDocOptionsViewController! {
+		return splitItemOptions.viewController as? happnLocCSVDocOptionsViewController
+	}
+	
+	private var contentViewController: happnLocCSVDocContentSplitViewController! {
+		return splitItemContent.viewController as? happnLocCSVDocContentSplitViewController
 	}
 	
 }

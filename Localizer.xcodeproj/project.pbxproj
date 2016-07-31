@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
 		7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */; };
 		7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */; };
 		7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */; };
@@ -55,6 +56,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
 		7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTableViewController.swift; sourceTree = "<group>"; };
 		7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTabViewController.swift; sourceTree = "<group>"; };
 		7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingDocViewController.swift; sourceTree = "<group>"; };
@@ -110,8 +112,7 @@
 				7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */,
 				7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */,
 				7B560D641C17022F001DD2B0 /* Misc. View Controllers */,
-				7B560D651C170273001DD2B0 /* Main View Controller */,
-				7B560D661C170280001DD2B0 /* Selection Info View Controllers */,
+				7B560D651C170273001DD2B0 /* Leaf Controllers */,
 				7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */,
 				7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */,
 			);
@@ -129,20 +130,14 @@
 			name = "Misc. View Controllers";
 			sourceTree = "<group>";
 		};
-		7B560D651C170273001DD2B0 /* Main View Controller */ = {
+		7B560D651C170273001DD2B0 /* Leaf Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */,
 				7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */,
-			);
-			name = "Main View Controller";
-			sourceTree = "<group>";
-		};
-		7B560D661C170280001DD2B0 /* Selection Info View Controllers */ = {
-			isa = PBXGroup;
-			children = (
 				7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */,
 			);
-			name = "Selection Info View Controllers";
+			name = "Leaf Controllers";
 			sourceTree = "<group>";
 		};
 		7B6E259619D4157A001934ED = {
@@ -322,6 +317,7 @@
 				7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */,
 				7B9BD4E41C1087BF007A096D /* CSVParser.swift in Sources */,
 				7B9BD4E21C1087B9007A096D /* stderr.swift in Sources */,
+				7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */,
 				7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */,
 				7B9BD4E31C1087BC007A096D /* AndroidXMLLocFile.swift in Sources */,
 				7BABB9591C11D99800DACD85 /* happnCSVLocKeyMappingComponents.swift in Sources */,

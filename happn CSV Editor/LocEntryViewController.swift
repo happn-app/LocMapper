@@ -12,13 +12,23 @@ import Cocoa
 
 class LocEntryViewController: NSTabViewController {
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
+	class LocEntry {
+		let lineKey: happnCSVLocFile.LineKey
+		let lineValue: happnCSVLocFile.LineValue
+		
+		init(lineKey k: happnCSVLocFile.LineKey, lineValue v: happnCSVLocFile.LineValue) {
+			lineKey = k
+			lineValue = v
+		}
 	}
 	
 	override var representedObject: AnyObject? {
 		didSet {
 		}
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
 	}
 	
 }
