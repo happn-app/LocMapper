@@ -423,7 +423,7 @@ class AndroidXMLLocFile: Streamable {
 			if let str = NSString(data: CDATABlock, encoding: String.Encoding.utf8.rawValue) as? String {currentChars += str}
 		}
 		
-		func parser(_ parser: XMLParser, parseErrorOccurred parseError: NSError) {
+		func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
 			print("parseErrorOccurred \(parseError)")
 		}
 	}

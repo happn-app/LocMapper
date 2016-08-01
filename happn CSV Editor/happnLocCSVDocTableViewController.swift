@@ -136,7 +136,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	private var sortedKeys: [happnCSVLocFile.LineKey]?
-	private let cachedRowsHeights = Cache<NSString, NSNumber>()
+	private let cachedRowsHeights = NSCache<NSString, NSNumber>()
 	
 	private func createTableViewColumnsIfNeeded() {
 		guard !tableColumnsCreated else {return}

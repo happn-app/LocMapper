@@ -45,7 +45,7 @@ class LocEntryContextViewController: NSViewController {
 	private var rangeEnv: Range<String.Index>!
 	
 	private func findRangeInString(_ string: String, withRegularExpression exprStr: String) -> Range<String.Index> {
-		let expr = try! RegularExpression(pattern: exprStr, options: [])
+		let expr = try! NSRegularExpression(pattern: exprStr, options: [])
 		let range = expr.rangeOfFirstMatch(in: string, options: [], range: NSRange(location: 0, length: string.characters.count))
 		return Range(uncheckedBounds: (
 			lower: string.index(string.startIndex, offsetBy: range.location),

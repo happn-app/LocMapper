@@ -66,7 +66,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		}
 		
 		csvLocFile = nil
-		DispatchQueue.global(attributes: .qosUserInitiated).async {
+		DispatchQueue.global(qos: .userInitiated).async {
 			do {
 				let locFile = try happnCSVLocFile(filecontent: fileContentStr, withCSVSeparator: ",")
 				DispatchQueue.main.async {
@@ -186,17 +186,15 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 					switch selectedImportType {
 					case .Xcode:
 						guard let url = openPanel.url else {return}
-						let stringsFiles = try XcodeStringsFile.stringsFilesInProject(url.absoluteURL!.path!, excluded_paths: excludedPaths, included_paths: ["/"+importedFolder+"/"])
+						let stringsFiles = try XcodeStringsFile.stringsFilesInProject(url.absoluteURL.path, excluded_paths: excludedPaths, included_paths: ["/"+importedFolder+"/"])
 						csvLocFile.mergeXcodeStringsFiles(stringsFiles, folderNameToLanguageName: [importedFolder: languageName])
 						
 					case .Android:
 						for url in openPanel.urls {
-							if
-								let noFilename = try? url.deletingLastPathComponent(),
-								let folderName = noFilename.lastPathComponent,
-								let noFolderName = try? noFilename.deletingLastPathComponent(),
-								let androidXMLLocFile = try? AndroidXMLLocFile(fromPath: url.absoluteURL!.path!, relativeToProjectPath: noFolderName.absoluteURL!.path!)
-							{
+							let noFilename = url.deletingLastPathComponent()
+							let folderName = noFilename.lastPathComponent
+							let noFolderName = noFilename.deletingLastPathComponent()
+							if let androidXMLLocFile = try? AndroidXMLLocFile(fromPath: url.absoluteURL.path, relativeToProjectPath: noFolderName.absoluteURL.path) {
 								csvLocFile.mergeAndroidXMLLocStringsFiles([androidXMLLocFile], folderNameToLanguageName: [folderName: languageName])
 							}
 						}
