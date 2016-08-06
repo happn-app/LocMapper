@@ -1066,7 +1066,7 @@
         <!--Mapping-->
         <scene sceneID="LEh-yi-1mT">
             <objects>
-                <viewController title="Mapping" id="vy9-Jp-xEg" sceneMemberID="viewController">
+                <viewController title="Mapping" id="vy9-Jp-xEg" customClass="LocEntryMappingViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="LTP-CJ-TmE">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1224,7 +1224,7 @@
         <!--Advanced Mapping-->
         <scene sceneID="jVZ-xe-0wu">
             <objects>
-                <viewController title="Advanced Mapping" id="Pxz-rI-HMY" sceneMemberID="viewController">
+                <viewController title="Advanced Mapping" id="Pxz-rI-HMY" customClass="LocEntryAdvancedMappingViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Q2N-ej-ciS">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>

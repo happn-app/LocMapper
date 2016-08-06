@@ -12,10 +12,6 @@ import Cocoa
 
 class LocEntryViewController: NSTabViewController {
 	
-	@IBOutlet var tabViewItemContext: NSTabViewItem!
-	@IBOutlet var tabViewItemMapping: NSTabViewItem!
-	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
-	
 	class LocEntry {
 		let lineKey: happnCSVLocFile.LineKey
 		let lineValue: happnCSVLocFile.LineValue
@@ -26,9 +22,22 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
+	@IBOutlet var tabViewItemContext: NSTabViewItem!
+	@IBOutlet var tabViewItemMapping: NSTabViewItem!
+	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
+	
 	override var representedObject: AnyObject? {
 		didSet {
 			locEntryContextViewController.representedObject = representedObject
+			locEntryMappingViewController.representedObject = representedObject
+			locEntryAdvancedMappingViewController.representedObject = representedObject
+		}
+	}
+	
+	var handlerSetEntryMapping: ((newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, forEntry: LocEntry) -> Void)? {
+		didSet {
+			locEntryMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
+			locEntryAdvancedMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
 		}
 	}
 	
@@ -38,6 +47,14 @@ class LocEntryViewController: NSTabViewController {
 	
 	private var locEntryContextViewController: LocEntryContextViewController! {
 		return tabViewItemContext.viewController as? LocEntryContextViewController
+	}
+	
+	private var locEntryMappingViewController: LocEntryMappingViewController! {
+		return tabViewItemMapping.viewController as? LocEntryMappingViewController
+	}
+	
+	private var locEntryAdvancedMappingViewController: LocEntryAdvancedMappingViewController! {
+		return tabViewItemAdvancedMapping.viewController as? LocEntryAdvancedMappingViewController
 	}
 	
 }

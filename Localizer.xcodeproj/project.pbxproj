@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
+		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
 		7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */; };
@@ -57,6 +59,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
+		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
 		7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTableViewController.swift; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 				7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */,
 				7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */,
 				7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */,
+				7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */,
 			);
 			name = "Misc. View Controllers";
 			sourceTree = "<group>";
@@ -137,8 +142,9 @@
 			children = (
 				7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */,
 				7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */,
-				7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */,
 				7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */,
+				7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */,
+				7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */,
 			);
 			name = "Leaf Controllers";
 			sourceTree = "<group>";
@@ -308,6 +314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */,
+				7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */,
 				7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */,
 				7B637D241C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift in Sources */,
 				7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */,
@@ -323,6 +330,7 @@
 				7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */,
 				7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */,
 				7B9BD4E31C1087BC007A096D /* AndroidXMLLocFile.swift in Sources */,
+				7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */,
 				7BABB9591C11D99800DACD85 /* happnCSVLocKeyMappingComponents.swift in Sources */,
 				7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */,
 				7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */,

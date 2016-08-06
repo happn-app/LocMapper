@@ -15,6 +15,18 @@ class LocEntryContextViewController: NSViewController {
 	@IBOutlet var labelGeneralInfo: NSTextField!
 	@IBOutlet var textViewContext: NSTextView!
 	
+	override var representedObject: AnyObject? {
+		didSet {
+			if let representedObject = representedObject as? LocEntryViewController.LocEntry {
+				updateLabelGeneralInfoWith(env: representedObject.lineKey.env, file: representedObject.lineKey.filename, key: representedObject.lineKey.locKey)
+				textViewContext.string = representedObject.lineKey.userReadableComment
+			} else {
+				updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
+				textViewContext.string = ""
+			}
+		}
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -27,17 +39,9 @@ class LocEntryContextViewController: NSViewController {
 		textViewContext.string = ""
 	}
 	
-	override var representedObject: AnyObject? {
-		didSet {
-			if let representedObject = representedObject as? LocEntryViewController.LocEntry {
-				updateLabelGeneralInfoWith(env: representedObject.lineKey.env, file: representedObject.lineKey.filename, key: representedObject.lineKey.locKey)
-				textViewContext.string = representedObject.lineKey.userReadableComment
-			} else {
-				updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
-				textViewContext.string = ""
-			}
-		}
-	}
+	/* ***************
+	   MARK: - Private
+	   *************** */
 	
 	private var originalGeneralInfoText: String!
 	private var rangeKey: Range<String.Index>!
