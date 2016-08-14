@@ -29,6 +29,14 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 		}
 	}
 	
+	@IBAction func showFilters(_ sender: AnyObject!) {
+		optionsSplitViewController.showFilters(sender)
+	}
+	
+	@IBAction func showEntryDetails(_ sender: AnyObject!) {
+		optionsSplitViewController.showEntryDetails(sender)
+	}
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 	}
