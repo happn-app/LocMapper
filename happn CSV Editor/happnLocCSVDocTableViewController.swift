@@ -106,22 +106,22 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	/* If we were view-based... but we're not (cell-based is still faster). */
-//	func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
+//	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
 //		guard let tableColumn = tableColumn else {return nil}
-//		guard let csvLocFile = csvLocFile, key = sortedKeys?[row] else {return nil}
+//		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
 //		
 //		let identifier = "LocEntryCell"
 //		
 //		let result: NSTextField
-//		if let r = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTextField {result = r}
+//		if let r = tableView.make(withIdentifier: identifier, owner: self) as? NSTextField {result = r}
 //		else {
 //			result = NSTextField(frame: NSZeroRect)
-//			result.bordered = false
+//			result.isBordered = false
 //			result.drawsBackground = false
 //			result.identifier = identifier
 //		}
 //		
-//		result.stringValue = csvLocFile.entries[key]?[tableColumn.identifier] ?? "TODOLOC"
+//		result.stringValue = csvLocFile.resolvedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
 //		return result
 //	}
 	
