@@ -10,7 +10,7 @@ import Foundation
 
 
 
-func usage<TargetStream: OutputStream>(program_name: String, stream: inout TargetStream) {
+func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout TargetStream) {
 	print("Usage: \(program_name) command [args ...]", to: &stream)
 	print("", to: &stream)
 	print("Commands are:", to: &stream)
@@ -33,25 +33,25 @@ func usage<TargetStream: OutputStream>(program_name: String, stream: inout Targe
  * and the usage, then exits with syntax error if there is not enough arguments
  * given to the program */
 func argAtIndexOrExit(_ i: Int, error_message: String) -> String {
-	guard Process.arguments.count > i else {
+	guard CommandLine.arguments.count > i else {
 		print("Syntax error: \(error_message)", to: &mx_stderr)
-		usage(program_name: Process.arguments[0], stream: &mx_stderr)
+		usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
 		exit(1)
 	}
 	
-	return Process.arguments[i]
+	return CommandLine.arguments[i]
 }
 
 func getFolderToHumanLanguageNamesFromIndex(_ i: Int) -> [String: String] {
 	var folder_name_to_language_name = [String: String]()
 	
 	var i = i
-	while i < Process.arguments.count {
+	while i < CommandLine.arguments.count {
 		let folder_name = argAtIndexOrExit(i, error_message: "INTERNAL ERROR"); i += 1
 		let language_name = argAtIndexOrExit(i, error_message: "Language name is required for a given folder name"); i += 1
 		guard folder_name_to_language_name[folder_name] == nil else {
 			print("Syntax error: Folder name \(folder_name) defined more than once", to: &mx_stderr)
-			usage(program_name: Process.arguments[0], stream: &mx_stderr)
+			usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
 			exit(1)
 		}
 		folder_name_to_language_name[folder_name] = language_name
@@ -59,7 +59,7 @@ func getFolderToHumanLanguageNamesFromIndex(_ i: Int) -> [String: String] {
 	
 	guard folder_name_to_language_name.count > 0 else {
 		print("Syntax error: Expected at least one language. Got none.", to: &mx_stderr)
-		usage(program_name: Process.arguments[0], stream: &mx_stderr)
+		usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
 		exit(1)
 	}
 	
@@ -282,7 +282,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		exit(0)
 	
 	default:
-		print("Unknown command \(Process.arguments[1])", to: &mx_stderr)
-		usage(program_name: Process.arguments[0], stream: &mx_stderr)
+		print("Unknown command \(CommandLine.arguments[1])", to: &mx_stderr)
+		usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
 		exit(2)
 }

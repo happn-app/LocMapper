@@ -22,7 +22,7 @@ let COMMENT_HEADER_NAME = "Comments"
 
 private extension String {
 	func csvCellValueWithSeparator(_ sep: String) -> String {
-		if sep.characters.count != 1 {NSException(name: "Invalid Separator" as NSExceptionName, reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
+		if sep.characters.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
 		if rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
 			let doubledDoubleQuotes = replacingOccurrences(of: "\"", with: "\"\"")
@@ -303,7 +303,7 @@ class happnCSVLocFile: Streamable {
 	
 	/* *** Init *** */
 	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: [String: String], csvSeparator csvSep: String) {
-		if csvSep.characters.count != 1 {NSException(name: "Invalid Separator" as NSExceptionName, reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
+		if csvSep.characters.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		languages = l
 		entries = e
@@ -825,7 +825,7 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Streamable Implementation
 	   ********************************* */
 	
-	func write<Target : OutputStream>(to target: inout Target) {
+	func write<Target : TextOutputStream>(to target: inout Target) {
 		target.write(
 			"\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
 			"\(PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +

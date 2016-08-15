@@ -15,7 +15,7 @@ class LocEntryContextViewController: NSViewController {
 	@IBOutlet var labelGeneralInfo: NSTextField!
 	@IBOutlet var textViewContext: NSTextView!
 	
-	override var representedObject: AnyObject? {
+	override var representedObject: Any? {
 		didSet {
 			if let representedObject = representedObject as? LocEntryViewController.LocEntry {
 				updateLabelGeneralInfoWith(env: representedObject.lineKey.env, file: representedObject.lineKey.filename, key: representedObject.lineKey.locKey)

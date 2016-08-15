@@ -12,7 +12,7 @@ import Cocoa
 
 class LocEntryMappingViewController: NSViewController {
 	
-	var handlerSetEntryMapping: ((newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, forEntry: LocEntryViewController.LocEntry) -> Void)?
+	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()

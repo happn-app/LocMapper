@@ -14,7 +14,7 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	
 	@IBOutlet var tabViewItemDocContent: NSTabViewItem!
 	
-	override var representedObject: AnyObject? {
+	override var representedObject: Any? {
 		didSet {
 			optionsSplitViewController.representedObject = representedObject
 			if representedObject == nil {self.selectedTabViewItemIndex = 0}

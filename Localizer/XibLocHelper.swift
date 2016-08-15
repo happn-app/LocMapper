@@ -36,7 +36,7 @@ extension String: ParsableXibStr, MutableParsableXibStr {
 	}
 }
 
-extension AttributedString: ParsableXibStr {
+extension NSAttributedString: ParsableXibStr {
 	func _xibstr_hasPrefix(_ prefix: String) -> Bool {
 		return self.string.hasPrefix(prefix)
 	}
@@ -59,27 +59,27 @@ protocol StringOrAttributedString {
 extension String: StringOrAttributedString {
 }
 
-extension AttributedString: StringOrAttributedString {
+extension NSAttributedString: StringOrAttributedString {
 }
 
 class XibLocHelper {
 	
 	func stringByParsingXibComplexLocString(
 		baseString: String, escapeToken escape: String,
-		simpleReplacementSeparators srs: OrderedSet, values srsValues: [String],
-		orderedReplacementSeparators ores: OrderedSet, interiorSeparators oris: OrderedSet, values orsValues: [Int],
-		pluralGroupExteriorSeparators pges: OrderedSet, interiorSeparators pgis: OrderedSet, defaultPluralityDefinition dpd: String, values pgsValues: [Int])
+		simpleReplacementSeparators srs: NSOrderedSet, values srsValues: [String],
+		orderedReplacementSeparators ores: NSOrderedSet, interiorSeparators oris: NSOrderedSet, values orsValues: [Int],
+		pluralGroupExteriorSeparators pges: NSOrderedSet, interiorSeparators pgis: NSOrderedSet, defaultPluralityDefinition dpd: String, values pgsValues: [Int])
 		-> String
 	{
 		return baseString
 	}
 	
 	func stringByParsingXibComplexLocString(
-		baseString: AttributedString, escapeToken escape: String,
-		simpleReplacementSeparators srs: OrderedSet, values srsValues: [StringOrAttributedString],
-		orderedReplacementSeparators ores: OrderedSet, interiorSeparators oris: OrderedSet, values orsValues: [Int],
-		pluralGroupExteriorSeparators pges: OrderedSet, interiorSeparators pgis: OrderedSet, defaultPluralityDefinition dpd: String, values pgsValues: [Int])
-		-> AttributedString
+		baseString: NSAttributedString, escapeToken escape: String,
+		simpleReplacementSeparators srs: NSOrderedSet, values srsValues: [StringOrAttributedString],
+		orderedReplacementSeparators ores: NSOrderedSet, interiorSeparators oris: NSOrderedSet, values orsValues: [Int],
+		pluralGroupExteriorSeparators pges: NSOrderedSet, interiorSeparators pgis: NSOrderedSet, defaultPluralityDefinition dpd: String, values pgsValues: [Int])
+		-> NSAttributedString
 	{
 		return baseString
 	}

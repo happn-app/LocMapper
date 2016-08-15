@@ -15,7 +15,7 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 	@IBOutlet var splitItemTableView: NSSplitViewItem!
 	@IBOutlet var splitItemLocEntry: NSSplitViewItem!
 	
-	override var representedObject: AnyObject? {
+	override var representedObject: Any? {
 		didSet {
 			tableViewController.representedObject = representedObject
 		}

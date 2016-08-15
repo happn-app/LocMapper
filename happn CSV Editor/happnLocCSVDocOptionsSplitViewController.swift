@@ -15,7 +15,7 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	@IBOutlet var splitItemOptions: NSSplitViewItem!
 	@IBOutlet var splitItemContent: NSSplitViewItem!
 	
-	override var representedObject: AnyObject? {
+	override var representedObject: Any? {
 		didSet {
 			optionsViewController.representedObject = representedObject
 			contentViewController.representedObject = representedObject

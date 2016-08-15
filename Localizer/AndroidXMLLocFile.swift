@@ -11,10 +11,13 @@ import Foundation
 
 
 protocol AndroidLocComponent {
+	
 	var stringValue: String { get }
+	
 }
 
-extension String {
+private extension String {
+	
 	var xmlTextValue: String {
 		var v = self
 //		v = v.stringByReplacingOccurrencesOfString("\\", withString: "\\\\", options: NSStringCompareOptions.LiteralSearch)
@@ -32,9 +35,11 @@ extension String {
 		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: NSString.CompareOptions.literal)
 		return v
 	}
+	
 }
 
 class AndroidXMLLocFile: Streamable {
+	
 	let filepath: String
 	let components: [AndroidLocComponent]
 	
@@ -476,12 +481,13 @@ class AndroidXMLLocFile: Streamable {
 		components = c
 	}
 	
-	func write<Target: OutputStream>(to target: inout Target) {
+	func write<Target: TextOutputStream>(to target: inout Target) {
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n".write(to: &target)
 		for component in components {
 			component.stringValue.write(to: &target)
 		}
 	}
+	
 }
 
 func ==(val1: AndroidXMLLocFile.ParserDelegate.Status, val2: AndroidXMLLocFile.ParserDelegate.Status) -> Bool {

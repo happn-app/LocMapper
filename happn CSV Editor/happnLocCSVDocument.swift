@@ -213,7 +213,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   **************************** */
 	
 	/* Implementing this method disables the whitespace-trimming behavior. */
-	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> AnyObject {
+	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any {
 		return editingString
 	}
 	

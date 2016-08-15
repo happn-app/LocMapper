@@ -11,10 +11,13 @@ import Foundation
 
 
 protocol XcodeStringsComponent {
+	
 	var stringValue: String { get }
+	
 }
 
 class XcodeStringsFile: Streamable {
+	
 	let filepath: String
 	let components: [XcodeStringsComponent]
 	
@@ -296,10 +299,11 @@ class XcodeStringsFile: Streamable {
 		self.components = components
 	}
 	
-	func write<Target : OutputStream>(to target: inout Target) {
+	func write<Target : TextOutputStream>(to target: inout Target) {
 		for component in components {
 			component.stringValue.write(to: &target)
 		}
 		"\n".write(to: &target)
 	}
+	
 }

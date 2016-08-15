@@ -91,8 +91,8 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 		gridView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(gridView)
 		
-		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(viewPadding)-[gridView]-(viewPadding)-|", options: [], metrics: ["viewPadding": viewPadding], views: ["gridView": gridView]))
-		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(viewPadding)-[gridView]-(viewPadding)-|", options: [], metrics: ["viewPadding": viewPadding], views: ["gridView": gridView]))
+		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(viewPadding)-[gridView]-(viewPadding)-|", options: [], metrics: ["viewPadding": viewPadding as NSNumber], views: ["gridView": gridView]))
+		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(viewPadding)-[gridView]-(viewPadding)-|", options: [], metrics: ["viewPadding": viewPadding as NSNumber], views: ["gridView": gridView]))
 		
 		updateUIForSelectedEnvironment()
 	}
@@ -128,7 +128,7 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 	   **************************** */
 	
 	/* Implementing this method disables the whitespace-trimming behavior. */
-	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> AnyObject {
+	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any {
 		return editingString
 	}
 	

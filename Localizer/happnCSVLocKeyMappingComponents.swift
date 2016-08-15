@@ -19,7 +19,7 @@ class happnCSVLocKeyMappingComponent {
 	`CSVLocKeyMappingComponentInvalid` that will simply hold the serialization
 	and will not do any transform. This allows storing the given invalid
 	transform so it is not lost when the transform is serialized back. */
-	static func createCSVLocKeyMappingFromSerialization(_ serialization: [String: AnyObject]) -> happnCSVLocKeyMappingComponent {
+	static func createCSVLocKeyMappingFromSerialization(_ serialization: [String: Any]) -> happnCSVLocKeyMappingComponent {
 		do {
 			guard let type = serialization["__type"] as? String else {
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid mapping component: Key __type is undefined or not a string."])
@@ -43,7 +43,7 @@ class happnCSVLocKeyMappingComponent {
 		}
 	}
 	
-	final func serialize() -> [String: AnyObject] {
+	final func serialize() -> [String: Any] {
 		var serializedData = self.serializePrivateData()
 		if      self is CSVLocKeyMappingComponentToConstant      {serializedData["__type"] = "to_constant"}
 		else if self is CSVLocKeyMappingComponentValueTransforms {serializedData["__type"] = "value_transforms"}
@@ -53,7 +53,7 @@ class happnCSVLocKeyMappingComponent {
 		return serializedData
 	}
 	
-	private func serializePrivateData() -> [String: AnyObject] {
+	fileprivate func serializePrivateData() -> [String: Any] {
 		preconditionFailure("This method is abstract")
 	}
 	
@@ -66,13 +66,13 @@ class happnCSVLocKeyMappingComponent {
 
 /* ***** */
 class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
-	let invalidSerialization: [String: AnyObject]
+	let invalidSerialization: [String: Any]
 	
-	init(serialization: [String: AnyObject]) {
+	init(serialization: [String: Any]) {
 		invalidSerialization = serialization
 	}
 	
-	override func serializePrivateData() -> [String: AnyObject] {
+	override func serializePrivateData() -> [String: Any] {
 		return invalidSerialization
 	}
 	
@@ -87,7 +87,7 @@ class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
 class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 	let constant: String
 	
-	init(serialization: [String: AnyObject]) throws {
+	init(serialization: [String: Any]) throws {
 		guard let c = serialization["constant"] as? String else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Key \"constant\" is either undefined or not a String."])
 		}
@@ -96,7 +96,7 @@ class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: AnyObject] {
+	override func serializePrivateData() -> [String: Any] {
 		return ["constant": constant]
 	}
 	
@@ -113,7 +113,7 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 	
 	let subTransformComponents: [LocValueTransformer]
 	
-	init(serialization: [String: AnyObject]) throws {
+	init(serialization: [String: Any]) throws {
 		guard
 			let env          = serialization["env"] as? String,
 			let filename     = serialization["filename"] as? String,
@@ -123,9 +123,9 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 		{
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Some keys are missing or invalid."])
 		}
-		let dtransforms: [[String: AnyObject]]
-		if      let array = dtransform_s as? [[String: AnyObject]] {dtransforms = array}
-		else if let simple = dtransform_s as? [String: AnyObject]  {dtransforms = [simple]}
+		let dtransforms: [[String: Any]]
+		if      let array = dtransform_s as? [[String: Any]] {dtransforms = array}
+		else if let simple = dtransform_s as? [String: Any]  {dtransforms = [simple]}
 		else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot convert transforms to array of dictionary from serialization: \"\(serialization)\"."])
 		}
@@ -143,14 +143,14 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: AnyObject] {
+	override func serializePrivateData() -> [String: Any] {
 		let serializedTransforms = subTransformComponents.map {return $0.serialize()}
 		
 		return [
 			"env":        sourceKey.env,
 			"filename":   sourceKey.filename,
 			"loc_key":    sourceKey.locKey,
-			"transforms": (serializedTransforms.count == 1 ? serializedTransforms[0] as AnyObject : serializedTransforms as AnyObject)
+			"transforms": (serializedTransforms.count == 1 ? serializedTransforms[0] as Any : serializedTransforms as Any)
 		]
 	}
 	
@@ -174,7 +174,7 @@ class LocValueTransformer {
 	LocValueTransformerInvalid that will simply hold the serialization and will
 	not do any transform. This allows storing the given invalid transform so it
 	is not lost when the transform is serialized back. */
-	static func createComponentTransformFromSerialization(_ serialization: [String: AnyObject]) -> LocValueTransformer {
+	static func createComponentTransformFromSerialization(_ serialization: [String: Any]) -> LocValueTransformer {
 		do {
 			guard let type = serialization["__type"] as? String else {
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid loc value transformer component: Key __type is undefined or not a string."])
@@ -198,7 +198,7 @@ class LocValueTransformer {
 		}
 	}
 	
-	final func serialize() -> [String: AnyObject] {
+	final func serialize() -> [String: Any] {
 		var serializedData = self.serializePrivateData()
 		if      self is LocValueTransformerSimpleStringReplacements    {serializedData["__type"] = "simple_string_replacements"}
 		else if self is LocValueTransformerRegionDelimitersReplacement {serializedData["__type"] = "region_delimiters_replacement"}
@@ -208,7 +208,7 @@ class LocValueTransformer {
 		return serializedData
 	}
 	
-	private func serializePrivateData() -> [String: AnyObject] {
+	fileprivate func serializePrivateData() -> [String: Any] {
 		preconditionFailure("This method is abstract")
 	}
 	
@@ -221,13 +221,13 @@ class LocValueTransformer {
 
 /* ***** */
 class LocValueTransformerInvalid : LocValueTransformer {
-	let invalidSerialization: [String: AnyObject]
+	let invalidSerialization: [String: Any]
 	
-	init(serialization: [String: AnyObject]) {
+	init(serialization: [String: Any]) {
 		invalidSerialization = serialization
 	}
 	
-	override func serializePrivateData() -> [String: AnyObject] {
+	override func serializePrivateData() -> [String: Any] {
 		return invalidSerialization
 	}
 	
@@ -243,7 +243,7 @@ class LocValueTransformerInvalid : LocValueTransformer {
 class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 	let replacements: [String: String]
 	
-	init(serialization: [String: AnyObject]) throws {
+	init(serialization: [String: Any]) throws {
 		guard let r = serialization["replacements"] as? [String: String] else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Key \"replacements\" is either undefined or not [String: String]."])
 		}
@@ -252,7 +252,7 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: AnyObject] {
+	override func serializePrivateData() -> [String: Any] {
 		return ["replacements": replacements]
 	}
 	
@@ -277,7 +277,7 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	let closeDelim: String
 	let escapeToken: String?
 	
-	init(serialization: [String: AnyObject]) throws {
+	init(serialization: [String: Any]) throws {
 		guard
 			let od = serialization["open_delimiter"] as? String,
 			let r  = serialization["replacement"] as? String,
@@ -295,7 +295,7 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: AnyObject] {
+	override func serializePrivateData() -> [String: Any] {
 		var ret = [
 			"open_delimiter": openDelim,
 			"replacement": replacement,

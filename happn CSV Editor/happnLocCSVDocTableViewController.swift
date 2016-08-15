@@ -14,7 +14,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	
 	@IBOutlet var tableView: NSTableView!
 	
-	override var representedObject: AnyObject? {
+	override var representedObject: Any? {
 		didSet {
 			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys.sorted()}
 			else                           {sortedKeys = nil}
@@ -25,7 +25,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	var handlerNotifyDocumentModification: (() -> Void)?
-	var handlerSetEntryViewSelection: ((newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
+	var handlerSetEntryViewSelection: ((_ newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
@@ -40,13 +40,13 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		return 0
 	}
 	
-	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
 		guard let tableColumn = tableColumn else {return nil}
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
 		return csvLocFile.resolvedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
 	}
 	
-	func tableView(_ tableView: NSTableView, setObjectValue object: AnyObject?, for tableColumn: NSTableColumn?, row: Int) {
+	func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return}
 		guard let tableColumn = tableColumn else {return}
 		
@@ -57,7 +57,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			self.handlerNotifyDocumentModification?()
 			
 			tableView.beginUpdates()
-			self.cachedRowsHeights.removeObject(forKey: key.filename + key.locKey)
+			self.cachedRowsHeights.removeObject(forKey: key.filename + key.locKey as NSString)
 			tableView.noteHeightOfRows(withIndexesChanged: IndexSet(integer: row))
 			tableView.endUpdates()
 		}
@@ -69,7 +69,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return minimumHeight}
 		
 		/* Check the cache to avoid unnecessary recalculation */
-		if let cachedRowHeight = cachedRowsHeights.object(forKey: key.filename + key.locKey) as? CGFloat {
+		if let cachedRowHeight = cachedRowsHeights.object(forKey: key.filename + key.locKey as NSString) as? CGFloat {
 			return cachedRowHeight
 		}
 		
@@ -92,17 +92,17 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		height += 2*2
 		
 		/* Let’s cache the result. */
-		cachedRowsHeights.setObject(height, forKey: key.filename + key.locKey)
+		cachedRowsHeights.setObject(height as NSNumber, forKey: key.filename + key.locKey as NSString)
 		
 		return height
 	}
 	
 	func tableViewSelectionDidChange(_ notification: Notification) {
 		guard tableView.selectedRow >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], let value = csvLocFile.lineValueForKey(key) else {
-			handlerSetEntryViewSelection?(newSelection: nil)
+			handlerSetEntryViewSelection?(nil)
 			return
 		}
-		handlerSetEntryViewSelection?(newSelection: (key, value))
+		handlerSetEntryViewSelection?((key, value))
 	}
 	
 	/* If we were view-based... but we're not (cell-based is still faster). */

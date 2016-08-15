@@ -26,7 +26,7 @@ class LocEntryViewController: NSTabViewController {
 	@IBOutlet var tabViewItemMapping: NSTabViewItem!
 	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
 	
-	override var representedObject: AnyObject? {
+	override var representedObject: Any? {
 		didSet {
 			locEntryContextViewController.representedObject = representedObject
 			locEntryMappingViewController.representedObject = representedObject
@@ -34,7 +34,7 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
-	var handlerSetEntryMapping: ((newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, forEntry: LocEntry) -> Void)? {
+	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntry) -> Void)? {
 		didSet {
 			locEntryMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
 			locEntryAdvancedMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
