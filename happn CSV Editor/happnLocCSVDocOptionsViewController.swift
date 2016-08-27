@@ -57,10 +57,6 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		}
 	}
 	
-	func control(_ control: NSControl, textShouldBeginEditing fieldEditor: NSText) -> Bool {
-		return true
-	}
-	
 	func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
 		switch sectionIndex(forRow: row) {
 		case .stringFilter:            return 27
