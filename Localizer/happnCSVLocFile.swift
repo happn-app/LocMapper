@@ -172,6 +172,62 @@ class happnCSVLocFile: Streamable {
 		
 	}
 	
+	/* *******************
+	   MARK: - Filter Enum
+	   ******************* */
+	
+	enum Filter {
+		case string(String)
+		case env(String)
+		case stateTodoloc, stateHardCodedValues, stateMappedValid, stateMappedInvalid
+		
+		init?(string: String) {
+			guard let first = string.characters.first else {return nil}
+			let substring = string.substring(from: string.index(after: string.startIndex))
+			
+			switch first {
+			case "t":
+				switch substring {
+				case "t":  self = .stateTodoloc
+				case "v":  self = .stateHardCodedValues
+				case "mv": self = .stateMappedValid
+				case "mi": self = .stateMappedInvalid
+				default: return nil
+				}
+				
+			case "s": self = .string(substring)
+			case "e": self = .env(substring)
+				
+			default: return nil
+			}
+		}
+		
+		func toString() -> String {
+			switch self {
+			case .string(let str):      return "s" + str
+			case .env(let env):         return "e" + env
+			case .stateTodoloc:         return "tt"
+			case .stateHardCodedValues: return "tv"
+			case .stateMappedValid:     return "tmv"
+			case .stateMappedInvalid:   return "tmi"
+			}
+		}
+		
+		var isStringFilter: Bool {
+			guard case .string = self else {return false}
+			return true
+		}
+		
+		var isEnvFilter: Bool {
+			guard case .env = self else {return false}
+			return true
+		}
+		
+		var isStateFilter: Bool {
+			return !isStringFilter && !isEnvFilter
+		}
+	}
+	
 	/* ********************
 	   MARK: - Initializers
 	   ******************** */
@@ -314,16 +370,75 @@ class happnCSVLocFile: Streamable {
 	   MARK: - Manual Modification of CSV Loc File
 	   ******************************************* */
 	
+	func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
+		guard !filters.isEmpty else {return entryKeys}
+		let stringFilters = filters.flatMap { filter -> String? in
+			if case .string(let str) = filter {return str}
+			return nil
+		}
+		let envFilters = filters.flatMap { filter -> String? in
+			if case .env(let env) = filter {return env}
+			return nil
+		}
+		let stateFilters = filters.filter { $0.isStateFilter }
+		
+		return entryKeys.filter { lineKey -> Bool in
+			/* Filter env */
+			guard envFilters.contains(lineKey.env) else {return false}
+			
+			/* Filter state */
+			/* TODO: State filters... */
+			
+			/* Search filter */
+			if stringFilters.count > 0 {
+				for l in self.languages {
+					let str = displayedValueForKey(lineKey, withLanguage: l)
+					for stringFilter in stringFilters {
+						if str.range(of: stringFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
+							return true
+						}
+					}
+				}
+				return false
+			}
+			return true
+		}
+	}
+
 	func lineValueForKey(_ key: LineKey) -> LineValue? {
 		return entries[key]
 	}
 	
-	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
-		let defaultValue = "TODOLOC"
-		guard let v = entries[key] else {return defaultValue}
+	func displayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
+		do {
+			return try resolvedValueForKey(key, withLanguage: language)
+		} catch let error as ValueResolvingError {
+			switch error {
+			case .keyNotFound, .noValue: return "!¡!TODOLOC!¡!"
+			case .invalidMapping:        return "!¡!TODOLOC_INVALIDMAPPING!¡!"
+			case .mappedKeyNotFound:     return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
+			}
+		} catch {
+			return "!¡!TODOLOC_INTERNALLOCALIZERERROR!¡!"
+		}
+	}
+	
+	enum ValueResolvingError : Error {
+		case keyNotFound
+		case noValue
+		case invalidMapping
+		case mappedKeyNotFound
+	}
+	
+	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) throws -> String {
+		guard let v = entries[key] else {throw ValueResolvingError.keyNotFound}
 		switch v {
-		case .entries(let entries): return entries[language] ?? defaultValue
-		case .mapping(_): return "TODO: MAPPING RESOLVING"
+		case .entries(let entries):
+			guard let r = entries[language] else {throw ValueResolvingError.noValue}
+			return r
+			
+		case .mapping(_):
+			throw ValueResolvingError.invalidMapping /* TODO: Resolve the mapping... */
 		}
 	}
 	
@@ -506,7 +621,7 @@ class happnCSVLocFile: Streamable {
 					key: k as String,
 					keyHasQuotes: keyHasQuotes,
 					equalSign: equalString,
-					value: resolvedValueForKey(entry_key, withLanguage: languageName),
+					value: displayedValueForKey(entry_key, withLanguage: languageName),
 					andSemicolon: semicolonString
 				))
 			}
@@ -729,17 +844,17 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("k"):
 					/* We're treating a standard string item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					let v = displayedValueForKey(entry_key, withLanguage: languageName)
 					filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v))
 				case let k where k.hasPrefix("K"):
 					/* We're treating a CDATA string item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					let v = displayedValueForKey(entry_key, withLanguage: languageName)
 					filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v))
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					let v = displayedValueForKey(entry_key, withLanguage: languageName)
 					let noA = k.substring(from: k.characters.index(after: k.startIndex))
 					let sepByQuote = noA.components(separatedBy: "\"")
 					if sepByQuote.count == 2 {
@@ -754,7 +869,7 @@ class happnCSVLocFile: Streamable {
 				case let k where k.hasPrefix("p") || k.hasPrefix("P"):
 					let isCData = k.hasPrefix("P")
 					/* We're treating a plural item */
-					let v = resolvedValueForKey(entry_key, withLanguage: languageName)
+					let v = displayedValueForKey(entry_key, withLanguage: languageName)
 					if v != "--" && currentPluralsValueByFilename[filename] != nil {
 						let noP = k.substring(from: k.characters.index(after: k.startIndex))
 						let sepByQuote = noP.components(separatedBy: "\"")
