@@ -27,6 +27,22 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		super.viewDidLoad()
 	}
 	
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
+	@IBAction func textFieldValueChanged(_ sender: NSTextField) {
+		Swift.print("\(sender.stringValue)")
+	}
+	
+	@IBAction func checkValueChanged(_ sender: NSButton) {
+		Swift.print("\(sender.tag)")
+	}
+	
+	/* *******************************************
+	   MARK: - Table View Data Source and Delegate
+	   ******************************************* */
+	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		return 1 /* String filter */ + 1 /* Sep */ + envs.count + 1 /* Sep */ + stateFilters.count
 	}
@@ -43,7 +59,7 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		case .envFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
 			(v.subviews.first! as! NSButton).title = envs[rowInSection]
-			(v.subviews.first! as! NSButton).tag = rowInSection
+			(v.subviews.first! as! NSButton).tag = row
 			return v
 			
 		case .separator2:
@@ -52,7 +68,7 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		case .stateFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
 			(v.subviews.first! as! NSButton).title = stateFilters[rowInSection]
-			(v.subviews.first! as! NSButton).tag = rowInSection
+			(v.subviews.first! as! NSButton).tag = row
 			return v
 		}
 	}
@@ -89,7 +105,7 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	
 	/* Currently we keep the envs list statically. We may want to extract it from the happnCSVLoc later. */
 	private let envs         = ["Xcode", "Android", "Windows", "RefLoc"]
-	private let stateFilters = ["TODOLOC", "Hard-Coded Values", "Mapped Values"]
+	private let stateFilters = ["TODOLOC", "Hard-Coded Values", "Mapped Values (Valid)", "Mapped Values (Invalid)"]
 	private lazy var section1SepIndex: Int = 1
 	private lazy var section2SepIndex: Int = self.section1SepIndex + 1 + self.envs.count
 	private lazy var section3SepIndex: Int = self.section2SepIndex + 1 + self.stateFilters.count
