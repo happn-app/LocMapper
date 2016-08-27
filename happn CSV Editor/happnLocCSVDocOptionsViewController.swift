@@ -28,11 +28,12 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	}
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
-		return 1 /* String filter */ + 1 /* Sep */ + envs.count + 1 /* Sep */ + 4
+		return 1 /* String filter */ + 1 /* Sep */ + envs.count + 1 /* Sep */ + stateFilters.count
 	}
 	
 	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-		switch sectionForRow(row) {
+		let rowInSection = rowIndexInSection(forRow: row)
+		switch sectionIndex(forRow: row) {
 		case .stringFilter:
 			return tableView.make(withIdentifier: "StringFilter", owner: self)!
 			
@@ -41,15 +42,18 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 			
 		case .envFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
-			(v.subviews.first! as! NSButton).title = envs[row - 2]
-			(v.subviews.first! as! NSButton).tag = row
+			(v.subviews.first! as! NSButton).title = envs[rowInSection]
+			(v.subviews.first! as! NSButton).tag = rowInSection
 			return v
 			
 		case .separator2:
 			return tableView.make(withIdentifier: "Sep", owner: self)!
 			
 		case .stateFilter:
-			return tableView.make(withIdentifier: "CheckFilter", owner: self)!
+			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
+			(v.subviews.first! as! NSButton).title = stateFilters[rowInSection]
+			(v.subviews.first! as! NSButton).tag = rowInSection
+			return v
 		}
 	}
 	
@@ -58,7 +62,7 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	}
 	
 	func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-		switch sectionForRow(row) {
+		switch sectionIndex(forRow: row) {
 		case .stringFilter:            return 27
 		case .envFilter, .stateFilter: return 19
 		case .separator1, .separator2: return 31
@@ -66,7 +70,7 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	}
 	
 	func tableView(_ tableView: NSTableView, isGroupRow row: Int) -> Bool {
-		return sectionForRow(row).isSeparator
+		return sectionIndex(forRow: row).isSeparator
 	}
 	
 	func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
@@ -87,13 +91,14 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		var isSeparator: Bool {return self == .separator1 || self == .separator2}
 	}
 	
-	/* Currently we keep the list statically. We may want to extract it from the happnCSVLoc later. */
-	private let envs = ["Xcode", "Android", "Windows", "RefLoc"]
+	/* Currently we keep the envs list statically. We may want to extract it from the happnCSVLoc later. */
+	private let envs         = ["Xcode", "Android", "Windows", "RefLoc"]
+	private let stateFilters = ["TODOLOC", "Hard-Coded Values", "Mapped Values"]
+	private lazy var section1SepIndex: Int = 1
+	private lazy var section2SepIndex: Int = self.section1SepIndex + 1 + self.envs.count
+	private lazy var section3SepIndex: Int = self.section2SepIndex + 1 + self.stateFilters.count
 	
-	private func sectionForRow(_ row: Int) -> Section {
-		let section1SepIndex = 1
-		let section2SepIndex = section1SepIndex + 1 + envs.count
-		let section3SepIndex = section2SepIndex + 1 + 4
+	private func sectionIndex(forRow row: Int) -> Section {
 		switch row {
 		case 0:                                         return .stringFilter
 		case section1SepIndex:                          return .separator1
@@ -101,6 +106,16 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		case section2SepIndex:                          return .separator2
 		case (section2SepIndex + 1)..<section3SepIndex: return .stateFilter
 		default: fatalError("Invalid index to convert to section: \(index)")
+		}
+	}
+	
+	private func rowIndexInSection(forRow row: Int) -> Int {
+		switch sectionIndex(forRow: row) {
+		case .stringFilter: return 0
+		case .separator1:   return 0
+		case .envFilter:    return row - (section1SepIndex + 1)
+		case .separator2:   return 0
+		case .stateFilter:  return row - (section2SepIndex + 1)
 		}
 	}
 	
