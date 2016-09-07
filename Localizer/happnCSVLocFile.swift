@@ -38,7 +38,7 @@ private extension String {
    MARK: -
    ******* */
 
-class happnCSVLocFile: Streamable {
+class happnCSVLocFile: TextOutputStreamable {
 	
 	let csvSeparator: String
 	private var metadata: [String: String]

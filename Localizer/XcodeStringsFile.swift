@@ -16,7 +16,7 @@ protocol XcodeStringsComponent {
 	
 }
 
-class XcodeStringsFile: Streamable {
+class XcodeStringsFile: TextOutputStreamable {
 	
 	let filepath: String
 	let components: [XcodeStringsComponent]

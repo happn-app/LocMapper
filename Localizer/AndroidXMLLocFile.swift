@@ -38,7 +38,7 @@ private extension String {
 	
 }
 
-class AndroidXMLLocFile: Streamable {
+class AndroidXMLLocFile: TextOutputStreamable {
 	
 	let filepath: String
 	let components: [AndroidLocComponent]
