@@ -404,7 +404,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			return true
 		}
 	}
-
+	
 	func lineValueForKey(_ key: LineKey) -> LineValue? {
 		return entries[key]
 	}

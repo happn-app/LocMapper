@@ -112,41 +112,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7B560D631C170219001DD2B0 /* happn CSV Loc Document */ = {
+		7B560D641C17022F001DD2B0 /* Bottom-Right Pane (Details) */ = {
 			isa = PBXGroup;
 			children = (
-				7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */,
-				7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */,
-				7B560D641C17022F001DD2B0 /* Misc. View Controllers */,
-				7B560D651C170273001DD2B0 /* Leaf Controllers */,
-				7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */,
-				7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */,
-			);
-			name = "happn CSV Loc Document";
-			sourceTree = "<group>";
-		};
-		7B560D641C17022F001DD2B0 /* Misc. View Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */,
-				7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */,
-				7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */,
-				7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */,
 				7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */,
-			);
-			name = "Misc. View Controllers";
-			sourceTree = "<group>";
-		};
-		7B560D651C170273001DD2B0 /* Leaf Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */,
-				7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */,
 				7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */,
 				7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */,
 				7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */,
 			);
-			name = "Leaf Controllers";
+			name = "Bottom-Right Pane (Details)";
 			sourceTree = "<group>";
 		};
 		7B6E259619D4157A001934ED = {
@@ -185,12 +159,62 @@
 			path = Localizer;
 			sourceTree = "<group>";
 		};
+		7B71565C1D95EE2700A15BC5 /* Loading Doc */ = {
+			isa = PBXGroup;
+			children = (
+				7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */,
+				7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */,
+			);
+			name = "Loading Doc";
+			sourceTree = "<group>";
+		};
+		7B71565D1D95EEB900A15BC5 /* Left Pane (Options) */ = {
+			isa = PBXGroup;
+			children = (
+				7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */,
+				7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */,
+			);
+			name = "Left Pane (Options)";
+			sourceTree = "<group>";
+		};
+		7B71565E1D95EEF300A15BC5 /* Top-Right Pane (Translations) */ = {
+			isa = PBXGroup;
+			children = (
+				7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */,
+				7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */,
+			);
+			name = "Top-Right Pane (Translations)";
+			sourceTree = "<group>";
+		};
+		7B71565F1D95EF5F00A15BC5 /* happn CSV Loc Document */ = {
+			isa = PBXGroup;
+			children = (
+				7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */,
+				7B7156601D95EFB400A15BC5 /* Document UI Helpers */,
+				7B71565C1D95EE2700A15BC5 /* Loading Doc */,
+				7B71565D1D95EEB900A15BC5 /* Left Pane (Options) */,
+				7B71565E1D95EEF300A15BC5 /* Top-Right Pane (Translations) */,
+				7B560D641C17022F001DD2B0 /* Bottom-Right Pane (Details) */,
+			);
+			name = "happn CSV Loc Document";
+			sourceTree = "<group>";
+		};
+		7B7156601D95EFB400A15BC5 /* Document UI Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */,
+				7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */,
+				7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */,
+			);
+			name = "Document UI Helpers";
+			sourceTree = "<group>";
+		};
 		7B837D801C0EF3DB0020E86B /* happn CSV Editor */ = {
 			isa = PBXGroup;
 			children = (
 				7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */,
 				7B837D811C0EF3DB0020E86B /* AppDelegate.swift */,
-				7B560D631C170219001DD2B0 /* happn CSV Loc Document */,
+				7B71565F1D95EF5F00A15BC5 /* happn CSV Loc Document */,
 				7B837D871C0EF3DB0020E86B /* Assets.xcassets */,
 				7B837D891C0EF3DB0020E86B /* Main.storyboard */,
 				7BF4B1961D34305A0062A605 /* LoadingWindow.xib */,
