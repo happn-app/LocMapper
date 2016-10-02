@@ -54,7 +54,9 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 			return tableView.make(withIdentifier: "StringFilter", owner: self)!
 			
 		case .separator1:
-			return tableView.make(withIdentifier: "Sep", owner: self)!
+			let ret = tableView.make(withIdentifier: "Sep", owner: self)! as! NSTableCellView
+			ret.textField?.stringValue = "Environment Filters"
+			return ret
 			
 		case .envFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
@@ -63,7 +65,9 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 			return v
 			
 		case .separator2:
-			return tableView.make(withIdentifier: "Sep", owner: self)!
+			let ret = tableView.make(withIdentifier: "Sep", owner: self)! as! NSTableCellView
+			ret.textField?.stringValue = "State Filters"
+			return ret
 			
 		case .stateFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
