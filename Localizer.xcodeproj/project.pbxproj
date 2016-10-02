@@ -15,6 +15,7 @@
 		7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */; };
 		7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */; };
 		7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */; };
+		7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7B56D2AE1DA0F25E00662EFD /* Localizable.strings */; };
 		7B637D241C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
 		7B6E25AA19D417BD001934ED /* stderr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A919D417BD001934ED /* stderr.swift */; };
@@ -67,6 +68,7 @@
 		7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTabViewController.swift; sourceTree = "<group>"; };
 		7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingDocViewController.swift; sourceTree = "<group>"; };
 		7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsSplitViewController.swift; sourceTree = "<group>"; };
+		7B56D2AE1DA0F25E00662EFD /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocSplitViewController.swift; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* Localizer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Localizer; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */,
 				7B837D811C0EF3DB0020E86B /* AppDelegate.swift */,
 				7B71565F1D95EF5F00A15BC5 /* happn CSV Loc Document */,
+				7B56D2AE1DA0F25E00662EFD /* Localizable.strings */,
 				7B837D871C0EF3DB0020E86B /* Assets.xcassets */,
 				7B837D891C0EF3DB0020E86B /* Main.storyboard */,
 				7BF4B1961D34305A0062A605 /* LoadingWindow.xib */,
@@ -306,6 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */,
+				7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */,
 				7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */,
 				7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */,
 				7B878D691D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib in Resources */,
