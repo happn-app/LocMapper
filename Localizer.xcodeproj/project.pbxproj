@@ -161,13 +161,13 @@
 			path = Localizer;
 			sourceTree = "<group>";
 		};
-		7B71565C1D95EE2700A15BC5 /* Loading Doc */ = {
+		7B71565C1D95EE2700A15BC5 /* Document Root & Loading UI */ = {
 			isa = PBXGroup;
 			children = (
 				7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */,
 				7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */,
 			);
-			name = "Loading Doc";
+			name = "Document Root & Loading UI";
 			sourceTree = "<group>";
 		};
 		7B71565D1D95EEB900A15BC5 /* Left Pane (Options) */ = {
@@ -193,7 +193,7 @@
 			children = (
 				7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */,
 				7B7156601D95EFB400A15BC5 /* Document UI Helpers */,
-				7B71565C1D95EE2700A15BC5 /* Loading Doc */,
+				7B71565C1D95EE2700A15BC5 /* Document Root & Loading UI */,
 				7B71565D1D95EEB900A15BC5 /* Left Pane (Options) */,
 				7B71565E1D95EEF300A15BC5 /* Top-Right Pane (Translations) */,
 				7B560D641C17022F001DD2B0 /* Bottom-Right Pane (Details) */,
