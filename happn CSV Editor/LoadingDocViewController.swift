@@ -19,4 +19,10 @@ class LoadingDocViewController : NSViewController {
 		activityIndicator.startAnimation(nil)
 	}
 	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
 }

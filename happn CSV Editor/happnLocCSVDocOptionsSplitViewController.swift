@@ -15,6 +15,12 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	@IBOutlet var splitItemOptions: NSSplitViewItem!
 	@IBOutlet var splitItemContent: NSSplitViewItem!
 	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
 	override var representedObject: Any? {
 		didSet {
 			optionsViewController.representedObject = representedObject
@@ -29,6 +35,10 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 		}
 	}
 	
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
 	@IBAction func showFilters(_ sender: AnyObject!) {
 		let dividerIndex = 0
 		self.splitView.setPosition(150, ofDividerAt: dividerIndex)
@@ -37,6 +47,10 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	@IBAction func showEntryDetails(_ sender: AnyObject!) {
 		contentViewController.showEntryDetails(sender)
 	}
+	
+	/* ***************
+	   MARK: - Private
+	   *************** */
 	
 	private var optionsViewController: happnLocCSVDocOptionsViewController! {
 		return splitItemOptions.viewController as? happnLocCSVDocOptionsViewController

@@ -15,18 +15,6 @@ class LocEntryContextViewController: NSViewController {
 	@IBOutlet var labelGeneralInfo: NSTextField!
 	@IBOutlet var textViewContext: NSTextView!
 	
-	override var representedObject: Any? {
-		didSet {
-			if let representedObject = representedObject as? LocEntryViewController.LocEntry {
-				updateLabelGeneralInfoWith(env: representedObject.lineKey.env, file: representedObject.lineKey.filename, key: representedObject.lineKey.locKey)
-				textViewContext.string = representedObject.lineKey.userReadableComment
-			} else {
-				updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
-				textViewContext.string = ""
-			}
-		}
-	}
-	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -37,6 +25,24 @@ class LocEntryContextViewController: NSViewController {
 		
 		updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
 		textViewContext.string = ""
+	}
+	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
+	override var representedObject: Any? {
+		didSet {
+			if let representedObject = representedObject as? LocEntryViewController.LocEntry {
+				updateLabelGeneralInfoWith(env: representedObject.lineKey.env, file: representedObject.lineKey.filename, key: representedObject.lineKey.locKey)
+				textViewContext.string = representedObject.lineKey.userReadableComment
+			} else {
+				updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
+				textViewContext.string = ""
+			}
+		}
 	}
 	
 	/* ***************

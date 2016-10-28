@@ -12,11 +12,16 @@ import Cocoa
 
 class LocEntryMappingViewController: NSViewController {
 	
-	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
-	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		// Do view setup here.
 	}
+	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
+	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
 	
 }

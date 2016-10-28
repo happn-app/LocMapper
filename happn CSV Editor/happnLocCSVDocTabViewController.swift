@@ -14,6 +14,12 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	
 	@IBOutlet var tabViewItemDocContent: NSTabViewItem!
 	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
 	override var representedObject: Any? {
 		didSet {
 			optionsSplitViewController.representedObject = representedObject
@@ -29,6 +35,10 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 		}
 	}
 	
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
 	@IBAction func showFilters(_ sender: AnyObject!) {
 		optionsSplitViewController.showFilters(sender)
 	}
@@ -40,6 +50,10 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 	}
+	
+	/* ***************
+	   MARK: - Private
+	   *************** */
 	
 	private var optionsSplitViewController: happnLocCSVDocOptionsSplitViewController! {
 		return tabViewItemDocContent.viewController as? happnLocCSVDocOptionsSplitViewController

@@ -14,6 +14,18 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	
 	@IBOutlet var tableView: NSTableView!
 	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		
+		createTableViewColumnsIfNeeded()
+	}
+	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
 	override var representedObject: Any? {
 		didSet {
 			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys.sorted()}
@@ -27,11 +39,12 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	var handlerNotifyDocumentModification: (() -> Void)?
 	var handlerSetEntryViewSelection: ((_ newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
 	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		
-		createTableViewColumnsIfNeeded()
+	func noteFiltersHaveChanged() {
 	}
+	
+	/* *****************************************
+	   MARK: - Table View Data Source & Delegate
+	   ***************************************** */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		precondition(tableView == self.tableView)

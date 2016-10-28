@@ -26,6 +26,16 @@ class LocEntryViewController: NSTabViewController {
 	@IBOutlet var tabViewItemMapping: NSTabViewItem!
 	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
 	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+	}
+	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
 	override var representedObject: Any? {
 		didSet {
 			locEntryContextViewController.representedObject = representedObject
@@ -41,9 +51,9 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-	}
+	/* ***************
+	   MARK: - Private
+	   *************** */
 	
 	private var locEntryContextViewController: LocEntryContextViewController! {
 		return tabViewItemContext.viewController as? LocEntryContextViewController

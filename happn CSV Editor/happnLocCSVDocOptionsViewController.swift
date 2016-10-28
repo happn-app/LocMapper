@@ -21,11 +21,23 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	
 	@IBOutlet var tableView: NSTableView!
 	
-	var handlerNotifyDocumentModification: (() -> Void)?
-	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	}
+	
+	/* *********************************************************************
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
+	
+	override var representedObject: Any? {
+		didSet {
+			/* TODO */
+		}
+	}
+	
+	var handlerNotifyDocumentModification: (() -> Void)?
 	
 	/* ***************
 	   MARK: - Actions
