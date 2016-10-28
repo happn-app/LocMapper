@@ -1,22 +1,12 @@
 /*
- * happnCSVLocFile.swift
- * Localizer
- *
- * Created by François Lamboley on 9/26/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * happnCSVLocFile.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 9/26/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 import Foundation
-
-
-
-let PRIVATE_KEY_HEADER_NAME = "__Key"
-let PRIVATE_ENV_HEADER_NAME = "__Env"
-let PRIVATE_FILENAME_HEADER_NAME = "__Filename"
-let PRIVATE_COMMENT_HEADER_NAME = "__Comments"
-let PRIVATE_MAPPINGS_HEADER_NAME = "__Mappings"
-let FILENAME_HEADER_NAME = "File"
-let COMMENT_HEADER_NAME = "Comments"
 
 
 
@@ -58,14 +48,31 @@ class happnCSVLocFile: TextOutputStreamable {
 		let locKey: String
 		let env: String
 		let filename: String
-		let comment: String
 		
 		/* Used when comparing for lt or gt, but not for equality */
 		let index: Int
 		
+		/* Not used when comparing line keys. Both keys are store in the "comment"
+		 * column. We could (should?) use a json in its own column for the
+		 * userInfo... but why do simply what can be done in a complicated way? */
+		let comment: String
+		let userInfo: [String: String]
+		
 		/* Not used when comparing line keys */
 		let userReadableGroupComment: String
 		let userReadableComment: String
+		
+		static func parse(attributedComment: String) -> (comment: String, userInfo: [String: String]) {
+			let (str, optionalUserInfo) = attributedComment.splitUserInfo()
+			guard let userInfo = optionalUserInfo else {
+				return (comment: attributedComment, userInfo: [:])
+			}
+			return (comment: str, userInfo: userInfo)
+		}
+		
+		var fullComment: String {
+			return comment.byPrepending(userInfo: userInfo)
+		}
 		
 		var hashValue: Int {
 			return locKey.hashValue &+ env.hashValue &+ filename.hashValue
@@ -95,12 +102,10 @@ class happnCSVLocFile: TextOutputStreamable {
 			}
 		}
 		
-		/* Crashes the compiler (Xcode 8b3 (8S174q) with default Swift).
-		 * Fortunately I don't really need this method... */
-//		func entryForLanguage(_ language: String) -> String? {
-//			guard let entries = entries else {return nil}
-//			return entries[language]
-//		}
+		func entryForLanguage(_ language: String) -> String? {
+			guard let entries = entries else {return nil}
+			return entries[language]
+		}
 	}
 	
 	/* *******************
@@ -265,9 +270,9 @@ class happnCSVLocFile: TextOutputStreamable {
 		
 		/* Retrieving languages from header */
 		for h in parser.fieldNames {
-			if h != PRIVATE_KEY_HEADER_NAME && h != PRIVATE_ENV_HEADER_NAME && h != PRIVATE_FILENAME_HEADER_NAME &&
-				h != PRIVATE_COMMENT_HEADER_NAME && h != PRIVATE_MAPPINGS_HEADER_NAME && h != FILENAME_HEADER_NAME &&
-				h != COMMENT_HEADER_NAME {
+			if h != happnCSVLocFile.PRIVATE_KEY_HEADER_NAME && h != happnCSVLocFile.PRIVATE_ENV_HEADER_NAME && h != happnCSVLocFile.PRIVATE_FILENAME_HEADER_NAME &&
+				h != happnCSVLocFile.PRIVATE_COMMENT_HEADER_NAME && h != happnCSVLocFile.PRIVATE_MAPPINGS_HEADER_NAME && h != happnCSVLocFile.FILENAME_HEADER_NAME &&
+				h != happnCSVLocFile.COMMENT_HEADER_NAME {
 				languages.append(h)
 			}
 		}
@@ -283,7 +288,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			/* If we did not find the empty line, we're still in the metadata. */
 			guard foundEmptyLine else {
 				if
-					let jsonData = row[PRIVATE_KEY_HEADER_NAME]?.data(using: String.Encoding.utf8),
+					let jsonData = row[happnCSVLocFile.PRIVATE_KEY_HEADER_NAME]?.data(using: String.Encoding.utf8),
 					let parsedJSON = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? [String: String]
 				{
 					if !metadata.isEmpty {print("*** Warning: Got more than one line of metadata. Merging values, last line wins if key is defined more than once.")}
@@ -294,11 +299,11 @@ class happnCSVLocFile: TextOutputStreamable {
 			
 			/* An empty line has been found. We're in the actual data. */
 			guard
-				let locKey              = row[PRIVATE_KEY_HEADER_NAME],
-				let env                 = row[PRIVATE_ENV_HEADER_NAME],
-				let filename            = row[PRIVATE_FILENAME_HEADER_NAME],
-				let rawComment          = row[PRIVATE_COMMENT_HEADER_NAME],
-				let userReadableComment = row[COMMENT_HEADER_NAME]
+				let locKey              = row[happnCSVLocFile.PRIVATE_KEY_HEADER_NAME],
+				let env                 = row[happnCSVLocFile.PRIVATE_ENV_HEADER_NAME],
+				let filename            = row[happnCSVLocFile.PRIVATE_FILENAME_HEADER_NAME],
+				let rawComment          = row[happnCSVLocFile.PRIVATE_COMMENT_HEADER_NAME],
+				let userReadableComment = row[happnCSVLocFile.COMMENT_HEADER_NAME]
 				else
 			{
 				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
@@ -312,17 +317,18 @@ class happnCSVLocFile: TextOutputStreamable {
 				continue
 			}
 			
-			/* Let's get the comment */
-			var comment: String
+			/* Let's get the comment and the user info */
+			let comment: String
+			let userInfo: [String: String]
 			if rawComment.hasPrefix("__") && rawComment.hasSuffix("__") {
-				comment = rawComment.replacingOccurrences(
+				(comment, userInfo) = LineKey.parse(attributedComment: rawComment.replacingOccurrences(
 					of: "__", with: "", options: NSString.CompareOptions.anchored
 				).replacingOccurrences(
 					of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards]
-				)
+				))
 			} else {
 				print("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
-				comment = rawComment
+				(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
 			}
 			
 			/* Let's create the line key */
@@ -330,15 +336,16 @@ class happnCSVLocFile: TextOutputStreamable {
 				locKey: locKey,
 				env: env,
 				filename: filename,
-				comment: comment,
 				index: i,
+				comment: comment,
+				userInfo: userInfo,
 				userReadableGroupComment: groupComment,
 				userReadableComment: userReadableComment
 			)
 			i += 1
 			groupComment = ""
 			
-			if let mappingStr = row[PRIVATE_MAPPINGS_HEADER_NAME], let mapping = happnCSVLocKeyMapping(stringRepresentation: mappingStr) {
+			if let mappingStr = row[happnCSVLocFile.PRIVATE_MAPPINGS_HEADER_NAME], let mapping = happnCSVLocKeyMapping(stringRepresentation: mappingStr) {
 				/* We have a mapping (may be invalid though). Let's set it for the
 				 * current line key. */
 				entries[k] = .mapping(mapping)
@@ -392,7 +399,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			/* Search filter */
 			if stringFilters.count > 0 {
 				for l in self.languages {
-					let str = displayedValueForKey(lineKey, withLanguage: l)
+					let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
 					for stringFilter in stringFilters {
 						if str.range(of: stringFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
 							return true
@@ -409,7 +416,12 @@ class happnCSVLocFile: TextOutputStreamable {
 		return entries[key]
 	}
 	
-	func displayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
+	func exportedValueForKey(_ key: LineKey, withLanguage language: String) -> String? {
+		let v = editorDisplayedValueForKey(key, withLanguage: language)
+		return (v != "---" ? v : nil)
+	}
+	
+	func editorDisplayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
 		do {
 			return try resolvedValueForKey(key, withLanguage: language)
 		} catch let error as ValueResolvingError {
@@ -504,13 +516,16 @@ class happnCSVLocFile: TextOutputStreamable {
 						currentUserReadableComment = ""
 					}
 					currentComment += whiteSpace.stringValue
+					
 				case let comment as XcodeStringsFile.Comment:
 					if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
 					currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
 					currentComment += comment.stringValue
+					
 				case let locString as XcodeStringsFile.LocalizedString:
 					let refKey = LineKey(
-						locKey: (locString.keyHasQuotes ? "'" : "#")+locString.key, env: env, filename: filenameNoLproj, comment: locString.equal+";"+locString.semicolon+currentComment, index: index,
+						locKey: locString.key, env: env, filename: filenameNoLproj, index: index, comment: currentComment,
+						userInfo: ["=": locString.equal, ";": locString.semicolon,"'?": locString.keyHasQuotes ? "1": "0"],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
@@ -518,6 +533,7 @@ class happnCSVLocFile: TextOutputStreamable {
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
+					
 				default:
 					print("Got unknown XcodeStringsFile component \(component)")
 				}
@@ -538,60 +554,15 @@ class happnCSVLocFile: TextOutputStreamable {
 		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Xcode" else {continue}
 			
-			var scannedString: NSString?
-			let keyScanner = Scanner(string: entry_key.locKey)
-			keyScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
+			let keyHasQuotes    = (entry_key.userInfo["'?"] == "1")
+			let equalString     = (entry_key.userInfo["="] ?? " = ")
+			let semicolonString = (entry_key.userInfo[";"] ?? ";")
 			
-			/* Let's see if the key has quotes */
-			if !keyScanner.scanCharacters(from: CharacterSet(charactersIn: "'#"), into: &scannedString) {
-				print("*** Warning: Got invalid key \(entry_key.locKey)")
-				continue
-			}
-			/* If the key in CSV file begins with a simple quotes, the Xcode key has double-quotes */
-			let keyHasQuotes = (scannedString == "'")
-			/* Let's get the Xcode original key */
-			if !keyScanner.scanUpTo("", into: &scannedString) {
-				print("*** Warning: Got invalid key \(entry_key.locKey): Cannot scan original key")
-				continue
-			}
-			let k = scannedString!
-			
-			/* Now let's parse the comment to get the equal and semicolon strings */
+			/* Now let's parse the comment to separate the WhiteSpace and the
+			 * Comment components. */
+			var commentComponents = [XcodeStringsComponent]()
 			let commentScanner = Scanner(string: entry_key.comment)
 			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
-			
-			/* Getting equal string */
-			var equalString = ""
-			if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &scannedString) {
-				if let white = scannedString {equalString += white as String}
-			}
-			if !commentScanner.scanString("=", into: nil) {
-				print("*** Warning: Got invalid key \(entry_key.locKey): No equal sign in equal string")
-				continue
-			}
-			equalString += "="
-			if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &scannedString) {
-				if let white = scannedString {equalString += white as String}
-			}
-			
-			/* Separator between equal and semicolon strings */
-			if !commentScanner.scanString(";", into: nil) {
-				print("*** Warning: Got invalid key \(entry_key.locKey): Character after equal string is not a semicolon")
-				continue
-			}
-			
-			/* Getting semicolon string */
-			var semicolonString = ""
-			if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &scannedString) {
-				if let white = scannedString {semicolonString += white as String}
-			}
-			if !commentScanner.scanString(";", into: nil) {
-				print("*** Warning: Got invalid key \(entry_key.locKey): No semicolon sign in semicolon string")
-				continue
-			}
-			semicolonString += ";"
-			
-			var commentComponents = [XcodeStringsComponent]()
 			while !commentScanner.isAtEnd {
 				var white: NSString?
 				if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
@@ -617,13 +588,15 @@ class happnCSVLocFile: TextOutputStreamable {
 				
 				filenameToComponents[filename]! += commentComponents
 				
-				filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
-					key: k as String,
-					keyHasQuotes: keyHasQuotes,
-					equalSign: equalString,
-					value: displayedValueForKey(entry_key, withLanguage: languageName),
-					andSemicolon: semicolonString
-				))
+				if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
+					filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
+						key: entry_key.locKey,
+						keyHasQuotes: keyHasQuotes,
+						equalSign: equalString,
+						value: v,
+						andSemicolon: semicolonString
+					))
+				}
 			}
 		}
 		
@@ -683,32 +656,36 @@ class happnCSVLocFile: TextOutputStreamable {
 				switch component {
 				case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
 					handleWhiteSpace(whiteSpace)
+					
 				case let comment as AndroidXMLLocFile.Comment:
 					handleComment(comment)
+					
 				case let groupOpening as AndroidXMLLocFile.GenericGroupOpening:
 					let refKey = LineKey(
-						locKey: "o"+groupOpening.fullString, env: env, filename: filenameNoLanguage, comment: currentComment, index: index,
+						locKey: "o"+groupOpening.fullString, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("--", forKey: key, withLanguage: languageName) {index += 1}
+					if setValue("---", forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
+					
 				case let groupClosing as AndroidXMLLocFile.GenericGroupClosing:
 					let refKey = LineKey(
 						locKey: "c"+groupClosing.groupName+(groupClosing.nameAttr != nil ? " "+groupClosing.nameAttr! : ""),
-						env: env, filename: filenameNoLanguage, comment: currentComment, index: index,
+						env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("--", forKey: key, withLanguage: languageName) {index += 1}
+					if setValue("---", forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
+					
 				case let locString as AndroidXMLLocFile.StringValue:
 					let refKey = LineKey(
-						locKey: (!locString.isCDATA ? "k" : "K") + locString.key, env: env, filename: filenameNoLanguage, comment: currentComment, index: index,
+						locKey: "k"+locString.key, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: ["DTA": locString.isCDATA ? "1" : "0"],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
@@ -716,9 +693,10 @@ class happnCSVLocFile: TextOutputStreamable {
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
+					
 				case let arrayItem as AndroidXMLLocFile.ArrayItem:
 					let refKey = LineKey(
-						locKey: "a"+arrayItem.parentName+"\""+String(arrayItem.idx), env: env, filename: filenameNoLanguage, comment: currentComment, index: index,
+						locKey: "a"+arrayItem.parentName+"\""+String(arrayItem.idx), env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
@@ -726,13 +704,14 @@ class happnCSVLocFile: TextOutputStreamable {
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
+					
 				case let pluralGroup as AndroidXMLLocFile.PluralGroup:
 					let refKey = LineKey(
-						locKey: "s"+pluralGroup.name, env: env, filename: filenameNoLanguage, comment: currentComment, index: index,
+						locKey: "s"+pluralGroup.name, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("--", forKey: key, withLanguage: languageName) {index += 1}
+					if setValue("---".byPrepending(userInfo: pluralGroup.attributes), forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""
@@ -750,17 +729,17 @@ class happnCSVLocFile: TextOutputStreamable {
 							}
 						}
 						let pluralItem = pluralGroup.values[quantity]??.1
-						let prefix = (pluralItem != nil && pluralItem!.isCDATA ? "P" : "p")
 						let refKey = LineKey(
-							locKey: prefix+pluralGroup.name+"\""+quantity, env: env, filename: filenameNoLanguage, comment: currentComment, index: index,
+							locKey: "p"+pluralGroup.name+"\""+quantity, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: ["DTA": pluralItem != nil && pluralItem!.isCDATA ? "1" : "0"],
 							userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 						)
 						let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: true, withListOfKeys: &keys)
-						if setValue((pluralItem?.value ?? "--"), forKey: key, withLanguage: languageName) {index += 1}
+						if setValue((pluralItem?.value ?? "---"), forKey: key, withLanguage: languageName) {index += 1}
 						currentComment = ""
 						currentUserReadableComment = ""
 						currentUserReadableGroupComment = ""
 					}
+					
 				default:
 					print("Got unknown AndroidXMLLocFile component \(component)")
 				}
@@ -779,6 +758,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	func exportToAndroidProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [AndroidLocComponent]]()
 		var spaces = [AndroidLocComponent /* Only WhiteSpace and Comment */]()
+		var currentPluralsUserInfoByFilename: [String /* Language */: [String: String]] = [:]
 		var currentPluralsValueByFilename: [String /* Language */: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], AndroidXMLLocFile.PluralGroup.PluralItem)?]] = [:]
 		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Android" else {continue}
@@ -816,10 +796,15 @@ class happnCSVLocFile: TextOutputStreamable {
 					/* We're treating a group opening */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
 					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substring(from: k.characters.index(after: k.startIndex))))
+					
 				case let k where k.hasPrefix("s"):
 					/* We're treating a plural group opening */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
+					if let userInfo = exportedValueForKey(entry_key, withLanguage: languageName)?.splitUserInfo().userInfo {
+						currentPluralsUserInfoByFilename[filename] = userInfo
+					}
 					currentPluralsValueByFilename[filename] = [:]
+					
 				case let k where k.hasPrefix("c"):
 					/* We're treating a group closing */
 					let noC = k.substring(from: k.characters.index(after: k.startIndex))
@@ -829,7 +814,7 @@ class happnCSVLocFile: TextOutputStreamable {
 						 * closing component: let's add the finished plural to the
 						 * components. */
 						if sepBySpace.count == 2 && sepBySpace[0] == "plurals" {
-							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralGroup(name: sepBySpace[1], values: plurals))
+							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralGroup(name: sepBySpace[1], attributes: currentPluralsUserInfoByFilename[filename] ?? [:], values: plurals))
 						} else {
 							print("*** Warning: Got invalid plural closing key \(k). Dropping whole plurals group.")
 						}
@@ -841,36 +826,38 @@ class happnCSVLocFile: TextOutputStreamable {
 					} else {
 						print("*** Warning: Got invalid closing key \(k)")
 					}
+					
 				case let k where k.hasPrefix("k"):
-					/* We're treating a standard string item */
-					filenameToComponents[filename]!.append(contentsOf: spaces)
-					let v = displayedValueForKey(entry_key, withLanguage: languageName)
-					filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v))
-				case let k where k.hasPrefix("K"):
-					/* We're treating a CDATA string item */
-					filenameToComponents[filename]!.append(contentsOf: spaces)
-					let v = displayedValueForKey(entry_key, withLanguage: languageName)
-					filenameToComponents[filename]!.append(AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v))
+					/* We're treating a string item */
+					if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
+						let stringValue: AndroidXMLLocFile.StringValue
+						if (entry_key.userInfo["DTA"] != "1") {stringValue = AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v)}
+						else                                  {stringValue = AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v)}
+						filenameToComponents[filename]!.append(contentsOf: spaces)
+						filenameToComponents[filename]!.append(stringValue)
+					}
+					
 				case let k where k.hasPrefix("a"):
 					/* We're treating an array item */
-					filenameToComponents[filename]!.append(contentsOf: spaces)
-					let v = displayedValueForKey(entry_key, withLanguage: languageName)
-					let noA = k.substring(from: k.characters.index(after: k.startIndex))
-					let sepByQuote = noA.components(separatedBy: "\"")
-					if sepByQuote.count == 2 {
-						if let idx = Int(sepByQuote[1]) {
-							filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
+					if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
+						filenameToComponents[filename]!.append(contentsOf: spaces)
+						let noA = k.substring(from: k.characters.index(after: k.startIndex))
+						let sepByQuote = noA.components(separatedBy: "\"")
+						if sepByQuote.count == 2 {
+							if let idx = Int(sepByQuote[1]) {
+								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
+							} else {
+								print("*** Warning: Invalid key '\(k)': cannot find idx")
+							}
 						} else {
-							print("*** Warning: Invalid key '\(k)': cannot find idx")
+							print("*** Warning: Got invalid array item key '\(k)'")
 						}
-					} else {
-						print("*** Warning: Got invalid array item key '\(k)'")
 					}
-				case let k where k.hasPrefix("p") || k.hasPrefix("P"):
-					let isCData = k.hasPrefix("P")
+					
+				case let k where k.hasPrefix("p"):
+					let isCData = (entry_key.userInfo["DTA"] == "1")
 					/* We're treating a plural item */
-					let v = displayedValueForKey(entry_key, withLanguage: languageName)
-					if v != "--" && currentPluralsValueByFilename[filename] != nil {
+					if currentPluralsValueByFilename[filename] != nil, let v = exportedValueForKey(entry_key, withLanguage: languageName) {
 						let noP = k.substring(from: k.characters.index(after: k.startIndex))
 						let sepByQuote = noP.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
@@ -887,6 +874,7 @@ class happnCSVLocFile: TextOutputStreamable {
 							print("*** Warning: Got invalid plural key '\(k)' (either malformed or misplaced)")
 						}
 					}
+					
 				default:
 					print("*** Warning: Got invalid key \(entry_key.locKey)")
 				}
@@ -930,7 +918,7 @@ class happnCSVLocFile: TextOutputStreamable {
 		
 		var isFirst = true
 		for (refKey, refVals) in locFile.entries {
-			let key = LineKey(locKey: refKey, env: "RefLoc", filename: "ReferencesTranslations.csv", comment: "", index: isFirst ? 0 : 1, userReadableGroupComment: isFirst ? "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••" : "", userReadableComment: "REF TRAD. DO NOT MODIFY.")
+			let key = LineKey(locKey: refKey, env: "RefLoc", filename: "ReferencesTranslations.csv", index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••" : "", userReadableComment: "REF TRAD. DO NOT MODIFY.")
 			entries[key] = .entries(refVals)
 			isFirst = false
 		}
@@ -942,15 +930,15 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	func write<Target : TextOutputStream>(to target: inout Target) {
 		target.write(
-			"\(PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
+			"\(happnCSVLocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(happnCSVLocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(happnCSVLocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(happnCSVLocFile.PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
+			"\(happnCSVLocFile.PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
 		)
 		target.write(
-			"\(csvSeparator)\(FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))" +
-			"\(csvSeparator)\(COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
+			"\(csvSeparator)\(happnCSVLocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))" +
+			"\(csvSeparator)\(happnCSVLocFile.COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
 		)
 		for language in languages {
 			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
@@ -988,7 +976,7 @@ class happnCSVLocFile: TextOutputStreamable {
 				target.write("\n")
 			}
 			
-			let comment = "__" + entry_key.comment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
+			let comment = "__" + entry_key.fullComment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
 			target.write(
 				"\(entry_key.locKey.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
 				"\(entry_key.env.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
@@ -1002,7 +990,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			)
 			if case .entries(let entries) = value {
 				for language in languages {
-					target.write("\(csvSeparator)\((entries[language] ?? "TODOLOC").csvCellValueWithSeparator(csvSeparator))")
+					target.write("\(csvSeparator)\((entries[language] ?? "!¡!TODOLOC!¡!").csvCellValueWithSeparator(csvSeparator))")
 				}
 			}
 			target.write("\n")
@@ -1012,6 +1000,14 @@ class happnCSVLocFile: TextOutputStreamable {
 	/* ***************
 	   MARK: - Private
 	   *************** */
+	
+	private static let PRIVATE_KEY_HEADER_NAME = "__Key"
+	private static let PRIVATE_ENV_HEADER_NAME = "__Env"
+	private static let PRIVATE_FILENAME_HEADER_NAME = "__Filename"
+	private static let PRIVATE_COMMENT_HEADER_NAME = "__Comments"
+	private static let PRIVATE_MAPPINGS_HEADER_NAME = "__Mappings"
+	private static let FILENAME_HEADER_NAME = "File"
+	private static let COMMENT_HEADER_NAME = "Comments"
 	
 	private func getLanguageAgnosticFilenameAndAddLanguageToList(_ filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
 		var found = false
@@ -1046,7 +1042,7 @@ class happnCSVLocFile: TextOutputStreamable {
 					if keys[idx].comment.isEmpty {
 						let newKey = LineKey(
 							locKey: keys[idx].locKey, env: keys[idx].env, filename: keys[idx].filename,
-							comment: refKey.comment, index: keys[idx].index,
+							index: keys[idx].index, comment: refKey.comment, userInfo: refKey.userInfo /* We might need a more delicate merging handling for the userInfo... */,
 							userReadableGroupComment: refKey.userReadableGroupComment,
 							userReadableComment: refKey.userReadableComment
 						)

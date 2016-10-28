@@ -1,10 +1,10 @@
 /*
- * happnCSVLocKeyMappingComponents.swift
- * Localizer
- *
- * Created by François Lamboley on 12/3/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * happnCSVLocKeyMappingComponents.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 12/3/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -134,8 +134,9 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 			locKey: locKey,
 			env: env,
 			filename: filename,
-			comment: "",
 			index: 0,
+			comment: "",
+			userInfo: [:],
 			userReadableGroupComment: "",
 			userReadableComment: ""
 		)

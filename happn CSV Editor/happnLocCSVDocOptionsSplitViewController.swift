@@ -1,10 +1,10 @@
 /*
- * happnLocCSVDocOptionsSplitViewController.swift
- * Localizer
- *
- * Created by François Lamboley on 12/8/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * happnLocCSVDocOptionsSplitViewController.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 12/8/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 

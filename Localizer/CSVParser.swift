@@ -1,20 +1,21 @@
 /*
- * CSVParser.swift
- * Localizer
- *
- * Created by François Lamboley on 12/12/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * CSVParser.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 12/12/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 /* Credits to Matt Gallagher from which this class comes from
- * http://projectswithlove.com/projects/CSVImporter.zip
- * http://www.cocoawithlove.com/2009/11/writing-parser-using-nsscanner-csv.html */
+ * http://projectswithlove.com/projects/CSVImporter.zip
+ * http://www.cocoawithlove.com/2009/11/writing-parser-using-nsscanner-csv.html */
 
 import Foundation
 
 
 
 class CSVParser {
+	
 	private(set) var fieldNames: [String]
 	
 	private let hasHeader: Bool
@@ -95,10 +96,10 @@ class CSVParser {
 	}
 	
 	/* Attempts to parse a record from the current scan location. The record
-	 * dictionary will use the _fieldNames as keys, or FIELD_X for each column
-	 * X-1 if no fieldName exists for a given column.
-	 *
-	 * Returns the parsed record as a dictionary, or nil on failure. */
+	 * dictionary will use the _fieldNames as keys, or FIELD_X for each column
+	 * X-1 if no fieldName exists for a given column.
+	 *
+	 * Returns the parsed record as a dictionary, or nil on failure. */
 	private func parseRecord() -> [String: String]? {
 		if scanner.isAtEnd {
 			return nil
@@ -148,7 +149,7 @@ class CSVParser {
 		}
 		
 		/* Special case: if the current location is immediately
-		 * followed by a separator, then the field is a valid, empty string. */
+		 * followed by a separator, then the field is a valid, empty string. */
 		let currentLocation = scanner.scanLocation
 		if parseSeparator() != nil || parseLineSeparator() != nil || scanner.isAtEnd {
 			scanner.scanLocation = currentLocation
@@ -235,13 +236,13 @@ class CSVParser {
 			}
 			
 			/* If the separator is just a single character (common case) then
-			 * we know we've reached the end of parseable text */
+			 * we know we've reached the end of parseable text */
 			if separatorIsSingleChar {
 				break
 			}
 			
 			/* Otherwise, we need to consider the case where the first character
-			 * of the separator is matched but we don't have the full separator. */
+			 * of the separator is matched but we don't have the full separator. */
 			let location = scanner.scanLocation
 			var firstCharOfSeparator: NSString?
 			if scanner.scanString(separator.substring(to: separator.characters.index(after: separator.startIndex)), into: &firstCharOfSeparator) {
@@ -251,7 +252,7 @@ class CSVParser {
 				}
 				
 				/* We have the first char of the separator but not the whole
-				 * separator, so just append the char and continue */
+				 * separator, so just append the char and continue */
 				accumulatedData += firstCharOfSeparator! as String
 				continue
 			} else {
@@ -265,4 +266,5 @@ class CSVParser {
 		
 		return nil
 	}
+	
 }

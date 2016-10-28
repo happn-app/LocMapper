@@ -1,10 +1,10 @@
 /*
- * main.swift
- * Localizer
- *
- * Created by François Lamboley on 9/25/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * main.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 9/25/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -30,8 +30,8 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 }
 
 /* Returns the arg at the given index, or prints "Syntax error: error_message"
- * and the usage, then exits with syntax error if there is not enough arguments
- * given to the program */
+ * and the usage, then exits with syntax error if there is not enough arguments
+ * given to the program */
 func argAtIndexOrExit(_ i: Int, error_message: String) -> String {
 	guard CommandLine.arguments.count > i else {
 		print("Syntax error: \(error_message)", to: &mx_stderr)
@@ -67,8 +67,8 @@ func getFolderToHumanLanguageNamesFromIndex(_ i: Int) -> [String: String] {
 }
 
 /* Takes the current arg position in input and a dictionary of long args names
- * with the corresponding action to execute when the long arg is found.
- * Returns the new arg position when all long args have been found. */
+ * with the corresponding action to execute when the long arg is found.
+ * Returns the new arg position when all long args have been found. */
 func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 	var i = argIdx
 	
@@ -99,8 +99,8 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 }
 
 
-//let basePathForTests = "/Users/frizlab/Documents/Projects"
-let basePathForTests = "/Users/frizlab/Work/Doing/FTW and Co"
+let basePathForTests = "/Users/frizlab/Documents/Projects"
+//let basePathForTests = "/Users/frizlab/Work/Doing/FTW and Co"
 
 let folderNameToLanguageNameForTests = [
 	"en.lproj": " English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
@@ -114,7 +114,7 @@ let androidLanguageFolderNamesForTests = [
 	"values": " English", "values-fr": "Français — French", "values-de": "Deutsch — German",
 	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt-rBR": "Português brasileiro — Portuguese (Brasil)",
 	"values-pt": "Português europeu — Portuguese (Portugal)", "values-tr": "Türkçe — Turkish",
-	"values-zh-rTW": "中文(香港) — Chinese (Traditional)", "values-th": "ภาษาไทย — Thai", "values-ja": "日本語 — Japanese",
+	"values-zh": "中文(香港) — Chinese (Traditional)", "values-th": "ภาษาไทย — Thai", "values-ja": "日本語 — Japanese",
 	"values-pl": "Polszczyzna — Polish" /*, "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",
 	"values-he": "עברית — Hebrew", "values-ko": "한국어 — Korean"*/
 ]
@@ -233,7 +233,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 			print("Error reading Xcode strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -242,12 +242,12 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print(csv, terminator: "")
 		var csvText = ""
 		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.hppnloccsv", usingEncoding: String.Encoding.utf8)
+		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -256,11 +256,11 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_android_export":
-		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("\(basePathForTests)/HappnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys)) else {
+		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("\(basePathForTests)/HappnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys).sorted()) else {
 			print("Error reading Android strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -269,12 +269,12 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print(csv, terminator: "")
 		var csvText = ""
 		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.hppnloccsv", usingEncoding: String.Encoding.utf8)
+		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.hppnloccsv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}

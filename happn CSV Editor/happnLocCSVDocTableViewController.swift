@@ -1,10 +1,10 @@
 /*
- * happnLocCSVDocTableViewController.swift
- * Localizer
- *
- * Created by François Lamboley on 12/8/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * happnLocCSVDocTableViewController.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 12/8/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -43,7 +43,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
 		guard let tableColumn = tableColumn else {return nil}
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
-		return csvLocFile.displayedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
+		return csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
 	}
 	
 	func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
@@ -75,7 +75,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		
 		var height = minimumHeight
 		for column in tableView.tableColumns {
-			let str = csvLocFile.displayedValueForKey(key, withLanguage: column.identifier).replacingOccurrences(of: "\\n", with: "\n")
+			let str = csvLocFile.editorDisplayedValueForKey(key, withLanguage: column.identifier).replacingOccurrences(of: "\\n", with: "\n")
 			let cell = column.dataCell as! NSCell
 			cell.stringValue = str
 			let rect = NSMakeRect(0, 0, column.width, CGFloat.greatestFiniteMagnitude)
@@ -121,7 +121,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 //			result.identifier = identifier
 //		}
 //		
-//		result.stringValue = csvLocFile.displayedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
+//		result.stringValue = csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
 //		return result
 //	}
 	

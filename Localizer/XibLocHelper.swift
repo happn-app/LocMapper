@@ -1,10 +1,10 @@
 /*
- * XibLocHelper.swift
- * Localizer
- *
- * Created by François Lamboley on 12/7/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * XibLocHelper.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 12/7/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Foundation
 

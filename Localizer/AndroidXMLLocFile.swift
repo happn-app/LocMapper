@@ -1,10 +1,10 @@
 /*
- * AndroidXMLLocFile.swift
- * Localizer
- *
- * Created by François Lamboley on 11/14/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * AndroidXMLLocFile.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 11/14/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -178,10 +178,15 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		let name: String
-		let values: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], PluralItem)?]
+		let attributes: [String: String]
+		let values: [String /* Quantity */: (comments: [AndroidLocComponent], value: PluralItem)?]
 		
 		var stringValue: String {
-			var ret = "<plurals name=\"\(name)\">"
+			var ret = "<plurals name=\"\(name)\""
+			for (key, val) in attributes {
+				ret += " \(key)=\"\(val.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\""))\""
+			}
+			ret += ">"
 			for (quantity, value) in values where value != nil {
 				let (spaces, pluralItem) = value!
 				assert(pluralItem.quantity == quantity)
@@ -192,15 +197,16 @@ class AndroidXMLLocFile: TextOutputStreamable {
 			return ret
 		}
 		
-		init(name n: String, values v: [String /* Quantity */: ([AndroidLocComponent], PluralItem)?]) {
+		init(name n: String, attributes attr: [String: String], values v: [String /* Quantity */: (comments: [AndroidLocComponent], value: PluralItem)?]) {
 			name = n
+			attributes = attr
 			values = v
 		}
 	}
 	
 	class ParserDelegate: NSObject, XMLParserDelegate {
 		/* Equality comparison does not compare argument values for cases with
-		 * arguments */
+		 * arguments */
 		enum Status: Equatable {
 			case outStart
 			case inResources
@@ -238,6 +244,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		var components = [AndroidLocComponent]()
 		
+		var currentPluralAttributes = [String: String]()
 		var currentPluralSpaces = [AndroidLocComponent]()
 		var currentPluralValues: [String /* Quantity */: ([AndroidLocComponent], PluralGroup.PluralItem)?]?
 		
@@ -260,7 +267,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		
 		func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
 //			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
-			let attrs = attributeDict 
+			let attrs = attributeDict
 			
 			if !currentChars.isEmpty {
 				addSpaceComponent(WhiteSpace(currentChars))
@@ -280,6 +287,9 @@ class AndroidXMLLocFile: TextOutputStreamable {
 					else                        {status = .error}
 				
 				case (.inResources, "plurals"):
+					var attrsCopy = attributeDict
+					attrsCopy.removeValue(forKey: "name")
+					currentPluralAttributes = attrsCopy
 					if let name = attrs["name"] {status = .inPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues = [:]}
 					else                        {status = .error}
 				
@@ -329,8 +339,9 @@ class AndroidXMLLocFile: TextOutputStreamable {
 					status = .inResources
 				
 				case (.inPlurals(let pluralsName), "plurals"):
-					components.append(PluralGroup(name: pluralsName, values: currentPluralValues!))
+					components.append(PluralGroup(name: pluralsName, attributes: currentPluralAttributes, values: currentPluralValues!))
 					addingSpacesToPlural = false
+					currentPluralAttributes = [:]
 					currentPluralValues = nil
 					
 					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
@@ -374,6 +385,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 			}
 			
 			currentChars = ""
+			isCurrentCharsCDATA = false
 			
 			if status == .error {
 				parser.abortParsing()
@@ -384,13 +396,12 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		func parser(_ parser: XMLParser, foundCharacters string: String) {
 //			println("foundCharacters \(string)")
 			if isCurrentCharsCDATA && !currentChars.isEmpty {
-				print("Error parsing XML file: found non-CDATA character, but I also have CDATA characters.", to: &mx_stderr)
-				parser.abortParsing()
-				status = .error
-				return
+				print("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.", to: &mx_stderr)
+				/* We used to fail parsing here. Now if a CDATA block is mixed with
+				 * non-CDATA value, we consider the whole value to be a CDATA block
+				 * and we continue. */
 			}
 			
-			isCurrentCharsCDATA = false
 			currentChars += string
 		}
 		
@@ -418,10 +429,10 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		
 		func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
 			if !isCurrentCharsCDATA && !currentChars.isEmpty {
-				print("Error parsing XML file: found CDATA block, but I also have non-CDATA characters.", to: &mx_stderr)
-				parser.abortParsing()
-				status = .error
-				return
+				print("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.", to: &mx_stderr)
+				/* We used to fail parsing here. Now if a CDATA block is mixed with
+				 * non-CDATA value, we consider the whole value to be a CDATA block
+				 * and we continue. */
 			}
 			
 			isCurrentCharsCDATA = true

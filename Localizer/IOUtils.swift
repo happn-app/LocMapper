@@ -1,10 +1,10 @@
 /*
- * IOUtils.swift
- * Localizer
- *
- * Created by François Lamboley on 12/4/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * IOUtils.swift
+ * Localizer
+ *
+ * Created by François Lamboley on 12/4/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -26,7 +26,7 @@ func writeText(_ text: String, toFile filePath: String, usingEncoding encoding: 
 		defer {output_stream.closeFile()}
 		
 		/* This line actually raises an exception if cannot write... We should
-		* handle that! (In Swift? How...) */
+		 * handle that! (In Swift? How...) */
 		output_stream.write(data)
 	} else {
 		throw NSError(domain: "LocalizerErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(filePath) for writing"])
