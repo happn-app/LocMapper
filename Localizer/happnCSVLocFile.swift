@@ -479,12 +479,21 @@ class happnCSVLocFile: TextOutputStreamable {
 		return Int(strVal)
 	}
 	
+	func filtersMetadataValueForKey(_ key: String) -> [Filter]? {
+		guard let dataVal = metadata[key]?.data(using: .utf8), let filtersStr = (try? JSONSerialization.jsonObject(with: dataVal, options: [])) as? [String] else {return nil}
+		return filtersStr.flatMap{Filter(string: $0)}
+	}
+	
 	func setMetadataValue(_ value: String, forKey key: String) {
 		metadata[key] = value
 	}
 	
 	func setMetadataValue(_ value: Int, forKey key: String) {
 		metadata[key] = String(value)
+	}
+	
+	func setMetadataValue(_ value: [Filter], forKey key: String) {
+		metadata[key] = String(data: try! JSONSerialization.data(withJSONObject: value.map{$0.toString()}, options: []), encoding: .utf8)
 	}
 	
 	/* ***********************************

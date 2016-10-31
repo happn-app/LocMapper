@@ -33,7 +33,21 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	
 	override var representedObject: Any? {
 		didSet {
-			/* TODO */
+			stringFilter = ""
+			envsStatus.removeAll()
+			stateFiltersStatus.removeAll()
+			for filter in (representedObject as? happnCSVLocFile)?.filtersMetadataValueForKey("filters") ?? [] {
+				switch filter {
+				case .string(let str):      stringFilter = str
+				case .env(let env):         envsStatus[env] = true
+				case .stateTodoloc:         stateFiltersStatus["todoloc"] = true
+				case .stateHardCodedValues: stateFiltersStatus["hard_coded_values"] = true
+				case .stateMappedValid:     stateFiltersStatus["valid_mapped_values"] = true
+				case .stateMappedInvalid:   stateFiltersStatus["invalid_mapped_values"] = true
+				}
+			}
+			
+			tableView.reloadData()
 		}
 	}
 	
@@ -44,18 +58,21 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	   *************** */
 	
 	@IBAction func textFieldValueChanged(_ sender: NSTextField) {
-		Swift.print("\(sender.stringValue)")
+		stringFilter = sender.stringValue
+		updateDocFilters()
 	}
 	
 	@IBAction func checkValueChanged(_ sender: NSButton) {
 		switch sectionIndex(forRow: sender.tag) {
 		case .envFilter:
 			let env = envs[rowIndexInSection(forRow: sender.tag)]
-			Swift.print("\(env)")
+			envsStatus[env] = (sender.state == NSOnState)
+			updateDocFilters()
 			
 		case .stateFilter:
-			let property = stateFilters[rowIndexInSection(forRow: sender.tag)]
-			Swift.print("\(property)")
+			let stateFilter = stateFilters[rowIndexInSection(forRow: sender.tag)]
+			stateFiltersStatus[stateFilter] = (sender.state == NSOnState)
+			updateDocFilters()
 			
 		default: fatalError("Invalid section for a check change")
 		}
@@ -73,7 +90,9 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		let rowInSection = rowIndexInSection(forRow: row)
 		switch sectionIndex(forRow: row) {
 		case .stringFilter:
-			return tableView.make(withIdentifier: "StringFilter", owner: self)!
+			let ret = tableView.make(withIdentifier: "StringFilter", owner: self)! as! NSTableCellView
+			ret.textField?.stringValue = stringFilter
+			return ret
 			
 		case .separator1:
 			let ret = tableView.make(withIdentifier: "Sep", owner: self)! as! NSTableCellView
@@ -82,7 +101,9 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 			
 		case .envFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
-			(v.subviews.first! as! NSButton).title = envs[rowInSection]
+			let env = envs[rowInSection]
+			(v.subviews.first! as! NSButton).state = (envsStatus[env] ?? false ? NSOnState : NSOffState)
+			(v.subviews.first! as! NSButton).title = env
 			(v.subviews.first! as! NSButton).tag = row
 			return v
 			
@@ -93,7 +114,9 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 			
 		case .stateFilter:
 			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
-			(v.subviews.first! as! NSButton).title = NSLocalizedString(stateFilters[rowInSection] + " state filter", comment: "")
+			let stateFilter = stateFilters[rowInSection]
+			(v.subviews.first! as! NSButton).state = (stateFiltersStatus[stateFilter] ?? false ? NSOnState : NSOffState)
+			(v.subviews.first! as! NSButton).title = NSLocalizedString(stateFilter + " state filter", comment: "")
 			(v.subviews.first! as! NSButton).tag = row
 			return v
 		}
@@ -136,6 +159,10 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	private lazy var section2SepIndex: Int = self.section1SepIndex + 1 + self.envs.count
 	private lazy var section3SepIndex: Int = self.section2SepIndex + 1 + self.stateFilters.count
 	
+	private var stringFilter = ""
+	private var envsStatus = [String: Bool]()
+	private var stateFiltersStatus = [String: Bool]()
+	
 	private func sectionIndex(forRow row: Int) -> Section {
 		switch row {
 		case 0:                                         return .stringFilter
@@ -155,6 +182,17 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		case .separator2:   return 0
 		case .stateFilter:  return row - (section2SepIndex + 1)
 		}
+	}
+	
+	private func updateDocFilters() {
+		var res = [happnCSVLocFile.Filter.string(stringFilter)]
+		for env in envs {if envsStatus[env] ?? false {res.append(.env(env))}}
+		if stateFiltersStatus["todoloc"] ?? false               {res.append(.stateTodoloc)}
+		if stateFiltersStatus["hard_coded_values"] ?? false     {res.append(.stateHardCodedValues)}
+		if stateFiltersStatus["valid_mapped_values"] ?? false   {res.append(.stateMappedValid)}
+		if stateFiltersStatus["invalid_mapped_values"] ?? false {res.append(.stateMappedInvalid)}
+		(representedObject as? happnCSVLocFile)?.setMetadataValue(res, forKey: "filters")
+		handlerNotifyDocumentModification?()
 	}
 	
 }
