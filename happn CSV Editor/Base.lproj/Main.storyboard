@@ -850,7 +850,7 @@
                             </textField>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oh1-yi-z5V">
                                 <rect key="frame" x="8" y="143" width="434" height="17"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Env: |env|, File: $file$, Key: *key*" id="qST-Te-Kl9">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="*key*   —   |env|   —   $file$" id="qST-Te-Kl9">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

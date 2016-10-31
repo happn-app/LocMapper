@@ -23,7 +23,7 @@ class LocEntryContextViewController: NSViewController {
 		rangeFile = findRangeInString(originalGeneralInfoText, withRegularExpression: "\\$.*\\$")
 		rangeEnv = findRangeInString(originalGeneralInfoText, withRegularExpression: "\\|.*\\|")
 		
-		updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
+		updateLabelGeneralInfoForEmptySelection()
 		textViewContext.string = ""
 	}
 	
@@ -39,7 +39,7 @@ class LocEntryContextViewController: NSViewController {
 				updateLabelGeneralInfoWith(env: representedObject.lineKey.env, file: representedObject.lineKey.filename, key: representedObject.lineKey.locKey)
 				textViewContext.string = representedObject.lineKey.userReadableComment
 			} else {
-				updateLabelGeneralInfoWith(env: "--", file: "--", key: "--")
+				updateLabelGeneralInfoForEmptySelection()
 				textViewContext.string = ""
 			}
 		}
@@ -65,12 +65,16 @@ class LocEntryContextViewController: NSViewController {
 	
 	private func updateLabelGeneralInfoWith(env: String, file: String, key: String) {
 		/* We assume in originalGeneralInfoText, the dynamic parts of the string
-		 * appear in the following order: env, file and key. */
+		 * appear in the following order: key, env and file. */
 		guard var infoText = originalGeneralInfoText else {return}
-		infoText.replaceSubrange(rangeKey, with: key)
 		infoText.replaceSubrange(rangeFile, with: file)
 		infoText.replaceSubrange(rangeEnv, with: env)
+		infoText.replaceSubrange(rangeKey, with: key)
 		labelGeneralInfo.stringValue = infoText
+	}
+	
+	private func updateLabelGeneralInfoForEmptySelection() {
+		labelGeneralInfo.stringValue = "--"
 	}
 	
 }
