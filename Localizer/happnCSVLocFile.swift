@@ -12,7 +12,7 @@ import Foundation
 
 private extension String {
 	func csvCellValueWithSeparator(_ sep: String) -> String {
-		if sep.characters.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(sep)\" as a CSV separator", userInfo: nil).raise()}
+		guard sep.characters.count == 1, sep != "\"", sep != "\n", sep != "\r" else {fatalError("Cannot use \"\(sep)\" as a CSV separator")}
 		if rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
 			let doubledDoubleQuotes = replacingOccurrences(of: "\"", with: "\"\"")
