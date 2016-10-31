@@ -378,9 +378,8 @@ class happnCSVLocFile: TextOutputStreamable {
 	   ******************************************* */
 	
 	func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
-		guard !filters.isEmpty else {return entryKeys}
 		let stringFilters = filters.flatMap { filter -> String? in
-			if case .string(let str) = filter {return str}
+			if case .string(let str) = filter, !str.isEmpty {return str}
 			return nil
 		}
 		let envFilters = filters.flatMap { filter -> String? in
@@ -388,6 +387,10 @@ class happnCSVLocFile: TextOutputStreamable {
 			return nil
 		}
 		let stateFilters = filters.filter { $0.isStateFilter }
+		
+		guard !envFilters.isEmpty && !stateFilters.isEmpty else {
+			return []
+		}
 		
 		return entryKeys.filter { lineKey -> Bool in
 			/* Filter env */
@@ -397,7 +400,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			/* TODO: State filters... */
 			
 			/* Search filter */
-			if stringFilters.count > 0 {
+			if !stringFilters.isEmpty {
 				for l in self.languages {
 					let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
 					for stringFilter in stringFilters {
