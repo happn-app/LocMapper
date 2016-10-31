@@ -17,7 +17,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		createTableViewColumnsIfNeeded()
+		createTableViewColumnsIfNeeded(reloadData: true)
 	}
 	
 	/* *********************************************************************
@@ -28,11 +28,9 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	
 	override var representedObject: Any? {
 		didSet {
-			if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys.sorted()}
-			else                           {sortedKeys = nil}
-			
 			tableColumnsCreated = false
-			createTableViewColumnsIfNeeded()
+			createTableViewColumnsIfNeeded(reloadData: false)
+			noteFiltersHaveChanged()
 		}
 	}
 	
@@ -40,6 +38,9 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	var handlerSetEntryViewSelection: ((_ newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
 	
 	func noteFiltersHaveChanged() {
+		if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys(matchingFilters: csvLocFile.filtersMetadataValueForKey("filters") ?? []).sorted()}
+		else                           {sortedKeys = nil}
+		tableView.reloadData()
 	}
 	
 	/* *****************************************
@@ -151,7 +152,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	private var sortedKeys: [happnCSVLocFile.LineKey]?
 	private let cachedRowsHeights = NSCache<NSString, NSNumber>()
 	
-	private func createTableViewColumnsIfNeeded() {
+	private func createTableViewColumnsIfNeeded(reloadData: Bool) {
 		guard !tableColumnsCreated else {return}
 		guard let tableView = tableView else {return}
 		
@@ -174,7 +175,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		}
 		
 		tableColumnsCreated = true
-		tableView.reloadData()
+		if reloadData {tableView.reloadData()}
 	}
 	
 }
