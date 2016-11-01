@@ -1,5 +1,5 @@
 /*
- * happnLocCSVDocOptionsViewController.swift
+ * happnLocCSVDocFiltersViewController.swift
  * Localizer
  *
  * Created by François Lamboley on 7/31/16.
@@ -17,7 +17,7 @@ class TextFieldSelectableTableView : NSTableView {
 }
 
 
-class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
 	
 	@IBOutlet var tableView: NSTableView!
 	
@@ -33,10 +33,12 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 	
 	override var representedObject: Any? {
 		didSet {
+			guard !internalRepresentedObjectChange else {return}
+			
 			stringFilter = ""
 			envsStatus.removeAll()
 			stateFiltersStatus.removeAll()
-			for filter in (representedObject as? happnCSVLocFile)?.filtersMetadataValueForKey("filters") ?? [] {
+			for filter in representedObject as? [happnCSVLocFile.Filter] ?? [] {
 				switch filter {
 				case .string(let str):      stringFilter = str
 				case .env(let env):         envsStatus[env] = true
@@ -51,7 +53,7 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		}
 	}
 	
-	var handlerNotifyDocumentModification: (() -> Void)?
+	var handlerNotifyFiltersModification: (() -> Void)?
 	
 	/* ***************
 	   MARK: - Actions
@@ -152,6 +154,12 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		var isSeparator: Bool {return self == .separator1 || self == .separator2}
 	}
 	
+	private var internalRepresentedObjectChange = false
+	private var representedFilters: [happnCSVLocFile.Filter] {
+		get {return representedObject as? [happnCSVLocFile.Filter] ?? []}
+		set {internalRepresentedObjectChange = true; representedObject = newValue; internalRepresentedObjectChange = false}
+	}
+	
 	/* Currently we keep the envs list statically. We may want to extract it from the happnCSVLoc later. */
 	private let envs         = ["Xcode", "Android", "Windows", "RefLoc"]
 	private let stateFilters = ["todoloc", "hard_coded_values", "valid_mapped_values", "invalid_mapped_values"]
@@ -191,8 +199,8 @@ class happnLocCSVDocOptionsViewController: NSViewController, NSTableViewDataSour
 		if stateFiltersStatus["hard_coded_values"] ?? false     {res.append(.stateHardCodedValues)}
 		if stateFiltersStatus["valid_mapped_values"] ?? false   {res.append(.stateMappedValid)}
 		if stateFiltersStatus["invalid_mapped_values"] ?? false {res.append(.stateMappedInvalid)}
-		(representedObject as? happnCSVLocFile)?.setMetadataValue(res, forKey: "filters")
-		handlerNotifyDocumentModification?()
+		representedFilters = res
+		handlerNotifyFiltersModification?()
 	}
 	
 }

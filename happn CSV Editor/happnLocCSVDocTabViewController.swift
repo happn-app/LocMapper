@@ -55,8 +55,8 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	   MARK: - Private
 	   *************** */
 	
-	private var optionsSplitViewController: happnLocCSVDocOptionsSplitViewController! {
-		return tabViewItemDocContent.viewController as? happnLocCSVDocOptionsSplitViewController
+	private var optionsSplitViewController: happnLocCSVDocFiltersSplitViewController! {
+		return tabViewItemDocContent.viewController as? happnLocCSVDocFiltersSplitViewController
 	}
 	
 }

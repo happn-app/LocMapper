@@ -223,22 +223,6 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	
 	private var currentOpenPanel: NSOpenPanel?
 	
-	private var mainViewController: happnLocCSVDocTabViewController! {
-		return windowControllers.first?.contentViewController as? happnLocCSVDocTabViewController
-	}
-	
-	private var optionsSplitViewController: happnLocCSVDocOptionsSplitViewController! {
-		return mainViewController.tabViewItemDocContent.viewController as? happnLocCSVDocOptionsSplitViewController
-	}
-	
-	private var contentSplitViewController: happnLocCSVDocContentSplitViewController! {
-		return optionsSplitViewController.splitItemContent.viewController as? happnLocCSVDocContentSplitViewController
-	}
-	
-	private var tableViewController: happnLocCSVDocTableViewController! {
-		return contentSplitViewController.splitItemTableView.viewController as? happnLocCSVDocTableViewController
-	}
-	
 	private func sendRepresentedObjectToSubControllers(_ object: AnyObject?) {
 		for w in windowControllers {
 			w.contentViewController?.representedObject = csvLocFile
@@ -254,6 +238,54 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			accessoryView.frame.size.width = superview.bounds.width
 			accessoryView.autoresizingMask = [.viewWidthSizable] /* Doesn't work though :( */
 		}
+	}
+	
+	/* **********
+	   MARK: → UI
+	   ********** */
+	
+	/* Document Root & Loading UI */
+	
+	private var mainViewController: happnLocCSVDocTabViewController! {
+		return windowControllers.first?.contentViewController as? happnLocCSVDocTabViewController
+	}
+	
+	/* Left Pane (Filters) */
+	
+	private var filtersSplitViewController: happnLocCSVDocFiltersSplitViewController! {
+		return mainViewController.tabViewItemDocContent.viewController as? happnLocCSVDocFiltersSplitViewController
+	}
+	
+	private var filtersViewController: happnLocCSVDocFiltersViewController! {
+		return filtersSplitViewController.splitItemFilters.viewController as? happnLocCSVDocFiltersViewController
+	}
+	
+	/* Top-Right Pane (Translations) */
+	
+	private var contentSplitViewController: happnLocCSVDocContentSplitViewController! {
+		return filtersSplitViewController.splitItemContent.viewController as? happnLocCSVDocContentSplitViewController
+	}
+	
+	private var tableViewController: happnLocCSVDocTableViewController! {
+		return contentSplitViewController.splitItemTableView.viewController as? happnLocCSVDocTableViewController
+	}
+	
+	/* Bottom-Right Pane (Details) */
+	
+	private var locEntrySplitViewController: LocEntryViewController! {
+		return contentSplitViewController.splitItemLocEntry.viewController as? LocEntryViewController
+	}
+	
+	private var locEntryContextViewController: LocEntryContextViewController! {
+		return locEntrySplitViewController.tabViewItemContext.viewController as? LocEntryContextViewController
+	}
+	
+	private var locEntryMappingViewController: LocEntryMappingViewController! {
+		return locEntrySplitViewController.tabViewItemMapping.viewController as? LocEntryMappingViewController
+	}
+	
+	private var locEntryAdvancedMappingViewController: LocEntryAdvancedMappingViewController! {
+		return locEntrySplitViewController.tabViewItemAdvancedMapping.viewController as? LocEntryAdvancedMappingViewController
 	}
 	
 }

@@ -40,7 +40,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	func noteFiltersHaveChanged() {
 		if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys(matchingFilters: csvLocFile.filtersMetadataValueForKey("filters") ?? []).sorted()}
 		else                           {sortedKeys = nil}
-		tableView.reloadData()
+		reloadTableData()
 	}
 	
 	/* *****************************************
@@ -112,11 +112,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	func tableViewSelectionDidChange(_ notification: Notification) {
-		guard tableView.selectedRow >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], let value = csvLocFile.lineValueForKey(key) else {
-			handlerSetEntryViewSelection?(nil)
-			return
-		}
-		handlerSetEntryViewSelection?((key, value))
+		notifyTableViewSelectionChange()
 	}
 	
 	/* If we were view-based... but we're not (cell-based is still faster). */
@@ -175,7 +171,20 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		}
 		
 		tableColumnsCreated = true
-		if reloadData {tableView.reloadData()}
+		if reloadData {reloadTableData()}
+	}
+	
+	private func reloadTableData() {
+		tableView.reloadData()
+		notifyTableViewSelectionChange()
+	}
+	
+	private func notifyTableViewSelectionChange() {
+		guard tableView.selectedRow >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], let value = csvLocFile.lineValueForKey(key) else {
+			handlerSetEntryViewSelection?(nil)
+			return
+		}
+		handlerSetEntryViewSelection?((key, value))
 	}
 	
 }

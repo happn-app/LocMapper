@@ -1,5 +1,5 @@
 /*
- * happnLocCSVDocOptionsSplitViewController.swift
+ * happnLocCSVDocFiltersSplitViewController.swift
  * Localizer
  *
  * Created by François Lamboley on 12/8/15.
@@ -10,9 +10,9 @@ import Cocoa
 
 
 
-class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
+class happnLocCSVDocFiltersSplitViewController : NSSplitViewController {
 	
-	@IBOutlet var splitItemOptions: NSSplitViewItem!
+	@IBOutlet var splitItemFilters: NSSplitViewItem!
 	@IBOutlet var splitItemContent: NSSplitViewItem!
 	
 	/* *********************************************************************
@@ -23,14 +23,21 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	
 	override var representedObject: Any? {
 		didSet {
-			optionsViewController.representedObject = representedObject
+			filtersViewController.representedObject = (representedObject as? happnCSVLocFile)?.filtersMetadataValueForKey("filters")
 			contentViewController.representedObject = representedObject
 		}
 	}
 	
 	var handlerNotifyDocumentModification: (() -> Void)? {
 		didSet {
-			optionsViewController.handlerNotifyDocumentModification = handlerNotifyDocumentModification
+			filtersViewController.handlerNotifyFiltersModification = { [weak self] in
+				guard let strongSelf = self else {return}
+				guard let filters = strongSelf.filtersViewController.representedObject as? [happnCSVLocFile.Filter] else {return}
+				
+				(strongSelf.representedObject as? happnCSVLocFile)?.setMetadataValue(filters, forKey: "filters")
+				strongSelf.contentViewController.noteFiltersHaveChanged()
+				strongSelf.handlerNotifyDocumentModification?()
+			}
 			contentViewController.handlerNotifyDocumentModification = handlerNotifyDocumentModification
 		}
 	}
@@ -52,8 +59,8 @@ class happnLocCSVDocOptionsSplitViewController : NSSplitViewController {
 	   MARK: - Private
 	   *************** */
 	
-	private var optionsViewController: happnLocCSVDocOptionsViewController! {
-		return splitItemOptions.viewController as? happnLocCSVDocOptionsViewController
+	private var filtersViewController: happnLocCSVDocFiltersViewController! {
+		return splitItemFilters.viewController as? happnLocCSVDocFiltersViewController
 	}
 	
 	private var contentViewController: happnLocCSVDocContentSplitViewController! {

@@ -448,11 +448,11 @@
             </objects>
             <point key="canvasLocation" x="-262" y="384"/>
         </scene>
-        <!--Loaded Doc-->
+        <!--Happn LocCSV Doc Content Split View Controller-->
         <scene sceneID="QGL-uo-KEh">
             <objects>
                 <customObject id="OgM-Fp-stH" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <splitViewController title="Loaded Doc" id="ct4-wk-7SH" customClass="happnLocCSVDocContentSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController id="ct4-wk-7SH" customClass="happnLocCSVDocContentSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="pQ1-ad-IWO"/>
                         <splitViewItem canCollapse="YES" holdingPriority="260" behavior="sidebar" id="RyI-Ha-ETJ"/>
@@ -536,10 +536,10 @@
             </objects>
             <point key="canvasLocation" x="-496" y="1278"/>
         </scene>
-        <!--Happn LocCSV Doc Options Split View Controller-->
+        <!--Happn LocCSV Doc Filters Split View Controller-->
         <scene sceneID="eXP-fC-M5z">
             <objects>
-                <splitViewController id="EeL-Ny-Gtb" customClass="happnLocCSVDocOptionsSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController id="EeL-Ny-Gtb" customClass="happnLocCSVDocFiltersSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem canCollapse="YES" holdingPriority="260" behavior="sidebar" id="Hc1-0c-bdQ"/>
                         <splitViewItem id="NFu-rf-yKA"/>
@@ -550,7 +550,7 @@
                     </splitView>
                     <connections>
                         <outlet property="splitItemContent" destination="NFu-rf-yKA" id="nQF-pg-4Nc"/>
-                        <outlet property="splitItemOptions" destination="Hc1-0c-bdQ" id="M4k-Ld-hhs"/>
+                        <outlet property="splitItemFilters" destination="Hc1-0c-bdQ" id="n5a-SI-Q3o"/>
                         <segue destination="daH-92-t52" kind="relationship" relationship="splitItems" id="oAM-7Y-arW"/>
                         <segue destination="ct4-wk-7SH" kind="relationship" relationship="splitItems" id="0t1-7D-gkO"/>
                     </connections>
@@ -559,10 +559,10 @@
             </objects>
             <point key="canvasLocation" x="-23" y="1278"/>
         </scene>
-        <!--Happn LocCSV Doc Options View Controller-->
+        <!--Happn LocCSV Doc Filters View Controller-->
         <scene sceneID="jYb-bF-CBH">
             <objects>
-                <viewController id="daH-92-t52" customClass="happnLocCSVDocOptionsViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="daH-92-t52" customClass="happnLocCSVDocFiltersViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="AuA-et-erp">
                         <rect key="frame" x="0.0" y="0.0" width="185" height="324"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -850,7 +850,7 @@
                             </textField>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oh1-yi-z5V">
                                 <rect key="frame" x="8" y="143" width="434" height="17"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="*key*   —   |env|   —   $file$" id="qST-Te-Kl9">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="|env|   —   *key*   —   $file$" id="qST-Te-Kl9">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

@@ -65,11 +65,11 @@ class LocEntryContextViewController: NSViewController {
 	
 	private func updateLabelGeneralInfoWith(env: String, file: String, key: String) {
 		/* We assume in originalGeneralInfoText, the dynamic parts of the string
-		 * appear in the following order: key, env and file. */
+		 * appear in the following order: env, key and file. */
 		guard var infoText = originalGeneralInfoText else {return}
 		infoText.replaceSubrange(rangeFile, with: file)
-		infoText.replaceSubrange(rangeEnv, with: env)
 		infoText.replaceSubrange(rangeKey, with: key)
+		infoText.replaceSubrange(rangeEnv, with: env)
 		labelGeneralInfo.stringValue = infoText
 	}
 	
