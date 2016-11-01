@@ -121,6 +121,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			DispatchQueue.global().async {
 				defer {
 					DispatchQueue.main.async {
+						self.mainViewController.noteContentHasChanged()
 						self.windowForSheet?.endSheet(loadingWindow)
 						self.updateChangeCount(.changeDone)
 					}
@@ -177,6 +178,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			DispatchQueue.global().async {
 				defer {
 					DispatchQueue.main.async {
+						self.mainViewController.noteContentHasChanged()
 						self.windowForSheet?.endSheet(loadingWindow)
 						self.updateChangeCount(.changeDone)
 					}

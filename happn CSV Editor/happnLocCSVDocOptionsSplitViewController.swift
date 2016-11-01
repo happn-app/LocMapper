@@ -42,6 +42,10 @@ class happnLocCSVDocFiltersSplitViewController : NSSplitViewController {
 		}
 	}
 	
+	func noteContentHasChanged() {
+		contentViewController.noteContentHasChanged()
+	}
+	
 	/* ***************
 	   MARK: - Actions
 	   *************** */

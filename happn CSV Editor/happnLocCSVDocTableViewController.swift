@@ -27,15 +27,17 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	   ********************************************************************* */
 	
 	override var representedObject: Any? {
-		didSet {
-			tableColumnsCreated = false
-			createTableViewColumnsIfNeeded(reloadData: false)
-			noteFiltersHaveChanged()
-		}
+		didSet {noteContentHasChanged()}
 	}
 	
 	var handlerNotifyDocumentModification: (() -> Void)?
 	var handlerSetEntryViewSelection: ((_ newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
+	
+	func noteContentHasChanged() {
+		tableColumnsCreated = false
+		createTableViewColumnsIfNeeded(reloadData: false)
+		noteFiltersHaveChanged()
+	}
 	
 	func noteFiltersHaveChanged() {
 		if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys(matchingFilters: csvLocFile.filtersMetadataValueForKey("filters") ?? []).sorted()}

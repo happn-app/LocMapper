@@ -35,6 +35,10 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 		}
 	}
 	
+	func noteContentHasChanged() {
+		optionsSplitViewController.noteContentHasChanged()
+	}
+	
 	/* ***************
 	   MARK: - Actions
 	   *************** */

@@ -43,6 +43,10 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 		}
 	}
 	
+	func noteContentHasChanged() {
+		tableViewController.noteContentHasChanged()
+	}
+	
 	func noteFiltersHaveChanged() {
 		tableViewController.noteFiltersHaveChanged()
 	}
