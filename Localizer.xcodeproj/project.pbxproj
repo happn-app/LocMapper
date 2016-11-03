@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
+		7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0869A21DCB7F8700EB9486 /* Utils.swift */; };
 		7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
@@ -64,6 +65,7 @@
 /* Begin PBXFileReference section */
 		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
+		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributedStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 		7B837D801C0EF3DB0020E86B /* happn CSV Editor */ = {
 			isa = PBXGroup;
 			children = (
+				7B0869A21DCB7F8700EB9486 /* Utils.swift */,
 				7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */,
 				7B837D811C0EF3DB0020E86B /* AppDelegate.swift */,
 				7B71565F1D95EF5F00A15BC5 /* happn CSV Loc Document */,
@@ -369,6 +372,7 @@
 				7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */,
 				7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */,
 				7B9BD4E11C1087B7007A096D /* XcodeStringsFile.swift in Sources */,
+				7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

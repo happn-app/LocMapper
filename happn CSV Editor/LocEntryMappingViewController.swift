@@ -10,7 +10,9 @@ import Cocoa
 
 
 
-class LocEntryMappingViewController: NSViewController {
+class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSComboBoxDelegate {
+	
+	@IBOutlet var comboBox: NSComboBox!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -22,6 +24,38 @@ class LocEntryMappingViewController: NSViewController {
 	           Actions are called to notify you of a modification of the doc
 	   ********************************************************************* */
 	
+	var handlerSearchMappingKey: ((_ inputString: String) -> [happnCSVLocFile.LineKey])?
 	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
+	
+	/* ****************************************
+	   MARK: - Combo Box Data Source & Delegate
+	   **************************************** */
+	
+	override func controlTextDidChange(_ obj: Notification) {
+		/* Do NOT call super... */
+	}
+	
+	func numberOfItems(in comboBox: NSComboBox) -> Int {
+		return possibleLineKeys.count
+	}
+	
+	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
+		return (arc4random() % 2 == 0 ? "a" : "b")
+	}
+	
+	/* ***************
+	   MARK: - Private
+	   *************** */
+	
+	private var possibleLineKeys = Array<happnCSVLocFile.LineKey>()
+	
+	private var representedMapping: happnCSVLocFile.happnCSVLocKeyMapping? {
+		return representedObject as? happnCSVLocFile.happnCSVLocKeyMapping
+	}
+	
+	private func updateAutoCompletion() {
+		possibleLineKeys = handlerSearchMappingKey?(comboBox.stringValue) ?? []
+		comboBox.reloadData()
+	}
 	
 }

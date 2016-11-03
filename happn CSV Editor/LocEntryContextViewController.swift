@@ -18,11 +18,6 @@ class LocEntryContextViewController: NSViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		originalGeneralInfoText = labelGeneralInfo.stringValue
-		rangeKey = findRangeInString(originalGeneralInfoText, withRegularExpression: "\\*.*\\*")
-		rangeFile = findRangeInString(originalGeneralInfoText, withRegularExpression: "\\$.*\\$")
-		rangeEnv = findRangeInString(originalGeneralInfoText, withRegularExpression: "\\|.*\\|")
-		
 		updateLabelGeneralInfoForEmptySelection()
 		textViewContext.string = ""
 	}
@@ -49,28 +44,8 @@ class LocEntryContextViewController: NSViewController {
 	   MARK: - Private
 	   *************** */
 	
-	private var originalGeneralInfoText: String!
-	private var rangeKey: Range<String.Index>!
-	private var rangeFile: Range<String.Index>!
-	private var rangeEnv: Range<String.Index>!
-	
-	private func findRangeInString(_ string: String, withRegularExpression exprStr: String) -> Range<String.Index> {
-		let expr = try! NSRegularExpression(pattern: exprStr, options: [])
-		let range = expr.rangeOfFirstMatch(in: string, options: [], range: NSRange(location: 0, length: string.characters.count))
-		return Range(uncheckedBounds: (
-			lower: string.index(string.startIndex, offsetBy: range.location),
-			upper: string.index(string.startIndex, offsetBy: range.location + range.length)
-		))
-	}
-	
 	private func updateLabelGeneralInfoWith(env: String, file: String, key: String) {
-		/* We assume in originalGeneralInfoText, the dynamic parts of the string
-		 * appear in the following order: env, key and file. */
-		guard var infoText = originalGeneralInfoText else {return}
-		infoText.replaceSubrange(rangeFile, with: file)
-		infoText.replaceSubrange(rangeKey, with: key)
-		infoText.replaceSubrange(rangeEnv, with: env)
-		labelGeneralInfo.stringValue = infoText
+		labelGeneralInfo.stringValue = Utils.lineKeyToStr(happnCSVLocFile.LineKey(locKey: key, env: env, filename: file, index: 0, comment: "", userInfo: [:], userReadableGroupComment: "", userReadableComment: ""))
 	}
 	
 	private func updateLabelGeneralInfoForEmptySelection() {
