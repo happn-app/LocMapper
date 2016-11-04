@@ -18,10 +18,14 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		/* We assume the table view controller will not change later. */
+		/* We assume the children view controllers will not change later. */
 		tableViewController.handlerSetEntryViewSelection = { [weak self] keyVal in
 			if let keyVal = keyVal {self?.locEntryViewController.representedObject = LocEntryViewController.LocEntry(lineKey: keyVal.0, lineValue: keyVal.1)}
 			else                   {self?.locEntryViewController.representedObject = nil}
+		}
+		locEntryViewController.handlerSearchMappingKey = { [weak self] str in
+			guard let locFile = self?.representedObject as? happnCSVLocFile else {return []}
+			return locFile.entryKeys(matchingFilters: [.string(str), .env("RefLoc"), .stateHardCodedValues])
 		}
 	}
 	

@@ -44,6 +44,12 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
+	var handlerSearchMappingKey: ((_ inputString: String) -> [happnCSVLocFile.LineKey])? {
+		didSet {
+			locEntryMappingViewController.handlerSearchMappingKey = handlerSearchMappingKey
+		}
+	}
+	
 	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntry) -> Void)? {
 		didSet {
 			locEntryMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping

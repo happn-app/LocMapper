@@ -377,6 +377,10 @@ class happnCSVLocFile: TextOutputStreamable {
 	   MARK: - Manual Modification of CSV Loc File
 	   ******************************************* */
 	
+	func hasEntryKey(_ key: LineKey) -> Bool {
+		return (entries[key] != nil)
+	}
+	
 	func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
 		let stringFilters = filters.flatMap { filter -> String? in
 			if case .string(let str) = filter, !str.isEmpty {return str}

@@ -16,6 +16,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		comboBox.formatter = LineKeyFormatter()
 	}
 	
 	/* *********************************************************************
@@ -27,12 +29,25 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	var handlerSearchMappingKey: ((_ inputString: String) -> [happnCSVLocFile.LineKey])?
 	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
 	
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
+	@IBAction func comboBoxAction(_ sender: AnyObject) {
+		let idx = comboBox.indexOfSelectedItem
+		guard idx >= 0 else {return}
+		
+		comboBox.cell?.representedObject = possibleLineKeys[idx]
+	}
+	
 	/* ****************************************
 	   MARK: - Combo Box Data Source & Delegate
 	   **************************************** */
 	
 	override func controlTextDidChange(_ obj: Notification) {
 		/* Do NOT call super... */
+		comboBox.cell?.representedObject = nil
+		updateAutoCompletion()
 	}
 	
 	func numberOfItems(in comboBox: NSComboBox) -> Int {
@@ -40,7 +55,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	}
 	
 	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
-		return (arc4random() % 2 == 0 ? "a" : "b")
+		return possibleLineKeys[index]
 	}
 	
 	/* ***************
@@ -56,6 +71,20 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	private func updateAutoCompletion() {
 		possibleLineKeys = handlerSearchMappingKey?(comboBox.stringValue) ?? []
 		comboBox.reloadData()
+	}
+	
+	private class LineKeyFormatter : Formatter {
+		
+		override func string(for obj: Any?) -> String? {
+			guard let linekey = obj as? happnCSVLocFile.LineKey else {return "\(obj ?? "")"}
+			return Utils.lineKeyToStr(linekey)
+		}
+		
+		override func getObjectValue(_ obj: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
+			obj?.pointee = string as AnyObject?
+			return true
+		}
+		
 	}
 	
 }
