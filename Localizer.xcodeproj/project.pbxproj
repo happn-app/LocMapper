@@ -48,6 +48,7 @@
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
 		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
 		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
+		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -99,6 +100,7 @@
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
 		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
+		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				7B0869A21DCB7F8700EB9486 /* Utils.swift */,
+				7BFE55211DCFD33A00C25B35 /* AppSettings.swift */,
 				7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */,
 				7B837D811C0EF3DB0020E86B /* AppDelegate.swift */,
 				7B71565F1D95EF5F00A15BC5 /* happn CSV Loc Document */,
@@ -349,6 +352,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */,
 				7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */,
 				7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */,
 				7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */,

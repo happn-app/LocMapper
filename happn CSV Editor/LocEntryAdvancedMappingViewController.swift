@@ -12,6 +12,8 @@ import Cocoa
 
 class LocEntryAdvancedMappingViewController: NSViewController {
 	
+	private(set) var dirty = false
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	}

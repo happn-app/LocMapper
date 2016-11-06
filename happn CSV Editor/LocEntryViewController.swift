@@ -22,6 +22,10 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
+	var dirty: Bool {
+		return locEntryMappingViewController.dirty || locEntryAdvancedMappingViewController.dirty
+	}
+	
 	@IBOutlet var tabViewItemContext: NSTabViewItem!
 	@IBOutlet var tabViewItemMapping: NSTabViewItem!
 	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
@@ -55,6 +59,52 @@ class LocEntryViewController: NSTabViewController {
 			locEntryMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
 			locEntryAdvancedMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
 		}
+	}
+	
+	/* **************************
+	   MARK: - NSTabView Delegate
+	   ************************** */
+	
+	override func tabView(_ tabView: NSTabView, shouldSelect tabViewItem: NSTabViewItem?) -> Bool {
+		guard !dirty else {
+			if let window = view.window {
+				if AppSettings.shared.showAlertForTabChangeDiscardMappingEdition {
+					let alert = NSAlert()
+					alert.messageText = "Unsaved Changes"
+					alert.informativeText = "Your changes will be lost if you change the selected tab."
+					alert.addButton(withTitle: "Cancel")
+					alert.addButton(withTitle: "Change Anyway")
+					alert.showsSuppressionButton = true
+					alert.beginSheetModal(for: window) { response in
+						switch response {
+						case NSAlertFirstButtonReturn:
+							(/*nop (cancel)*/)
+							
+						case NSAlertSecondButtonReturn:
+							self.locEntryMappingViewController.discardEditing()
+							self.locEntryAdvancedMappingViewController.discardEditing()
+							
+							tabView.selectTabViewItem(tabViewItem)
+							
+							/* Let's check if the user asked not to be bothered by this
+							 * alert anymore. */
+							if (alert.suppressionButton?.state ?? NSOffState) == NSOnState {
+								AppSettings.shared.showAlertForTabChangeDiscardMappingEdition = false
+							}
+							
+						default:
+							NSLog("%@", "Unknown button response \(response)")
+						}
+					}
+				} else {
+					self.locEntryMappingViewController.discardEditing()
+					self.locEntryAdvancedMappingViewController.discardEditing()
+					return super.tabView(tabView, shouldSelect: tabViewItem)
+				}
+			}
+			return false
+		}
+		return super.tabView(tabView, shouldSelect: tabViewItem)
 	}
 	
 	/* ***************

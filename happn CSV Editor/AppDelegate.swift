@@ -13,12 +13,15 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 	
+	func applicationWillFinishLaunching(_ notification: Notification) {
+		/* Let's register the user defaults */
+		AppSettings.shared.registerDefaultSettings()
+	}
+	
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
-		// Insert code here to initialize your application
 	}
 	
 	func applicationWillTerminate(_ aNotification: Notification) {
-		// Insert code here to tear down your application
 	}
 	
 }

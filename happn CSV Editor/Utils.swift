@@ -6,7 +6,7 @@
  * Copyright © 2016 happn. All rights reserved.
  */
 
-import Foundation
+import Cocoa
 
 
 
@@ -34,6 +34,13 @@ class Utils {
 			lower: string.index(string.startIndex, offsetBy: range.location),
 			upper: string.index(string.startIndex, offsetBy: range.location + range.length)
 		))
+	}
+	
+	static func setTextView(_ textView: NSTextView, enabled: Bool) {
+		/* Straight from https://developer.apple.com/library/content/qa/qa1461/_index.html */
+		textView.isSelectable = enabled
+		textView.isEditable = enabled
+		textView.textColor = (enabled ? .controlTextColor : .disabledControlTextColor)
 	}
 	
 }

@@ -10,14 +10,22 @@ import Cocoa
 
 
 
-class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSComboBoxDelegate {
+class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSComboBoxDelegate, NSTextDelegate {
+	
+	private(set) var dirty = false
 	
 	@IBOutlet var comboBox: NSComboBox!
+	@IBOutlet var textViewMappingOptions: NSTextView!
+	@IBOutlet var buttonValidateMapping: NSButton!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		comboBox.formatter = LineKeyFormatter()
+		
+		/* The sets the font for all of the text storage and other. Do NOT remove. */
+		textViewMappingOptions.font = textViewMappingOptions.font
+		textViewMappingOptions.string = ""
 	}
 	
 	/* *********************************************************************
@@ -33,11 +41,24 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	   MARK: - Actions
 	   *************** */
 	
+	override func discardEditing() {
+		super.discardEditing()
+		
+		/* TODO */
+		
+		dirty = false
+	}
+	
 	@IBAction func comboBoxAction(_ sender: AnyObject) {
+		dirty = true
+		
 		let idx = comboBox.indexOfSelectedItem
 		guard idx >= 0 else {return}
 		
 		comboBox.cell?.representedObject = possibleLineKeys[idx]
+	}
+	
+	@IBAction func validateAndApplyMapping(_ sender: AnyObject) {
 	}
 	
 	/* ****************************************
@@ -48,6 +69,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		/* Do NOT call super... */
 		comboBox.cell?.representedObject = nil
 		updateAutoCompletion()
+		dirty = true
 	}
 	
 	func numberOfItems(in comboBox: NSComboBox) -> Int {
@@ -56,6 +78,14 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
 		return possibleLineKeys[index]
+	}
+	
+	/* ***********************
+	   MARK: - NSText Delegate
+	   *********************** */
+	
+	func textDidChange(_ notification: Notification) {
+		dirty = true
 	}
 	
 	/* ***************
