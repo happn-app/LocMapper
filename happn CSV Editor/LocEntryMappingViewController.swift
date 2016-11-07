@@ -16,6 +16,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	@IBOutlet var comboBox: NSComboBox!
 	@IBOutlet var textViewMappingOptions: NSTextView!
+	@IBOutlet var buttonCancelEdition: NSButton!
 	@IBOutlet var buttonValidateMapping: NSButton!
 	
 	override func viewDidLoad() {

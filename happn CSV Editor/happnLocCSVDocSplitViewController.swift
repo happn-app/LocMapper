@@ -19,6 +19,50 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 		super.viewDidLoad()
 		
 		/* We assume the children view controllers will not change later. */
+		tableViewController.handlerCanChangeSelection = { [weak self] handlerDoitNow in
+			guard let strongSelf = self else {return false}
+			guard !strongSelf.askingForSelectionChange else {return false}
+			
+			guard !strongSelf.locEntryViewController.dirty else {
+				if let window = strongSelf.view.window {
+					if AppSettings.shared.showAlertForSelectionChangeDiscardMappingEdition {
+						strongSelf.askingForSelectionChange = true
+						let alert = NSAlert()
+						alert.messageText = "Unsaved Changes"
+						alert.informativeText = "Your changes will be lost if you change the selected entry."
+						alert.addButton(withTitle: "Cancel")
+						alert.addButton(withTitle: "Change Anyway")
+						alert.showsSuppressionButton = true
+						alert.beginSheetModal(for: window) { response in
+							switch response {
+							case NSAlertFirstButtonReturn:
+								(/*nop (cancel)*/)
+								
+							case NSAlertSecondButtonReturn:
+								strongSelf.locEntryViewController.discardEditing()
+								
+								handlerDoitNow()
+								
+								/* Let's check if the user asked not to be bothered by this
+								 * alert anymore. */
+								if (alert.suppressionButton?.state ?? NSOffState) == NSOnState {
+									AppSettings.shared.showAlertForSelectionChangeDiscardMappingEdition = false
+								}
+								
+							default:
+								NSLog("%@", "Unknown button response \(response)")
+							}
+							strongSelf.askingForSelectionChange = false
+						}
+					} else {
+						strongSelf.locEntryViewController.discardEditing()
+						return true
+					}
+				}
+				return false
+			}
+			return true
+		}
 		tableViewController.handlerSetEntryViewSelection = { [weak self] keyVal in
 			if let keyVal = keyVal {self?.locEntryViewController.representedObject = LocEntryViewController.LocEntry(lineKey: keyVal.0, lineValue: keyVal.1)}
 			else                   {self?.locEntryViewController.representedObject = nil}
@@ -67,6 +111,8 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 	/* ***************
 	   MARK: - Private
 	   *************** */
+	
+	private var askingForSelectionChange = false
 	
 	private var tableViewController: happnLocCSVDocTableViewController! {
 		return splitItemTableView.viewController as? happnLocCSVDocTableViewController

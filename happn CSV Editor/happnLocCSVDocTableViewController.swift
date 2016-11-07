@@ -31,6 +31,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	var handlerNotifyDocumentModification: (() -> Void)?
+	var handlerCanChangeSelection: ((_ handlerChangeNow: @escaping () -> Void) -> Bool)?
 	var handlerSetEntryViewSelection: ((_ newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
 	
 	func noteContentHasChanged() {
@@ -111,6 +112,23 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		cachedRowsHeights.setObject(height as NSNumber, forKey: key.filename + key.locKey as NSString)
 		
 		return height
+	}
+	
+	/* This method is preferred over tableView(_:shouldSelectRow:) says the doc.
+	 * And anyway it is the only way to prevent selection modification (including
+	 * deselection) and allow applying the prevented selection modification after
+	 * the prevention.
+	 * Note: There is a selectionShouldChange(in:) method which is also called
+	 *       when the user deselects stuff, but it does not give the expected new
+	 *       selection, so there is no way to apply the selection after having
+	 *       prevented it. */
+	func tableView(_ tableView: NSTableView, selectionIndexesForProposedSelection proposedSelectionIndexes: IndexSet) -> IndexSet {
+		guard let handlerCanChangeSelection = handlerCanChangeSelection else {return proposedSelectionIndexes}
+		
+		guard handlerCanChangeSelection({tableView.selectRowIndexes(proposedSelectionIndexes, byExtendingSelection: false)}) else {
+			return IndexSet(integer: tableView.selectedRow)
+		}
+		return proposedSelectionIndexes
 	}
 	
 	func tableViewSelectionDidChange(_ notification: Notification) {

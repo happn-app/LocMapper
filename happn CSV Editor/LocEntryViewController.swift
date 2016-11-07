@@ -60,6 +60,17 @@ class LocEntryViewController: NSTabViewController {
 			locEntryAdvancedMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
 		}
 	}
+
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
+	override func discardEditing() {
+		super.discardEditing()
+		
+		locEntryMappingViewController.discardEditing()
+		locEntryAdvancedMappingViewController.discardEditing()
+	}
 	
 	/* **************************
 	   MARK: - NSTabView Delegate
@@ -81,8 +92,7 @@ class LocEntryViewController: NSTabViewController {
 							(/*nop (cancel)*/)
 							
 						case NSAlertSecondButtonReturn:
-							self.locEntryMappingViewController.discardEditing()
-							self.locEntryAdvancedMappingViewController.discardEditing()
+							self.discardEditing()
 							
 							tabView.selectTabViewItem(tabViewItem)
 							
@@ -97,8 +107,7 @@ class LocEntryViewController: NSTabViewController {
 						}
 					}
 				} else {
-					self.locEntryMappingViewController.discardEditing()
-					self.locEntryAdvancedMappingViewController.discardEditing()
+					self.discardEditing()
 					return super.tabView(tabView, shouldSelect: tabViewItem)
 				}
 			}
