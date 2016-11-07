@@ -461,6 +461,28 @@ class happnCSVLocFile: TextOutputStreamable {
 		}
 	}
 	
+	/** Converts the given value for the given key to a hard-coded value. The
+	previous mapping for the given key is then dropped (obviously).
+	
+	If the key was not present in the file, nothing is done.
+	
+	- returns: `true` if the value of the key was indeed a mapping and has been
+	converted, `false` if nothing had to be done (value was already hard-coded or
+	not present). */
+	func convertKeyToHardCoded(_ key: LineKey) -> Bool {
+		guard case .some(.mapping(_)) = entries[key] else {
+			return false
+		}
+		
+		var values = [String: String]()
+		for l in languages {
+			values[l] = editorDisplayedValueForKey(key, withLanguage: l)
+		}
+		
+		entries[key] = .entries(values)
+		return true
+	}
+	
 	/** Sets the given value for the given key and language.
 	
 	- important: If the key had a mapping, the mapping is **dropped**.
