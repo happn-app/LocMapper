@@ -135,6 +135,55 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		notifyTableViewSelectionChange()
 	}
 	
+	func tableView(_ tableView: NSTableView, shouldEdit tableColumn: NSTableColumn?, row: Int) -> Bool {
+		if row >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], csvLocFile.lineValueForKey(key)?.mapping != nil {
+			let updateEntryToManualValues = {
+				if csvLocFile.convertKeyToHardCoded(key) {
+					self.tableView.reloadData(forRowIndexes: IndexSet(integer: row), columnIndexes: IndexSet(integersIn: 0..<self.tableView.numberOfColumns))
+					self.notifyTableViewSelectionChange()
+					self.handlerNotifyDocumentModification?()
+				}
+			}
+			
+			if AppSettings.shared.showAlertForDiscardingMapping {
+				guard let window = view.window else {return false}
+				let alert = NSAlert()
+				alert.messageText = "Discard Mapping"
+				alert.informativeText = "If you manually set a value to a mapped entry, the mapping will be dropped."
+				alert.addButton(withTitle: "OK")
+				alert.addButton(withTitle: "Cancel")
+				alert.showsSuppressionButton = true
+				alert.beginSheetModal(for: window) { response in
+					switch response {
+					case NSAlertFirstButtonReturn:
+						updateEntryToManualValues()
+						if let tableColumn = tableColumn, let tableColumnIndex = self.tableView.tableColumns.index(of: tableColumn) {
+							self.tableView.editColumn(tableColumnIndex, row: row, with: nil, select: true)
+						}
+						
+						/* Let's check if the user asked not to be bothered by this
+						 * alert anymore. */
+						if (alert.suppressionButton?.state ?? NSOffState) == NSOnState {
+							AppSettings.shared.showAlertForDiscardingMapping = false
+						}
+						
+					case NSAlertSecondButtonReturn:
+						(/*nop (cancel)*/)
+						
+					default:
+						NSLog("%@", "Unknown button response \(response)")
+					}
+				}
+				return false
+			} else {
+				updateEntryToManualValues()
+				return true
+			}
+		}
+		
+		return true
+	}
+	
 	/* If we were view-based... but we're not (cell-based is still faster). */
 //	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
 //		guard let tableColumn = tableColumn else {return nil}
