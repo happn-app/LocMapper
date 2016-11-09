@@ -895,7 +895,7 @@
                         <subviews>
                             <comboBox wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jdj-0Q-QST">
                                 <rect key="frame" x="44" y="145" width="399" height="26"/>
-                                <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Type to Search" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="7" id="xzh-QS-XcY">
+                                <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Type to Search" drawsBackground="YES" completes="NO" usesDataSource="YES" numberOfVisibleItems="7" id="xzh-QS-XcY">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -915,8 +915,8 @@
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZW6-Ta-lmE">
-                                <rect key="frame" x="8" y="124" width="112" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Mapping Options:" id="IHw-pu-VUs">
+                                <rect key="frame" x="8" y="124" width="77" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Transforms:" id="IHw-pu-VUs">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -964,12 +964,13 @@
                             </scrollView>
                             <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hGK-T9-IIU">
                                 <rect key="frame" x="294" y="4" width="151" height="28"/>
-                                <buttonCell key="cell" type="push" title="   Validate and Apply…   " bezelStyle="rounded" alignment="center" controlSize="small" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LdP-M5-QtW">
+                                <buttonCell key="cell" type="push" title="   Validate and Apply…   " bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LdP-M5-QtW">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
+                                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="validateAndApplyMapping:" target="vy9-Jp-xEg" id="sba-cu-jID"/>
@@ -977,7 +978,7 @@ DQ
                             </button>
                             <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ARx-0F-ZCs">
                                 <rect key="frame" x="215" y="4" width="81" height="28"/>
-                                <buttonCell key="cell" type="push" title="   Cancel   " bezelStyle="rounded" alignment="center" controlSize="small" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Bf0-Uf-A8A">
+                                <buttonCell key="cell" type="push" title="   Cancel   " bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Bf0-Uf-A8A">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -1008,7 +1009,7 @@ Gw
                         <outlet property="buttonCancelEdition" destination="ARx-0F-ZCs" id="vVg-gf-aF5"/>
                         <outlet property="buttonValidateMapping" destination="hGK-T9-IIU" id="L2a-AR-ee1"/>
                         <outlet property="comboBox" destination="jdj-0Q-QST" id="NI8-4Z-wtO"/>
-                        <outlet property="textViewMappingOptions" destination="m35-Mw-091" id="miE-yg-mNu"/>
+                        <outlet property="textViewMappingTransform" destination="m35-Mw-091" id="DRc-eZ-ZTG"/>
                     </connections>
                 </viewController>
                 <customObject id="uYU-fQ-WuL" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1065,6 +1066,10 @@ Gw
                                 <buttonCell key="cell" type="push" title="   Validate and Apply…   " bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="v6R-ds-jgY">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                 </buttonCell>
                             </button>
                             <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="E3b-o9-2DZ">

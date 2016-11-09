@@ -113,6 +113,11 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 	
 	let subTransformComponents: [LocValueTransformer]
 	
+	init(sourceKey k: happnCSVLocFile.LineKey, subTransformsComponents s: [LocValueTransformer]) {
+		sourceKey = k
+		subTransformComponents = s
+	}
+	
 	init(serialization: [String: Any]) throws {
 		guard
 			let env          = serialization["env"] as? String,
@@ -141,7 +146,6 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 			userReadableComment: ""
 		)
 		subTransformComponents = dtransforms.map {return LocValueTransformer.createComponentTransformFromSerialization($0)}
-		super.init()
 	}
 	
 	override func serializePrivateData() -> [String: Any] {
@@ -185,6 +189,8 @@ class LocValueTransformer {
 			
 			switch type {
 			case "simple_string_replacements":    c = try LocValueTransformerSimpleStringReplacements(serialization: serialization)
+			case "genre_variant_pick":            c = try LocValueTransformerGenreVariantPick(serialization: serialization)
+			case "plural_variant_pick":           c = try LocValueTransformerPluralVariantPick(serialization: serialization)
 			case "region_delimiters_replacement": c = try LocValueTransformerRegionDelimitersReplacement(serialization: serialization)
 			default:
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid loc value transformer component: Unknown __type value \"\(type)\"."])
@@ -201,9 +207,12 @@ class LocValueTransformer {
 	
 	final func serialize() -> [String: Any] {
 		var serializedData = self.serializePrivateData()
-		if      self is LocValueTransformerSimpleStringReplacements    {serializedData["__type"] = "simple_string_replacements"}
-		else if self is LocValueTransformerRegionDelimitersReplacement {serializedData["__type"] = "region_delimiters_replacement"}
-		else {
+		switch self {
+		case _ as LocValueTransformerSimpleStringReplacements:    serializedData["__type"] = "simple_string_replacements"
+		case _ as LocValueTransformerGenreVariantPick:            serializedData["__type"] = "genre_variant_pick"
+		case _ as LocValueTransformerPluralVariantPick:           serializedData["__type"] = "plural_variant_pick"
+		case _ as LocValueTransformerRegionDelimitersReplacement: serializedData["__type"] = "region_delimiters_replacement"
+		default:
 			print("*** Warning: Did not get a type for loc value transformer component \(self)")
 		}
 		return serializedData
@@ -280,6 +289,131 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	
 	init(serialization: [String: Any]) throws {
 		guard
+			let od = serialization["open_delimiter"] as? String, !od.isEmpty,
+			let r  = serialization["replacement"] as? String,
+			let cd = serialization["close_delimiter"] as? String, !cd.isEmpty
+			else
+		{
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid or missing open_delimiter, replacement or close_delimiter."])
+		}
+		
+		openDelim = od
+		replacement = r
+		closeDelim = cd
+		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
+		else                                                            {escapeToken = nil}
+		super.init()
+	}
+	
+	override func serializePrivateData() -> [String: Any] {
+		var ret = [
+			"open_delimiter": openDelim,
+			"replacement": replacement,
+			"close_delimiter": closeDelim
+		]
+		if let e = escapeToken {ret["escape_token"] = e}
+		return ret
+	}
+	
+	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
+		guard let ret = value else {
+			return nil
+		}
+		
+		/* TODO */
+		return ret
+	}
+}
+
+
+
+/* ***** */
+class LocValueTransformerGenreVariantPick : LocValueTransformer {
+	enum Genre {
+		case male, female
+		init?(string: String) {
+			switch string.lowercased() {
+			case "male",   "m": self = .male
+			case "female", "f": self = .female
+			default: return nil
+			}
+		}
+		func toString() -> String {
+			switch self {
+			case .male:   return "male"
+			case .female: return "female"
+			}
+		}
+	}
+	
+	let genre: Genre
+	let openDelim: String
+	let middleDelim: String
+	let closeDelim: String
+	let escapeToken: String?
+	
+	init(serialization: [String: Any]) throws {
+		guard let gs = serialization["genre"] as? String, let g = Genre(string: gs) else {
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid genre."])
+		}
+		
+		if let d = serialization["open_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty open delimiter, which is invalid."])}
+			openDelim = d
+		} else {openDelim = "`"}
+		
+		if let d = serialization["middle_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty middle delimiter, which is invalid."])}
+			middleDelim = d
+		} else {middleDelim = "¦"}
+		
+		if let d = serialization["close_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty close delimiter, which is invalid."])}
+			closeDelim = d
+		} else {closeDelim = "¦"}
+		
+		genre = g
+		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
+		else                                                            {escapeToken = nil}
+		
+		/* Let's check the values retrieved from serialization are ok.
+		 * TODO: Check the weird open/close/middle delimiter constraints from HCUtils+Language */
+		
+		super.init()
+	}
+	
+	override func serializePrivateData() -> [String: Any] {
+		var ret = [
+			"genre": openDelim,
+			"open_delimiter": openDelim,
+			"middle_delimiter": middleDelim,
+			"close_delimiter": closeDelim
+		]
+		if let e = escapeToken {ret["escape_token"] = e}
+		return ret
+	}
+	
+	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
+		guard let ret = value else {
+			return nil
+		}
+		
+		/* TODO */
+		return ret
+	}
+}
+
+
+
+/* ***** */
+class LocValueTransformerPluralVariantPick : LocValueTransformer {
+	let openDelim: String
+	let replacement: String
+	let closeDelim: String
+	let escapeToken: String?
+	
+	init(serialization: [String: Any]) throws {
+		guard
 			let od = serialization["open_delimiter"] as? String,
 			let r  = serialization["replacement"] as? String,
 			let cd = serialization["close_delimiter"] as? String
@@ -291,8 +425,8 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		openDelim = od
 		replacement = r
 		closeDelim = cd
-		if let e = serialization["escape_token"] as? String, e.characters.count >= 1 {escapeToken = e}
-		else                                                                         {escapeToken = nil}
+		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
+		else                                                            {escapeToken = nil}
 		super.init()
 	}
 	
