@@ -283,7 +283,7 @@ class happnCSVLocFile: TextOutputStreamable {
 		for row in parsedRows {
 			/* Is the row empty? The first empty row signal the start of the actual
 			 * data (metadata/data separation). */
-			guard row != [:] else {foundEmptyLine = true; continue}
+			guard !row.reduce(true, { result, keyval in result && keyval.1 == "" }) else {foundEmptyLine = true; continue}
 			
 			/* If we did not find the empty line, we're still in the metadata. */
 			guard foundEmptyLine else {
