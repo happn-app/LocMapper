@@ -12,7 +12,12 @@ import Cocoa
 
 class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSComboBoxDelegate, NSTextDelegate {
 	
-	private(set) var dirty = false
+	private(set) var dirty = false {
+		didSet {
+			guard dirty != oldValue else {return}
+			updateEnabledStates()
+		}
+	}
 	
 	@IBOutlet var comboBox: NSComboBox!
 	@IBOutlet var textViewMappingTransform: NSTextView!
@@ -37,6 +42,9 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		textViewMappingTransform.isAutomaticLinkDetectionEnabled = false
 		textViewMappingTransform.smartInsertDeleteEnabled = false
 		textViewMappingTransform.isGrammarCheckingEnabled = false
+		
+		updateEnabledStates()
+		updateTextUIValues()
 	}
 	
 	/* *********************************************************************
@@ -45,8 +53,20 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	           Actions are called to notify you of a modification of the doc
 	   ********************************************************************* */
 	
+	override var representedObject: Any? {
+		didSet {
+			guard !internalRepresentedObjectChange else {return}
+			
+			dirty = false
+			if isViewLoaded {
+				updateEnabledStates()
+				updateTextUIValues()
+			}
+		}
+	}
+	
 	var handlerSearchMappingKey: ((_ inputString: String) -> [happnCSVLocFile.LineKey])?
-	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
+	var handlerNotifyLineValueModification: (() -> Void)?
 	
 	/* ***************
 	   MARK: - Actions
@@ -55,9 +75,12 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	override func discardEditing() {
 		super.discardEditing()
 		
-		/* TODO */
-		
 		dirty = false
+		updateTextUIValues()
+	}
+	
+	@IBAction func cancelEdition(_ sender: AnyObject) {
+		discardEditing()
 	}
 	
 	@IBAction func comboBoxAction(_ sender: AnyObject) {
@@ -67,6 +90,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		guard idx >= 0 else {return}
 		
 		comboBox.cell?.representedObject = possibleLineKeys[idx]
+		
+		updateEnabledStates()
 	}
 	
 	@IBAction func validateAndApplyMapping(_ sender: AnyObject) {
@@ -105,7 +130,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			}
 			
 			/* Creating the actual mapping entry */
-			let mapping = [CSVLocKeyMappingComponentValueTransforms(sourceKey: lineKey, subTransformsComponents: transforms)]
+			representedMapping = .mapping(happnCSVLocFile.happnCSVLocKeyMapping(components: [CSVLocKeyMappingComponentValueTransforms(sourceKey: lineKey, subTransformsComponents: transforms)]))
+			handlerNotifyLineValueModification?()
 		} catch {
 			guard let window = view.window else {NSBeep(); return}
 			
@@ -154,13 +180,66 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	private var possibleLineKeys = Array<happnCSVLocFile.LineKey>()
 	
-	private var representedMapping: happnCSVLocFile.happnCSVLocKeyMapping? {
-		return representedObject as? happnCSVLocFile.happnCSVLocKeyMapping
+	private var internalRepresentedObjectChange = false
+	private var representedMapping: happnCSVLocFile.LineValue? {
+		get {return representedObject as? happnCSVLocFile.LineValue}
+		set {representedObject = newValue}
 	}
 	
 	private func updateAutoCompletion() {
 		possibleLineKeys = handlerSearchMappingKey?(comboBox.stringValue) ?? []
 		comboBox.reloadData()
+	}
+	
+	private func updateEnabledStates() {
+		if representedMapping == nil {
+			Utils.setTextView(textViewMappingTransform, enabled: false)
+			buttonValidateMapping.isEnabled = false
+			buttonCancelEdition.isEnabled = false
+			comboBox.isEnabled = false
+		} else {
+			Utils.setTextView(textViewMappingTransform, enabled: true)
+			buttonValidateMapping.isEnabled = dirty && comboBox.cell?.representedObject is happnCSVLocFile.LineKey
+			buttonCancelEdition.isEnabled = dirty
+			comboBox.isEnabled = true
+		}
+	}
+	
+	private func updateTextUIValues() {
+		switch representedMapping {
+		case nil:
+			comboBox.stringValue = ""
+			comboBox.cell?.representedObject = nil
+			comboBox.placeholderString = "No Selection"
+			textViewMappingTransform.string = ""
+			
+		case .entries?:
+			comboBox.stringValue = ""
+			comboBox.cell?.representedObject = nil
+			comboBox.placeholderString = "Selected value is unmapped. Type text here to search for a key to map this value to."
+			textViewMappingTransform.string = ""
+			
+		case .mapping(let mapping)?:
+			if (mapping.components?.count ?? 0) == 1, let component = mapping.components?.first as? CSVLocKeyMappingComponentValueTransforms {
+				comboBox.objectValue = component.sourceKey
+				comboBox.cell?.representedObject = component.sourceKey
+				comboBox.placeholderString = "Type to search for a key"
+				let serializedTransforms = component.subTransformComponents.map {return $0.serialize()}
+				if
+					let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: [.prettyPrinted]),
+					let jsonStr = String(data: jsonData, encoding: .utf8)
+				{
+					textViewMappingTransform.string = jsonStr
+				} else {
+					textViewMappingTransform.string = "ERROR CONVERTING TRANSFORMS TO JSON! This should not happen. Please check with developer of the App."
+				}
+			} else {
+				comboBox.stringValue = ""
+				comboBox.cell?.representedObject = nil
+				comboBox.placeholderString = "<Complex Mapping> Type in to search a key and convert the mapping to a simple one."
+				textViewMappingTransform.string = ""
+			}
+		}
 	}
 	
 	private class LineKeyFormatter : Formatter {

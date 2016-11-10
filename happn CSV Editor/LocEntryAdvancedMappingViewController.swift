@@ -24,6 +24,6 @@ class LocEntryAdvancedMappingViewController: NSViewController {
 	           Actions are called to notify you of a modification of the doc
 	   ********************************************************************* */
 	
-	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntryViewController.LocEntry) -> Void)?
+	var handlerNotifyLineValueModification: (() -> Void)?
 	
 }

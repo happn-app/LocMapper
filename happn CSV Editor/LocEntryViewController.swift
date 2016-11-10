@@ -43,7 +43,7 @@ class LocEntryViewController: NSTabViewController {
 	override var representedObject: Any? {
 		didSet {
 			locEntryContextViewController.representedObject = representedObject
-			locEntryMappingViewController.representedObject = representedObject
+			locEntryMappingViewController.representedObject = (representedObject as? LocEntry)?.lineValue
 			locEntryAdvancedMappingViewController.representedObject = representedObject
 		}
 	}
@@ -54,13 +54,23 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
-	var handlerSetEntryMapping: ((_ newMapping: happnCSVLocFile.happnCSVLocKeyMapping?, _ forEntry: LocEntry) -> Void)? {
+	var handlerNotifyLineValueModification: (() -> Void)? {
 		didSet {
-			locEntryMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
-			locEntryAdvancedMappingViewController.handlerSetEntryMapping = handlerSetEntryMapping
+			locEntryMappingViewController.handlerNotifyLineValueModification = { [weak self] in
+				guard let strongSelf = self else {return}
+				guard let currentLocEntry = strongSelf.representedObject as? LocEntry else {return}
+				guard let newLineValue = strongSelf.locEntryMappingViewController.representedObject as? happnCSVLocFile.LineValue else {return}
+				strongSelf.representedObject = LocEntry(lineKey: currentLocEntry.lineKey, lineValue: newLineValue)
+				strongSelf.handlerNotifyLineValueModification?()
+			}
+			locEntryAdvancedMappingViewController.handlerNotifyLineValueModification = { [weak self] in
+				guard let strongSelf = self else {return}
+				/* TODO */
+				strongSelf.handlerNotifyLineValueModification?()
+			}
 		}
 	}
-
+	
 	/* ***************
 	   MARK: - Actions
 	   *************** */

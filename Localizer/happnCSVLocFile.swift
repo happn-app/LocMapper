@@ -499,6 +499,28 @@ class happnCSVLocFile: TextOutputStreamable {
 		return created
 	}
 	
+	/** Sets the given mapping for the given key.
+	
+	- important: All of the non-mapped values will be dropped for the given key.
+	
+	- returns: `true` if the key had to be added to the list of entries, `false`
+	if the key was already present and was only modified. */
+	func setValue(_ val: happnCSVLocKeyMapping, forKey key: LineKey) -> Bool {
+		let created = (entries[key] == nil)
+		entries[key] = .mapping(val)
+		return created
+	}
+	
+	/** Sets the given value for the given key.
+	
+	- returns: `true` if the key had to be added to the list of entries, `false`
+	if the key was already present and was only modified. */
+	func setValue(_ val: LineValue, forKey key: LineKey) -> Bool {
+		let created = (entries[key] == nil)
+		entries[key] = val
+		return created
+	}
+	
 	func stringMetadataValueForKey(_ key: String) -> String? {
 		return metadata[key]
 	}

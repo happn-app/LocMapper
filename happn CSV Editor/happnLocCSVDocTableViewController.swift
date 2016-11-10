@@ -34,6 +34,11 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	var handlerCanChangeSelection: ((_ handlerChangeNow: @escaping () -> Void) -> Bool)?
 	var handlerSetEntryViewSelection: ((_ newSelection: (happnCSVLocFile.LineKey, happnCSVLocFile.LineValue)?) -> Void)?
 	
+	func noteSelectedLineHasChanged() {
+		guard tableView.selectedRow > 0 else {return}
+		tableView.reloadData(forRowIndexes: IndexSet(integer: tableView.selectedRow), columnIndexes: IndexSet(integersIn: 0..<self.tableView.numberOfColumns))
+	}
+	
 	func noteContentHasChanged() {
 		tableColumnsCreated = false
 		createTableViewColumnsIfNeeded(reloadData: false)

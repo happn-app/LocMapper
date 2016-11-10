@@ -985,6 +985,9 @@ DQ
 Gw
 </string>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="cancelEdition:" target="vy9-Jp-xEg" id="UPV-eU-EEe"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
