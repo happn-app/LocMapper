@@ -370,7 +370,7 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 		if let d = serialization["close_delimiter"] as? String {
 			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty close delimiter, which is invalid."])}
 			closeDelim = d
-		} else {closeDelim = "¦"}
+		} else {closeDelim = "´"}
 		
 		genre = g
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
@@ -384,7 +384,7 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 	
 	override func serializePrivateData() -> [String: Any] {
 		var ret = [
-			"genre": openDelim,
+			"genre": genre.toString(),
 			"open_delimiter": openDelim,
 			"middle_delimiter": middleDelim,
 			"close_delimiter": closeDelim
