@@ -968,22 +968,22 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	func write<Target : TextOutputStream>(to target: inout Target) {
 		target.write(
-			"\(happnCSVLocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(happnCSVLocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(happnCSVLocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(happnCSVLocFile.PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-			"\(happnCSVLocFile.PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
+			happnCSVLocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			happnCSVLocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			happnCSVLocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			happnCSVLocFile.PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			happnCSVLocFile.PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
 		target.write(
-			"\(csvSeparator)\(happnCSVLocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))" +
-			"\(csvSeparator)\(happnCSVLocFile.COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator))"
+			csvSeparator + happnCSVLocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + happnCSVLocFile.COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
 		for language in languages {
-			target.write("\(csvSeparator)\(language.csvCellValueWithSeparator(csvSeparator))")
+			target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))
 		}
 		if !metadata.isEmpty, let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []), let jsonStr = String(data: jsonData, encoding: String.Encoding.utf8) {
 			/* Let's write the metadata */
-			target.write("\n\(jsonStr.csvCellValueWithSeparator(csvSeparator))")
+			target.write("\n" + jsonStr.csvCellValueWithSeparator(csvSeparator))
 		}
 		target.write("\n")
 		var previousBasename: String?
@@ -1002,33 +1002,33 @@ class happnCSVLocFile: TextOutputStreamable {
 			if basename != previousBasename {
 				previousBasename = basename
 				target.write("\n")
-				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
+				target.write(csvSeparator + csvSeparator + csvSeparator + csvSeparator + csvSeparator)
 				target.write(("\\o/ \\o/ \\o/ " + previousBasename! + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
-				target.write("\(csvSeparator)\n")
+				target.write(csvSeparator + "\n")
 			}
 			
 			/* Writing group comment */
 			if !entry_key.userReadableGroupComment.isEmpty {
-				target.write("\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)\(csvSeparator)")
+				target.write(csvSeparator + csvSeparator + csvSeparator + csvSeparator + csvSeparator + csvSeparator)
 				target.write(entry_key.userReadableGroupComment.csvCellValueWithSeparator(csvSeparator))
 				target.write("\n")
 			}
 			
 			let comment = "__" + entry_key.fullComment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
 			target.write(
-				"\(entry_key.locKey.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-				"\(entry_key.env.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-				"\(entry_key.filename.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)" +
-				"\(comment.csvCellValueWithSeparator(csvSeparator))\(csvSeparator)"
+				entry_key.locKey.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+				entry_key.env.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+				entry_key.filename.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+				comment.csvCellValueWithSeparator(csvSeparator) + csvSeparator
 			)
-			if case .mapping(let mapping) = value {target.write(csvSeparator + mapping.stringRepresentation().csvCellValueWithSeparator(csvSeparator))}
+			if case .mapping(let mapping) = value {target.write(mapping.stringRepresentation().csvCellValueWithSeparator(csvSeparator))}
 			target.write(
-				"\(csvSeparator)\(basename.csvCellValueWithSeparator(csvSeparator))" +
-				"\(csvSeparator)\(entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator))"
+				csvSeparator + basename.csvCellValueWithSeparator(csvSeparator) +
+				csvSeparator + entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator)
 			)
 			if case .entries(let entries) = value {
 				for language in languages {
-					target.write("\(csvSeparator)\((entries[language] ?? "!¡!TODOLOC!¡!").csvCellValueWithSeparator(csvSeparator))")
+					target.write(csvSeparator + (entries[language] ?? "!¡!TODOLOC!¡!").csvCellValueWithSeparator(csvSeparator))
 				}
 			}
 			target.write("\n")
