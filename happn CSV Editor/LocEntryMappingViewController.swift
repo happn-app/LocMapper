@@ -84,11 +84,11 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	}
 	
 	@IBAction func comboBoxAction(_ sender: AnyObject) {
-		dirty = true
-		
+		guard !comboBox.stringValue.isEmpty else {return}
 		let idx = comboBox.indexOfSelectedItem
 		guard idx >= 0 else {return}
 		
+		dirty = true
 		comboBox.cell?.representedObject = possibleLineKeys[idx]
 		
 		updateEnabledStates()
@@ -155,6 +155,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		/* Do NOT call super... */
 		comboBox.cell?.representedObject = nil
 		updateAutoCompletion()
+		updateEnabledStates()
 		dirty = true
 	}
 	
