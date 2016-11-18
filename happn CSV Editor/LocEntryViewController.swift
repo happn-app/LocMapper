@@ -44,7 +44,7 @@ class LocEntryViewController: NSTabViewController {
 		didSet {
 			locEntryContextViewController.representedObject = representedObject
 			locEntryMappingViewController.representedObject = (representedObject as? LocEntry)?.lineValue
-			locEntryAdvancedMappingViewController.representedObject = representedObject
+			locEntryAdvancedMappingViewController.representedObject = (representedObject as? LocEntry)?.lineValue
 		}
 	}
 	
@@ -65,7 +65,9 @@ class LocEntryViewController: NSTabViewController {
 			}
 			locEntryAdvancedMappingViewController.handlerNotifyLineValueModification = { [weak self] in
 				guard let strongSelf = self else {return}
-				/* TODO */
+				guard let currentLocEntry = strongSelf.representedObject as? LocEntry else {return}
+				guard let newLineValue = strongSelf.locEntryAdvancedMappingViewController.representedObject as? happnCSVLocFile.LineValue else {return}
+				strongSelf.representedObject = LocEntry(lineKey: currentLocEntry.lineKey, lineValue: newLineValue)
 				strongSelf.handlerNotifyLineValueModification?()
 			}
 		}

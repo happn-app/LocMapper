@@ -117,6 +117,14 @@ class happnCSVLocFile: TextOutputStreamable {
 		let originalStringRepresentation: String
 		var components: [happnCSVLocKeyMappingComponent]?
 		
+		/** Compute whether the given transform is valid (do not check for
+		existence of keys for mapping components though). */
+		var isValid: Bool {
+			guard let components = components else {return false}
+			for c in components {guard c.isValid else {return false}}
+			return true
+		}
+		
 		/** Inits a happn CSV Loc Key Mapping from a string representation (JSON).
 		
 		If the string is empty, returns nil.

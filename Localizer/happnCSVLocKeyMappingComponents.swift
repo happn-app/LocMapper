@@ -12,6 +12,7 @@ import Foundation
 
 /* Abstract */
 class happnCSVLocKeyMappingComponent {
+	
 	/**
    Instantiate the correct subclass for the given serialization.
 	
@@ -43,6 +44,12 @@ class happnCSVLocKeyMappingComponent {
 		}
 	}
 	
+	/** Subclasses must implement to check if mapping is syntactically valid (do
+	not check if resolving component is possible). */
+	var isValid: Bool {
+		fatalError("This computed property is abstract.")
+	}
+	
 	final func serialize() -> [String: Any] {
 		var serializedData = self.serializePrivateData()
 		if      self is CSVLocKeyMappingComponentToConstant      {serializedData["__type"] = "to_constant"}
@@ -60,12 +67,18 @@ class happnCSVLocKeyMappingComponent {
 	func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		preconditionFailure("This method is abstract")
 	}
+	
 }
 
 
 
 /* ***** */
 class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
+	
+	override var isValid: Bool {
+		return false
+	}
+	
 	let invalidSerialization: [String: Any]
 	
 	init(serialization: [String: Any]) {
@@ -79,12 +92,18 @@ class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
 	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		return nil
 	}
+	
 }
 
 
 
 /* ***** */
 class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
+	
+	override var isValid: Bool {
+		return true
+	}
+	
 	let constant: String
 	
 	init(serialization: [String: Any]) throws {
@@ -103,12 +122,19 @@ class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
 		return constant
 	}
+	
 }
 
 
 
 /* ***** */
 class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent {
+	
+	override var isValid: Bool {
+		for transform in subTransformComponents {guard transform.isValid else {return false}}
+		return true
+	}
+	
 	let sourceKey: happnCSVLocFile.LineKey
 	
 	let subTransformComponents: [LocValueTransformer]
@@ -166,12 +192,18 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 		}
 		return result
 	}
+	
 }
 
 
 
 /* Abstract */
 class LocValueTransformer {
+	
+	var isValid: Bool {
+		fatalError("isValid is abstract.")
+	}
+	
 	/**
    Instantiate the correct subclass for the given serialization.
 	
@@ -225,12 +257,18 @@ class LocValueTransformer {
 	func applyToValue(_ value: String?, withLanguage: String) -> String? {
 		preconditionFailure("This method is abstract")
 	}
+	
 }
 
 
 
 /* ***** */
 class LocValueTransformerInvalid : LocValueTransformer {
+	
+	override var isValid: Bool {
+		return false
+	}
+	
 	let invalidSerialization: [String: Any]
 	
 	init(serialization: [String: Any]) {
@@ -245,12 +283,18 @@ class LocValueTransformerInvalid : LocValueTransformer {
 		/* The transform is invalid; we don't know what to do, let's do nothing. */
 		return value
 	}
+	
 }
 
 
 
 /* ***** */
 class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
+	
+	override var isValid: Bool {
+		return true
+	}
+	
 	let replacements: [String: String]
 	
 	init(serialization: [String: Any]) throws {
@@ -276,12 +320,18 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 		}
 		return ret
 	}
+	
 }
 
 
 
 /* ***** */
 class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
+	
+	override var isValid: Bool {
+		return true
+	}
+	
 	let openDelim: String
 	let replacement: String
 	let closeDelim: String
@@ -323,12 +373,14 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		/* TODO */
 		return ret
 	}
+	
 }
 
 
 
 /* ***** */
 class LocValueTransformerGenreVariantPick : LocValueTransformer {
+	
 	enum Genre {
 		case male, female
 		init?(string: String) {
@@ -344,6 +396,10 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 			case .female: return "female"
 			}
 		}
+	}
+	
+	override var isValid: Bool {
+		return true
 	}
 	
 	let genre: Genre
@@ -401,12 +457,18 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 		/* TODO */
 		return ret
 	}
+	
 }
 
 
 
 /* ***** */
 class LocValueTransformerPluralVariantPick : LocValueTransformer {
+	
+	override var isValid: Bool {
+		return true
+	}
+	
 	let openDelim: String
 	let replacement: String
 	let closeDelim: String
@@ -448,4 +510,5 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		/* TODO */
 		return ret
 	}
+	
 }

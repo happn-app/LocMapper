@@ -75,6 +75,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	override func discardEditing() {
 		super.discardEditing()
 		
+		view.window?.makeFirstResponder(nil)
+		
 		dirty = false
 		updateTextUIValues()
 	}
@@ -104,11 +106,11 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		do {
 			let errorDomain = "Transforms Conversion"
 			
+			/* Retrieving transforms from the text view */
 			let transformString: String
 			if let str = textViewMappingTransform.string?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines), !str.isEmpty {transformString = str}
 			else                                                                                                                    {transformString = "[]"}
 			
-			/* Retrieving transforms from the text view */
 			guard let transformData = transformString.data(using: .utf8) else {
 				throw NSError(domain: errorDomain, code: 1, userInfo: nil)
 			}
@@ -123,7 +125,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			/* Converting deserialized representations to actual transforms */
 			let transforms = try serializedTransforms.map { serialization -> LocValueTransformer in
 				let transform = LocValueTransformer.createComponentTransformFromSerialization(serialization)
-				guard !(transform is LocValueTransformerInvalid) else {
+				guard transform.isValid else {
 					throw NSError(domain: errorDomain, code: 3, userInfo: nil)
 				}
 				return transform
@@ -177,7 +179,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	/* ***************
 	   MARK: - Private
-	   *************** */
+	   *************** */
 	
 	private var possibleLineKeys = Array<happnCSVLocFile.LineKey>()
 	

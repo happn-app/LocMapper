@@ -928,12 +928,12 @@
                                     <rect key="frame" x="1" y="1" width="428" height="78"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="m35-Mw-091">
+                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="m35-Mw-091">
                                             <rect key="frame" x="0.0" y="0.0" width="0.0" height="78"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="428" height="78"/>
-                                            <size key="maxSize" width="620" height="10000000"/>
+                                            <size key="maxSize" width="10000000" height="10000000"/>
                                             <attributedString key="textStorage">
                                                 <fragment content="&lt;No Options&gt;">
                                                     <attributes>
@@ -1033,12 +1033,12 @@ Gw
                                     <rect key="frame" x="1" y="1" width="428" height="257"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="RYO-qy-Cak">
+                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="RYO-qy-Cak">
                                             <rect key="frame" x="0.0" y="0.0" width="0.0" height="257"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="428" height="257"/>
-                                            <size key="maxSize" width="620" height="10000000"/>
+                                            <size key="maxSize" width="10000000" height="10000000"/>
                                             <attributedString key="textStorage">
                                                 <fragment content="&lt;No Options&gt;">
                                                     <attributes>
@@ -1048,6 +1048,9 @@ Gw
                                                 </fragment>
                                             </attributedString>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <connections>
+                                                <outlet property="delegate" destination="Pxz-rI-HMY" id="G5h-wl-043"/>
+                                            </connections>
                                         </textView>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1074,13 +1077,22 @@ DQ
 </string>
                                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="validateAndApplyMapping:" target="Pxz-rI-HMY" id="X3A-Xp-RnK"/>
+                                </connections>
                             </button>
                             <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="E3b-o9-2DZ">
                                 <rect key="frame" x="215" y="4" width="81" height="28"/>
                                 <buttonCell key="cell" type="push" title="   Cancel   " bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bud-l6-fkZ">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="cancelEdition:" target="Pxz-rI-HMY" id="XsD-Mi-gfd"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -1094,6 +1106,11 @@ DQ
                             <constraint firstAttribute="bottom" secondItem="1mt-3B-KeN" secondAttribute="bottom" constant="10" id="uWk-ER-tsc"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="buttonCancelEdition" destination="E3b-o9-2DZ" id="Qln-13-oeD"/>
+                        <outlet property="buttonValidateMapping" destination="1mt-3B-KeN" id="XPs-93-RQT"/>
+                        <outlet property="textViewMapping" destination="RYO-qy-Cak" id="gRb-LK-bn5"/>
+                    </connections>
                 </viewController>
                 <customObject id="IEK-tA-01y" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
