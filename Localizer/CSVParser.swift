@@ -20,6 +20,7 @@ class CSVParser {
 	
 	private let hasHeader: Bool
 	private let csvString: String
+	private let startOffset: Int
 	
 	private let separator: String
 	private let separatorIsSingleChar: Bool
@@ -28,9 +29,12 @@ class CSVParser {
 	private var scanner: Scanner!
 	
 	/* fieldNames is ignored if hasHeader is true */
-	init(source str: String, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
+	init(source str: String, startOffset offset: Int, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
+		assert(offset < str.characters.count)
+		
 		csvString = str
 		separator = sep
+		startOffset = offset
 		
 		var cs = CharacterSet.newlines
 		cs.insert(charactersIn: "\"")
@@ -52,6 +56,7 @@ class CSVParser {
 	func arrayOfParsedRows() -> [[String: String]]? {
 		scanner = Scanner(string: csvString)
 		scanner.charactersToBeSkipped = CharacterSet()
+		scanner.scanLocation = startOffset
 		return parseFile()
 	}
 	

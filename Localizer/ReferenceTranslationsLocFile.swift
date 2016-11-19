@@ -27,7 +27,7 @@ class ReferenceTranslationsLocFile {
 	
 	init(filecontent: String, languages sourceLanguages: [Language], csvSeparator: String = ",") throws {
 		let error = NSError(domain: "ReferenceTranslationsLocFile", code: 1, userInfo: nil)
-		let parser = CSVParser(source: filecontent, separator: csvSeparator, hasHeader: true, fieldNames: nil)
+		let parser = CSVParser(source: filecontent, startOffset: 0, separator: csvSeparator, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
 			throw error
 		}

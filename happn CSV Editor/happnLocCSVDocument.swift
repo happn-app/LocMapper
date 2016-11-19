@@ -19,8 +19,6 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		}
 	}
 	
-	private var mainWindowController: NSWindowController?
-	
 	override init() {
 		csvLocFile = happnCSVLocFile()
 		super.init()
@@ -35,10 +33,13 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	}
 	
 	override func makeWindowControllers() {
-		// Returns the Storyboard that contains your Document window.
 		let storyboard = NSStoryboard(name: "Main", bundle: nil)
 		let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
 		addWindowController(windowController)
+		
+		if let windowFrame = windowFrameToRestore {
+			windowController.window?.setFrameFrom(windowFrame)
+		}
 		
 		mainViewController.handlerNotifyDocumentModification = { [weak self] in
 			self?.updateChangeCount(.changeDone)
@@ -51,6 +52,12 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		guard let csvLocFile = csvLocFile else {
 			return Data()
 		}
+		
+		/* Let's save the UI state */
+		if let frameStr = mainWindowController?.window?.stringWithSavedFrame {csvLocFile.setMetadataValue(frameStr, forKey: "UIWindowFrame")}
+		else                                                                 {csvLocFile.removeMetadata(forKey: "UIWindowFrame")}
+		do    {try csvLocFile.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
+		catch {Swift.print("*** Warning: Cannot save UIState metadata")}
 		
 		var strData = ""
 		Swift.print(csvLocFile, terminator: "", to: &strData)
@@ -65,10 +72,12 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
 		}
 		
+		windowFrameToRestore = fileContentStr.infoForSplitUserInfo().userInfo?["UIWindowFrame"]
+		
 		csvLocFile = nil
 		DispatchQueue.global(qos: .userInitiated).async {
 			do {
-				let locFile = try happnCSVLocFile(filecontent: fileContentStr, withCSVSeparator: ",")
+				let locFile = try happnCSVLocFile(filecontent: fileContentStr, csvSeparator: ",")
 				DispatchQueue.main.async {
 					self.csvLocFile = locFile
 				}
@@ -223,6 +232,8 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   MARK: - Private
 	   *************** */
 	
+	private var windowFrameToRestore: String?
+	
 	private var currentOpenPanel: NSOpenPanel?
 	
 	private func sendRepresentedObjectToSubControllers(_ object: AnyObject?) {
@@ -246,10 +257,16 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   MARK: → UI
 	   ********** */
 	
+	/* Root Window Controller */
+	
+	private var mainWindowController: NSWindowController! {
+		return windowControllers.first
+	}
+	
 	/* Document Root & Loading UI */
 	
 	private var mainViewController: happnLocCSVDocTabViewController! {
-		return windowControllers.first?.contentViewController as? happnLocCSVDocTabViewController
+		return mainWindowController.contentViewController as? happnLocCSVDocTabViewController
 	}
 	
 	/* Left Pane (Filters) */

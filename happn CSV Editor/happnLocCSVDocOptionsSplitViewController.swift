@@ -34,7 +34,7 @@ class happnLocCSVDocFiltersSplitViewController : NSSplitViewController {
 				guard let strongSelf = self else {return}
 				guard let filters = strongSelf.filtersViewController.representedObject as? [happnCSVLocFile.Filter] else {return}
 				
-				(strongSelf.representedObject as? happnCSVLocFile)?.setMetadataValue(filters, forKey: "filters")
+				_ = try? (strongSelf.representedObject as? happnCSVLocFile)?.setMetadataValue(filters, forKey: "filters")
 				strongSelf.contentViewController.noteFiltersHaveChanged()
 				strongSelf.handlerNotifyDocumentModification?()
 			}

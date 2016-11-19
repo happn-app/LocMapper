@@ -256,23 +256,24 @@ class happnCSVLocFile: TextOutputStreamable {
 		if FileManager.default.fileExists(atPath: path) {
 			filecontent = try NSString(contentsOfFile: path, usedEncoding: &encoding) as String
 		}
-		try self.init(filecontent: (filecontent != nil ? filecontent! : ""), withCSVSeparator: csvSep)
+		try self.init(filecontent: (filecontent != nil ? filecontent! : ""), csvSeparator: csvSep)
 	}
 	
 	/* *** Init with file content *** */
-	convenience init(filecontent: String, withCSVSeparator csvSep: String) throws {
+	convenience init(filecontent: String, csvSeparator csvSep: String) throws {
 		let defaultError = NSError(domain: "Migrator", code: 1, userInfo: nil)
 		if filecontent.isEmpty {
 			self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep)
 			return
 		}
 		
-		let parser = CSVParser(source: filecontent, separator: csvSep, hasHeader: true, fieldNames: nil)
+		let (startOffset, metadata) = filecontent.infoForSplitUserInfo()
+		
+		let parser = CSVParser(source: filecontent, startOffset: startOffset, separator: csvSep, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
 			throw defaultError
 		}
 		
-		var metadata = [String: String]()
 		var languages = [String]()
 		var entries = [LineKey: LineValue]()
 		
@@ -287,25 +288,10 @@ class happnCSVLocFile: TextOutputStreamable {
 		
 		var i = 0
 		var groupComment = ""
-		var foundEmptyLine = false
 		for row in parsedRows {
-			/* Is the row empty? The first empty row signal the start of the actual
-			 * data (metadata/data separation). */
-			guard !row.reduce(true, { result, keyval in result && keyval.1 == "" }) else {foundEmptyLine = true; continue}
+			/* We drop empty rows. */
+			guard !row.reduce(true, { result, keyval in result && keyval.1 == "" }) else {continue}
 			
-			/* If we did not find the empty line, we're still in the metadata. */
-			guard foundEmptyLine else {
-				if
-					let jsonData = row[happnCSVLocFile.PRIVATE_KEY_HEADER_NAME]?.data(using: String.Encoding.utf8),
-					let parsedJSON = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? [String: String]
-				{
-					if !metadata.isEmpty {print("*** Warning: Got more than one line of metadata. Merging values, last line wins if key is defined more than once.")}
-					parsedJSON.forEach {metadata[$0] = $1}
-				}
-				continue
-			}
-			
-			/* An empty line has been found. We're in the actual data. */
 			guard
 				let locKey              = row[happnCSVLocFile.PRIVATE_KEY_HEADER_NAME],
 				let env                 = row[happnCSVLocFile.PRIVATE_ENV_HEADER_NAME],
@@ -369,7 +355,7 @@ class happnCSVLocFile: TextOutputStreamable {
 				entries[k] = .entries(values)
 			}
 		}
-		self.init(languages: languages, entries: entries, metadata: metadata, csvSeparator: csvSep)
+		self.init(languages: languages, entries: entries, metadata: metadata ?? [:], csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
@@ -551,8 +537,19 @@ class happnCSVLocFile: TextOutputStreamable {
 		metadata[key] = String(value)
 	}
 	
-	func setMetadataValue(_ value: [Filter], forKey key: String) {
-		metadata[key] = String(data: try! JSONSerialization.data(withJSONObject: value.map{$0.toString()}, options: []), encoding: .utf8)
+	func setMetadataValue(_ value: [Filter], forKey key: String) throws {
+		try setMetadataValue(value.map{$0.toString()}, forKey: key)
+	}
+	
+	func setMetadataValue(_ value: Any, forKey key: String) throws {
+		guard let str = String(data: try JSONSerialization.data(withJSONObject: value, options: []), encoding: .utf8) else {
+			throw NSError(domain: "happnCSVLocFile set filters metadata value", code: 1, userInfo: nil)
+		}
+		metadata[key] = str
+	}
+	
+	func removeMetadata(forKey key: String) {
+		metadata.removeValue(forKey: key)
 	}
 	
 	/* ***********************************
@@ -997,6 +994,10 @@ class happnCSVLocFile: TextOutputStreamable {
 	   ********************************* */
 	
 	func write<Target : TextOutputStream>(to target: inout Target) {
+		/* Writing metadata */
+		target.write("".byPrepending(userInfo: metadata))
+		
+		/* Start of the actual data */
 		target.write(
 			happnCSVLocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
 			happnCSVLocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
@@ -1010,10 +1011,6 @@ class happnCSVLocFile: TextOutputStreamable {
 		)
 		for language in languages {
 			target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))
-		}
-		if !metadata.isEmpty, let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []), let jsonStr = String(data: jsonData, encoding: String.Encoding.utf8) {
-			/* Let's write the metadata */
-			target.write("\n" + jsonStr.csvCellValueWithSeparator(csvSeparator))
 		}
 		target.write("\n")
 		var previousBasename: String?

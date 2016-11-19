@@ -14,6 +14,10 @@ class happnLocCSVDocTabViewController : NSTabViewController {
 	
 	@IBOutlet var tabViewItemDocContent: NSTabViewItem!
 	
+	var uiState: [String: Any] {
+		return [:]
+	}
+	
 	/* *********************************************************************
 	   MARK: - Doc Modification Actions & Handlers
 	           Handlers notify the doc object the doc has been modified

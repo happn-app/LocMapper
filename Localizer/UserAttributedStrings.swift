@@ -12,11 +12,7 @@ import Foundation
 
 extension String {
 	
-	/** Parses the string (eg. the result of calling byPrepending(userInfo:))
-	into the user info and the remaining string. If parsing the string fails, the
-	userInfo will contain nil and string will be the original string. If parsing
-	the string succeed, userInfo will never be nil. It might be empty though. */
-	func splitUserInfo() -> (string: String, userInfo: [String: String]?) {
+	func infoForSplitUserInfo() -> (stringStartOffset: Int, userInfo: [String: String]?) {
 		enum State {
 			case waitStartKey
 			case waitEndKey
@@ -71,16 +67,33 @@ extension String {
 		for (curIdx, char) in characters.enumerated() {
 			guard currentState != .remainingString else {break}
 			guard let newState = currentState.process(char: char, withCurrentKey: &currentKey, currentValue: &currentValue, currentUserInfo: &userInfo) else {
-				return (string: self, userInfo: nil)
+				return (stringStartOffset: 0, userInfo: nil)
 			}
 			currentState = newState
 			idx = curIdx
 		}
 		
-		guard currentState == .remainingString else {return (string: self, userInfo: nil)}
-		return (string: self.substring(from: characters.index(characters.startIndex, offsetBy: idx+1)), userInfo: userInfo)
+		guard currentState == .remainingString else {return (stringStartOffset: 0, userInfo: nil)}
+		return (stringStartOffset: idx+1, userInfo: userInfo)
 	}
 	
+	/** Parses the string (eg. the result of calling byPrepending(userInfo:))
+	into the user info and the remaining string. If parsing the string fails, the
+	userInfo will contain nil and string will be the original string. If parsing
+	the string succeed, userInfo will never be nil. It might be empty though. */
+	func splitUserInfo() -> (string: String, userInfo: [String: String]?) {
+		let (offset, userInfo) = infoForSplitUserInfo()
+		return (string: substring(from: characters.index(characters.startIndex, offsetBy: offset)), userInfo: userInfo)
+	}
+	
+	/** Returns a new string containing a serialization of the user info and the
+	original string. The format guarantees that:
+	
+	    str.byPrepending(userInfo: userInfo) == "".byPrepending(userInfo: userInfo) + str
+	
+	Use `infoForSplitUserInfo` or `splitUserInfo` to de-serialize the user info.
+	
+	- returns: The new string with the serialized user info. */
 	func byPrepending(userInfo: [String: String]) -> String {
 		var res = ""
 		for (key, val) in userInfo {
