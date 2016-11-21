@@ -202,10 +202,12 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 						
 					case .Android:
 						for url in openPanel.urls {
+							let urlPath = url.absoluteURL.path
 							let noFilename = url.deletingLastPathComponent()
 							let folderName = noFilename.lastPathComponent
 							let noFolderName = noFilename.deletingLastPathComponent()
-							if let androidXMLLocFile = try? AndroidXMLLocFile(fromPath: url.absoluteURL.path, relativeToProjectPath: noFolderName.absoluteURL.path) {
+							let relativePath = "./" + urlPath.substring(from: urlPath.index(urlPath.startIndex, offsetBy: noFolderName.absoluteURL.path.characters.count + 1))
+							if let androidXMLLocFile = try? AndroidXMLLocFile(fromPath: relativePath, relativeToProjectPath: noFolderName.absoluteURL.path) {
 								csvLocFile.mergeAndroidXMLLocStringsFiles([androidXMLLocFile], folderNameToLanguageName: [folderName: languageName])
 							}
 						}

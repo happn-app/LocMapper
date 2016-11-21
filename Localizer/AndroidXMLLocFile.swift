@@ -463,6 +463,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 	}
 	
 	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
+		assert(!path.hasPrefix("/"))
 		let url = URL(fileURLWithPath: path, relativeTo: URL(fileURLWithPath: projectPath))
 		try self.init(pathRelativeToProject: path, fileURL: url)
 	}

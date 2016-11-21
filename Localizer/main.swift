@@ -274,11 +274,11 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc android ref.happnloc", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
-		csv.exportToAndroidProjectWithRoot("\(basePathForTests)/HappnAndroid/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
+		csv.exportToAndroidProjectWithRoot("\(basePathForTests)/HappnAndroid/happn/src/main/res/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
 		exit(0)
 	
 	default:
