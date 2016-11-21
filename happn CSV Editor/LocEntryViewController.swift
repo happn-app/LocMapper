@@ -54,6 +54,12 @@ class LocEntryViewController: NSTabViewController {
 		}
 	}
 	
+	var handlerLineKeyToString: ((_ lineKey: happnCSVLocFile.LineKey) -> String)? {
+		didSet {
+			locEntryMappingViewController.handlerLineKeyToString = handlerLineKeyToString
+		}
+	}
+	
 	var handlerNotifyLineValueModification: (() -> Void)? {
 		didSet {
 			locEntryMappingViewController.handlerNotifyLineValueModification = { [weak self] in

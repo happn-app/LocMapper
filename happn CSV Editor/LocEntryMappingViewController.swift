@@ -27,7 +27,9 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		comboBox.formatter = LineKeyFormatter()
+		comboBox.formatter = LineKeyFormatter(handlerLineKeyToString: { [weak self] linekey -> String in
+			return self?.handlerLineKeyToString?(linekey) ?? Utils.lineKeyToStr(linekey)
+		})
 		
 		/* The sets the font for all of the text storage and other. Do NOT remove. */
 		textViewMappingTransform.font = textViewMappingTransform.font
@@ -66,6 +68,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	}
 	
 	var handlerSearchMappingKey: ((_ inputString: String) -> [happnCSVLocFile.LineKey])?
+	var handlerLineKeyToString: ((_ lineKey: happnCSVLocFile.LineKey) -> String)?
 	var handlerNotifyLineValueModification: (() -> Void)?
 	
 	/* ***************
@@ -252,9 +255,20 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	private class LineKeyFormatter : Formatter {
 		
+		let handlerLineKeyToString: (_ lineKey: happnCSVLocFile.LineKey) -> String
+		
+		init(handlerLineKeyToString handler: ((_ lineKey: happnCSVLocFile.LineKey) -> String)?) {
+			handlerLineKeyToString = handler ?? { linekey in return Utils.lineKeyToStr(linekey) }
+			super.init()
+		}
+		
+		required init?(coder aDecoder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		
 		override func string(for obj: Any?) -> String? {
 			guard let linekey = obj as? happnCSVLocFile.LineKey else {return "\(obj ?? "")"}
-			return Utils.lineKeyToStr(linekey)
+			return handlerLineKeyToString(linekey)
 		}
 		
 		override func getObjectValue(_ obj: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
