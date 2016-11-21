@@ -16,7 +16,7 @@
 			<key>CFBundleTypeMIMETypes</key>
 			<array/>
 			<key>CFBundleTypeName</key>
-			<string>happnLocDocumentType</string>
+			<string>happn Localization Files</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
@@ -65,7 +65,7 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>happn Loc Files</string>
+			<string>happn Localization Files</string>
 			<key>UTTypeIconFile</key>
 			<string>happnLocDocIcon</string>
 			<key>UTTypeIdentifier</key>
