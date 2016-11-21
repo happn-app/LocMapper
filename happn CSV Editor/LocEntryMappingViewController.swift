@@ -90,8 +90,11 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		let idx = comboBox.indexOfSelectedItem
 		guard idx >= 0 else {return}
 		
+		let newLineKey = possibleLineKeys[idx]
+		guard comboBox.cell?.representedObject as? happnCSVLocFile.LineKey != newLineKey else {return}
+		
 		dirty = true
-		comboBox.cell?.representedObject = possibleLineKeys[idx]
+		comboBox.cell?.representedObject = newLineKey
 		
 		updateEnabledStates()
 	}
@@ -102,6 +105,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			NSBeep()
 			return
 		}
+		
+		view.window?.makeFirstResponder(nil)
 		
 		do {
 			let errorDomain = "Transforms Conversion"
