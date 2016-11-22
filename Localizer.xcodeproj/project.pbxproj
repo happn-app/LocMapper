@@ -6,6 +6,21 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		7B21A38F1DE4BCDF00F81E68 /* Localizer */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "Localizer" */;
+			buildPhases = (
+			);
+			dependencies = (
+				7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */,
+				7B21A3961DE4BCE900F81E68 /* PBXTargetDependency */,
+			);
+			name = Localizer;
+			productName = Localizer;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
@@ -51,6 +66,23 @@
 		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		7B21A3931DE4BCE900F81E68 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B6E259E19D4157A001934ED;
+			remoteInfo = "Localizer CLI";
+		};
+		7B21A3951DE4BCE900F81E68 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B837D7E1C0EF3DB0020E86B;
+			remoteInfo = "Localizer App";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		7B6E259D19D4157A001934ED /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -81,7 +113,7 @@
 		7B6E25A919D417BD001934ED /* stderr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stderr.swift; sourceTree = "<group>"; };
 		7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeStringsFile.swift; sourceTree = "<group>"; };
 		7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidXMLLocFile.swift; sourceTree = "<group>"; };
-		7B837D7F1C0EF3DB0020E86B /* happn CSV Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "happn CSV Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B837D7F1C0EF3DB0020E86B /* Localizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Localizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B837D811C0EF3DB0020E86B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocEntryViewController.swift; sourceTree = "<group>"; };
 		7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocument.swift; sourceTree = "<group>"; };
@@ -146,7 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				7B6E259F19D4157A001934ED /* Localizer */,
-				7B837D7F1C0EF3DB0020E86B /* happn CSV Editor.app */,
+				7B837D7F1C0EF3DB0020E86B /* Localizer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -239,9 +271,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7B6E259E19D4157A001934ED /* Localizer */ = {
+		7B6E259E19D4157A001934ED /* Localizer CLI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7B6E25A619D4157A001934ED /* Build configuration list for PBXNativeTarget "Localizer" */;
+			buildConfigurationList = 7B6E25A619D4157A001934ED /* Build configuration list for PBXNativeTarget "Localizer CLI" */;
 			buildPhases = (
 				7B6E259B19D4157A001934ED /* Sources */,
 				7B6E259C19D4157A001934ED /* Frameworks */,
@@ -251,14 +283,14 @@
 			);
 			dependencies = (
 			);
-			name = Localizer;
+			name = "Localizer CLI";
 			productName = Localizer;
 			productReference = 7B6E259F19D4157A001934ED /* Localizer */;
 			productType = "com.apple.product-type.tool";
 		};
-		7B837D7E1C0EF3DB0020E86B /* happn CSV Editor */ = {
+		7B837D7E1C0EF3DB0020E86B /* Localizer App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7B837D8F1C0EF3DB0020E86B /* Build configuration list for PBXNativeTarget "happn CSV Editor" */;
+			buildConfigurationList = 7B837D8F1C0EF3DB0020E86B /* Build configuration list for PBXNativeTarget "Localizer App" */;
 			buildPhases = (
 				7B837D7B1C0EF3DB0020E86B /* Sources */,
 				7B837D7C1C0EF3DB0020E86B /* Frameworks */,
@@ -268,9 +300,9 @@
 			);
 			dependencies = (
 			);
-			name = "happn CSV Editor";
+			name = "Localizer App";
 			productName = "happn CSV Editor";
-			productReference = 7B837D7F1C0EF3DB0020E86B /* happn CSV Editor.app */;
+			productReference = 7B837D7F1C0EF3DB0020E86B /* Localizer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -284,13 +316,19 @@
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = happn;
 				TargetAttributes = {
+					7B21A38F1DE4BCDF00F81E68 = {
+						CreatedOnToolsVersion = 8.1;
+						ProvisioningStyle = Automatic;
+					};
 					7B6E259E19D4157A001934ED = {
 						CreatedOnToolsVersion = 6.1;
 						LastSwiftMigration = 0800;
 					};
 					7B837D7E1C0EF3DB0020E86B = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = M8JS42FSNG;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -307,8 +345,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7B6E259E19D4157A001934ED /* Localizer */,
-				7B837D7E1C0EF3DB0020E86B /* happn CSV Editor */,
+				7B21A38F1DE4BCDF00F81E68 /* Localizer */,
+				7B6E259E19D4157A001934ED /* Localizer CLI */,
+				7B837D7E1C0EF3DB0020E86B /* Localizer App */,
 			);
 		};
 /* End PBXProject section */
@@ -382,6 +421,19 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B6E259E19D4157A001934ED /* Localizer CLI */;
+			targetProxy = 7B21A3931DE4BCE900F81E68 /* PBXContainerItemProxy */;
+		};
+		7B21A3961DE4BCE900F81E68 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B837D7E1C0EF3DB0020E86B /* Localizer App */;
+			targetProxy = 7B21A3951DE4BCE900F81E68 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		7B837D891C0EF3DB0020E86B /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -394,6 +446,20 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		7B21A3911DE4BCDF00F81E68 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		7B21A3921DE4BCDF00F81E68 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		7B6E25A419D4157A001934ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -432,7 +498,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -470,14 +535,13 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = NO;
 			};
 			name = Release;
 		};
 		7B6E25A719D4157A001934ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Localizer;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -485,7 +549,7 @@
 		7B6E25A819D4157A001934ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Localizer;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
@@ -495,17 +559,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = M8JS42FSNG;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "happn CSV Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = "fr.happn.happn-CSV-Editor";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.happnLocEditor";
+				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 3.0.1;
 			};
 			name = Debug;
 		};
@@ -513,24 +578,33 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = M8JS42FSNG;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "happn CSV Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = "fr.happn.happn-CSV-Editor";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.happnLocEditor";
+				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 3.0.1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "Localizer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B21A3911DE4BCDF00F81E68 /* Debug */,
+				7B21A3921DE4BCDF00F81E68 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		7B6E259A19D4157A001934ED /* Build configuration list for PBXProject "Localizer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -540,7 +614,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7B6E25A619D4157A001934ED /* Build configuration list for PBXNativeTarget "Localizer" */ = {
+		7B6E25A619D4157A001934ED /* Build configuration list for PBXNativeTarget "Localizer CLI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7B6E25A719D4157A001934ED /* Debug */,
@@ -549,7 +623,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7B837D8F1C0EF3DB0020E86B /* Build configuration list for PBXNativeTarget "happn CSV Editor" */ = {
+		7B837D8F1C0EF3DB0020E86B /* Build configuration list for PBXNativeTarget "Localizer App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7B837D8D1C0EF3DB0020E86B /* Debug */,

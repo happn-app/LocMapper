@@ -8,15 +8,15 @@
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
             buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7B21A38F1DE4BCDF00F81E68"
-               BuildableName = "Localizer"
-               BlueprintName = "Localizer"
+               BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
+               BuildableName = "Localizer.app"
+               BlueprintName = "Localizer App"
                ReferencedContainer = "container:Localizer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B21A38F1DE4BCDF00F81E68"
-            BuildableName = "Localizer"
-            BlueprintName = "Localizer"
+            BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
+            BuildableName = "Localizer.app"
+            BlueprintName = "Localizer App"
             ReferencedContainer = "container:Localizer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -51,6 +51,23 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
+            BuildableName = "Localizer.app"
+            BlueprintName = "Localizer App"
+            ReferencedContainer = "container:Localizer.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "CA_DEBUG_TRANSACTIONS"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -60,6 +77,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
+            BuildableName = "Localizer.app"
+            BlueprintName = "Localizer App"
+            ReferencedContainer = "container:Localizer.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

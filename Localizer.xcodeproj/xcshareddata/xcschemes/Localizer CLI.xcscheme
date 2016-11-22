@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
-               BuildableName = "happn CSV Editor.app"
-               BlueprintName = "happn CSV Editor"
+               BlueprintIdentifier = "7B6E259E19D4157A001934ED"
+               BuildableName = "Localizer"
+               BlueprintName = "Localizer CLI"
                ReferencedContainer = "container:Localizer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
-            BuildableName = "happn CSV Editor.app"
-            BlueprintName = "happn CSV Editor"
+            BlueprintIdentifier = "7B6E259E19D4157A001934ED"
+            BuildableName = "Localizer"
+            BlueprintName = "Localizer CLI"
             ReferencedContainer = "container:Localizer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -55,19 +55,30 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
-            BuildableName = "happn CSV Editor.app"
-            BlueprintName = "happn CSV Editor"
+            BlueprintIdentifier = "7B6E259E19D4157A001934ED"
+            BuildableName = "Localizer"
+            BlueprintName = "Localizer CLI"
             ReferencedContainer = "container:Localizer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "CA_DEBUG_TRANSACTIONS"
-            value = "1"
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "test_xcode_export"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "test_xcode_import"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "test_android_export"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "test_android_import"
             isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -81,9 +92,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B837D7E1C0EF3DB0020E86B"
-            BuildableName = "happn CSV Editor.app"
-            BlueprintName = "happn CSV Editor"
+            BlueprintIdentifier = "7B6E259E19D4157A001934ED"
+            BuildableName = "Localizer"
+            BlueprintName = "Localizer CLI"
             ReferencedContainer = "container:Localizer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
