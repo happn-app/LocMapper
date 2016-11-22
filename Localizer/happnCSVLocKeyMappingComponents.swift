@@ -221,7 +221,7 @@ class LocValueTransformer {
 			
 			switch type {
 			case "simple_string_replacements":    c = try LocValueTransformerSimpleStringReplacements(serialization: serialization)
-			case "genre_variant_pick":            c = try LocValueTransformerGenreVariantPick(serialization: serialization)
+			case "gender_variant_pick":           c = try LocValueTransformerGenderVariantPick(serialization: serialization)
 			case "plural_variant_pick":           c = try LocValueTransformerPluralVariantPick(serialization: serialization)
 			case "region_delimiters_replacement": c = try LocValueTransformerRegionDelimitersReplacement(serialization: serialization)
 			default:
@@ -241,7 +241,7 @@ class LocValueTransformer {
 		var serializedData = self.serializePrivateData()
 		switch self {
 		case _ as LocValueTransformerSimpleStringReplacements:    serializedData["__type"] = "simple_string_replacements"
-		case _ as LocValueTransformerGenreVariantPick:            serializedData["__type"] = "genre_variant_pick"
+		case _ as LocValueTransformerGenderVariantPick:           serializedData["__type"] = "gender_variant_pick"
 		case _ as LocValueTransformerPluralVariantPick:           serializedData["__type"] = "plural_variant_pick"
 		case _ as LocValueTransformerRegionDelimitersReplacement: serializedData["__type"] = "region_delimiters_replacement"
 		default:
@@ -379,9 +379,9 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 
 
 /* ***** */
-class LocValueTransformerGenreVariantPick : LocValueTransformer {
+class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	
-	enum Genre {
+	enum Gender {
 		case male, female
 		init?(string: String) {
 			switch string.lowercased() {
@@ -402,15 +402,15 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 		return true
 	}
 	
-	let genre: Genre
+	let gender: Gender
 	let openDelim: String
 	let middleDelim: String
 	let closeDelim: String
 	let escapeToken: String?
 	
 	init(serialization: [String: Any]) throws {
-		guard let gs = serialization["genre"] as? String, let g = Genre(string: gs) else {
-			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid genre."])
+		guard let gs = serialization["gender"] as? String, let g = Gender(string: gs) else {
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid gender."])
 		}
 		
 		if let d = serialization["open_delimiter"] as? String {
@@ -428,7 +428,7 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 			closeDelim = d
 		} else {closeDelim = "´"}
 		
-		genre = g
+		gender = g
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
 		else                                                            {escapeToken = nil}
 		
@@ -440,7 +440,7 @@ class LocValueTransformerGenreVariantPick : LocValueTransformer {
 	
 	override func serializePrivateData() -> [String: Any] {
 		var ret = [
-			"genre": genre.toString(),
+			"gender": gender.toString(),
 			"open_delimiter": openDelim,
 			"middle_delimiter": middleDelim,
 			"close_delimiter": closeDelim
