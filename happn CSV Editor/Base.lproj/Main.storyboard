@@ -117,6 +117,11 @@
                                                 <action selector="importKeyStructureWithSender:" target="Ady-hI-5gd" id="Exz-oD-z53"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Export Translations to Project…" keyEquivalent="E" id="bxK-sS-1wD">
+                                            <connections>
+                                                <action selector="exportTranslationsWithSender:" target="Ady-hI-5gd" id="m7b-CP-8ci"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="LKY-jV-u5N"/>
                                         <menuItem title="Page Setup…" keyEquivalent="P" id="qIS-W8-SiK">
                                             <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
@@ -425,7 +430,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="happn_CSV_Editor" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Localizer" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-707" y="-124"/>
@@ -437,7 +442,7 @@
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="Ckk-yw-fiv">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="511" width="480" height="270"/>
+                        <rect key="contentRect" x="196" y="511" width="891" height="315"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                     </window>
                     <connections>
@@ -446,13 +451,13 @@
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-262" y="384"/>
+            <point key="canvasLocation" x="-56.5" y="406.5"/>
         </scene>
         <!--Happn LocCSV Doc Content Split View Controller-->
         <scene sceneID="QGL-uo-KEh">
             <objects>
                 <customObject id="OgM-Fp-stH" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <splitViewController id="ct4-wk-7SH" customClass="happnLocCSVDocContentSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController id="ct4-wk-7SH" customClass="happnLocCSVDocContentSplitViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="pQ1-ad-IWO"/>
                         <splitViewItem canCollapse="YES" holdingPriority="260" behavior="sidebar" id="RyI-Ha-ETJ"/>
@@ -474,7 +479,7 @@
         <!--Happn LocCSV Doc Tab View Controller-->
         <scene sceneID="Fx0-qb-f8X">
             <objects>
-                <tabViewController tabStyle="unspecified" id="4e3-9h-uPT" customClass="happnLocCSVDocTabViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController tabStyle="unspecified" id="4e3-9h-uPT" customClass="happnLocCSVDocTabViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="" id="uWS-8y-Dne"/>
                         <tabViewItem id="Uby-N0-ifu"/>
@@ -501,7 +506,7 @@
         <!--Loading Doc-->
         <scene sceneID="sBe-AT-aGM">
             <objects>
-                <viewController title="Loading Doc" id="h3E-y2-Xoi" customClass="LoadingDocViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Loading Doc" id="h3E-y2-Xoi" customClass="LoadingDocViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="MEH-BK-PZM">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -542,7 +547,7 @@
         <!--Happn LocCSV Doc Filters Split View Controller-->
         <scene sceneID="eXP-fC-M5z">
             <objects>
-                <splitViewController id="EeL-Ny-Gtb" customClass="happnLocCSVDocFiltersSplitViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController id="EeL-Ny-Gtb" customClass="happnLocCSVDocFiltersSplitViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem canCollapse="YES" holdingPriority="260" behavior="sidebar" id="Hc1-0c-bdQ"/>
                         <splitViewItem id="NFu-rf-yKA"/>
@@ -565,7 +570,7 @@
         <!--Happn LocCSV Doc Filters View Controller-->
         <scene sceneID="jYb-bF-CBH">
             <objects>
-                <viewController id="daH-92-t52" customClass="happnLocCSVDocFiltersViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="daH-92-t52" customClass="happnLocCSVDocFiltersViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="AuA-et-erp">
                         <rect key="frame" x="0.0" y="0.0" width="185" height="324"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -584,7 +589,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="185" height="294"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView wantsLayer="YES" verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="34" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="n3b-ZV-g19" customClass="TextFieldSelectableTableView" customModule="happn_CSV_Editor" customModuleProvider="target">
+                                        <tableView wantsLayer="YES" verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="34" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="n3b-ZV-g19" customClass="TextFieldSelectableTableView" customModule="Localizer" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="185" height="294"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -712,7 +717,7 @@
         <!--Happn LocCSV Doc Table View Controller-->
         <scene sceneID="2nv-Yj-wet">
             <objects>
-                <viewController id="eGi-W3-OT9" customClass="happnLocCSVDocTableViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="eGi-W3-OT9" customClass="happnLocCSVDocTableViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="ptP-zJ-RYf">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -772,7 +777,7 @@
         <!--Loc Entry View Controller-->
         <scene sceneID="r7B-F7-LLj">
             <objects>
-                <tabViewController tabStyle="unspecified" id="Y9e-9e-EPZ" customClass="LocEntryViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController tabStyle="unspecified" id="Y9e-9e-EPZ" customClass="LocEntryViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="" id="551-Mg-qbo"/>
                         <tabViewItem id="WPL-ZU-yBx"/>
@@ -804,7 +809,7 @@
         <!--Context-->
         <scene sceneID="iPi-lh-0KH">
             <objects>
-                <viewController title="Context" id="LlL-Ny-Ucy" customClass="LocEntryContextViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Context" id="LlL-Ny-Ucy" customClass="LocEntryContextViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="4Lw-82-IgK">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="165"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -888,7 +893,7 @@
         <!--Mapping-->
         <scene sceneID="LEh-yi-1mT">
             <objects>
-                <viewController title="Mapping" id="vy9-Jp-xEg" customClass="LocEntryMappingViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Mapping" id="vy9-Jp-xEg" customClass="LocEntryMappingViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="LTP-CJ-TmE">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="174"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -929,7 +934,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="m35-Mw-091">
-                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="78"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="430" height="78"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="428" height="78"/>
@@ -1022,7 +1027,7 @@ Gw
         <!--Advanced Mapping-->
         <scene sceneID="jVZ-xe-0wu">
             <objects>
-                <viewController title="Advanced Mapping" id="Pxz-rI-HMY" customClass="LocEntryAdvancedMappingViewController" customModule="happn_CSV_Editor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Advanced Mapping" id="Pxz-rI-HMY" customClass="LocEntryAdvancedMappingViewController" customModule="Localizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="Q2N-ej-ciS">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1034,7 +1039,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="RYO-qy-Cak">
-                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="257"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="430" height="257"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="428" height="257"/>

@@ -221,6 +221,14 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		}
 	}
 	
+	@IBAction func exportTranslations(sender: AnyObject) {
+		let alert = NSAlert()
+		alert.messageText = "Unimplemented"
+		alert.informativeText = "This feature has not yet been implemented. Please check with the dev!"
+		alert.addButton(withTitle: "OK")
+		alert.beginSheetModal(for: windowForSheet!, completionHandler: nil)
+	}
+	
 	/* ****************************
 	   MARK: - Token Field Delegate
 	   **************************** */
