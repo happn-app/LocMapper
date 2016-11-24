@@ -73,7 +73,7 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 		}
 		locEntryViewController.handlerLineKeyToString = { [weak self] linekey in
 			guard let locFile = self?.representedObject as? happnCSVLocFile else {return "<Internal Error>"}
-			if let firstLanguage = locFile.languages.first {return locFile.editorDisplayedValueForKey(linekey, withLanguage: firstLanguage) + " (" + Utils.lineKeyToStr(linekey) + ")"}
+			if let firstLanguage = locFile.languages.first {return locFile.editorDisplayedValueForKey(linekey, withLanguage: firstLanguage).replacingOccurrences(of: "\n", with: "\\n") + " (" + Utils.lineKeyToStr(linekey) + ")"}
 			else                                           {return Utils.lineKeyToStr(linekey)}
 		}
 		locEntryViewController.handlerNotifyLineValueModification = { [weak self] in

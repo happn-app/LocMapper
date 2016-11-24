@@ -352,7 +352,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	func editorDisplayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
 		do {
-			return try resolvedValueForKey(key, withLanguage: language)
+			return try resolvedValueForKey(key, withLanguage: language).replacingOccurrences(of: "\\n", with: "\n")
 		} catch _ as ValueResolvingError {
 			return "!¡!TODOLOC!¡!"
 		} catch let error as MappingResolvingError {

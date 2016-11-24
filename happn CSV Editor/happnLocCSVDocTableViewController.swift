@@ -65,12 +65,15 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
 		guard let tableColumn = tableColumn else {return nil}
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
-		return csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
+		
+		guard tableColumn.identifier != "ENV" else {return key.env}
+		guard tableColumn.identifier != "KEY" else {return key.locKey}
+		return csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier)
 	}
 	
 	func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return}
-		guard let tableColumn = tableColumn else {return}
+		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier) else {return}
 		
 		guard let strValue = (object as? String)?.replacingOccurrences(of: "\n", with: "\\n") else {return}
 		_ = csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
@@ -79,10 +82,22 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			self.handlerNotifyDocumentModification?()
 			
 			tableView.beginUpdates()
-			self.cachedRowsHeights.removeObject(forKey: key.filename + key.locKey as NSString)
+			self.cachedRowsHeights.removeObject(forKey: key.env + key.filename + key.locKey as NSString)
 			tableView.noteHeightOfRows(withIndexesChanged: IndexSet(integer: row))
 			tableView.endUpdates()
 		}
+	}
+	
+	func tableView(_ tableView: NSTableView, willDisplayCell cell: Any, for tableColumn: NSTableColumn?, row: Int) {
+		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return}
+		
+		let color: NSColor
+		switch csvLocFile.lineValueForKey(key) {
+		case .none: color = NSColor.red
+		case .mapping?: color = NSColor.gray
+		case .entries?: color = NSColor.black
+		}
+		(cell as? HighlightColorTextFieldCell)?.nonHighlightedTextColor = color
 	}
 	
 	func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
@@ -91,13 +106,15 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return minimumHeight}
 		
 		/* Check the cache to avoid unnecessary recalculation */
-		if let cachedRowHeight = cachedRowsHeights.object(forKey: key.filename + key.locKey as NSString) as? CGFloat {
+		if let cachedRowHeight = cachedRowsHeights.object(forKey: key.env + key.filename + key.locKey as NSString) as? CGFloat {
 			return cachedRowHeight
 		}
 		
 		var height = minimumHeight
 		for column in tableView.tableColumns {
-			let str = csvLocFile.editorDisplayedValueForKey(key, withLanguage: column.identifier).replacingOccurrences(of: "\\n", with: "\n")
+			guard !Set(arrayLiteral: "ENV", "KEY").contains(column.identifier) else {continue}
+			
+			let str = csvLocFile.editorDisplayedValueForKey(key, withLanguage: column.identifier)
 			let cell = column.dataCell as! NSCell
 			cell.stringValue = str
 			let rect = NSMakeRect(0, 0, column.width, CGFloat.greatestFiniteMagnitude)
@@ -114,7 +131,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		height += 2*2
 		
 		/* Let’s cache the result. */
-		cachedRowsHeights.setObject(height as NSNumber, forKey: key.filename + key.locKey as NSString)
+		cachedRowsHeights.setObject(height as NSNumber, forKey: key.env + key.filename + key.locKey as NSString)
 		
 		return height
 	}
@@ -141,6 +158,8 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	func tableView(_ tableView: NSTableView, shouldEdit tableColumn: NSTableColumn?, row: Int) -> Bool {
+		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier) else {return false}
+		
 		if row >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], csvLocFile.lineValueForKey(key)?.mapping != nil {
 			let updateEntryToManualValues = {
 				if csvLocFile.convertKeyToHardCoded(key) {
@@ -162,7 +181,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 					switch response {
 					case NSAlertFirstButtonReturn:
 						updateEntryToManualValues()
-						if let tableColumn = tableColumn, let tableColumnIndex = self.tableView.tableColumns.index(of: tableColumn) {
+						if let tableColumnIndex = self.tableView.tableColumns.index(of: tableColumn) {
 							self.tableView.editColumn(tableColumnIndex, row: row, with: nil, select: true)
 						}
 						
@@ -205,7 +224,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 //			result.identifier = identifier
 //		}
 //		
-//		result.stringValue = csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier).replacingOccurrences(of: "\\n", with: "\n")
+//		result.stringValue = csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier)
 //		return result
 //	}
 	
@@ -232,15 +251,23 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		
 		guard let csvLocFile = csvLocFile else {return}
 		
-		for l in csvLocFile.languages {
+		for l in ["ENV", "KEY"] + csvLocFile.languages {
 			let tc = NSTableColumn(identifier: l)
 			tc.title = l
-			let tfc = NSTextFieldCell(textCell: "TODOLOC")
+			
+			tc.resizingMask = .userResizingMask
+			switch l {
+			case "ENV": tc.width = 66
+			case "KEY": tc.width = 142
+			default:    tc.width = 350
+			}
+			
+			let tfc = HighlightColorTextFieldCell(textCell: "TODOLOC")
+			tfc.hightlightColor = NSColor.white
 			tfc.isEditable = true
 			tfc.wraps = true
 			tc.dataCell = tfc
-			tc.width = 350
-			tc.resizingMask = .userResizingMask
+			
 			tableView.addTableColumn(tc)
 		}
 		
@@ -259,6 +286,28 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 			return
 		}
 		handlerSetEntryViewSelection?((key, value))
+	}
+	
+}
+
+class HighlightColorTextFieldCell : NSTextFieldCell {
+	
+	var hightlightColor: NSColor? {
+		didSet {
+			if isHighlighted {textColor = hightlightColor}
+		}
+	}
+	
+	var nonHighlightedTextColor: NSColor? {
+		didSet {
+			if !isHighlighted {textColor = nonHighlightedTextColor}
+		}
+	}
+	
+	override var isHighlighted: Bool {
+		didSet {
+			textColor = (isHighlighted ? hightlightColor : nonHighlightedTextColor)
+		}
 	}
 	
 }
