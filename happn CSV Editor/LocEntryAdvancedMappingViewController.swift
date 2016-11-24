@@ -89,7 +89,7 @@ class LocEntryAdvancedMappingViewController: NSViewController {
 			
 			/* Creating the actual mapping entry */
 			guard
-				let mapping = happnCSVLocFile.happnCSVLocKeyMapping(stringRepresentation: textViewMapping.string?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) ?? ""),
+				let mapping = happnCSVLocKeyMapping(stringRepresentation: textViewMapping.string?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) ?? ""),
 				mapping.isValid else
 			{
 				throw NSError(domain: errorDomain, code: 1, userInfo: nil)

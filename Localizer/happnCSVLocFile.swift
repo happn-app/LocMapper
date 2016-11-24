@@ -109,83 +109,6 @@ class happnCSVLocFile: TextOutputStreamable {
 	}
 	
 	/* *******************
-	   MARK: - Key Mapping
-	   ******************* */
-	
-	class happnCSVLocKeyMapping {
-		
-		let originalStringRepresentation: String
-		var components: [happnCSVLocKeyMappingComponent]?
-		
-		/** Compute whether the given transform is valid (do not check for
-		existence of keys for mapping components though). */
-		var isValid: Bool {
-			guard let components = components else {return false}
-			for c in components {guard c.isValid else {return false}}
-			return true
-		}
-		
-		/** Inits a happn CSV Loc Key Mapping from a string representation (JSON).
-		
-		If the string is empty, returns nil.
-		
-		If the string representation is invalid (invalid JSON, etc.), a fully
-		inited object is returned with nil components. */
-		convenience init?(stringRepresentation: String) {
-			guard !stringRepresentation.isEmpty else {return nil}
-			
-			guard
-				let data = stringRepresentation.data(using: String.Encoding.utf8),
-				let serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: [])
-				else
-			{
-				print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
-				self.init(components: nil, stringRepresentation: stringRepresentation)
-				return
-			}
-			let serializedComponents: [[String: AnyObject]]
-			if      let array = serializedComponent_s as? [[String: AnyObject]] {serializedComponents = array}
-			else if let simple = serializedComponent_s as? [String: AnyObject]  {serializedComponents = [simple]}
-			else {
-				print("*** Warning: Invalid mapping; cannot convert string to array of dictionary: \"\(stringRepresentation)\"")
-				self.init(components: nil, stringRepresentation: stringRepresentation)
-				return
-			}
-			
-			self.init(components: serializedComponents.map {happnCSVLocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
-		}
-		
-		convenience init(components: [happnCSVLocKeyMappingComponent]) {
-			self.init(components: components, stringRepresentation: happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components))
-		}
-		
-		init(components c: [happnCSVLocKeyMappingComponent]?, stringRepresentation: String) {
-			components = c
-			originalStringRepresentation = stringRepresentation
-		}
-		
-		func stringRepresentation() -> String {
-			if let components = components {
-				return happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components)
-			} else {
-				return originalStringRepresentation
-			}
-		}
-		
-		private static func stringRepresentationFromComponentsList(_ components: [happnCSVLocKeyMappingComponent]) -> String {
-			let allSerialized = components.map {$0.serialize()}
-			return try! String(
-				data: JSONSerialization.data(
-					withJSONObject: (allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
-					options: [.prettyPrinted]
-				),
-				encoding: String.Encoding.utf8
-			)!
-		}
-		
-	}
-	
-	/* *******************
 	   MARK: - Filter Enum
 	   ******************* */
 	
@@ -422,25 +345,24 @@ class happnCSVLocFile: TextOutputStreamable {
 		return (v != "---" ? v : nil)
 	}
 	
+	enum ValueResolvingError : Error {
+		case keyNotFound
+		case noValue
+	}
+	
 	func editorDisplayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
 		do {
 			return try resolvedValueForKey(key, withLanguage: language)
-		} catch let error as ValueResolvingError {
+		} catch _ as ValueResolvingError {
+			return "!¡!TODOLOC!¡!"
+		} catch let error as MappingResolvingError {
 			switch error {
-			case .keyNotFound, .noValue: return "!¡!TODOLOC!¡!"
-			case .invalidMapping:        return "!¡!TODOLOC_INVALIDMAPPING!¡!"
-			case .mappedKeyNotFound:     return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
+			case .invalidMapping, .mappedToMappedKey: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
+			case .keyNotFound:                        return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
 			}
 		} catch {
 			return "!¡!TODOLOC_INTERNALLOCALIZERERROR!¡!"
 		}
-	}
-	
-	enum ValueResolvingError : Error {
-		case keyNotFound
-		case noValue
-		case invalidMapping
-		case mappedKeyNotFound
 	}
 	
 	func resolvedValueForKey(_ key: LineKey, withLanguage language: String) throws -> String {
@@ -450,8 +372,8 @@ class happnCSVLocFile: TextOutputStreamable {
 			guard let r = entries[language] else {throw ValueResolvingError.noValue}
 			return r
 			
-		case .mapping(_):
-			throw ValueResolvingError.invalidMapping /* TODO: Resolve the mapping... */
+		case .mapping(let mapping):
+			return try mapping.apply(forLanguage: language, entries: entries)
 		}
 	}
 	
@@ -955,7 +877,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			print(locFile, terminator: "", to: &xmlText)
 			var err: NSError?
 			do {
-				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: String.Encoding.utf8)
+				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: .utf8)
 			} catch let error as NSError {
 				err = error
 				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")

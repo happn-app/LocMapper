@@ -140,7 +140,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			}
 			
 			/* Creating the actual mapping entry */
-			representedMapping = .mapping(happnCSVLocFile.happnCSVLocKeyMapping(components: [CSVLocKeyMappingComponentValueTransforms(sourceKey: lineKey, subTransformsComponents: transforms)]))
+			representedMapping = .mapping(happnCSVLocKeyMapping(components: [CSVLocKeyMappingComponentValueTransforms(sourceKey: lineKey, subTransformsComponents: transforms)]))
 			handlerNotifyLineValueModification?()
 		} catch {
 			guard let window = view.window else {NSBeep(); return}

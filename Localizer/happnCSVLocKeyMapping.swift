@@ -1,5 +1,5 @@
 /*
- * happnCSVLocKeyMappingComponents.swift
+ * happnCSVLocKeyMapping.swift
  * Localizer
  *
  * Created by François Lamboley on 12/3/15.
@@ -7,6 +7,100 @@
  */
 
 import Foundation
+
+
+
+enum MappingResolvingError : Error {
+	case invalidMapping
+	case keyNotFound
+	case mappedToMappedKey /* When mapping points to a mapped key. This is invalid to avoid infinite recursions... */
+}
+
+
+class happnCSVLocKeyMapping {
+	
+	let originalStringRepresentation: String
+	var components: [happnCSVLocKeyMappingComponent]?
+	
+	/** Compute whether the given transform is valid (do not check for
+	existence of keys for mapping components though). */
+	var isValid: Bool {
+		guard let components = components else {return false}
+		for c in components {guard c.isValid else {return false}}
+		return true
+	}
+	
+	/** Inits a happn CSV Loc Key Mapping from a string representation (JSON).
+	
+	If the string is empty, returns nil.
+	
+	If the string representation is invalid (invalid JSON, etc.), a fully
+	inited object is returned with nil components. */
+	convenience init?(stringRepresentation: String) {
+		guard !stringRepresentation.isEmpty else {return nil}
+		
+		guard
+			let data = stringRepresentation.data(using: .utf8),
+			let serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: []) else
+		{
+			print("*** Warning: Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"")
+			self.init(components: nil, stringRepresentation: stringRepresentation)
+			return
+		}
+		let serializedComponents: [[String: AnyObject]]
+		if      let array = serializedComponent_s as? [[String: AnyObject]] {serializedComponents = array}
+		else if let simple = serializedComponent_s as? [String: AnyObject]  {serializedComponents = [simple]}
+		else {
+			print("*** Warning: Invalid mapping; cannot convert string to array of dictionary: \"\(stringRepresentation)\"")
+			self.init(components: nil, stringRepresentation: stringRepresentation)
+			return
+		}
+		
+		self.init(components: serializedComponents.map {happnCSVLocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
+	}
+	
+	convenience init(components: [happnCSVLocKeyMappingComponent]) {
+		self.init(components: components, stringRepresentation: happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components))
+	}
+	
+	init(components c: [happnCSVLocKeyMappingComponent]?, stringRepresentation: String) {
+		components = c
+		originalStringRepresentation = stringRepresentation
+	}
+	
+	func stringRepresentation() -> String {
+		if let components = components {
+			return happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components)
+		} else {
+			return originalStringRepresentation
+		}
+	}
+	
+	func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
+		guard isValid, let components = components else {
+			throw MappingResolvingError.invalidMapping
+		}
+		
+		var res = ""
+		for component in components {
+			assert(component.isValid) /* Checked above with isValid */
+			res += try component.apply(forLanguage: language, entries: entries)
+		}
+		return res
+	}
+	
+	private static func stringRepresentationFromComponentsList(_ components: [happnCSVLocKeyMappingComponent]) -> String {
+		let allSerialized = components.map {$0.serialize()}
+		return try! String(
+			data: JSONSerialization.data(
+				withJSONObject: (allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
+				options: [.prettyPrinted]
+			),
+			encoding: .utf8
+		)!
+	}
+	
+}
 
 
 
@@ -64,7 +158,7 @@ class happnCSVLocKeyMappingComponent {
 		preconditionFailure("This method is abstract")
 	}
 	
-	func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
 		preconditionFailure("This method is abstract")
 	}
 	
@@ -89,8 +183,8 @@ class CSVLocKeyMappingComponentInvalid : happnCSVLocKeyMappingComponent {
 		return invalidSerialization
 	}
 	
-	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
-		return nil
+	override func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
+		throw MappingResolvingError.invalidMapping
 	}
 	
 }
@@ -119,7 +213,7 @@ class CSVLocKeyMappingComponentToConstant : happnCSVLocKeyMappingComponent {
 		return ["constant": constant]
 	}
 	
-	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
+	override func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
 		return constant
 	}
 	
@@ -185,12 +279,12 @@ class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent 
 		]
 	}
 	
-	override func applyWithCurrentValue(_ language: String, entries: [happnCSVLocFile.LineKey: [String /* Language */: String /* Value */]]) -> String? {
-		var result = entries[sourceKey]?[language]
-		for subTransform in subTransformComponents {
-			result = subTransform.applyToValue(result, withLanguage: language)
+	override func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
+		switch entries[sourceKey] {
+		case nil:                   throw MappingResolvingError.keyNotFound
+		case .mapping?:             throw MappingResolvingError.mappedToMappedKey
+		case .entries(let values)?: return try subTransformComponents.reduce(values[language] ?? "") { try $1.apply(toValue: $0, withLanguage: language) }
 		}
-		return result
 	}
 	
 }
@@ -254,7 +348,7 @@ class LocValueTransformer {
 		preconditionFailure("This method is abstract")
 	}
 	
-	func applyToValue(_ value: String?, withLanguage: String) -> String? {
+	func apply(toValue value: String, withLanguage: String) throws -> String {
 		preconditionFailure("This method is abstract")
 	}
 	
@@ -279,9 +373,8 @@ class LocValueTransformerInvalid : LocValueTransformer {
 		return invalidSerialization
 	}
 	
-	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
-		/* The transform is invalid; we don't know what to do, let's do nothing. */
-		return value
+	override func apply(toValue value: String, withLanguage: String) throws -> String {
+		throw NSError()
 	}
 	
 }
@@ -310,11 +403,8 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 		return ["replacements": replacements]
 	}
 	
-	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
-		guard var ret = value else {
-			return nil
-		}
-		
+	override func apply(toValue value: String, withLanguage: String) throws -> String {
+		var ret = value
 		for (r, v) in replacements {
 			ret = ret.replacingOccurrences(of: r, with: v)
 		}
@@ -365,12 +455,9 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		return ret
 	}
 	
-	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
-		guard let ret = value else {
-			return nil
-		}
-		
+	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		/* TODO */
+		var ret = value
 		return ret
 	}
 	
@@ -449,12 +536,9 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		return ret
 	}
 	
-	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
-		guard let ret = value else {
-			return nil
-		}
-		
+	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		/* TODO */
+		var ret = value
 		return ret
 	}
 	
@@ -502,12 +586,9 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		return ret
 	}
 	
-	override func applyToValue(_ value: String?, withLanguage: String) -> String? {
-		guard let ret = value else {
-			return nil
-		}
-		
+	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		/* TODO */
+		var ret = value
 		return ret
 	}
 	
