@@ -294,19 +294,26 @@ class HighlightColorTextFieldCell : NSTextFieldCell {
 	
 	var hightlightColor: NSColor? {
 		didSet {
-			if isHighlighted {textColor = hightlightColor}
+			updateTextColor()
 		}
 	}
 	
 	var nonHighlightedTextColor: NSColor? {
 		didSet {
-			if !isHighlighted {textColor = nonHighlightedTextColor}
+			updateTextColor()
 		}
 	}
 	
-	override var isHighlighted: Bool {
+	override var backgroundStyle: NSBackgroundStyle {
 		didSet {
-			textColor = (isHighlighted ? hightlightColor : nonHighlightedTextColor)
+			updateTextColor()
+		}
+	}
+	
+	private func updateTextColor() {
+		switch backgroundStyle {
+		case .dark, .raised:   textColor = hightlightColor
+		case .light, .lowered: textColor = nonHighlightedTextColor
 		}
 	}
 	
