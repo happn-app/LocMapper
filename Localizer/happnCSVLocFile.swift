@@ -322,10 +322,31 @@ class happnCSVLocFile: TextOutputStreamable {
 			
 			/* Search filter */
 			if !stringFilters.isEmpty {
-				for l in self.languages {
-					let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
-					for stringFilter in stringFilters {
-						if str.range(of: stringFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
+				for stringFilter in stringFilters {
+					let stringComponents = stringFilter.components(separatedBy: ",")
+					let keyFilter: String?
+					let contentFilter: String
+					if stringComponents.count > 1 {
+						keyFilter = stringComponents.last!
+						contentFilter = stringComponents[0..<stringComponents.count-1].joined(separator: ",")
+					} else {
+						keyFilter = nil
+						contentFilter = stringFilter
+					}
+					var keyOk = true
+					if let keyFilter = keyFilter {
+						keyOk = false
+						for k in [lineKey.locKey, lineKey.filename] {
+							if k.range(of: keyFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
+								keyOk = true
+								break
+							}
+						}
+					}
+					guard keyOk else {return false}
+					for l in self.languages {
+						let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
+						if str.range(of: contentFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
 							return true
 						}
 					}
