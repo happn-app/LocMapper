@@ -31,7 +31,7 @@ private extension String {
 	var valueFromXMLText: String {
 		var v = self
 		v = v.replacingOccurrences(of: "\\'", with: "'", options: NSString.CompareOptions.literal)
-		v = v.replacingOccurrences(of: "\\\"'", with: "\"", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "\\\"", with: "\"", options: NSString.CompareOptions.literal)
 		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: NSString.CompareOptions.literal)
 		return v
 	}
