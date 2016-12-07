@@ -21,7 +21,6 @@ private extension String {
 	var xmlTextValue: String {
 		var v = self
 //		v = v.stringByReplacingOccurrencesOfString("\\", withString: "\\\\", options: NSStringCompareOptions.LiteralSearch)
-		v = v.replacingOccurrences(of: "\"", with: "\\\"", options: NSString.CompareOptions.literal)
 		v = v.replacingOccurrences(of: "'", with: "\\'", options: NSString.CompareOptions.literal)
 		v = v.replacingOccurrences(of: "&", with: "&amp;", options: NSString.CompareOptions.literal)
 		v = v.replacingOccurrences(of: "<", with: "&lt;", options: NSString.CompareOptions.literal)
@@ -31,7 +30,6 @@ private extension String {
 	var valueFromXMLText: String {
 		var v = self
 		v = v.replacingOccurrences(of: "\\'", with: "'", options: NSString.CompareOptions.literal)
-		v = v.replacingOccurrences(of: "\\\"", with: "\"", options: NSString.CompareOptions.literal)
 		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: NSString.CompareOptions.literal)
 		return v
 	}
