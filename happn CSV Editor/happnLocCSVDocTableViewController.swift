@@ -51,6 +51,40 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		reloadTableData()
 	}
 	
+	/* ***************
+	   MARK: - Actions
+	   *************** */
+	
+	func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
+		switch item.action {
+		case #selector(happnLocCSVDocTableViewController.copy(_:))?:
+			return tableView.selectedRow >= 0
+			
+		default:
+			return false
+//			super.validateUserInterfaceItem(item)
+		}
+	}
+	
+	@IBAction func copy(_ sender: AnyObject) {
+		guard tableView.selectedRow >= 0 else {NSBeep(); return}
+		guard let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow] else {NSBeep(); return}
+		
+		var val = ""
+		var first = true
+		for c in tableView.tableColumns {
+			guard !Set(arrayLiteral: "ENV", "KEY").contains(c.identifier) else {continue}
+			
+			val += (first ? "" : "\t") + csvLocFile.editorDisplayedValueForKey(key, withLanguage: c.identifier)
+			first = false
+		}
+		
+		let pasteboard = NSPasteboard.general()
+		pasteboard.clearContents()
+		pasteboard.setString(val, forType: NSPasteboardTypeString)
+		pasteboard.setString(val, forType: NSPasteboardTypeTabularText)
+	}
+	
 	/* *****************************************
 	   MARK: - Table View Data Source & Delegate
 	   ***************************************** */
