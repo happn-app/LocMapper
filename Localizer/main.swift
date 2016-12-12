@@ -115,8 +115,8 @@ let androidLanguageFolderNamesForTests = [
 	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt-rBR": "Português brasileiro — Portuguese (Brasil)",
 	"values-pt": "Português europeu — Portuguese (Portugal)", "values-tr": "Türkçe — Turkish",
 	"values-zh": "中文(香港) — Chinese (Traditional)", "values-th": "ภาษาไทย — Thai", "values-ja": "日本語 — Japanese",
-	"values-pl": "Polszczyzna — Polish" /*, "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",
-	"values-he": "עברית — Hebrew", "values-ko": "한국어 — Korean"*/
+	"values-pl": "Polszczyzna — Polish" , "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",
+	/*"values-he": "עברית — Hebrew", "values-ko": "한국어 — Korean"*/
 ]
 
 var csvSeparator = ","
