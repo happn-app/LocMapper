@@ -326,9 +326,9 @@ class happnCSVLocFile: TextOutputStreamable {
 					let stringComponents = stringFilter.components(separatedBy: ",")
 					let keyFilter: String?
 					let contentFilter: String
-					if stringComponents.count > 1 {
-						keyFilter = stringComponents.last!
-						contentFilter = stringComponents[0..<stringComponents.count-1].joined(separator: ",")
+					if let filter = stringComponents.last, stringComponents.count > 1 {
+						keyFilter = filter.isEmpty ? nil : filter
+						contentFilter = stringComponents[0..<stringComponents.count-2].joined(separator: ",")
 					} else {
 						keyFilter = nil
 						contentFilter = stringFilter
@@ -344,6 +344,7 @@ class happnCSVLocFile: TextOutputStreamable {
 						}
 					}
 					guard keyOk else {return false}
+					guard !contentFilter.isEmpty else {return true}
 					for l in self.languages {
 						let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
 						if str.range(of: contentFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
