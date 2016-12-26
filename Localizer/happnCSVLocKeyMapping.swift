@@ -423,23 +423,24 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	}
 	
 	let openDelim: String
-	let replacement: String
 	let closeDelim: String
 	let escapeToken: String?
+	
+	let replacement: String
 	
 	init(serialization: [String: Any]) throws {
 		guard
 			let od = serialization["open_delimiter"] as? String, !od.isEmpty,
-			let r  = serialization["replacement"] as? String,
-			let cd = serialization["close_delimiter"] as? String, !cd.isEmpty
+			let cd = serialization["close_delimiter"] as? String, !cd.isEmpty,
+			let r  = serialization["replacement"] as? String
 			else
 		{
-			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid or missing open_delimiter, replacement or close_delimiter."])
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid or missing open_delimiter, close_delimiter or replacement."])
 		}
 		
 		openDelim = od
-		replacement = r
 		closeDelim = cd
+		replacement = r
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
 		else                                                            {escapeToken = nil}
 		super.init()
@@ -448,17 +449,18 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	override func serializePrivateData() -> [String: Any] {
 		var ret = [
 			"open_delimiter": openDelim,
-			"replacement": replacement,
-			"close_delimiter": closeDelim
+			"close_delimiter": closeDelim,
+			"replacement": replacement
 		]
 		if let e = escapeToken {ret["escape_token"] = e}
 		return ret
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		/* TODO */
-		var ret = value
-		return ret
+		let ret = NSMutableString(string: value)
+		let regexp = try! NSRegularExpression(pattern: "\(openDelim.replacingOccurrences(of: "|", with: "\\|").replacingOccurrences(of: "^", with: "\\^")).*?\(closeDelim.replacingOccurrences(of: "|", with: "\\|").replacingOccurrences(of: "^", with: "\\^"))", options: [])
+		regexp.replaceMatches(in: ret, options: [], range: NSRange(location: 0, length: ret.length), withTemplate: replacement)
+		return ret as String
 	}
 	
 }
