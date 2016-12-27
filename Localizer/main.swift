@@ -14,6 +14,9 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	print("Usage: \(program_name) command [args ...]", to: &stream)
 	print("", to: &stream)
 	print("Commands are:", to: &stream)
+	print("   version", to: &stream)
+	print("      Shows the current version of the tool", to: &stream)
+	print("", to: &stream)
 	print("   export_from_xcode [--csv_separator=separator] [--exclude=excluded_path ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", to: &stream)
 	print("      Exports and merges all the .strings files in the project to output_file.csv, excluding all paths containing any excluded_path", to: &stream)
 	print("", to: &stream)
@@ -121,6 +124,16 @@ let androidLanguageFolderNamesForTests = [
 
 var csvSeparator = ","
 switch argAtIndexOrExit(1, error_message: "Command is required") {
+	/* Version */
+	case "version":
+		if let hdl = dlopen(nil, 0), let versionNumber = dlsym(hdl, "LocalizerVersionNumber")?.assumingMemoryBound(to: Double.self).pointee {
+			print("Localizer version \(Int(versionNumber))")
+			exit(0)
+		} else {
+			print("Cannot get version number", to: &mx_stderr)
+			exit(2)
+		}
+	
 	/* Export from Xcode */
 	case "export_from_xcode":
 		var i = 2
