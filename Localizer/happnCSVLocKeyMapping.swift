@@ -540,7 +540,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		let ret = NSMutableString(string: value)
-		let regexp = try! NSRegularExpression(pattern: "\(openDelim)(.*?)\(middleDelim)(.*?)\(closeDelim)", options: [])
+		let regexp = try! NSRegularExpression(pattern: "\(NSRegularExpression.escapedPattern(for: openDelim))(.*?)\(NSRegularExpression.escapedPattern(for: middleDelim))(.*?)\(NSRegularExpression.escapedPattern(for: closeDelim))", options: [])
 		regexp.replaceMatches(in: ret, options: [], range: NSRange(location: 0, length: ret.length), withTemplate: (gender == .male ? "$1" : "$2"))
 		return ret as String
 	}
