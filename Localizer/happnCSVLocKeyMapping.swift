@@ -458,7 +458,7 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		let ret = NSMutableString(string: value)
-		let regexp = try! NSRegularExpression(pattern: "\(openDelim.replacingOccurrences(of: "|", with: "\\|").replacingOccurrences(of: "^", with: "\\^")).*?\(closeDelim.replacingOccurrences(of: "|", with: "\\|").replacingOccurrences(of: "^", with: "\\^"))", options: [])
+		let regexp = try! NSRegularExpression(pattern: "\(NSRegularExpression.escapedPattern(for: openDelim)).*?\(NSRegularExpression.escapedPattern(for: closeDelim))", options: [])
 		regexp.replaceMatches(in: ret, options: [], range: NSRange(location: 0, length: ret.length), withTemplate: replacement)
 		return ret as String
 	}
