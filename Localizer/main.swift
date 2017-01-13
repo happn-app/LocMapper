@@ -126,7 +126,9 @@ var csvSeparator = ","
 switch argAtIndexOrExit(1, error_message: "Command is required") {
 	/* Version */
 	case "version":
-		if let hdl = dlopen(nil, 0), let versionNumber = dlsym(hdl, "LocalizerVersionNumber")?.assumingMemoryBound(to: Double.self).pointee {
+		let hdl = dlopen(nil, 0)
+		defer {if let hdl = hdl {dlclose(hdl)}}
+		if let versionNumber = hdl.flatMap({ dlsym($0, "LocalizerVersionNumber") })?.assumingMemoryBound(to: Double.self).pointee {
 			print("Localizer version \(Int(versionNumber))")
 			exit(0)
 		} else {
