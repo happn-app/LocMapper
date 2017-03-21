@@ -434,7 +434,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 			}
 			
 			isCurrentCharsCDATA = true
-			if let str = NSString(data: CDATABlock, encoding: String.Encoding.utf8.rawValue) as? String {currentChars += str}
+			if let str = NSString(data: CDATABlock, encoding: String.Encoding.utf8.rawValue) as String? {currentChars += str}
 		}
 		
 		func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
@@ -453,7 +453,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 					parsed_loc_files.append(locFile)
 				} catch let error as NSError {
 					err = error
-					print("*** Warning: Got error while parsing strings file \(cur_file): \(err)", to: &mx_stderr)
+					print("*** Warning: Got error while parsing strings file \(cur_file): \(err as Any? ?? "<Unknown>")", to: &mx_stderr)
 				}
 			}
 		}

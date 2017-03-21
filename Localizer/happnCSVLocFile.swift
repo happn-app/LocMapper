@@ -620,7 +620,7 @@ class happnCSVLocFile: TextOutputStreamable {
 				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: String.Encoding.utf16)
 			} catch let error as NSError {
 				err = error
-				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
+				print("Error: Cannot write file to path \(fullOutputPath), got error \(err as Any? ?? "<Unknown>")")
 			}
 		}
 	}
@@ -902,7 +902,7 @@ class happnCSVLocFile: TextOutputStreamable {
 				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: .utf8)
 			} catch let error as NSError {
 				err = error
-				print("Error: Cannot write file to path \(fullOutputPath), got error \(err)")
+				print("Error: Cannot write file to path \(fullOutputPath), got error \(err as Any? ?? "<Unknown>")")
 			}
 		}
 	}
