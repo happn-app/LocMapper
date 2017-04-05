@@ -315,6 +315,7 @@ class LocValueTransformer {
 			
 			switch type {
 			case "simple_string_replacements":    c = try LocValueTransformerSimpleStringReplacements(serialization: serialization)
+			case "to_upper":                      c = try LocValueTransformerToUpper(serialization: serialization)
 			case "gender_variant_pick":           c = try LocValueTransformerGenderVariantPick(serialization: serialization)
 			case "plural_variant_pick":           c = try LocValueTransformerPluralVariantPick(serialization: serialization)
 			case "region_delimiters_replacement": c = try LocValueTransformerRegionDelimitersReplacement(serialization: serialization)
@@ -335,6 +336,7 @@ class LocValueTransformer {
 		var serializedData = self.serializePrivateData()
 		switch self {
 		case _ as LocValueTransformerSimpleStringReplacements:    serializedData["__type"] = "simple_string_replacements"
+		case _ as LocValueTransformerToUpper:                     serializedData["__type"] = "to_upper"
 		case _ as LocValueTransformerGenderVariantPick:           serializedData["__type"] = "gender_variant_pick"
 		case _ as LocValueTransformerPluralVariantPick:           serializedData["__type"] = "plural_variant_pick"
 		case _ as LocValueTransformerRegionDelimitersReplacement: serializedData["__type"] = "region_delimiters_replacement"
@@ -409,6 +411,29 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 			ret = ret.replacingOccurrences(of: r, with: v)
 		}
 		return ret
+	}
+	
+}
+
+
+
+/* ***** */
+class LocValueTransformerToUpper : LocValueTransformer {
+	
+	override var isValid: Bool {
+		return true
+	}
+	
+	init(serialization: [String: Any]) throws {
+		super.init()
+	}
+	
+	override func serializePrivateData() -> [String: Any] {
+		return [:]
+	}
+	
+	override func apply(toValue value: String, withLanguage: String) throws -> String {
+		return value.uppercased()
 	}
 	
 }
