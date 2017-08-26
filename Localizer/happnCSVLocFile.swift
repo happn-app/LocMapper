@@ -11,6 +11,7 @@ import Foundation
 
 
 private extension String {
+	
 	func csvCellValueWithSeparator(_ sep: String) -> String {
 		guard sep.characters.count == 1, sep != "\"", sep != "\n", sep != "\r" else {fatalError("Cannot use \"\(sep)\" as a CSV separator")}
 		if rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
@@ -22,6 +23,7 @@ private extension String {
 			return self
 		}
 	}
+	
 }
 
 /* *******

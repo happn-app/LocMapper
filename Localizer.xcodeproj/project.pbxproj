@@ -25,6 +25,9 @@
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
 		7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0869A21DCB7F8700EB9486 /* Utils.swift */; };
+		7B11A5731F51AE7B0064549D /* libXibLoc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B11A5691F51AE620064549D /* libXibLoc.a */; };
+		7B11A5741F51AE810064549D /* libXibLoc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B11A5691F51AE620064549D /* libXibLoc.a */; };
+		7B11A5791F51AEAE0064549D /* XibLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBF5FE11C15C2A90024318C /* XibLoc.swift */; };
 		7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
@@ -55,7 +58,6 @@
 		7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
 		7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
 		7BABB9591C11D99800DACD85 /* happnCSVLocKeyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */; };
-		7BBF5FE21C15C2A90024318C /* XibLocHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */; };
 		7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
 		7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
@@ -67,6 +69,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7B11A5751F51AE880064549D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B11A5681F51AE620064549D;
+			remoteInfo = XibLoc;
+		};
+		7B11A5771F51AE8C0064549D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B11A5681F51AE620064549D;
+			remoteInfo = XibLoc;
+		};
 		7B21A3931DE4BCE900F81E68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
@@ -99,6 +115,7 @@
 		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		7B11A5691F51AE620064549D /* libXibLoc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXibLoc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributedStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
@@ -125,7 +142,7 @@
 		7B87D4D91A3AECD500C151A8 /* CSVParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVParser.swift; sourceTree = "<group>"; };
 		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMapping.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
-		7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLocHelper.swift; sourceTree = "<group>"; };
+		7BBF5FE11C15C2A90024318C /* XibLoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLoc.swift; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationsLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
@@ -136,10 +153,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7B11A5661F51AE620064549D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7B6E259C19D4157A001934ED /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B11A5741F51AE810064549D /* libXibLoc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,12 +172,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B11A5731F51AE7B0064549D /* libXibLoc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B11A56A1F51AE620064549D /* XibLoc */ = {
+			isa = PBXGroup;
+			children = (
+				7BBF5FE11C15C2A90024318C /* XibLoc.swift */,
+			);
+			path = XibLoc;
+			sourceTree = "<group>";
+		};
+		7B11A5721F51AE7B0064549D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7B560D641C17022F001DD2B0 /* Bottom-Right Pane (Details) */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,7 +211,9 @@
 				7BCB27A91D2D4020005CFEB9 /* Readme.txt */,
 				7B6E25A119D4157A001934ED /* Localizer */,
 				7B837D801C0EF3DB0020E86B /* happn CSV Editor */,
+				7B11A56A1F51AE620064549D /* XibLoc */,
 				7B6E25A019D4157A001934ED /* Products */,
+				7B11A5721F51AE7B0064549D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -179,6 +222,7 @@
 			children = (
 				7B6E259F19D4157A001934ED /* Localizer */,
 				7B837D7F1C0EF3DB0020E86B /* Localizer.app */,
+				7B11A5691F51AE620064549D /* libXibLoc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -190,7 +234,6 @@
 				7BABB9561C11C92C00DACD85 /* IOUtils.swift */,
 				7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
-				7BBF5FE11C15C2A90024318C /* XibLocHelper.swift */,
 				7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */,
 				7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */,
 				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
@@ -270,7 +313,34 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		7B11A5671F51AE620064549D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		7B11A5681F51AE620064549D /* XibLoc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B11A5711F51AE620064549D /* Build configuration list for PBXNativeTarget "XibLoc" */;
+			buildPhases = (
+				7B11A5651F51AE620064549D /* Sources */,
+				7B11A5661F51AE620064549D /* Frameworks */,
+				7B11A5671F51AE620064549D /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XibLoc;
+			productName = XibLoc;
+			productReference = 7B11A5691F51AE620064549D /* libXibLoc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		7B6E259E19D4157A001934ED /* Localizer CLI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7B6E25A619D4157A001934ED /* Build configuration list for PBXNativeTarget "Localizer CLI" */;
@@ -282,6 +352,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7B11A5761F51AE880064549D /* PBXTargetDependency */,
 			);
 			name = "Localizer CLI";
 			productName = Localizer;
@@ -299,6 +370,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7B11A5781F51AE8C0064549D /* PBXTargetDependency */,
 			);
 			name = "Localizer App";
 			productName = "happn CSV Editor";
@@ -316,6 +388,9 @@
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = happn;
 				TargetAttributes = {
+					7B11A5681F51AE620064549D = {
+						CreatedOnToolsVersion = 9.0;
+					};
 					7B21A38F1DE4BCDF00F81E68 = {
 						CreatedOnToolsVersion = 8.1;
 						ProvisioningStyle = Automatic;
@@ -345,6 +420,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				7B11A5681F51AE620064549D /* XibLoc */,
 				7B21A38F1DE4BCDF00F81E68 /* Localizer */,
 				7B6E259E19D4157A001934ED /* Localizer CLI */,
 				7B837D7E1C0EF3DB0020E86B /* Localizer App */,
@@ -369,6 +445,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7B11A5651F51AE620064549D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B11A5791F51AEAE0064549D /* XibLoc.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7B6E259B19D4157A001934ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -383,7 +467,6 @@
 				7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */,
 				7B9BD4DF1C108344007A096D /* happnCSVLocKeyMapping.swift in Sources */,
 				7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */,
-				7BBF5FE21C15C2A90024318C /* XibLocHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,6 +505,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7B11A5761F51AE880064549D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B11A5681F51AE620064549D /* XibLoc */;
+			targetProxy = 7B11A5751F51AE880064549D /* PBXContainerItemProxy */;
+		};
+		7B11A5781F51AE8C0064549D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B11A5681F51AE620064549D /* XibLoc */;
+			targetProxy = 7B11A5771F51AE8C0064549D /* PBXContainerItemProxy */;
+		};
 		7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7B6E259E19D4157A001934ED /* Localizer CLI */;
@@ -446,6 +539,48 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		7B11A56F1F51AE620064549D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		7B11A5701F51AE620064549D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		7B21A3911DE4BCDF00F81E68 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -544,6 +679,7 @@
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 14;
 				PRODUCT_NAME = Localizer;
+				SDKROOT = macosx;
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -554,6 +690,7 @@
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 14;
 				PRODUCT_NAME = Localizer;
+				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -606,6 +743,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7B11A5711F51AE620064549D /* Build configuration list for PBXNativeTarget "XibLoc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B11A56F1F51AE620064549D /* Debug */,
+				7B11A5701F51AE620064549D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "Localizer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
