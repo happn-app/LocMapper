@@ -264,13 +264,8 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
-//			println("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
+//			print("didStartElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName) attributes \(attributeDict)")
 			let attrs = attributeDict
-			
-			if !currentChars.isEmpty {
-				addSpaceComponent(WhiteSpace(currentChars))
-				currentChars = ""
-			}
 			
 			switch (status, elementName) {
 				case (.outStart, "resources"):
@@ -299,14 +294,21 @@ class AndroidXMLLocFile: TextOutputStreamable {
 					else                                {status = .error}
 				
 				default:
-					currentChars += "<\(elementName)>"
+					/* We used to fail here. Instead we simply ignore the tag and add
+					 * it to the current chars */
+					let attributesStr = attrs.reduce("") { $0 + " " + $1.key + "=\"" + $1.value.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\"" }
+					currentChars += "<" + elementName + attributesStr + ">"
 					return
-					//status = .Error
 			}
 			
-			if status == .error {
+			guard status != .error else {
 				parser.abortParsing()
 				return
+			}
+			
+			if !currentChars.isEmpty {
+				addSpaceComponent(WhiteSpace(currentChars))
+				currentChars = ""
 			}
 			
 			if elementName != "string" && elementName != "plurals" && elementName != "item" {
@@ -315,7 +317,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-//			println("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
+//			print("didEndElement \(elementName) namespaceURI \(namespaceURI) qualifiedName \(qName)")
 			switch (status, elementName) {
 				case (.inResources, "resources"):
 					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
@@ -353,6 +355,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 						components.append(ArrayItem(value: currentChars.valueFromXMLText, index: currentArrayIdx, parentName: arrayName))
 						status = previousStatus
 						currentArrayIdx += 1
+						
 					default:
 						status = .error
 					}
@@ -372,14 +375,15 @@ class AndroidXMLLocFile: TextOutputStreamable {
 						)
 						currentPluralSpaces.removeAll()
 						status = previousStatus
+						
 					default:
 						status = .error
 					}
 				
 				default:
+					/* Ignoring unknown tags when building current chars... */
 					currentChars += "</\(elementName)>"
 					return
-					//status = .Error
 			}
 			
 			currentChars = ""
@@ -392,7 +396,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundCharacters string: String) {
-//			println("foundCharacters \(string)")
+//			print("foundCharacters \(string)")
 			if isCurrentCharsCDATA && !currentChars.isEmpty {
 				print("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.", to: &mx_stderr)
 				/* We used to fail parsing here. Now if a CDATA block is mixed with
@@ -408,7 +412,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundComment comment: String) {
-//			println("foundComment \(comment)")
+//			print("foundComment \(comment)")
 			
 			switch status {
 				case .inResources: fallthrough
@@ -434,7 +438,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 			}
 			
 			isCurrentCharsCDATA = true
-			if let str = NSString(data: CDATABlock, encoding: String.Encoding.utf8.rawValue) as String? {currentChars += str}
+			if let str = String(data: CDATABlock, encoding: .utf8) {currentChars += str}
 		}
 		
 		func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
