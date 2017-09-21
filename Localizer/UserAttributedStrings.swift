@@ -34,11 +34,11 @@ extension String {
 					switch char {
 					case "\\": return .waitEndKeyBackslash
 					case ":": return .waitEndValue
-					default: currentKey.characters.append(char); return .waitEndKey
+					default: currentKey.append(char); return .waitEndKey
 					}
 					
 				case .waitEndKeyBackslash:
-					currentKey.characters.append(char)
+					currentKey.append(char)
 					return .waitEndKey
 					
 				case .waitEndValue:
@@ -46,11 +46,11 @@ extension String {
 					case "\\": return .waitEndValueBackslash
 					case ",": currentUserInfo[currentKey] = currentValue; currentKey = ""; currentValue = ""; return .waitEndKey
 					case ";": currentUserInfo[currentKey] = currentValue; currentKey = ""; currentValue = ""; return .remainingString
-					default: currentValue.characters.append(char); return .waitEndValue
+					default: currentValue.append(char); return .waitEndValue
 					}
 					
 				case .waitEndValueBackslash:
-					currentValue.characters.append(char)
+					currentValue.append(char)
 					return .waitEndValue
 					
 				case .remainingString:
@@ -83,7 +83,7 @@ extension String {
 	the string succeed, userInfo will never be nil. It might be empty though. */
 	func splitUserInfo() -> (string: String, userInfo: [String: String]?) {
 		let (offset, userInfo) = infoForSplitUserInfo()
-		return (string: substring(from: characters.index(characters.startIndex, offsetBy: offset)), userInfo: userInfo)
+		return (string: String(dropFirst(offset)), userInfo: userInfo)
 	}
 	
 	/** Returns a new string containing a serialization of the user info and the

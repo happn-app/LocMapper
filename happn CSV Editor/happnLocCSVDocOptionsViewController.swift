@@ -10,6 +10,15 @@ import Cocoa
 
 
 
+private extension NSUserInterfaceItemIdentifier {
+	
+	static let stringFilter = NSUserInterfaceItemIdentifier(rawValue: "StringFilter")
+	static let sep          = NSUserInterfaceItemIdentifier(rawValue: "Sep")
+	static let checkFilter  = NSUserInterfaceItemIdentifier(rawValue: "CheckFilter")
+	
+}
+
+
 class TextFieldSelectableTableView : NSTableView {
 	override func validateProposedFirstResponder(_ responder: NSResponder, for event: NSEvent?) -> Bool {
 		return responder is NSTextField || super.validateProposedFirstResponder(responder, for: event)
@@ -68,12 +77,12 @@ class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSour
 		switch sectionIndex(forRow: sender.tag) {
 		case .envFilter:
 			let env = envs[rowIndexInSection(forRow: sender.tag)]
-			envsStatus[env] = (sender.state == NSOnState)
+			envsStatus[env] = (sender.state == .on)
 			updateDocFilters()
 			
 		case .stateFilter:
 			let stateFilter = stateFilters[rowIndexInSection(forRow: sender.tag)]
-			stateFiltersStatus[stateFilter] = (sender.state == NSOnState)
+			stateFiltersStatus[stateFilter] = (sender.state == .on)
 			updateDocFilters()
 			
 		default: fatalError("Invalid section for a check change")
@@ -92,32 +101,32 @@ class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSour
 		let rowInSection = rowIndexInSection(forRow: row)
 		switch sectionIndex(forRow: row) {
 		case .stringFilter:
-			let ret = tableView.make(withIdentifier: "StringFilter", owner: self)! as! NSTableCellView
+			let ret = tableView.makeView(withIdentifier: .stringFilter, owner: self)! as! NSTableCellView
 			ret.textField?.stringValue = stringFilter
 			return ret
 			
 		case .separator1:
-			let ret = tableView.make(withIdentifier: "Sep", owner: self)! as! NSTableCellView
+			let ret = tableView.makeView(withIdentifier: .sep, owner: self)! as! NSTableCellView
 			ret.textField?.stringValue = "Environment Filters"
 			return ret
 			
 		case .envFilter:
-			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
+			let v = tableView.makeView(withIdentifier: .checkFilter, owner: self)!
 			let env = envs[rowInSection]
-			(v.subviews.first! as! NSButton).state = (envsStatus[env] ?? false ? NSOnState : NSOffState)
+			(v.subviews.first! as! NSButton).state = (envsStatus[env] ?? false ? .on : .off)
 			(v.subviews.first! as! NSButton).title = env
 			(v.subviews.first! as! NSButton).tag = row
 			return v
 			
 		case .separator2:
-			let ret = tableView.make(withIdentifier: "Sep", owner: self)! as! NSTableCellView
+			let ret = tableView.makeView(withIdentifier: .sep, owner: self)! as! NSTableCellView
 			ret.textField?.stringValue = "State Filters"
 			return ret
 			
 		case .stateFilter:
-			let v = tableView.make(withIdentifier: "CheckFilter", owner: self)!
+			let v = tableView.makeView(withIdentifier: .checkFilter, owner: self)!
 			let stateFilter = stateFilters[rowInSection]
-			(v.subviews.first! as! NSButton).state = (stateFiltersStatus[stateFilter] ?? false ? NSOnState : NSOffState)
+			(v.subviews.first! as! NSButton).state = (stateFiltersStatus[stateFilter] ?? false ? .on : .off)
 			(v.subviews.first! as! NSButton).title = NSLocalizedString(stateFilter + " state filter", comment: "")
 			(v.subviews.first! as! NSButton).tag = row
 			return v

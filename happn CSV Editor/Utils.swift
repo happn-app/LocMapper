@@ -29,7 +29,7 @@ class Utils {
 	
 	static func findRangeInString(_ string: String, withRegularExpression exprStr: String) -> Range<String.Index> {
 		let expr = try! NSRegularExpression(pattern: exprStr, options: [])
-		let range = expr.rangeOfFirstMatch(in: string, options: [], range: NSRange(location: 0, length: string.characters.count))
+		let range = expr.rangeOfFirstMatch(in: string, options: [], range: NSRange(location: 0, length: string.utf16.count))
 		return Range(uncheckedBounds: (
 			lower: string.index(string.startIndex, offsetBy: range.location),
 			upper: string.index(string.startIndex, offsetBy: range.location + range.length)

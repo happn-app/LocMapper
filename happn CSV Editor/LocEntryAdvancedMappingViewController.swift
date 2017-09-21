@@ -89,7 +89,7 @@ class LocEntryAdvancedMappingViewController: NSViewController {
 			
 			/* Creating the actual mapping entry */
 			guard
-				let mapping = happnCSVLocKeyMapping(stringRepresentation: textViewMapping.string?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) ?? ""),
+				let mapping = happnCSVLocKeyMapping(stringRepresentation: textViewMapping.string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)),
 				mapping.isValid else
 			{
 				throw NSError(domain: errorDomain, code: 1, userInfo: nil)
@@ -97,7 +97,7 @@ class LocEntryAdvancedMappingViewController: NSViewController {
 			representedMapping = .mapping(mapping)
 			handlerNotifyLineValueModification?()
 		} catch {
-			guard let window = view.window else {NSBeep(); return}
+			guard let window = view.window else {NSSound.beep(); return}
 			
 			/* If JSONSerialization sent useful error messages... */
 //			let alert = NSAlert(error: error)

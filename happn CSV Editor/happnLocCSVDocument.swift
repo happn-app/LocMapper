@@ -10,6 +10,25 @@ import Cocoa
 
 
 
+private extension NSStoryboard.Name {
+	
+	static let main = NSStoryboard.Name(rawValue: "Main")
+	
+}
+
+private extension NSStoryboard.SceneIdentifier {
+	
+	static let documentWindowController = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
+	
+}
+
+private extension NSNib.Name {
+	
+	static let accessoryViewForImportReferenceTranslations = NSNib.Name(rawValue: "AccessoryViewForImportReferenceTranslations")
+	static let accessoryViewForImportKeyStructure = NSNib.Name(rawValue: "AccessoryViewForImportKeyStructure")
+	
+}
+
 class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	
 	/** If nil, the file is loading. */
@@ -28,13 +47,13 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		super.windowControllerDidLoadNib(aController)
 	}
 	
-	override class func autosavesInPlace() -> Bool {
+	override class var autosavesInPlace: Bool {
 		return false
 	}
 	
 	override func makeWindowControllers() {
-		let storyboard = NSStoryboard(name: "Main", bundle: nil)
-		let windowController = storyboard.instantiateController(withIdentifier: "Document Window Controller") as! NSWindowController
+		let storyboard = NSStoryboard(name: .main, bundle: nil)
+		let windowController = storyboard.instantiateController(withIdentifier: .documentWindowController) as! NSWindowController
 		addWindowController(windowController)
 		
 		if let windowFrame = windowFrameToRestore {
@@ -97,14 +116,14 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	
 	@IBAction func importReferenceTranslations(sender: AnyObject) {
 		guard currentOpenPanel == nil, let csvLocFile = csvLocFile else {
-			NSBeep()
+			NSSound.beep()
 			return
 		}
 		
 		/* Getting accessory view. */
-		var objects: NSArray = []
-		Bundle.main.loadNibNamed("AccessoryViewForImportReferenceTranslations", owner: nil, topLevelObjects: &objects)
-		let accessoryView = (objects.filter {$0 is NSView} as! [NSView]).first!
+		var objects: NSArray?
+		Bundle.main.loadNibNamed(.accessoryViewForImportReferenceTranslations, owner: nil, topLevelObjects: &objects)
+		let accessoryView = (objects ?? []).flatMap{ $0 as? NSView }.first!
 		let tokenField = accessoryView.viewWithTag(1) as! NSTokenField
 		
 		tokenField.delegate = self
@@ -121,12 +140,12 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		
 		openPanel.beginSheetModal(for: windowForSheet!) { response in
 			self.currentOpenPanel = nil
-			guard response == NSFileHandlingPanelOKButton, let url = openPanel.url else {return}
+			guard response == .OK, let url = openPanel.url else {return}
 			
 			let loadingWindow = UINavigationUtilities.createLoadingWindow()
 			self.windowForSheet?.beginSheet(loadingWindow, completionHandler: nil)
 			
-			let languages = tokenField.stringValue.characters.split(separator: ",").map(String.init)
+			let languages = tokenField.stringValue.split(separator: ",").map(String.init)
 			DispatchQueue.global().async {
 				defer {
 					DispatchQueue.main.async {
@@ -150,14 +169,14 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	
 	@IBAction func importKeyStructure(sender: AnyObject) {
 		guard currentOpenPanel == nil, let csvLocFile = csvLocFile else {
-			NSBeep()
+			NSSound.beep()
 			return
 		}
 		
 		let openPanel = NSOpenPanel()
 		
 		/* Getting accessory view. */
-		let controller = ImportKeyStructurePanelController(nibName: "AccessoryViewForImportKeyStructure", bundle: nil, csvLocFile: csvLocFile, openPanel: openPanel)!
+		let controller = ImportKeyStructurePanelController(nibName: .accessoryViewForImportKeyStructure, bundle: nil, csvLocFile: csvLocFile, openPanel: openPanel)!
 		
 		currentOpenPanel = openPanel
 		configureAccessoryView(controller.view, forOpenPanel: openPanel)
@@ -168,7 +187,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			openPanel.accessoryView = nil /* Fixes a crash... (macOS 10.12 (16A239j) */
 			self.currentOpenPanel = nil
 			
-			guard response == NSFileHandlingPanelOKButton else {return}
+			guard response == .OK else {return}
 			
 			controller.saveImportSettings()
 			self.updateChangeCount(.changeDone)
@@ -206,7 +225,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 							let noFilename = url.deletingLastPathComponent()
 							let folderName = noFilename.lastPathComponent
 							let noFolderName = noFilename.deletingLastPathComponent()
-							let relativePath = "./" + urlPath.substring(from: urlPath.index(urlPath.startIndex, offsetBy: noFolderName.absoluteURL.path.characters.count + 1))
+							let relativePath = "./" + urlPath.dropFirst(noFolderName.absoluteURL.path.count + 1)
 							if let androidXMLLocFile = try? AndroidXMLLocFile(fromPath: relativePath, relativeToProjectPath: noFolderName.absoluteURL.path) {
 								csvLocFile.mergeAndroidXMLLocStringsFiles([androidXMLLocFile], folderNameToLanguageName: [folderName: languageName])
 							}
@@ -234,7 +253,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   **************************** */
 	
 	/* Implementing this method disables the whitespace-trimming behavior. */
-	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any {
+	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any? {
 		return editingString
 	}
 	
@@ -259,7 +278,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			/* Adjust size of accessory view. */
 			accessoryView.frame.origin.x = superview.bounds.minX
 			accessoryView.frame.size.width = superview.bounds.width
-			accessoryView.autoresizingMask = [.viewWidthSizable] /* Doesn't work though :( */
+			accessoryView.autoresizingMask = [.width] /* Doesn't work though :( */
 		}
 	}
 	

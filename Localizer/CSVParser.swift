@@ -30,27 +30,26 @@ class CSVParser {
 	
 	/* fieldNames is ignored if hasHeader is true */
 	init(source str: String, startOffset offset: Int, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
-		assert(offset < str.characters.count)
-		
+		assert(offset < str.count)
+		assert(
+			!sep.isEmpty && sep.range(of: "\"") == nil && sep.rangeOfCharacter(from: CharacterSet.newlines) == nil,
+			"CSV separator string must not be empty and must not contain the double quote character or newline characters."
+		)
+
 		csvString = str
 		separator = sep
 		startOffset = offset
 		
 		var cs = CharacterSet.newlines
 		cs.insert(charactersIn: "\"")
-		cs.insert(charactersIn: separator.substring(to: separator.index(after: separator.startIndex)))
+		cs.insert(separator.unicodeScalars.first!)
 		endTextCharacterSet = cs as CharacterSet
 		
-		separatorIsSingleChar = (separator.characters.count == 1)
+		separatorIsSingleChar = (separator.count == 1)
 		
 		hasHeader = header
 		if names != nil {fieldNames = names!}
 		else            {fieldNames = [String]()}
-		
-		assert(
-			!separator.isEmpty && separator.range(of: "\"") == nil && separator.rangeOfCharacter(from: CharacterSet.newlines) == nil,
-			"CSV separator string must not be empty and must not contain the double quote character or newline characters."
-		)
 	}
 	
 	func arrayOfParsedRows() -> [[String: String]]? {
@@ -110,7 +109,7 @@ class CSVParser {
 			return nil
 		}
 		if let newlines = parseLineSeparator() {
-			scanner.scanLocation -= newlines.characters.count /* ish... actually not 100% true because NSScanner uses UTF-16 view of the string, Swift uses actual character count. */
+			scanner.scanLocation -= newlines.utf16.count
 			return [:]
 		}
 		
@@ -250,8 +249,8 @@ class CSVParser {
 			 * of the separator is matched but we don't have the full separator. */
 			let location = scanner.scanLocation
 			var firstCharOfSeparator: NSString?
-			if scanner.scanString(separator.substring(to: separator.characters.index(after: separator.startIndex)), into: &firstCharOfSeparator) {
-				if scanner.scanString(separator.substring(from: separator.characters.index(after: separator.startIndex)), into: nil) {
+			if scanner.scanString(String(separator.first!), into: &firstCharOfSeparator) {
+				if scanner.scanString(String(separator.dropFirst()), into: nil) {
 					scanner.scanLocation = location
 					break
 				}

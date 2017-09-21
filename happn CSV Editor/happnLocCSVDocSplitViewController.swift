@@ -35,17 +35,17 @@ class happnLocCSVDocContentSplitViewController : NSSplitViewController {
 						alert.showsSuppressionButton = true
 						alert.beginSheetModal(for: window) { response in
 							switch response {
-							case NSAlertFirstButtonReturn:
+							case .alertFirstButtonReturn:
 								(/*nop (cancel)*/)
 								
-							case NSAlertSecondButtonReturn:
+							case .alertSecondButtonReturn:
 								strongSelf.locEntryViewController.discardEditing()
 								
 								handlerDoitNow()
 								
 								/* Let's check if the user asked not to be bothered by this
 								 * alert anymore. */
-								if (alert.suppressionButton?.state ?? NSOffState) == NSOnState {
+								if (alert.suppressionButton?.state ?? .off) == .on {
 									AppSettings.shared.showAlertForSelectionChangeDiscardMappingEdition = false
 								}
 								

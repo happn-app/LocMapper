@@ -280,7 +280,7 @@ class XcodeStringsFile: TextOutputStreamable {
 		}
 		
 		engine = treat_idle_char
-		for c in filecontent.characters {
+		for c in filecontent {
 			guard engine(c) else {
 				throw NSError(domain: "XcodeStringsFileErrDomain", code: 42, userInfo: [NSLocalizedDescriptionKey: "Cannot parse file (syntax error)"])
 			}

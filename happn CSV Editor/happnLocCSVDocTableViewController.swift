@@ -67,22 +67,22 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	@IBAction func copy(_ sender: AnyObject) {
-		guard tableView.selectedRow >= 0 else {NSBeep(); return}
-		guard let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow] else {NSBeep(); return}
+		guard tableView.selectedRow >= 0 else {NSSound.beep(); return}
+		guard let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow] else {NSSound.beep(); return}
 		
 		var val = ""
 		var first = true
 		for c in tableView.tableColumns {
-			guard !Set(arrayLiteral: "ENV", "KEY").contains(c.identifier) else {continue}
+			guard !Set(arrayLiteral: "ENV", "KEY").contains(c.identifier.rawValue) else {continue}
 			
-			val += (first ? "" : "\t") + csvLocFile.editorDisplayedValueForKey(key, withLanguage: c.identifier)
+			val += (first ? "" : "\t") + csvLocFile.editorDisplayedValueForKey(key, withLanguage: c.identifier.rawValue)
 			first = false
 		}
 		
-		let pasteboard = NSPasteboard.general()
+		let pasteboard = NSPasteboard.general
 		pasteboard.clearContents()
-		pasteboard.setString(val, forType: NSPasteboardTypeString)
-		pasteboard.setString(val, forType: NSPasteboardTypeTabularText)
+		pasteboard.setString(val, forType: .string)
+		pasteboard.setString(val, forType: .tabularText)
 	}
 	
 	/* *****************************************
@@ -100,17 +100,17 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		guard let tableColumn = tableColumn else {return nil}
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
 		
-		guard tableColumn.identifier != "ENV" else {return key.env}
-		guard tableColumn.identifier != "KEY" else {return key.locKey}
-		return csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier)
+		guard tableColumn.identifier.rawValue != "ENV" else {return key.env}
+		guard tableColumn.identifier.rawValue != "KEY" else {return key.locKey}
+		return csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier.rawValue)
 	}
 	
 	func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return}
-		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier) else {return}
+		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier.rawValue) else {return}
 		
 		guard let strValue = (object as? String)?.replacingOccurrences(of: "\n", with: "\\n") else {return}
-		_ = csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier)
+		_ = csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier.rawValue)
 		
 		DispatchQueue.main.async {
 			self.handlerNotifyDocumentModification?()
@@ -146,9 +146,9 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		
 		var height = minimumHeight
 		for column in tableView.tableColumns {
-			guard !Set(arrayLiteral: "ENV", "KEY").contains(column.identifier) else {continue}
+			guard !Set(arrayLiteral: "ENV", "KEY").contains(column.identifier.rawValue) else {continue}
 			
-			let str = csvLocFile.editorDisplayedValueForKey(key, withLanguage: column.identifier)
+			let str = csvLocFile.editorDisplayedValueForKey(key, withLanguage: column.identifier.rawValue)
 			let cell = column.dataCell as! NSCell
 			cell.stringValue = str
 			let rect = NSMakeRect(0, 0, column.width, CGFloat.greatestFiniteMagnitude)
@@ -192,7 +192,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	func tableView(_ tableView: NSTableView, shouldEdit tableColumn: NSTableColumn?, row: Int) -> Bool {
-		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier) else {return false}
+		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier.rawValue) else {return false}
 		
 		if row >= 0, let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow], csvLocFile.lineValueForKey(key)?.mapping != nil {
 			let updateEntryToManualValues = {
@@ -213,7 +213,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 				alert.showsSuppressionButton = true
 				alert.beginSheetModal(for: window) { response in
 					switch response {
-					case NSAlertFirstButtonReturn:
+					case .alertFirstButtonReturn:
 						updateEntryToManualValues()
 						if let tableColumnIndex = self.tableView.tableColumns.index(of: tableColumn) {
 							self.tableView.editColumn(tableColumnIndex, row: row, with: nil, select: true)
@@ -221,11 +221,11 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 						
 						/* Let's check if the user asked not to be bothered by this
 						 * alert anymore. */
-						if (alert.suppressionButton?.state ?? NSOffState) == NSOnState {
+						if (alert.suppressionButton?.state ?? .off) == .on {
 							AppSettings.shared.showAlertForDiscardingMapping = false
 						}
 						
-					case NSAlertSecondButtonReturn:
+					case .alertSecondButtonReturn:
 						(/*nop (cancel)*/)
 						
 					default:
@@ -286,7 +286,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		guard let csvLocFile = csvLocFile else {return}
 		
 		for l in ["ENV", "KEY"] + csvLocFile.languages {
-			let tc = NSTableColumn(identifier: l)
+			let tc = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: l))
 			tc.title = l
 			
 			tc.resizingMask = .userResizingMask
@@ -338,7 +338,7 @@ class HighlightColorTextFieldCell : NSTextFieldCell {
 		}
 	}
 	
-	override var backgroundStyle: NSBackgroundStyle {
+	override var backgroundStyle: NSView.BackgroundStyle {
 		didSet {
 			updateTextColor()
 		}

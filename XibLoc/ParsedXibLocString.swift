@@ -52,14 +52,14 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		let pluralityStringStartIdx = stringSource.index(startIdx, offsetBy: 2)
 		
 		/* We do have plurality override(s)! Is it valid? */
-		guard let pluralityEndIdx = stringSource.range(of: "||", options: [.literal], range: pluralityStringStartIdx..<stringSource.endIndex)?.lowerBound else {
+		guard let pluralityEndIdx = stringSource[pluralityStringStartIdx...].range(of: "||", options: [.literal])?.lowerBound else {
 			/* Nope. It is not. */
 			NSLog("%@", "Got invalid plurality override in string \(source)") /* We used to use HCLogES */
 			return []
 		}
 		
 		/* A valid plurality overrides part was found. Let's parse them! */
-		let pluralityOverrideStr = stringSource.substring(from: pluralityStringStartIdx)
+		let pluralityOverrideStr = stringSource[pluralityStringStartIdx..<pluralityEndIdx]
 		let pluralityDefinitions = pluralityOverrideStr.components(separatedBy: "|").map{ $0 == "_" ? defaultPluralityDefinition : PluralityDefinition(string: $0) }
 		
 		/* Let's remove the plurality definition from the string. */

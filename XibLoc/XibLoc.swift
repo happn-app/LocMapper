@@ -16,7 +16,7 @@ public extension String {
 		return self
 	}
 	
-	public func applying(xibLocInfo: XibLocResolvingInfo<NSAttributedString, NSAttributedString>, defaultAttributes: [String: Any]?) throws -> NSAttributedString {
+	public func applying(xibLocInfo: XibLocResolvingInfo<NSAttributedString, NSAttributedString>, defaultAttributes: [NSAttributedStringKey: Any]?) throws -> NSAttributedString {
 		return try NSAttributedString(string: self, attributes: defaultAttributes).applying(xibLocInfo: xibLocInfo)
 	}
 	

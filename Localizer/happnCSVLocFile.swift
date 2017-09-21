@@ -13,7 +13,7 @@ import Foundation
 private extension String {
 	
 	func csvCellValueWithSeparator(_ sep: String) -> String {
-		guard sep.characters.count == 1, sep != "\"", sep != "\n", sep != "\r" else {fatalError("Cannot use \"\(sep)\" as a CSV separator")}
+		guard sep.utf16.count == 1, sep != "\"", sep != "\n", sep != "\r" else {fatalError("Cannot use \"\(sep)\" as a CSV separator")}
 		if rangeOfCharacter(from: CharacterSet(charactersIn: "\(sep)\"\n\r")) != nil {
 			/* Double quotes needed */
 			let doubledDoubleQuotes = replacingOccurrences(of: "\"", with: "\"\"")
@@ -120,8 +120,8 @@ class happnCSVLocFile: TextOutputStreamable {
 		case stateTodoloc, stateHardCodedValues, stateMappedValid, stateMappedInvalid
 		
 		init?(string: String) {
-			guard let first = string.characters.first else {return nil}
-			let substring = string.substring(from: string.index(after: string.startIndex))
+			guard let first = string.first else {return nil}
+			let substring = String(string.dropFirst())
 			
 			switch first {
 			case "t":
@@ -285,7 +285,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	/* *** Init *** */
 	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: [String: String], csvSeparator csvSep: String) {
-		if csvSep.characters.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
+		if csvSep.utf16.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		languages = l
 		entries = e
@@ -806,7 +806,7 @@ class happnCSVLocFile: TextOutputStreamable {
 				case let k where k.hasPrefix("o"):
 					/* We're treating a group opening */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: k.substring(from: k.characters.index(after: k.startIndex))))
+					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: String(k.dropFirst())))
 					
 				case let k where k.hasPrefix("s"):
 					/* We're treating a plural group opening */
@@ -818,7 +818,7 @@ class happnCSVLocFile: TextOutputStreamable {
 					
 				case let k where k.hasPrefix("c"):
 					/* We're treating a group closing */
-					let noC = k.substring(from: k.characters.index(after: k.startIndex))
+					let noC = k.dropFirst()
 					let sepBySpace = noC.components(separatedBy: " ")
 					if let plurals = currentPluralsValueByFilename[filename] {
 						/* We have a plural group being contructed. We've reached it's
@@ -842,8 +842,8 @@ class happnCSVLocFile: TextOutputStreamable {
 					/* We're treating a string item */
 					if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
 						let stringValue: AndroidXMLLocFile.StringValue
-						if (entry_key.userInfo["DTA"] != "1") {stringValue = AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), value: v)}
-						else                                  {stringValue = AndroidXMLLocFile.StringValue(key: k.substring(from: k.characters.index(after: k.startIndex)), cDATAValue: v)}
+						if (entry_key.userInfo["DTA"] != "1") {stringValue = AndroidXMLLocFile.StringValue(key: String(k.dropFirst()), value: v)}
+						else                                  {stringValue = AndroidXMLLocFile.StringValue(key: String(k.dropFirst()), cDATAValue: v)}
 						filenameToComponents[filename]!.append(contentsOf: spaces)
 						filenameToComponents[filename]!.append(stringValue)
 					}
@@ -852,7 +852,7 @@ class happnCSVLocFile: TextOutputStreamable {
 					/* We're treating an array item */
 					if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
 						filenameToComponents[filename]!.append(contentsOf: spaces)
-						let noA = k.substring(from: k.characters.index(after: k.startIndex))
+						let noA = k.dropFirst()
 						let sepByQuote = noA.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
 							if let idx = Int(sepByQuote[1]) {
@@ -869,7 +869,7 @@ class happnCSVLocFile: TextOutputStreamable {
 					let isCData = (entry_key.userInfo["DTA"] == "1")
 					/* We're treating a plural item */
 					if currentPluralsValueByFilename[filename] != nil, let v = exportedValueForKey(entry_key, withLanguage: languageName) {
-						let noP = k.substring(from: k.characters.index(after: k.startIndex))
+						let noP = k.dropFirst()
 						let sepByQuote = noP.components(separatedBy: "\"")
 						if sepByQuote.count == 2 {
 							let quantity = sepByQuote[1]
@@ -964,9 +964,9 @@ class happnCSVLocFile: TextOutputStreamable {
 			let value = entries[entry_key]!
 			
 			var basename = entry_key.filename
-			if let slashRange = basename.range(of: "/", options: NSString.CompareOptions.backwards) {
+			if let slashRange = basename.range(of: "/", options: .backwards) {
 				if slashRange.lowerBound != basename.endIndex {
-					basename = basename.substring(from: basename.index(after: slashRange.lowerBound))
+					basename = String(basename[basename.index(after: slashRange.lowerBound)...])
 				}
 			}
 			if basename.hasSuffix(".xml") {basename = (basename as NSString).deletingPathExtension}

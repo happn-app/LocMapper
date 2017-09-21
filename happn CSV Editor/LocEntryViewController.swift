@@ -106,17 +106,17 @@ class LocEntryViewController: NSTabViewController {
 					alert.showsSuppressionButton = true
 					alert.beginSheetModal(for: window) { response in
 						switch response {
-						case NSAlertFirstButtonReturn:
+						case .alertFirstButtonReturn:
 							(/*nop (cancel)*/)
 							
-						case NSAlertSecondButtonReturn:
+						case .alertSecondButtonReturn:
 							self.discardEditing()
 							
 							tabView.selectTabViewItem(tabViewItem)
 							
 							/* Let's check if the user asked not to be bothered by this
 							 * alert anymore. */
-							if (alert.suppressionButton?.state ?? NSOffState) == NSOnState {
+							if (alert.suppressionButton?.state ?? .off) == .on {
 								AppSettings.shared.showAlertForTabChangeDiscardMappingEdition = false
 							}
 							

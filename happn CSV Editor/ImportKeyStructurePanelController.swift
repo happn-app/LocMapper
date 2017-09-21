@@ -32,7 +32,7 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 	private(set) var selectedImportType: ImportType
 	
 	var excludedPaths: [String] {
-		return tokenFieldExcludedPaths.stringValue.characters.split(separator: ",").map(String.init)
+		return tokenFieldExcludedPaths.stringValue.split(separator: ",").map(String.init)
 	}
 	
 	var importedFolderForXcode: String {
@@ -43,7 +43,7 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 		return textFieldImportedLanguageName.stringValue.isEmpty ? textFieldImportedLanguageName.placeholderString ?? "" : textFieldImportedLanguageName.stringValue
 	}
 	
-	init?(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?, csvLocFile f: happnCSVLocFile, openPanel op: NSOpenPanel) {
+	init?(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?, csvLocFile f: happnCSVLocFile, openPanel op: NSOpenPanel) {
 		openPanel = op
 		csvLocFile = f
 		
@@ -128,7 +128,7 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 	   **************************** */
 	
 	/* Implementing this method disables the whitespace-trimming behavior. */
-	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any {
+	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any? {
 		return editingString
 	}
 	

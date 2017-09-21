@@ -105,7 +105,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	@IBAction func validateAndApplyMapping(_ sender: AnyObject) {
 		guard let lineKey = comboBox.cell?.representedObject as? happnCSVLocFile.LineKey else {
 			/* This should not be possible */
-			NSBeep()
+			NSSound.beep()
 			return
 		}
 		
@@ -116,8 +116,9 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			
 			/* Retrieving transforms from the text view */
 			let transformString: String
-			if let str = textViewMappingTransform.string?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines), !str.isEmpty {transformString = str}
-			else                                                                                                                    {transformString = "[]"}
+			let str = textViewMappingTransform.string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+			if !str.isEmpty {transformString = str}
+			else            {transformString = "[]"}
 			
 			guard let transformData = transformString.data(using: .utf8) else {
 				throw NSError(domain: errorDomain, code: 1, userInfo: nil)
@@ -143,7 +144,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			representedMapping = .mapping(happnCSVLocKeyMapping(components: [CSVLocKeyMappingComponentValueTransforms(sourceKey: lineKey, subTransformsComponents: transforms)]))
 			handlerNotifyLineValueModification?()
 		} catch {
-			guard let window = view.window else {NSBeep(); return}
+			guard let window = view.window else {NSSound.beep(); return}
 			
 			/* If JSONSerialization sent useful error messages... */
 //			let alert = NSAlert(error: error)

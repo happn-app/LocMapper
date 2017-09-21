@@ -77,7 +77,7 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 	
 	func stringByDeletingPrefixIfPresent(_ prefix: String, from string: String) -> String? {
 		if string.hasPrefix(prefix) {
-			return string[string.index(string.startIndex, offsetBy: prefix.characters.count)..<string.endIndex]
+			return String(string.dropFirst(prefix.count))
 		}
 		
 		return nil
