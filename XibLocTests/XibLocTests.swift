@@ -22,11 +22,10 @@ class XibLocTests: XCTestCase {
 	}
 	
 	func testOneSimpleReplacement() {
-//		XCTAssertEqual(
-//			try "|replaced|".replacing(xibLocInfo: XibLocResolvingInfo(simpleReplacementWithToken: "|", value: "replacement")),
-//			"replacement"
-//		)
+		XCTAssertEqual(
+			try "|replaced|".applying(xibLocInfo: XibLocResolvingInfo(simpleReplacementWithToken: "|", value: "replacement")),
+			"replacement"
+		)
 	}
 	
 }
-

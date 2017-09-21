@@ -12,8 +12,12 @@ import Foundation
 
 public extension String {
 	
-	public func applying<ReturnType>(xibLocInfo: XibLocResolvingInfo<String, ReturnType>) throws -> ReturnType {
-		return "" as! ReturnType
+	public func applying(xibLocInfo: XibLocResolvingInfo<String, String>) throws -> String {
+		return self
+	}
+	
+	public func applying(xibLocInfo: XibLocResolvingInfo<NSAttributedString, NSAttributedString>, defaultAttributes: [String: Any]?) throws -> NSAttributedString {
+		return try NSAttributedString(string: self, attributes: defaultAttributes).applying(xibLocInfo: xibLocInfo)
 	}
 	
 //	internal func parseAsXibLocString(escapeToken: String?, simpleReplacementsToken: [XibLocResolvingInfo.OneWordTokens], orderedReplacementsTokens: [XibLocResolvingInfo.MultipleWordsTokens], pluralGroupsTokens: [XibLocResolvingInfo.MultipleWordsTokens]) throws -> ParsedXibLocString {
@@ -24,8 +28,8 @@ public extension String {
 
 public extension NSAttributedString {
 	
-	public func applying<ReturnType>(xibLocInfo: XibLocResolvingInfo<NSAttributedString, ReturnType>) throws -> ReturnType {
-		return "" as! ReturnType
+	public func applying(xibLocInfo: XibLocResolvingInfo<NSAttributedString, NSAttributedString>) throws -> NSAttributedString {
+		return self
 	}
 	
 }

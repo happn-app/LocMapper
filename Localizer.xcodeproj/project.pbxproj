@@ -41,6 +41,7 @@
 		7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */; };
 		7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
+		7B3E7AB01F5C7FD700E67EAF /* ParserHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
 		7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */; };
 		7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */; };
@@ -150,6 +151,7 @@
 		7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueGlob.swift; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributedStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
+		7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserHelper.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
 		7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTableViewController.swift; sourceTree = "<group>"; };
 		7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTabViewController.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				7BBF5FE11C15C2A90024318C /* XibLoc.swift */,
 				7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */,
 				7B11A58B1F51B5D80064549D /* ParsedXibLocString.swift */,
+				7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */,
 				7B11A58D1F51BA0A0064549D /* SimpleReplacementEngine.swift */,
 				7B11A58F1F51C1940064549D /* Plurality */,
 				7B76A3EA1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift */,
@@ -558,6 +561,7 @@
 				7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */,
 				7B11A5991F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift in Sources */,
 				7B11A58A1F51B34F0064549D /* XibLocResolvingInfo.swift in Sources */,
+				7B3E7AB01F5C7FD700E67EAF /* ParserHelper.swift in Sources */,
 				7B11A5791F51AEAE0064549D /* XibLoc.swift in Sources */,
 				7B11A59A1F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift in Sources */,
 				7B11A5931F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift in Sources */,
