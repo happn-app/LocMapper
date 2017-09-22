@@ -31,7 +31,7 @@
 		7B11A5811F51B17C0064549D /* XibLocTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5801F51B17C0064549D /* XibLocTests.swift */; };
 		7B11A5831F51B17C0064549D /* libXibLoc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B11A5691F51AE620064549D /* libXibLoc.a */; };
 		7B11A58A1F51B34F0064549D /* XibLocResolvingInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */; };
-		7B11A58C1F51B5D80064549D /* ParsedXibLocString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A58B1F51B5D80064549D /* ParsedXibLocString.swift */; };
+		7B11A58C1F51B5D80064549D /* ParsedXibLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */; };
 		7B11A58E1F51BA0A0064549D /* SimpleReplacementEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A58D1F51BA0A0064549D /* SimpleReplacementEngine.swift */; };
 		7B11A5911F51C1F70064549D /* PluralityDefinitionZoneValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5901F51C1F70064549D /* PluralityDefinitionZoneValue.swift */; };
 		7B11A5931F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5921F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift */; };
@@ -141,7 +141,7 @@
 		7B11A5801F51B17C0064549D /* XibLocTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XibLocTests.swift; sourceTree = "<group>"; };
 		7B11A5821F51B17C0064549D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XibLocResolvingInfo.swift; sourceTree = "<group>"; };
-		7B11A58B1F51B5D80064549D /* ParsedXibLocString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedXibLocString.swift; sourceTree = "<group>"; };
+		7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedXibLoc.swift; sourceTree = "<group>"; };
 		7B11A58D1F51BA0A0064549D /* SimpleReplacementEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleReplacementEngine.swift; sourceTree = "<group>"; };
 		7B11A5901F51C1F70064549D /* PluralityDefinitionZoneValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValue.swift; sourceTree = "<group>"; };
 		7B11A5921F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueNumber.swift; sourceTree = "<group>"; };
@@ -228,7 +228,7 @@
 			children = (
 				7BBF5FE11C15C2A90024318C /* XibLoc.swift */,
 				7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */,
-				7B11A58B1F51B5D80064549D /* ParsedXibLocString.swift */,
+				7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */,
 				7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */,
 				7B11A58D1F51BA0A0064549D /* SimpleReplacementEngine.swift */,
 				7B11A58F1F51C1940064549D /* Plurality */,
@@ -567,7 +567,7 @@
 				7B11A59A1F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift in Sources */,
 				7B11A5931F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift in Sources */,
 				7B76A3E91F51C77B003F1FB7 /* PluralityDefinition.swift in Sources */,
-				7B11A58C1F51B5D80064549D /* ParsedXibLocString.swift in Sources */,
+				7B11A58C1F51B5D80064549D /* ParsedXibLoc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

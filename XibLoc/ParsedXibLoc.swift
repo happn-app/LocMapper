@@ -1,5 +1,5 @@
 /*
- * ParsedXibLocString.swift
+ * ParsedXibLoc.swift
  * XibLoc
  *
  * Created by François Lamboley on 8/26/17.
@@ -17,7 +17,7 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		case constant(SourceType)
 		case simpleReplacement(OneWordTokens, value: SourceType)
 		case orderedReplacement(MultipleWordsTokens, values: [SourceType])
-		case pluralGroup(MultipleWordsTokens, values: [SourceType])
+		case pluralGroup(MultipleWordsTokens, pluralityDefinition: PluralityDefinition, values: [SourceType])
 		case dictionaryReplacement(id: String, defaultValue: SourceType?, otherValues: [String: SourceType])
 		
 	}
@@ -27,9 +27,10 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 	init(source: SourceType, parserHelper: ParserHelper, simpleReplacements: [OneWordTokens], orderedReplacements: [MultipleWordsTokens], pluralGroups: [MultipleWordsTokens], defaultPluralityDefinition: PluralityDefinition) {
 		var source = source
 		var stringSource = parserHelper.stringRepresentation(of: source)
-		let pluralityDefinitions = ParsedXibLoc<SourceType, ParserHelper>.preprocessForPluralityDefinitionOverrides(source: &source, stringSource: &stringSource, parserHelper: parserHelper, defaultPluralityDefinition: defaultPluralityDefinition)
+		var pluralityDefinitions = ParsedXibLoc<SourceType, ParserHelper>.preprocessForPluralityDefinitionOverrides(source: &source, stringSource: &stringSource, parserHelper: parserHelper, defaultPluralityDefinition: defaultPluralityDefinition)
+		while pluralityDefinitions.count <= pluralGroups.count {pluralityDefinitions.append(defaultPluralityDefinition)} /* TODO: Check if really <= instead of < (original ObjC code was <= but it feels weird) */
 		
-		parts = []
+		
 	}
 	
 //	func resolve(simpleReplacementsValues: [String], orderedReplacementsValues: [Int], pluralGroupsValues: [Int]) -> String {
@@ -52,7 +53,7 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		let pluralityStringStartIdx = stringSource.index(startIdx, offsetBy: 2)
 		
 		/* We do have plurality override(s)! Is it valid? */
-		guard let pluralityEndIdx = stringSource[pluralityStringStartIdx...].range(of: "||", options: [.literal])?.lowerBound else {
+		guard let pluralityEndIdx = stringSource.range(of: "||", options: [.literal], range: pluralityStringStartIdx..<stringSource.endIndex)?.lowerBound else {
 			/* Nope. It is not. */
 			NSLog("%@", "Got invalid plurality override in string \(source)") /* We used to use HCLogES */
 			return []
