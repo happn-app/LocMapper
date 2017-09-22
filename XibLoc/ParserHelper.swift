@@ -24,3 +24,17 @@ protocol ParserHelper {
 	func remove(upTo: String.Index, from source: inout SourceType)
 	
 }
+
+struct StringParserHelper : ParserHelper {
+	
+	typealias SourceType = String
+	
+	func stringRepresentation(of source: String) -> String {
+		return source
+	}
+	
+	func remove(upTo: String.Index, from source: inout String) {
+		source.removeSubrange(..<upTo)
+	}
+	
+}
