@@ -22,9 +22,12 @@ class XibLocTests: XCTestCase {
 	}
 	
 	func testOneSimpleReplacement() {
+		let info = XibLocResolvingInfo(simpleReplacementWithToken: "|", value: "replacement")
+//		let info = XibLocResolvingInfo(defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil, simpleSourceTypeReplacements: [:], orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1], pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: AnyAttributesModifierEngine<String, String>.identity())
+//		let info = XibLocResolvingInfo(defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil, simpleSourceTypeReplacements: [OneWordTokens(token: "|"): "replacement"], orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1], pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: AnyAttributesModifierEngine<String, String>.identity())
 		XCTAssertEqual(
-			try "|replaced|".applying(xibLocInfo: XibLocResolvingInfo(simpleReplacementWithToken: "|", value: "replacement")),
-			"replacement"
+			try "the <|replaced|\\:yop:dodo>".applying(xibLocInfo: info),
+			"the replacement"
 		)
 	}
 	

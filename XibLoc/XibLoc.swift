@@ -13,7 +13,13 @@ import Foundation
 public extension String {
 	
 	public func applying(xibLocInfo: XibLocResolvingInfo<String, String>) throws -> String {
-		return self
+		/* TODO: Cache */
+		return ParsedXibLoc(source: self, parserHelper: StringParserHelper(), forXibLocResolvingInfo: xibLocInfo).resolve(xibLocResolvingInfo: xibLocInfo)
+	}
+	
+	public func applying(xibLocInfo: XibLocResolvingInfo<String, NSAttributedString>) throws -> NSAttributedString {
+		/* TODO: Cache */
+		return ParsedXibLoc(source: self, parserHelper: StringParserHelper(), forXibLocResolvingInfo: xibLocInfo).resolve(xibLocResolvingInfo: xibLocInfo)
 	}
 	
 	public func applying(xibLocInfo: XibLocResolvingInfo<NSAttributedString, NSAttributedString>, defaultAttributes: [NSAttributedStringKey: Any]?) throws -> NSAttributedString {

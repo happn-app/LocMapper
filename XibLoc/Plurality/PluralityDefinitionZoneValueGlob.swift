@@ -12,6 +12,20 @@ import Foundation
 
 struct PluralityDefinitionZoneValueGlob : PluralityDefinitionZoneValue {
 	
+	/** Returns an “any number” glob match zone value (matches any number, either
+	ints or floats). Equivalent of `init(string: "*")!`. An argument is required
+	because we can't create an init method that has no argument and a name... */
+	init(forAnyNumber: Void) {
+		value = .anyNumber
+	}
+	
+	/** Returns an “any float” glob match zone value (matches 1.0 but not 1).
+	Equivalent of `init(string: "*.")!`. An argument is required because we can't
+	create an init method that has no argument and a name... */
+	init(forAnyFloat: Void) {
+		value = .anyFloat
+	}
+	
 	init?(string: String) {
 		switch string {
 		case "*", "^*{.*}$": value = .anyNumber
@@ -43,8 +57,9 @@ struct PluralityDefinitionZoneValueGlob : PluralityDefinitionZoneValue {
 	
 	func matches(int: Int) -> Bool {
 		switch value {
-		case .anyNumber:        return true
-		case .anyFloat, .regex: return matches(string: String(int))
+		case .anyNumber: return true
+		case .anyFloat:  return false
+		case .regex:     return matches(string: String(int))
 		}
 	}
 	

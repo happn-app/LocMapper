@@ -18,6 +18,14 @@ struct PluralityDefinitionZone : CustomDebugStringConvertible {
 	let optionalityLevel: Int /* 0 is non-optional */
 	let priorityDecreaseLevel: Int /* 0 is standard priority; higher is lower priority */
 	
+	/** Returns a zone that matches anything and have the given index. */
+	init(index i: Int = 0, optionalityLevel o: Int = 0, priorityDecreaseLevel p: Int = 0) {
+		index = i
+		optionalityLevel = o
+		priorityDecreaseLevel = p
+		zoneValues = [PluralityDefinitionZoneValueGlob(forAnyNumber: ())]
+	}
+	
 	init?(string: String, index i: Int) {
 		let scanner = Scanner(string: string)
 		scanner.charactersToBeSkipped = CharacterSet()

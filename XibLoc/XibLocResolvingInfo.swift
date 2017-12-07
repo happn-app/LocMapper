@@ -10,13 +10,44 @@ import Foundation
 
 
 
+/* Supported configurations & Required Constraints:
+ *   - See ParsedXibLoc private init for constraints on the tokens;
+ *   - Supported overlaps:
+ *      - Config: "*" is a left and right token for an attributes modification
+ *      - Config: "_" is a left and right token for an attributes modification
+ *      - Config: "|" is a left and right token for a simple replacement
+ *      - Config: "<" ":" ">" are resp. a left, interior and right tokens for an ordered replacement
+ *      - Supported: "This text will be *bold _and italic_ too*!"
+ *      - Supported: "This text will be *bold _and italic too*_!"
+ *      - Supported: "This text will be *bold _and italic too_*!"
+ *      - Supported: "This text will be *bold _and* italic too_!"
+ *      - Supported: "This text will be *bold _and* italic too_!"
+ *      - Supported: "Let's replace |*some text*|"
+ *           Note: Useless, but supported. If the simple replacement is a source
+ *                 type replacement, the content will never be checked and the
+ *                 attributes will never be set. If the replacement is a return
+ *                 type replacement, the attributes of the content will be
+ *                 modified, but then replaced by the replacement…
+ *      - Supported: "Let's replace *|some text|*"
+ *           Note: Only useful for a source type replacement (attributes would
+ *                 be overwritten with a return type replacement).
+ *      - Supported: "Let's replace with either <*this* is chosen:nope> or <nope:_that_>"
+ *      - Supported: "Let's replace with either *<this is chosen:_nope_> or <_nope_:that>*"
+ *      - Unsupported: "Let's replace *|some* text|"
+ *      - Supported: "Let's replace <*multiple*:*choice*:stuff>"
+ *      - Unsupported: "Let's replace *<multiple:choice*:stuff>" */
 public struct XibLocResolvingInfo<SourceType, ReturnType> {
+	
+	let defaultPluralityDefinition: PluralityDefinition
 	
 	let escapeToken: String?
 	
-	let simpleReplacements: [OneWordTokens: AnySimpleReplacementEngine<SourceType, ReturnType>]
+	let simpleSourceTypeReplacements: [OneWordTokens: SourceType]
 	let orderedReplacements: [MultipleWordsTokens: Int]
 	let pluralGroups: [MultipleWordsTokens: Int]
+	
+	let attributesModifications: [OneWordTokens: AnyAttributesModifierEngine<SourceType, ReturnType>]
+	let simpleReturnTypeReplacements: [OneWordTokens: ReturnType]
 	
 	/* Format: "@[id|key1:val1|key2:val2¦default replacement]".
 	 * Examples of use:
@@ -30,22 +61,37 @@ public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	 * will be done for each dictionary with the same id.
 	 *
 	 * If a dictionary tag is found in the input but the id does not match any of
-	 * the keys in this property, the tag won't be replaced at all. */
-	let dictionaryReplacements: [String: String]
+	 * the keys in this property, the tag won't be replaced at all.
+	 *
+	 * If dictionaryReplacements is nil, no dictionary parsing will be done at
+	 * all.
+	 *
+	 * To escape a dictionary, just place the escape token before the @ as you
+	 * would normally do with another token.
+	 * For instance, assuming the escape token is "\\" (one backslash), to escape
+	 * "@[plural|one:dude¦dudes]", use this string: "\\@[plural|one:dude¦dudes]".
+	 * Placing the escape token between the "@" and the "[" works too:
+	 * "@\\[plural|one:dude¦dudes]".
+	 * Inside a dictionary, to escape a special character, just escape it with
+	 * the escape token as expected (eg. "@[escaped|colon\\::and\\|pipe]"). */
+	let dictionaryReplacements: [String: String]?
 	
-	let identityReplacement: AnySimpleReplacementEngine<SourceType, ReturnType>
+	let identityReplacement: AnyAttributesModifierEngine<SourceType, ReturnType>
 	
 }
 
 public extension XibLocResolvingInfo where SourceType == String, ReturnType == String {
 	
 	public init(simpleReplacementWithToken token: String, value: String) {
+		defaultPluralityDefinition = PluralityDefinition()
 		escapeToken = nil
-		simpleReplacements = [OneWordTokens(token: token): AnySimpleReplacementEngine(constant: value)]
+		attributesModifications = [:]
+		simpleSourceTypeReplacements = [:]
+		simpleReturnTypeReplacements = [OneWordTokens(token: token): value]
 		orderedReplacements = [:]
 		pluralGroups = [:]
-		dictionaryReplacements = [:]
-		identityReplacement = AnySimpleReplacementEngine.identity()
+		dictionaryReplacements = nil
+		identityReplacement = AnyAttributesModifierEngine.identity()
 	}
 	
 }

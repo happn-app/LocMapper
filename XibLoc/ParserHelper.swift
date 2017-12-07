@@ -21,7 +21,8 @@ protocol ParserHelper {
 	indexes of the given string. */
 	func stringRepresentation(of source: SourceType) -> String
 	
-	func remove(upTo: String.Index, from source: inout SourceType)
+	func slice<R>(range: R, from source: SourceType) -> SourceType where R : RangeExpression, R.Bound == String.Index
+	func remove<R>(range: R, from source: inout SourceType) where R : RangeExpression, R.Bound == String.Index
 	
 }
 
@@ -33,8 +34,12 @@ struct StringParserHelper : ParserHelper {
 		return source
 	}
 	
-	func remove(upTo: String.Index, from source: inout String) {
-		source.removeSubrange(..<upTo)
+	func slice<R>(range: R, from source: String) -> String where R : RangeExpression, R.Bound == String.Index {
+		return String(source[range])
+	}
+	
+	func remove<R>(range: R, from source: inout SourceType) where R : RangeExpression, R.Bound == String.Index {
+		source.removeSubrange(range)
 	}
 	
 }

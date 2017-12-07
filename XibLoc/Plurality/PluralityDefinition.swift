@@ -14,7 +14,19 @@ struct PluralityDefinition : CustomDebugStringConvertible {
 	
 	let zones: [PluralityDefinitionZone]
 	
-	/* Parse the plurality string to create a plurality definition. The parsing
+	/** Returns an empty plurality definition, which will always return the
+	latest plural version  */
+	init() {
+		zones = []
+	}
+	
+	/** Returns a plurality definition that contains one zone that matches
+	anything. Will always return the first plural version. */
+	init(matchingAnything: Void) {
+		zones = [PluralityDefinitionZone()]
+	}
+	
+	/* Parses the plurality string to create a plurality definition. The parsing
 	 * is forgiving: messages are printed in the logs if there are syntax errors. */
 	init(string: String) {
 		let scanner = Scanner(string: string)
@@ -49,7 +61,7 @@ struct PluralityDefinition : CustomDebugStringConvertible {
 		
 		/* We sort the zones in order to optimize the removal of zones if needed
 		 * when computing the version index to use for a given value. */
-		zones = zonesBuilding.reversed().stableSorted { (obj1, obj2) -> Bool? in
+		zones = zonesBuilding.reversed().stableSorted{ (obj1, obj2) -> Bool? in
 			if obj1.optionalityLevel > obj2.optionalityLevel {return true}
 			if obj1.optionalityLevel < obj2.optionalityLevel {return false}
 			return nil
@@ -100,14 +112,14 @@ struct PluralityDefinition : CustomDebugStringConvertible {
 		guard zones.count > nVersions else {return zoneIndex}
 		
 		let sepIdx = zones.count - nVersions
-		return zones[0..<sepIdx].reduce(zoneIndex) { (curIdx, zone) -> Int in
+		return zones[0..<sepIdx].reduce(zoneIndex){ (curIdx, zone) -> Int in
 			if zone.index < zoneIndex {return curIdx - 1}
 			return curIdx
 		}
 	}
 	
 	private func bestMatchingZone(from matchingZones: [PluralityDefinitionZone]) -> PluralityDefinitionZone {
-		return matchingZones.sorted { (obj1, obj2) -> Bool in
+		return matchingZones.sorted{ (obj1, obj2) -> Bool in
 			if obj1.priorityDecreaseLevel < obj2.priorityDecreaseLevel {return true}
 			if obj1.priorityDecreaseLevel > obj2.priorityDecreaseLevel {return false}
 			if obj1.index < obj2.index {return true}
