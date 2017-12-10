@@ -38,8 +38,8 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		var range: Range<String.Index>
 		let value: ReplacementValue
 		
-		var leftTokenDistance: String.IndexDistance
-		var rightTokenDistance: String.IndexDistance
+		var removedLeftTokenDistance: String.IndexDistance
+		var removedRightTokenDistance: String.IndexDistance
 		var containerRange: Range<String.Index> /* Always contains “range”. Equals “range” for OneWordTokens. */
 		
 		var children: [Replacement]
@@ -48,8 +48,8 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 			Swift.print("\(prefix)REPLACEMENT START")
 			Swift.print("\(prefix)container: \(string[containerRange])")
 			Swift.print("\(prefix)range: \(string[range])")
-			Swift.print("\(prefix)left  token distance: \(leftTokenDistance)")
-			Swift.print("\(prefix)right token distance: \(rightTokenDistance)")
+			Swift.print("\(prefix)removed left  token distance: \(removedLeftTokenDistance)")
+			Swift.print("\(prefix)removed right token distance: \(removedRightTokenDistance)")
 			Swift.print("\(prefix)children (\(children.count))")
 			for c in children {c.print(from: string, prefix: prefix + "   ")}
 			Swift.print("\(prefix)REPLACEMENT END")
@@ -118,7 +118,10 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 			for sep in tokens {
 				var pos = stringSource.startIndex
 				while let r = ParsedXibLoc<SourceType, ParserHelper>.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
-					let replacement = Replacement(range: r, value: replacementTypeBuilder(sep), leftTokenDistance: sep.leftToken.count, rightTokenDistance: sep.rightToken.count, containerRange: r, children: [])
+					let replacementType = replacementTypeBuilder(sep)
+					let doUntokenization = replacementType.isAttributesModifiation /* See discussion below about token removal */
+					let contentRange = ParsedXibLoc<SourceType, ParserHelper>.contentRange(from: r, in: stringSource, leftSep: sep.leftToken, rightSep: sep.rightToken)
+					let replacement = Replacement(range: contentRange, value: replacementType, removedLeftTokenDistance: doUntokenization ? sep.leftToken.count : 0, removedRightTokenDistance: doUntokenization ? sep.rightToken.count : 0, containerRange: r, children: [])
 					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: replacement, in: &output)
 				}
 			}
@@ -136,14 +139,16 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 					var idx = 0
 					while let sepRange = ParsedXibLoc<SourceType, ParserHelper>.range(of: sep.interiorToken, escapeToken: escapeToken, baseString: stringSource, in: startIndex..<endIndex) {
 						let internalRange = startIndex..<sepRange.lowerBound
-						let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), leftTokenDistance: idx == 0 ? sep.leftToken.count : 0, rightTokenDistance: sep.interiorToken.count, containerRange: r, children: [])
+						/* We set both removed left and right token distances to 0 (see discussion below about token removal) */
+						let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), removedLeftTokenDistance: 0/*idx == 0 ? sep.leftToken.count : 0*/, removedRightTokenDistance: 0/*sep.interiorToken.count*/, containerRange: r, children: [])
 						ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: replacement, in: &output)
 						
 						idx += 1
 						startIndex = sepRange.upperBound
 					}
 					let internalRange = startIndex..<endIndex
-					let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), leftTokenDistance: idx == 0 ? sep.leftToken.count : 0, rightTokenDistance: sep.rightToken.count, containerRange: r, children: [])
+					/* We set both removed left and right token distances to 0 (see discussion below about token removal) */
+					let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), removedLeftTokenDistance: 0/*idx == 0 ? sep.leftToken.count : 0*/, removedRightTokenDistance: 0/*sep.rightToken.count*/, containerRange: r, children: [])
 					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: replacement, in: &output)
 				}
 			}
@@ -158,11 +163,23 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		getMultipleWordsRanges(tokens: orderedReplacements, replacementTypeBuilder: { .orderedReplacement($0, value: $1) }, in: &replacementsBuilding)
 		/* TODO: Parse the dictionary replacements. */
 		
-		/* Let's remove the tokens from the source string (only the ranges are needed) */
+		/* Let's remove the tokens we want gone from the source string. The escape
+		 * token is always removed. We only remove the left and right separator
+		 * tokens from the attributes modification; all other tokens are left. The
+		 * idea behind the removal of the tokens is to avoid adjusting all the
+		 * ranges in the replacements when applying the changes in the source. The
+		 * attributes modification change is guaranteed to not modify the range of
+		 * anything by contract, so we can pre-compute the ranges before applying
+		 * the modification. All other changes will modify the ranges 99% of the
+		 * cases, so there are no pre-computations to be done this way. */
 		
 		var untokenizedSourceBuilding = source
 		var untokenizedStringSourceBuilding = stringSource
-		ParsedXibLoc<SourceType, ParserHelper>.removeTokens(from: replacementsBuilding, adjustedReplacements: &replacementsBuilding, in: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
+		ParsedXibLoc<SourceType, ParserHelper>.remove(escapeToken: escapeToken, in: &replacementsBuilding, source: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
+		ParsedXibLoc<SourceType, ParserHelper>.removeTokens(from: &replacementsBuilding, baseIndexPath: IndexPath(), source: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
+//		print("***** RESULTS TIME *****")
+//		print("untokenized: \(untokenizedStringSourceBuilding)")
+//		for r in replacementsBuilding {r.print(from: untokenizedStringSourceBuilding)}
 		
 		replacements = replacementsBuilding
 		untokenizedSource = untokenizedSourceBuilding
@@ -207,9 +224,53 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		}
 	}
 	
-	private static func removeTokens(from replacements: [Replacement], adjustedReplacements: inout [Replacement], in source: inout SourceType, stringSource: inout String, parserHelper: ParserHelper) {
-		for replacement in replacements {
-			removeTokens(from: replacement.children, adjustedReplacements: &adjustedReplacements, in: &source, stringSource: &stringSource, parserHelper: parserHelper)
+	private static func remove(escapeToken: String?, in replacements: inout [Replacement], source: inout SourceType, stringSource: inout String, parserHelper: ParserHelper) {
+		guard let escapeToken = escapeToken else {return}
+		
+		var pos = stringSource.startIndex
+		while let r = stringSource.range(of: escapeToken, options: [.literal], range: pos..<stringSource.endIndex) {
+			remove(range: r, in: &replacements, originalString: stringSource)
+			parserHelper.remove(range: r, from: &source)
+			stringSource.removeSubrange(r)
+			pos = r.lowerBound
+			
+			if pos >= stringSource.endIndex {break}
+			if stringSource[r] == escapeToken {pos = stringSource.index(pos, offsetBy: escapeToken.count)}
+		}
+	}
+	
+	private static func replacement(at indexPath: IndexPath, in replacements: [Replacement]) -> Replacement {
+		var result: Replacement!
+		var replacements = replacements
+		for idx in indexPath {
+			result = replacements[idx]
+			replacements = result.children
+		}
+		return result
+	}
+	
+	private static func removeTokens(inReplacementAtIndexPath indexPath: IndexPath, from replacements: inout [Replacement], source: inout SourceType, stringSource: inout String, parserHelper: ParserHelper) {
+		let replacement1 = replacement(at: indexPath, in: replacements)
+		let leftTokenRange = stringSource.index(replacement1.range.lowerBound, offsetBy: -replacement1.removedLeftTokenDistance)..<replacement1.range.lowerBound
+		remove(range: leftTokenRange, in: &replacements, originalString: stringSource)
+		parserHelper.remove(range: leftTokenRange, from: &source)
+		stringSource.removeSubrange(leftTokenRange)
+		
+		let replacement2 = replacement(at: indexPath, in: replacements)
+		let rightTokenRange = replacement2.range.upperBound..<stringSource.index(replacement2.range.upperBound, offsetBy: replacement2.removedRightTokenDistance)
+		remove(range: rightTokenRange, in: &replacements, originalString: stringSource)
+		parserHelper.remove(range: rightTokenRange, from: &source)
+		stringSource.removeSubrange(rightTokenRange)
+		
+		removeTokens(from: &replacements, baseIndexPath: indexPath, source: &source, stringSource: &stringSource, parserHelper: parserHelper)
+	}
+	
+	private static func removeTokens(from replacements: inout [Replacement], baseIndexPath: IndexPath, source: inout SourceType, stringSource: inout String, parserHelper: ParserHelper) {
+		let replacementsCount: Int
+		if baseIndexPath.isEmpty {replacementsCount = replacements.count}
+		else                     {replacementsCount = replacement(at: baseIndexPath, in: replacements).children.count}
+		for i in 0..<replacementsCount {
+			removeTokens(inReplacementAtIndexPath: baseIndexPath.appending(i), from: &replacements, source: &source, stringSource: &stringSource, parserHelper: parserHelper)
 		}
 	}
 	
