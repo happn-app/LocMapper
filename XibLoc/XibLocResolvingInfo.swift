@@ -35,7 +35,8 @@ import Foundation
  *      - Supported: "Let's replace with either *<this is chosen:_nope_> or <_nope_:that>*"
  *      - Unsupported: "Let's replace *|some* text|"
  *      - Supported: "Let's replace <*multiple*:*choice*:stuff>"
- *      - Unsupported: "Let's replace *<multiple:choice*:stuff>" */
+ *      - Unsupported: "Let's replace *<multiple:choice*:stuff>"
+ *      - Unsupported: "Let's replace <*multiple:choice*:stuff>" */
 public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	
 	let defaultPluralityDefinition: PluralityDefinition

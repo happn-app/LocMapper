@@ -38,9 +38,22 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 		var range: Range<String.Index>
 		let value: ReplacementValue
 		
+		var leftTokenDistance: String.IndexDistance
+		var rightTokenDistance: String.IndexDistance
 		var containerRange: Range<String.Index> /* Always contains “range”. Equals “range” for OneWordTokens. */
 		
 		var children: [Replacement]
+		
+		func print(from string: String, prefix: String = "") {
+			Swift.print("\(prefix)REPLACEMENT START")
+			Swift.print("\(prefix)container: \(string[containerRange])")
+			Swift.print("\(prefix)range: \(string[range])")
+			Swift.print("\(prefix)left  token distance: \(leftTokenDistance)")
+			Swift.print("\(prefix)right token distance: \(rightTokenDistance)")
+			Swift.print("\(prefix)children (\(children.count))")
+			for c in children {c.print(from: string, prefix: prefix + "   ")}
+			Swift.print("\(prefix)REPLACEMENT END")
+		}
 		
 	}
 	
@@ -95,18 +108,23 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 			}
 		#endif
 		
-		/* Let's get the ranges of all the special (non-constant) parts of the string. */
-		
-		func getOneWordRanges(tokens: [OneWordTokens], in output: inout [OneWordTokens: [Range<String.Index>]]) {
+		/* Let's build the replacements. Overlaps are allowed with the following rules:
+		 *    - The attributes modifications can overlap between themselves at will;
+		 *    - Replacements can be embedded in other replacements (internal ranges for multiple words tokens, default or other values ranges for dictionaries);
+		 *    - Replacements cannot overlap attributes modifications or replacements if one is not fully embedded in the other.
+		 * Note: Anything can be embedded in a simple replacement, but everything embedded in it will be dropped... (the content is replaced, by definition!) */
+
+		func getOneWordRanges(tokens: [OneWordTokens], replacementTypeBuilder: (_ token: OneWordTokens) -> ReplacementValue, in output: inout [Replacement]) {
 			for sep in tokens {
 				var pos = stringSource.startIndex
 				while let r = ParsedXibLoc<SourceType, ParserHelper>.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
-					output[sep, default: []].append(r)
+					let replacement = Replacement(range: r, value: replacementTypeBuilder(sep), leftTokenDistance: sep.leftToken.count, rightTokenDistance: sep.rightToken.count, containerRange: r, children: [])
+					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: replacement, in: &output)
 				}
 			}
 		}
 		
-		func getMultipleWordsRanges(tokens: [MultipleWordsTokens], in output: inout [MultipleWordsTokens: [(external: Range<String.Index>, internal: [Range<String.Index>])]]) {
+		func getMultipleWordsRanges(tokens: [MultipleWordsTokens], replacementTypeBuilder: (_ token: MultipleWordsTokens, _ idx: Int) -> ReplacementValue, in output: inout [Replacement]) {
 			for sep in tokens {
 				var pos = stringSource.startIndex
 				while let r = ParsedXibLoc<SourceType, ParserHelper>.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
@@ -115,92 +133,30 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 					var startIndex = contentRange.lowerBound
 					let endIndex = contentRange.upperBound
 					
-					var currentInternalRanges = [Range<String.Index>]()
+					var idx = 0
 					while let sepRange = ParsedXibLoc<SourceType, ParserHelper>.range(of: sep.interiorToken, escapeToken: escapeToken, baseString: stringSource, in: startIndex..<endIndex) {
-						currentInternalRanges.append(startIndex..<sepRange.lowerBound)
+						let internalRange = startIndex..<sepRange.lowerBound
+						let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), leftTokenDistance: idx == 0 ? sep.leftToken.count : 0, rightTokenDistance: sep.interiorToken.count, containerRange: r, children: [])
+						ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: replacement, in: &output)
+						
+						idx += 1
 						startIndex = sepRange.upperBound
 					}
-					currentInternalRanges.append(startIndex..<endIndex)
-					output[sep, default: []].append((external: r, internal: currentInternalRanges))
+					let internalRange = startIndex..<endIndex
+					let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), leftTokenDistance: idx == 0 ? sep.leftToken.count : 0, rightTokenDistance: sep.rightToken.count, containerRange: r, children: [])
+					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: replacement, in: &output)
 				}
 			}
 		}
-		
-		var simpleSourceTypeReplacementsRanges = [OneWordTokens: [Range<String.Index>]]()
-		var simpleReturnTypeReplacementsRanges = [OneWordTokens: [Range<String.Index>]]()
-		var attributesModificationsRanges = [OneWordTokens: [Range<String.Index>]]()
-		var pluralGroupsRanges = [MultipleWordsTokens: [(external: Range<String.Index>, internal: [Range<String.Index>])]]()
-		var orderedReplacementsRanges = [MultipleWordsTokens: [(external: Range<String.Index>, internal: [Range<String.Index>])]]()
-		
-		getOneWordRanges(tokens: simpleSourceTypeReplacements, in: &simpleSourceTypeReplacementsRanges)
-		getOneWordRanges(tokens: simpleReturnTypeReplacements, in: &simpleReturnTypeReplacementsRanges)
-		getOneWordRanges(tokens: attributesModifications, in: &attributesModificationsRanges)
-		getMultipleWordsRanges(tokens: pluralGroups, in: &pluralGroupsRanges)
-		getMultipleWordsRanges(tokens: orderedReplacements, in: &orderedReplacementsRanges)
-		
-		/* For the moment, parsing dictionary replacements is not supported. Here
-		 * is below however the structure in which said parsing should be done
-		 * when implementing support!
-		 * The keys to the dictionary are the ids of the replacements. Must be
-		 * equal to the subranges formed by the "id" ranges in the tuple. */
-		let dictionaryReplacementsRanges = [String: [(external: Range<String.Index>, id: Range<String.Index>, defaultValue: Range<String.Index>?, otherValues: [String: Range<String.Index>])]]()
-		
-		/* TODO: Parse dictionary replacements ranges. */
-		
-		/* Let's check for overlaps and solve the embedded replacements:
-		 *    - The attributes modifications can overlap between themselves at will;
-		 *    - Replacements can be embedded in other replacements (internal ranges for multiple words tokens, default or other values ranges for dictionaries);
-		 *    - Replacements cannot overlap attributes modifications or replacements if one is not fully embedded in the other.
-		 * Note: Anything can be embedded in a simple replacement, but everything embedded in it will be dropped... (the content is replaced, by definition!) */
 		
 		var replacementsBuilding = [Replacement]()
 		
-		for (token, ranges) in simpleSourceTypeReplacementsRanges {
-			for range in ranges {
-				var replacement = Replacement(range: range, value: .simpleSourceTypeReplacement(token), containerRange: range, children: [])
-				ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-			}
-		}
-		for (token, ranges) in simpleReturnTypeReplacementsRanges {
-			for range in ranges {
-				var replacement = Replacement(range: range, value: .simpleReturnTypeReplacement(token), containerRange: range, children: [])
-				ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-			}
-		}
-		for (token, ranges) in attributesModificationsRanges {
-			for range in ranges {
-				var replacement = Replacement(range: range, value: .attributesModification(token), containerRange: range, children: [])
-				ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-			}
-		}
-		for (token, values) in pluralGroupsRanges {
-			for (externalRange, internalRanges) in values {
-				for (idx, range) in internalRanges.enumerated() {
-					var replacement = Replacement(range: range, value: .pluralGroup(token, value: idx), containerRange: externalRange, children: [])
-					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-				}
-			}
-		}
-		for (token, values) in orderedReplacementsRanges {
-			for (externalRange, internalRanges) in values {
-				for (idx, range) in internalRanges.enumerated() {
-					var replacement = Replacement(range: range, value: .orderedReplacement(token, value: idx), containerRange: externalRange, children: [])
-					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-				}
-			}
-		}
-		for (id, values) in dictionaryReplacementsRanges {
-			for (externalRange, _, defaultRange, otherRanges) in values {
-				if let defaultRange = defaultRange {
-					var replacement = Replacement(range: defaultRange, value: .dictionaryReplacement(id: id, value: nil), containerRange: externalRange, children: [])
-					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-				}
-				for (key, range) in otherRanges {
-					var replacement = Replacement(range: range, value: .dictionaryReplacement(id: id, value: key), containerRange: externalRange, children: [])
-					ParsedXibLoc<SourceType, ParserHelper>.insert(replacement: &replacement, in: &replacementsBuilding)
-				}
-			}
-		}
+		getOneWordRanges(tokens: simpleSourceTypeReplacements, replacementTypeBuilder: { .simpleSourceTypeReplacement($0) }, in: &replacementsBuilding)
+		getOneWordRanges(tokens: simpleReturnTypeReplacements, replacementTypeBuilder: { .simpleReturnTypeReplacement($0) }, in: &replacementsBuilding)
+		getOneWordRanges(tokens: attributesModifications, replacementTypeBuilder: { .attributesModification($0) }, in: &replacementsBuilding)
+		getMultipleWordsRanges(tokens: pluralGroups, replacementTypeBuilder: { .pluralGroup($0, value: $1) }, in: &replacementsBuilding)
+		getMultipleWordsRanges(tokens: orderedReplacements, replacementTypeBuilder: { .orderedReplacement($0, value: $1) }, in: &replacementsBuilding)
+		/* TODO: Parse the dictionary replacements. */
 		
 		/* Let's remove the tokens from the source string (only the ranges are needed) */
 		
@@ -252,7 +208,7 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 	}
 	
 	private static func removeTokens(from replacements: [Replacement], adjustedReplacements: inout [Replacement], in source: inout SourceType, stringSource: inout String, parserHelper: ParserHelper) {
-		for (idx, var replacement) in replacements.enumerated() {
+		for replacement in replacements {
 			removeTokens(from: replacement.children, adjustedReplacements: &adjustedReplacements, in: &source, stringSource: &stringSource, parserHelper: parserHelper)
 		}
 	}
@@ -262,8 +218,19 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 	returns `true`).
 	Assumes the given replacement and current replacements are valid. */
 	@discardableResult
-	private static func insert(replacement: inout Replacement, in currentReplacements: inout [Replacement]) -> Bool {
-		for (idx, var checkedReplacement) in currentReplacements.enumerated() {
+	private static func insert(replacement: Replacement, in currentReplacements: inout [Replacement]) -> Bool {
+		for (idx, checkedReplacement) in currentReplacements.enumerated() {
+			/* If both checked and inserted replacements have the same container
+			 * range, we are inserting a new replacement value for the checked
+			 * replacement (eg. inserting the “b” when “a” has been inserted in the
+			 * following replacement: “<a:b>”). Let's just check the two ranges do
+			 * not overlap (asserted, this is an internal logic error if ranges
+			 * overlap). */
+			guard replacement.containerRange != checkedReplacement.containerRange else {
+				assert(!replacement.range.overlaps(checkedReplacement.range))
+				continue
+			}
+			
 			/* If there are no overlaps of the container ranges, or if we have two
 			 * attributes modifications, we have an easy case: nothing to do (all
 			 * ranges are valid). */
@@ -272,12 +239,14 @@ struct ParsedXibLoc<SourceType, ParserHelper : XibLoc.ParserHelper> where Parser
 			
 			if checkedReplacement.range.clamped(to: replacement.containerRange) == replacement.containerRange {
 				/* replacement’s container range is included in checkedReplacement’s range: we must add replacement as a child of checkedReplacement */
-				guard insert(replacement: &replacement, in: &checkedReplacement.children) else {return false}
+				var checkedReplacement = checkedReplacement
+				guard insert(replacement: replacement, in: &checkedReplacement.children) else {return false}
 				currentReplacements[idx] = checkedReplacement
 				return true
 			} else if replacement.range.clamped(to: checkedReplacement.containerRange) == checkedReplacement.containerRange {
 				/* checkedReplacement’s container range is included in replacement’s range: we must add checkedReplacement as a child of replacement */
-				guard insert(replacement: &checkedReplacement, in: &replacement.children) else {return false}
+				var replacement = replacement
+				guard insert(replacement: checkedReplacement, in: &replacement.children) else {return false}
 				currentReplacements[idx] = replacement
 				return true
 			} else {
