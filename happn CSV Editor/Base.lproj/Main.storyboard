@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -106,7 +106,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
-                                        <menuItem title="Import Reference Translations…" keyEquivalent="I" id="hjE-p6-IXV">
+                                        <menuItem title="Merge Reference Translations…" keyEquivalent="I" id="hjE-p6-IXV">
                                             <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="importReferenceTranslationsWithSender:" target="Ady-hI-5gd" id="xuc-qw-1K9"/>
@@ -444,6 +444,9 @@
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="511" width="891" height="315"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <connections>
+                            <outlet property="delegate" destination="jGA-0Y-lOj" id="JNc-Ah-CCO"/>
+                        </connections>
                     </window>
                     <connections>
                         <segue destination="4e3-9h-uPT" kind="relationship" relationship="window.shadowedContentViewController" id="wHu-dD-nOI"/>
@@ -465,10 +468,14 @@
                     <splitView key="splitView" wantsLayer="YES" dividerStyle="thin" id="2YT-KH-9BI">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <connections>
+                            <outlet property="delegate" destination="ct4-wk-7SH" id="CJD-OL-3OH"/>
+                        </connections>
                     </splitView>
                     <connections>
                         <outlet property="splitItemLocEntry" destination="RyI-Ha-ETJ" id="X6b-rl-0Eh"/>
                         <outlet property="splitItemTableView" destination="pQ1-ad-IWO" id="FQU-Oe-jb5"/>
+                        <outlet property="splitView" destination="2YT-KH-9BI" id="j5G-cd-Syf"/>
                         <segue destination="eGi-W3-OT9" kind="relationship" relationship="splitItems" id="gwN-Fh-slv"/>
                         <segue destination="Y9e-9e-EPZ" kind="relationship" relationship="splitItems" id="2OG-99-kYQ"/>
                     </connections>
@@ -494,6 +501,7 @@
                         </connections>
                     </tabView>
                     <connections>
+                        <outlet property="tabView" destination="vrq-sc-u37" id="Pfq-wR-15e"/>
                         <outlet property="tabViewItemDocContent" destination="Uby-N0-ifu" id="is5-mf-a3A"/>
                         <segue destination="h3E-y2-Xoi" kind="relationship" relationship="tabItems" id="EAV-4K-6TI"/>
                         <segue destination="EeL-Ny-Gtb" kind="relationship" relationship="tabItems" id="snY-Ou-kbO"/>
@@ -555,10 +563,14 @@
                     <splitView key="splitView" wantsLayer="YES" dividerStyle="thin" vertical="YES" id="zbf-k1-u1K">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <connections>
+                            <outlet property="delegate" destination="EeL-Ny-Gtb" id="TtL-a4-Gy2"/>
+                        </connections>
                     </splitView>
                     <connections>
                         <outlet property="splitItemContent" destination="NFu-rf-yKA" id="nQF-pg-4Nc"/>
                         <outlet property="splitItemFilters" destination="Hc1-0c-bdQ" id="n5a-SI-Q3o"/>
+                        <outlet property="splitView" destination="zbf-k1-u1K" id="IBY-uf-CUn"/>
                         <segue destination="daH-92-t52" kind="relationship" relationship="splitItems" id="oAM-7Y-arW"/>
                         <segue destination="ct4-wk-7SH" kind="relationship" relationship="splitItems" id="0t1-7D-gkO"/>
                     </connections>
@@ -794,6 +806,7 @@
                         </connections>
                     </tabView>
                     <connections>
+                        <outlet property="tabView" destination="0P6-g6-vF8" id="jwx-RQ-emN"/>
                         <outlet property="tabViewItemAdvancedMapping" destination="xbE-Uc-8td" id="lMv-1Z-obv"/>
                         <outlet property="tabViewItemContext" destination="551-Mg-qbo" id="reP-5f-Olr"/>
                         <outlet property="tabViewItemMapping" destination="WPL-ZU-yBx" id="UoZ-4m-u7Q"/>
@@ -820,7 +833,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="430" height="104"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView wantsLayer="YES" editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="8Nh-Ot-zly">
+                                        <textView wantsLayer="YES" editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="8Nh-Ot-zly">
                                             <rect key="frame" x="0.0" y="0.0" width="430" height="104"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -933,7 +946,7 @@
                                     <rect key="frame" x="1" y="1" width="428" height="78"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="m35-Mw-091">
+                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="m35-Mw-091">
                                             <rect key="frame" x="0.0" y="0.0" width="430" height="78"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1038,7 +1051,7 @@ Gw
                                     <rect key="frame" x="1" y="1" width="428" height="257"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="RYO-qy-Cak">
+                                        <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="RYO-qy-Cak">
                                             <rect key="frame" x="0.0" y="0.0" width="430" height="257"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

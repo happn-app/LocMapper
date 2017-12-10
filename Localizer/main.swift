@@ -147,7 +147,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		)
 		
 		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-		var output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
+		let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		
 		print("Exporting from Xcode project...")

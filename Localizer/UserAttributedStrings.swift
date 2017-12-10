@@ -64,7 +64,7 @@ extension String {
 		var currentKey = ""
 		var currentValue = ""
 		var currentState = State.waitStartKey
-		for (curIdx, char) in characters.enumerated() {
+		for (curIdx, char) in enumerated() {
 			guard currentState != .remainingString else {break}
 			guard let newState = currentState.process(char: char, withCurrentKey: &currentKey, currentValue: &currentValue, currentUserInfo: &userInfo) else {
 				return (stringStartOffset: 0, userInfo: nil)

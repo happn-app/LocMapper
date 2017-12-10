@@ -410,7 +410,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	converted, `false` if nothing had to be done (value was already hard-coded or
 	not present). */
 	func convertKeyToHardCoded(_ key: LineKey) -> Bool {
-		guard case .some(.mapping(_)) = entries[key] else {
+		guard case .mapping? = entries[key] else {
 			return false
 		}
 		
@@ -432,8 +432,8 @@ class happnCSVLocFile: TextOutputStreamable {
 	func setValue(_ val: String, forKey key: LineKey, withLanguage language: String) -> Bool {
 		let created: Bool
 		var entriesForKey: [String: String]
-		if case .some(.entries(let e)) = entries[key] {created = false;               entriesForKey = e}
-		else                                          {created = entries[key] == nil; entriesForKey = [:]}
+		if case .entries(let e)? = entries[key] {created = false;               entriesForKey = e}
+		else                                    {created = entries[key] == nil; entriesForKey = [:]}
 		entriesForKey[language] = val
 		entries[key] = .entries(entriesForKey)
 		return created
@@ -536,7 +536,7 @@ class happnCSVLocFile: TextOutputStreamable {
 				case let locString as XcodeStringsFile.LocalizedString:
 					let refKey = LineKey(
 						locKey: locString.key, env: env, filename: filenameNoLproj, index: index, comment: currentComment,
-						userInfo: ["=": locString.equal, ";": locString.semicolon,"'?": locString.keyHasQuotes ? "1": "0"],
+						userInfo: ["=": locString.equal, ";": locString.semicolon, "'?": locString.keyHasQuotes ? "1": "0"],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
@@ -913,7 +913,12 @@ class happnCSVLocFile: TextOutputStreamable {
 	   MARK: - Reference Translations Loc File
 	   *************************************** */
 	
+	let referenceTranslationsFilename = "ReferencesTranslations.csv"
+	let referenceTranslationsGroupComment = "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••"
+	let referenceTranslationsUserReadableComment = "REF TRAD. DO NOT MODIFY."
+	
 	func replaceReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
+		/* Remove all previous RefLoc entries */
 		for key in entries.keys {
 			guard key.env == "RefLoc" else {continue}
 			entries.removeValue(forKey: key)
@@ -927,9 +932,28 @@ class happnCSVLocFile: TextOutputStreamable {
 			}
 		}
 		
+		/* Import new RefLoc entries */
 		var isFirst = true
 		for (refKey, refVals) in locFile.entries {
-			let key = LineKey(locKey: refKey, env: "RefLoc", filename: "ReferencesTranslations.csv", index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••" : "", userReadableComment: "REF TRAD. DO NOT MODIFY.")
+			let key = LineKey(locKey: refKey, env: "RefLoc", filename: referenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? referenceTranslationsGroupComment : "", userReadableComment: referenceTranslationsUserReadableComment)
+			entries[key] = .entries(refVals)
+			isFirst = false
+		}
+	}
+	
+	func mergeReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
+		/* Adding languages in reference translations. But not removing languages
+		 * not in reference translations! */
+		for l in locFile.languages {
+			if !languages.contains(l) {
+				languages.append(l)
+			}
+		}
+		
+		/* Import new RefLoc entries */
+		var isFirst = entryKeys.contains{ $0.env == "RefLoc" }
+		for (refKey, refVals) in locFile.entries {
+			let key = LineKey(locKey: refKey, env: "RefLoc", filename: referenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? referenceTranslationsGroupComment : "", userReadableComment: referenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
 			isFirst = false
 		}
