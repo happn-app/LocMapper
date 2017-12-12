@@ -41,7 +41,7 @@
 		7B17BDB21FAE53090083171B /* AttributesModifierEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B17BDB11FAE53090083171B /* AttributesModifierEngine.swift */; };
 		7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
-		7B3E7AB01F5C7FD700E67EAF /* ParserHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */; };
+		7B3E7AB01F5C7FD700E67EAF /* ParserHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
 		7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */; };
 		7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */; };
@@ -49,6 +49,8 @@
 		7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */; };
 		7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7B56D2AE1DA0F25E00662EFD /* Localizable.strings */; };
 		7B637D241C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */; };
+		7B6474891FDEFCC100204E10 /* ParserHelpers+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */; };
+		7B64748B1FDF038000204E10 /* ParserHelpers+AttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B64748A1FDF038000204E10 /* ParserHelpers+AttributedString.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
 		7B6E25AA19D417BD001934ED /* stderr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A919D417BD001934ED /* stderr.swift */; };
 		7B6E25AC19D430C5001934ED /* XcodeStringsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */; };
@@ -151,7 +153,7 @@
 		7B17BDB11FAE53090083171B /* AttributesModifierEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributesModifierEngine.swift; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributedStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
-		7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserHelper.swift; sourceTree = "<group>"; };
+		7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserHelpers.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
 		7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTableViewController.swift; sourceTree = "<group>"; };
 		7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTabViewController.swift; sourceTree = "<group>"; };
@@ -159,6 +161,8 @@
 		7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsSplitViewController.swift; sourceTree = "<group>"; };
 		7B56D2AE1DA0F25E00662EFD /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocSplitViewController.swift; sourceTree = "<group>"; };
+		7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParserHelpers+String.swift"; sourceTree = "<group>"; };
+		7B64748A1FDF038000204E10 /* ParserHelpers+AttributedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParserHelpers+AttributedString.swift"; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* Localizer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Localizer; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7B6E25A919D417BD001934ED /* stderr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stderr.swift; sourceTree = "<group>"; };
@@ -228,9 +232,11 @@
 			children = (
 				7BBF5FE11C15C2A90024318C /* XibLoc.swift */,
 				7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */,
-				7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */,
-				7B3E7AAF1F5C7FD700E67EAF /* ParserHelper.swift */,
 				7B17BDB11FAE53090083171B /* AttributesModifierEngine.swift */,
+				7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */,
+				7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */,
+				7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */,
+				7B64748A1FDF038000204E10 /* ParserHelpers+AttributedString.swift */,
 				7B11A58F1F51C1940064549D /* Plurality */,
 				7B76A3EA1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift */,
 			);
@@ -562,8 +568,10 @@
 				7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */,
 				7B11A5991F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift in Sources */,
 				7B11A58A1F51B34F0064549D /* XibLocResolvingInfo.swift in Sources */,
-				7B3E7AB01F5C7FD700E67EAF /* ParserHelper.swift in Sources */,
+				7B3E7AB01F5C7FD700E67EAF /* ParserHelpers.swift in Sources */,
 				7B11A5791F51AEAE0064549D /* XibLoc.swift in Sources */,
+				7B6474891FDEFCC100204E10 /* ParserHelpers+String.swift in Sources */,
+				7B64748B1FDF038000204E10 /* ParserHelpers+AttributedString.swift in Sources */,
 				7B11A59A1F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift in Sources */,
 				7B11A5931F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift in Sources */,
 				7B76A3E91F51C77B003F1FB7 /* PluralityDefinition.swift in Sources */,
