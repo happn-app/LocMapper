@@ -55,7 +55,7 @@ public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	let orderedReplacements: [MultipleWordsTokens: Int]
 	let pluralGroups: [MultipleWordsTokens: PluralValue]
 	
-	let attributesModifications: [OneWordTokens: AnyAttributesModifierEngine<ReturnType, ReturnType>]
+	let attributesModifications: [OneWordTokens: (_ modified: inout ReturnType, _ strRange: Range<String.Index>, _ refStr: String) -> Void] /* The handler must NOT modify the string representation of the given argument. */
 	let simpleReturnTypeReplacements: [OneWordTokens: ReturnType]
 	
 	/* Format: "@[id|key1:val1|key2:val2¦default replacement]".
@@ -85,7 +85,7 @@ public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	 * the escape token as expected (eg. "@[escaped|colon\\::and\\|pipe]"). */
 	let dictionaryReplacements: [String: String]?
 	
-	let identityReplacement: AnyAttributesModifierEngine<SourceType, ReturnType>
+	let identityReplacement: (_ source: SourceType) -> ReturnType
 	
 }
 
@@ -100,7 +100,7 @@ public extension XibLocResolvingInfo where SourceType == String, ReturnType == S
 		orderedReplacements = [:]
 		pluralGroups = [:]
 		dictionaryReplacements = nil
-		identityReplacement = AnyAttributesModifierEngine.identity()
+		identityReplacement = { $0 }
 	}
 	
 }

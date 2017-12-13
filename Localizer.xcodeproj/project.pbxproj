@@ -38,7 +38,6 @@
 		7B11A5991F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5961F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift */; };
 		7B11A59A1F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5971F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift */; };
 		7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */; };
-		7B17BDB21FAE53090083171B /* AttributesModifierEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B17BDB11FAE53090083171B /* AttributesModifierEngine.swift */; };
 		7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
 		7B3E7AB01F5C7FD700E67EAF /* ParserHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */; };
@@ -150,7 +149,6 @@
 		7B11A5961F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueIntervalOfInts.swift; sourceTree = "<group>"; };
 		7B11A5971F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueIntervalOfFloats.swift; sourceTree = "<group>"; };
 		7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueGlob.swift; sourceTree = "<group>"; };
-		7B17BDB11FAE53090083171B /* AttributesModifierEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributesModifierEngine.swift; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributedStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
 		7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserHelpers.swift; sourceTree = "<group>"; };
@@ -232,7 +230,6 @@
 			children = (
 				7BBF5FE11C15C2A90024318C /* XibLoc.swift */,
 				7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */,
-				7B17BDB11FAE53090083171B /* AttributesModifierEngine.swift */,
 				7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */,
 				7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */,
 				7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */,
@@ -562,7 +559,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B11A5911F51C1F70064549D /* PluralityDefinitionZoneValue.swift in Sources */,
-				7B17BDB21FAE53090083171B /* AttributesModifierEngine.swift in Sources */,
 				7B11A5951F51C27E0064549D /* PluralityDefinitionZone.swift in Sources */,
 				7B76A3EB1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift in Sources */,
 				7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */,

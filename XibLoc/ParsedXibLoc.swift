@@ -215,7 +215,7 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 		/* TODO */
 		
 		/* Converting the source type string to the destination type */
-		var result = xibLocResolvingInfo.identityReplacement.apply(on: sourceWithSimpleReplacements)
+		var result = xibLocResolvingInfo.identityReplacement(sourceWithSimpleReplacements)
 		
 		/* Applying other replacements */
 		ParsedXibLoc<SourceType, SourceTypeHelper>.enumerateReplacementsDepthFirst(adjustedReplacements, handler: { replacement in
@@ -231,12 +231,11 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 				then apply the transformation, then replace with the transformed value. This is expensive.
 				The attributes modifier should be able to handle being given a range and apply the transform to this range only
 				"""
-				let range = (replacement.range, refString)
-				let slice = returnTypeHelperType.slice(strRange: range, from: result)
-				let modifiedSlice = modifier.apply(on: slice)
-				let stringReplacement = returnTypeHelperType.replace(strRange: range, with: modifiedSlice, in: &result)
-				assert(stringReplacement.count == refString.distance(from: replacement.range.lowerBound, to: replacement.range.upperBound))
-				refString.replaceSubrange(replacement.containerRange, with: stringReplacement)
+				modifier(&result, replacement.range, refString)
+				/* We cannot do the assert below because the returnTypeHelperType
+				 * does not have a method to convert from the return type to a
+				 * string. However, if possible, the assert would be correct. */
+//				assert(returnTypeHelperType.stringRepresentation(of: result) == refString)
 				/* No ranges to adjust in replacements */
 				
 			case .simpleReturnTypeReplacement(let token):

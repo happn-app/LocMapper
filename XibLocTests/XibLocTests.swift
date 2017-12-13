@@ -35,7 +35,7 @@ class XibLocTests: XCTestCase {
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
 			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: AnyAttributesModifierEngine<String, String>.identity()
+			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
 			try "the <first:second>".applying(xibLocInfo: info),
@@ -49,7 +49,7 @@ class XibLocTests: XCTestCase {
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
 			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: AnyAttributesModifierEngine.identity()
+			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
 			try "the <first:second>".applying(xibLocInfo: info),
@@ -63,7 +63,7 @@ class XibLocTests: XCTestCase {
 			simpleSourceTypeReplacements: [OneWordTokens(token: "|"): "first"],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
 			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: AnyAttributesModifierEngine.identity()
+			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
 			try "the <|fiftieth|:second>".applying(xibLocInfo: info),
@@ -85,7 +85,7 @@ class XibLocTests: XCTestCase {
 			simpleSourceTypeReplacements: [OneWordTokens(token: "|"): "first"],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
 			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: AnyAttributesModifierEngine.identity()
+			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
 			try "the <|fiftieth|:second>".applying(xibLocInfo: info),
@@ -99,8 +99,8 @@ class XibLocTests: XCTestCase {
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
 			pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "$"): AnyAttributesModifierEngine(handlerEngine: { String($0.reversed()) })],
-			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: AnyAttributesModifierEngine.identity()
+			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (); str.replaceSubrange(range, with: str[range].reversed()) }],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
 			try "the <$tsrif$:second>".applying(xibLocInfo: info),
@@ -114,11 +114,41 @@ class XibLocTests: XCTestCase {
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
 			pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "$"): AnyAttributesModifierEngine(handlerEngine: { String($0.reversed()) })],
-			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: AnyAttributesModifierEngine.identity()
+			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (/*SR-6603*/); str.replaceSubrange(range, with: str[range].reversed()) }],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
 			try "the <$tsrif$:second>".applying(xibLocInfo: info),
+			"the second"
+		)
+	}
+	
+	func testOneOrderedReplacementAndIdentityAttributeModification3() {
+		let info = XibLocResolvingInfo<String, String>(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
+			simpleSourceTypeReplacements: [:],
+			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
+			pluralGroups: [:],
+			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (); str.replaceSubrange(range, with: str[range].reversed()) }],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
+		)
+		XCTAssertEqual(
+			try "the $<tsrif:dnoces>$".applying(xibLocInfo: info),
+			"the first"
+		)
+	}
+	
+	func testOneOrderedReplacementAndIdentityAttributeModification4() {
+		let info = XibLocResolvingInfo<String, String>(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
+			simpleSourceTypeReplacements: [:],
+			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
+			pluralGroups: [:],
+			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (); str.replaceSubrange(range, with: str[range].reversed()) }],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
+		)
+		XCTAssertEqual(
+			try "the $<tsrif:dnoces>$".applying(xibLocInfo: info),
 			"the second"
 		)
 	}
@@ -127,9 +157,9 @@ class XibLocTests: XCTestCase {
 		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "*"): AnyAttributesModifierEngine(handlerEngine: helperAddTestAttributeLevel)],
+			attributesModifications: [OneWordTokens(token: "*"): helperAddTestAttributeLevel],
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: AnyAttributesModifierEngine(handlerEngine: { NSMutableAttributedString(string: $0) })
+			identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
 		let result = NSMutableAttributedString(string: "the ")
 		result.append(NSAttributedString(string: "test", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
@@ -144,10 +174,10 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [:],
 			attributesModifications: [
-				OneWordTokens(token: "*"): AnyAttributesModifierEngine(handlerEngine: helperAddTestAttributeLevel),
-				OneWordTokens(token: "_"): AnyAttributesModifierEngine(handlerEngine: helperAddTestAttributeIndex)
+				OneWordTokens(token: "*"): helperAddTestAttributeLevel,
+				OneWordTokens(token: "_"): helperAddTestAttributeIndex
 			], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: AnyAttributesModifierEngine(handlerEngine: { NSMutableAttributedString(string: $0) })
+			identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
 		let result = NSMutableAttributedString(string: "the test ")
 		result.append(NSAttributedString(string: "one ", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
@@ -159,14 +189,12 @@ class XibLocTests: XCTestCase {
 		)
 	}
 	
-	func helperAddTestAttributeLevel(to attributedString: NSMutableAttributedString) -> NSMutableAttributedString {
-		attributedString.addAttributes([.accessibilityListItemLevel: NSNumber(value: 0)], range: NSRange(location: 0, length: attributedString.length))
-		return attributedString
+	func helperAddTestAttributeLevel(to attributedString: inout NSMutableAttributedString, strRange: Range<String.Index>, refStr: String) {
+		attributedString.addAttributes([.accessibilityListItemLevel: NSNumber(value: 0)], range: NSRange(strRange, in: refStr))
 	}
 	
-	func helperAddTestAttributeIndex(to attributedString: NSMutableAttributedString) -> NSMutableAttributedString {
-		attributedString.addAttributes([.accessibilityListItemIndex: NSNumber(value: 0)], range: NSRange(location: 0, length: attributedString.length))
-		return attributedString
+	func helperAddTestAttributeIndex(to attributedString: inout NSMutableAttributedString, strRange: Range<String.Index>, refStr: String) {
+		attributedString.addAttributes([.accessibilityListItemIndex: NSNumber(value: 0)], range: NSRange(strRange, in: refStr))
 	}
 	
 }
