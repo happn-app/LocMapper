@@ -39,14 +39,6 @@ import Foundation
  *      - Unsupported: "Let's replace <*multiple:choice*:stuff>" */
 public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	
-	enum PluralValue {
-		
-		case int(Int)
-		case float(Float)
-		case floatCustomPrecision(value: Float, precision: Float?)
-		
-	}
-	
 	let defaultPluralityDefinition: PluralityDefinition
 	
 	let escapeToken: String?
@@ -95,8 +87,8 @@ public extension XibLocResolvingInfo where SourceType == String, ReturnType == S
 		defaultPluralityDefinition = PluralityDefinition()
 		escapeToken = nil
 		attributesModifications = [:]
-        simpleSourceTypeReplacements = [:]
-        simpleReturnTypeReplacements = [OneWordTokens(token: token): value]
+		simpleSourceTypeReplacements = [:]
+		simpleReturnTypeReplacements = [OneWordTokens(token: token): value]
 		orderedReplacements = [:]
 		pluralGroups = [:]
 		dictionaryReplacements = nil

@@ -32,14 +32,11 @@ struct StringSourceTypeHelper : SourceTypeHelper {
 }
 
 
-
 struct StringReturnTypeHelper : ReturnTypeHelper {
 	
 	typealias ReturnType = String
 	
 	static func slice<R>(strRange: (r: R, s: String), from source: ReturnType) -> ReturnType where R : RangeExpression, R.Bound == String.Index {
-		print(strRange.s)
-		print(source)
 		assert(strRange.s == source)
 		return String(source[strRange.r])
 	}

@@ -10,6 +10,14 @@ import Foundation
 
 
 
+enum PluralValue {
+	
+	case int(Int)
+	case float(Float)
+	case floatCustomPrecision(value: Float, precision: Float?)
+	
+}
+
 struct PluralityDefinition : CustomDebugStringConvertible {
 	
 	let zones: [PluralityDefinitionZone]
@@ -65,6 +73,14 @@ struct PluralityDefinition : CustomDebugStringConvertible {
 			if obj1.optionalityLevel > obj2.optionalityLevel {return true}
 			if obj1.optionalityLevel < obj2.optionalityLevel {return false}
 			return nil
+		}
+	}
+	
+	func indexOfVersionToUse(forValue value: PluralValue, defaultFloatPrecision: Float = 0.00001, numberOfVersions: Int) -> Int {
+		switch value {
+		case .int(let int):                                                     return indexOfVersionToUse(matchingZonePredicate: { $0.matches(int: int) }, numberOfVersions: numberOfVersions)
+		case .float(let float):                                                 return indexOfVersionToUse(matchingZonePredicate: { $0.matches(float: float, precision: defaultFloatPrecision) }, numberOfVersions: numberOfVersions)
+		case .floatCustomPrecision(value: let float, precision: let precision): return indexOfVersionToUse(matchingZonePredicate: { $0.matches(float: float, precision: precision ?? defaultFloatPrecision) }, numberOfVersions: numberOfVersions)
 		}
 	}
 	

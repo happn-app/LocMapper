@@ -94,62 +94,68 @@ class XibLocTests: XCTestCase {
 	}
 	
 	func testOneOrderedReplacementAndIdentityAttributeModification1() {
-		let info = XibLocResolvingInfo<String, String>(
+		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
 			pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (); str.replaceSubrange(range, with: str[range].reversed()) }],
-			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
+			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
+		let result = NSMutableAttributedString(string: "the ")
+		result.append(NSAttributedString(string: "first", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the <$tsrif$:second>".applying(xibLocInfo: info),
-			"the first"
+			try "the <$first$:second>".applying(xibLocInfo: info),
+			result
 		)
 	}
 	
 	func testOneOrderedReplacementAndIdentityAttributeModification2() {
-		let info = XibLocResolvingInfo<String, String>(
+		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
 			pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (/*SR-6603*/); str.replaceSubrange(range, with: str[range].reversed()) }],
-			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
+			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
 		XCTAssertEqual(
-			try "the <$tsrif$:second>".applying(xibLocInfo: info),
-			"the second"
+			try "the <$first$:second>".applying(xibLocInfo: info),
+			NSMutableAttributedString(string: "the second")
 		)
 	}
 	
 	func testOneOrderedReplacementAndIdentityAttributeModification3() {
-		let info = XibLocResolvingInfo<String, String>(
+		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
 			pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (); str.replaceSubrange(range, with: str[range].reversed()) }],
-			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
+			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
+		let result = NSMutableAttributedString(string: "the ")
+		result.append(NSAttributedString(string: "first", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the $<tsrif:dnoces>$".applying(xibLocInfo: info),
-			"the first"
+			try "the $<first:second>$".applying(xibLocInfo: info),
+			result
 		)
 	}
 	
 	func testOneOrderedReplacementAndIdentityAttributeModification4() {
-		let info = XibLocResolvingInfo<String, String>(
+		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
 			pluralGroups: [:],
-			attributesModifications: [OneWordTokens(token: "$"): { str, range, _ in (); str.replaceSubrange(range, with: str[range].reversed()) }],
-			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { $0 }
+			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
+			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
+		let result = NSMutableAttributedString(string: "the ")
+		result.append(NSAttributedString(string: "second", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the $<tsrif:dnoces>$".applying(xibLocInfo: info),
-			"the second"
+			try "the $<first:second>$".applying(xibLocInfo: info),
+			result
 		)
 	}
 	

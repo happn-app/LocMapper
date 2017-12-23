@@ -33,7 +33,12 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 		
 	}
 	
+	/* Note: I'm not so sure having a struct here is such a good idea... We have
+	 *       to workaround a lot the fact that we pass replacements by value
+	 *       instead of pointers to replacements... */
 	struct Replacement {
+		
+		let groupId: Int
 		
 		var range: Range<String.Index>
 		let value: ReplacementValue
@@ -72,7 +77,7 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 	init(source: SourceType, parserHelper: SourceTypeHelper.Type, escapeToken: String?, simpleSourceTypeReplacements: [OneWordTokens], orderedReplacements: [MultipleWordsTokens], pluralGroups: [MultipleWordsTokens], attributesModifications: [OneWordTokens], simpleReturnTypeReplacements: [OneWordTokens], hasDictionaryReplacements: Bool, defaultPluralityDefinition: PluralityDefinition) {
 		var source = source
 		var stringSource = parserHelper.stringRepresentation(of: source)
-		var pluralityDefinitions = ParsedXibLoc<SourceType, SourceTypeHelper>.preprocessForPluralityDefinitionOverrides(source: &source, stringSource: &stringSource, parserHelper: parserHelper, defaultPluralityDefinition: defaultPluralityDefinition)
+		var pluralityDefinitions = ParsedXibLoc.preprocessForPluralityDefinitionOverrides(source: &source, stringSource: &stringSource, parserHelper: parserHelper, defaultPluralityDefinition: defaultPluralityDefinition)
 		while pluralityDefinitions.count <= pluralGroups.count {pluralityDefinitions.append(defaultPluralityDefinition)} /* TODO: Check if really <= instead of < (original ObjC code was <= but it feels weird) */
 		
 		self.init(source: source, stringSource: stringSource, parserHelper: parserHelper, escapeToken: escapeToken, simpleSourceTypeReplacements: simpleSourceTypeReplacements, orderedReplacements: orderedReplacements, pluralGroups: pluralGroups, attributesModifications: attributesModifications, simpleReturnTypeReplacements: simpleReturnTypeReplacements, hasDictionaryReplacements: hasDictionaryReplacements, pluralityDefinitions: pluralityDefinitions)
@@ -116,54 +121,57 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 		 *    - Replacements can be embedded in other replacements (internal ranges for multiple words tokens, default or other values ranges for dictionaries);
 		 *    - Replacements cannot overlap attributes modifications or replacements if one is not fully embedded in the other.
 		 * Note: Anything can be embedded in a simple replacement, but everything embedded in it will be dropped... (the content is replaced, by definition!) */
-
-		func getOneWordRanges(tokens: [OneWordTokens], replacementTypeBuilder: (_ token: OneWordTokens) -> ReplacementValue, in output: inout [Replacement]) {
+		
+		func getOneWordRanges(tokens: [OneWordTokens], replacementTypeBuilder: (_ token: OneWordTokens) -> ReplacementValue, currentGroupId: inout Int, in output: inout [Replacement]) {
 			for sep in tokens {
 				var pos = stringSource.startIndex
-				while let r = ParsedXibLoc<SourceType, SourceTypeHelper>.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
+				while let r = ParsedXibLoc.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
 					let replacementType = replacementTypeBuilder(sep)
 					let doUntokenization = replacementType.isAttributesModifiation /* See discussion below about token removal */
-					let contentRange = ParsedXibLoc<SourceType, SourceTypeHelper>.contentRange(from: r, in: stringSource, leftSep: sep.leftToken, rightSep: sep.rightToken)
-					let replacement = Replacement(range: contentRange, value: replacementType, removedLeftTokenDistance: doUntokenization ? sep.leftToken.count : 0, removedRightTokenDistance: doUntokenization ? sep.rightToken.count : 0, containerRange: r, children: [])
-					ParsedXibLoc<SourceType, SourceTypeHelper>.insert(replacement: replacement, in: &output)
+					let contentRange = ParsedXibLoc.contentRange(from: r, in: stringSource, leftSep: sep.leftToken, rightSep: sep.rightToken)
+					let replacement = Replacement(groupId: currentGroupId, range: contentRange, value: replacementType, removedLeftTokenDistance: doUntokenization ? sep.leftToken.count : 0, removedRightTokenDistance: doUntokenization ? sep.rightToken.count : 0, containerRange: r, children: [])
+					ParsedXibLoc.insert(replacement: replacement, in: &output)
+					currentGroupId += 1
 				}
 			}
 		}
 		
-		func getMultipleWordsRanges(tokens: [MultipleWordsTokens], replacementTypeBuilder: (_ token: MultipleWordsTokens, _ idx: Int) -> ReplacementValue, in output: inout [Replacement]) {
+		func getMultipleWordsRanges(tokens: [MultipleWordsTokens], replacementTypeBuilder: (_ token: MultipleWordsTokens, _ idx: Int) -> ReplacementValue, currentGroupId: inout Int, in output: inout [Replacement]) {
 			for sep in tokens {
 				var pos = stringSource.startIndex
-				while let r = ParsedXibLoc<SourceType, SourceTypeHelper>.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
+				while let r = ParsedXibLoc.rangeFrom(leftSeparator: sep.leftToken, rightSeparator: sep.rightToken, escapeToken: escapeToken, baseString: stringSource, currentPositionInString: &pos) {
 					/* Let's get the internal ranges. */
-					let contentRange = ParsedXibLoc<SourceType, SourceTypeHelper>.contentRange(from: r, in: stringSource, leftSep: sep.leftToken, rightSep: sep.rightToken)
+					let contentRange = ParsedXibLoc.contentRange(from: r, in: stringSource, leftSep: sep.leftToken, rightSep: sep.rightToken)
 					var startIndex = contentRange.lowerBound
 					let endIndex = contentRange.upperBound
 					
 					var idx = 0
-					while let sepRange = ParsedXibLoc<SourceType, SourceTypeHelper>.range(of: sep.interiorToken, escapeToken: escapeToken, baseString: stringSource, in: startIndex..<endIndex) {
+					while let sepRange = ParsedXibLoc.range(of: sep.interiorToken, escapeToken: escapeToken, baseString: stringSource, in: startIndex..<endIndex) {
 						let internalRange = startIndex..<sepRange.lowerBound
 						/* We set both removed left and right token distances to 0 (see discussion below about token removal) */
-						let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), removedLeftTokenDistance: 0/*idx == 0 ? sep.leftToken.count : 0*/, removedRightTokenDistance: 0/*sep.interiorToken.count*/, containerRange: r, children: [])
-						ParsedXibLoc<SourceType, SourceTypeHelper>.insert(replacement: replacement, in: &output)
+						let replacement = Replacement(groupId: currentGroupId, range: internalRange, value: replacementTypeBuilder(sep, idx), removedLeftTokenDistance: 0/*idx == 0 ? sep.leftToken.count : 0*/, removedRightTokenDistance: 0/*sep.interiorToken.count*/, containerRange: r, children: [])
+						ParsedXibLoc.insert(replacement: replacement, in: &output)
 						
 						idx += 1
 						startIndex = sepRange.upperBound
 					}
 					let internalRange = startIndex..<endIndex
 					/* We set both removed left and right token distances to 0 (see discussion below about token removal) */
-					let replacement = Replacement(range: internalRange, value: replacementTypeBuilder(sep, idx), removedLeftTokenDistance: 0/*idx == 0 ? sep.leftToken.count : 0*/, removedRightTokenDistance: 0/*sep.rightToken.count*/, containerRange: r, children: [])
-					ParsedXibLoc<SourceType, SourceTypeHelper>.insert(replacement: replacement, in: &output)
+					let replacement = Replacement(groupId: currentGroupId, range: internalRange, value: replacementTypeBuilder(sep, idx), removedLeftTokenDistance: 0/*idx == 0 ? sep.leftToken.count : 0*/, removedRightTokenDistance: 0/*sep.rightToken.count*/, containerRange: r, children: [])
+					ParsedXibLoc.insert(replacement: replacement, in: &output)
+					currentGroupId += 1
 				}
 			}
 		}
 		
+		var currentGroupId = 0
 		var replacementsBuilding = [Replacement]()
 		
-		getOneWordRanges(tokens: simpleSourceTypeReplacements, replacementTypeBuilder: { .simpleSourceTypeReplacement($0) }, in: &replacementsBuilding)
-		getOneWordRanges(tokens: simpleReturnTypeReplacements, replacementTypeBuilder: { .simpleReturnTypeReplacement($0) }, in: &replacementsBuilding)
-		getOneWordRanges(tokens: attributesModifications, replacementTypeBuilder: { .attributesModification($0) }, in: &replacementsBuilding)
-		getMultipleWordsRanges(tokens: pluralGroups, replacementTypeBuilder: { .pluralGroup($0, value: $1) }, in: &replacementsBuilding)
-		getMultipleWordsRanges(tokens: orderedReplacements, replacementTypeBuilder: { .orderedReplacement($0, value: $1) }, in: &replacementsBuilding)
+		getOneWordRanges(tokens: simpleSourceTypeReplacements, replacementTypeBuilder: { .simpleSourceTypeReplacement($0) }, currentGroupId: &currentGroupId, in: &replacementsBuilding)
+		getOneWordRanges(tokens: simpleReturnTypeReplacements, replacementTypeBuilder: { .simpleReturnTypeReplacement($0) }, currentGroupId: &currentGroupId, in: &replacementsBuilding)
+		getOneWordRanges(tokens: attributesModifications, replacementTypeBuilder: { .attributesModification($0) }, currentGroupId: &currentGroupId, in: &replacementsBuilding)
+		getMultipleWordsRanges(tokens: pluralGroups, replacementTypeBuilder: { .pluralGroup($0, value: $1) }, currentGroupId: &currentGroupId, in: &replacementsBuilding)
+		getMultipleWordsRanges(tokens: orderedReplacements, replacementTypeBuilder: { .orderedReplacement($0, value: $1) }, currentGroupId: &currentGroupId, in: &replacementsBuilding)
 		/* TODO: Parse the dictionary replacements. */
 		
 		/* Let's remove the tokens we want gone from the source string. The escape
@@ -171,15 +179,15 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 		 * tokens from the attributes modification; all other tokens are left. The
 		 * idea behind the removal of the tokens is to avoid adjusting all the
 		 * ranges in the replacements when applying the changes in the source. The
-		 * attributes modification change is guaranteed to not modify the range of
+		 * attributes modification change is guaranteed not to modify the range of
 		 * anything by contract, so we can pre-compute the ranges before applying
 		 * the modification. All other changes will modify the ranges 99% of the
 		 * cases, so there are no pre-computations to be done this way. */
 		
 		var untokenizedSourceBuilding = source
 		var untokenizedStringSourceBuilding = stringSource
-		ParsedXibLoc<SourceType, SourceTypeHelper>.remove(escapeToken: escapeToken, in: &replacementsBuilding, source: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
-		ParsedXibLoc<SourceType, SourceTypeHelper>.removeTokens(from: &replacementsBuilding, baseIndexPath: IndexPath(), source: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
+		ParsedXibLoc.remove(escapeToken: escapeToken, in: &replacementsBuilding, source: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
+		ParsedXibLoc.removeTokens(from: &replacementsBuilding, source: &untokenizedSourceBuilding, stringSource: &untokenizedStringSourceBuilding, parserHelper: parserHelper)
 //		print("***** RESULTS TIME *****")
 //		print("untokenized: \(untokenizedStringSourceBuilding)")
 //		for r in replacementsBuilding {r.print(from: untokenizedStringSourceBuilding)}
@@ -194,70 +202,65 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 	}
 	
 	func resolve<ReturnTypeHelper : XibLoc.ReturnTypeHelper>(xibLocResolvingInfo: XibLocResolvingInfo<SourceType, ReturnTypeHelper.ReturnType>, returnTypeHelperType: ReturnTypeHelper.Type) -> ReturnTypeHelper.ReturnType {
-		var refString = untokenizedStringSource
-		var adjustedReplacements = replacements
+		let replacementsIterator = ReplacementsIterator(refString: untokenizedStringSource, adjustedReplacements: replacements)
 		
 		/* Applying simple source type replacements */
 		var sourceWithSimpleReplacements = untokenizedSource
-		ParsedXibLoc<SourceType, SourceTypeHelper>.enumerateReplacementsDepthFirst(adjustedReplacements, handler: { replacement in
-			guard case .simpleSourceTypeReplacement(let token) = replacement.value else {return adjustedReplacements}
+		while let replacement = replacementsIterator.next() {
+			guard case .simpleSourceTypeReplacement(let token) = replacement.value else {continue}
 			guard let newValue = xibLocResolvingInfo.simpleSourceTypeReplacements[token] else {
 				NSLog("%@", "Got token \(token) in replacement tree for simple source type replacement, but no value given in xibLocResolvingInfo") /* HCLogES */
-				return adjustedReplacements
+				continue
 			}
 			
-			let stringReplacement = sourceTypeHelperType.replace(strRange: (replacement.containerRange, refString), with: newValue, in: &sourceWithSimpleReplacements)
-			let originalRefString = refString
-			refString.replaceSubrange(replacement.containerRange, with: stringReplacement)
-			ParsedXibLoc<SourceType, SourceTypeHelper>.replace(range: replacement.containerRange, with: replacement.containerRange.lowerBound..<refString.index(replacement.containerRange.lowerBound, offsetBy: stringReplacement.count), in: &adjustedReplacements, originalString: originalRefString)
-			return adjustedReplacements
-		})
-		/* TODO */
+			let stringReplacement = sourceTypeHelperType.replace(strRange: (replacement.containerRange, replacementsIterator.refString), with: newValue, in: &sourceWithSimpleReplacements)
+			
+			replacementsIterator.delete(replacementGroup: replacement.groupId)
+			replacementsIterator.replace(rangeInText: replacement.containerRange, with: stringReplacement)
+		}
 		
 		/* Converting the source type string to the destination type */
 		var result = xibLocResolvingInfo.identityReplacement(sourceWithSimpleReplacements)
+		replacementsIterator.reset()
 		
 		/* Applying other replacements */
-		ParsedXibLoc<SourceType, SourceTypeHelper>.enumerateReplacementsDepthFirst(adjustedReplacements, handler: { replacement in
+		while let replacement = replacementsIterator.next() {
 			switch replacement.value {
-			case .simpleSourceTypeReplacement: (/* nop (done above) */)
+			case .simpleSourceTypeReplacement: (/* Treated before conversion to ReturnType */)
 			case .attributesModification(let token):
 				guard let modifier = xibLocResolvingInfo.attributesModifications[token] else {
 					NSLog("%@", "Got token \(token) in replacement tree for attributes modification, but no value given in xibLocResolvingInfo") /* HCLogES */
-					return adjustedReplacements
+					continue
 				}
-				let warning = """
-				todo: currently we slice the result to extract the part where we'll apply the transformation,
-				then apply the transformation, then replace with the transformed value. This is expensive.
-				The attributes modifier should be able to handle being given a range and apply the transform to this range only
-				"""
-				modifier(&result, replacement.range, refString)
+				modifier(&result, replacement.range, replacementsIterator.refString)
 				/* We cannot do the assert below because the returnTypeHelperType
 				 * does not have a method to convert from the return type to a
 				 * string. However, if possible, the assert would be correct. */
 //				assert(returnTypeHelperType.stringRepresentation(of: result) == refString)
-				/* No ranges to adjust in replacements */
+				replacementsIterator.delete(replacementGroup: replacement.groupId)
 				
 			case .simpleReturnTypeReplacement(let token):
 				guard let newValue = xibLocResolvingInfo.simpleReturnTypeReplacements[token] else {
 					NSLog("%@", "Got token \(token) in replacement tree for simple return type replacement, but no value given in xibLocResolvingInfo") /* HCLogES */
-					return adjustedReplacements
+					continue
 				}
 				
-				let stringReplacement = returnTypeHelperType.replace(strRange: (replacement.containerRange, refString), with: newValue, in: &result)
-				refString.replaceSubrange(replacement.containerRange, with: stringReplacement)
+				let stringReplacement = returnTypeHelperType.replace(strRange: (replacement.containerRange, replacementsIterator.refString), with: newValue, in: &result)
+				replacementsIterator.delete(replacementGroup: replacement.groupId)
+				replacementsIterator.replace(rangeInText: replacement.containerRange, with: stringReplacement)
 				
 			case .orderedReplacement(let token, value: let value):
 				guard let wantedValue = xibLocResolvingInfo.orderedReplacements[token] else {
 					NSLog("%@", "Got token \(token) in replacement tree for ordered replacement, but no value given in xibLocResolvingInfo") /* HCLogES */
-					return adjustedReplacements
+					continue
 				}
 				let warning = "todo: we must handle the case where the given value is too big! in this case we must use the last value available"
-				guard value == wantedValue else {return adjustedReplacements}
+				guard value == wantedValue else {continue}
 				
-				let content = returnTypeHelperType.slice(strRange: (replacement.range, refString), from: result)
-				let stringContent = returnTypeHelperType.replace(strRange: (replacement.containerRange, refString), with: content, in: &result)
-				refString.replaceSubrange(replacement.containerRange, with: stringContent)
+				let content = returnTypeHelperType.slice(strRange: (replacement.range, replacementsIterator.refString), from: result)
+				let stringContent = returnTypeHelperType.replace(strRange: (replacement.containerRange, replacementsIterator.refString), with: content, in: &result)
+				replacementsIterator.delete(replacementGroup: replacement.groupId)
+				replacementsIterator.replace(rangeInText: replacement.containerRange, with: stringContent)
 				
 			case .pluralGroup(let token, value: let value):
 				let warning = "todo"
@@ -265,9 +268,7 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
 			case .dictionaryReplacement(id: let id, value: let value):
 				let warning = "todo"
 			}
-			return adjustedReplacements
-		})
-		/* TODO */
+		}
 		
 		return result
 	}
@@ -276,98 +277,196 @@ struct ParsedXibLoc<SourceType, SourceTypeHelper : XibLoc.SourceTypeHelper> wher
       MARK: - Private
 	   *************** */
 	
-	static private func enumerateReplacementsDepthFirst(_ replacements: [Replacement], handler: (_ replacement: Replacement) -> [Replacement], baseIndexPath: IndexPath = IndexPath()) {
-		let replacementsCount: Int
-		var replacements = replacements
-		if baseIndexPath.isEmpty {replacementsCount = replacements.count}
-		else                     {replacementsCount = ParsedXibLoc<SourceType, SourceTypeHelper>.replacement(at: baseIndexPath, in: replacements).children.count}
-		for i in 0..<replacementsCount {
-			let currentIndexPath = baseIndexPath.appending(i)
-			let replacement = ParsedXibLoc<SourceType, SourceTypeHelper>.replacement(at: currentIndexPath, in: replacements)
-			
-			enumerateReplacementsDepthFirst(replacements, handler: handler, baseIndexPath: currentIndexPath)
-			replacements = handler(replacement)
-		}
-	}
+	/* *************************
+      MARK: → General Utilities
+	   ************************* */
 	
-	/* NOT a generic method. Assumes a bunch of stuff on the given arguments. */
-	private static func adjustedRange(from range: Range<String.Index>, byReplacing removedRange: Range<String.Index>, with addedRange: Range<String.Index>?, in originalString: String) -> Range<String.Index> {
-		let adjustLowerBound = (originalString.distance(from: range.lowerBound, to: removedRange.upperBound) <= 0)
-		let adjustUpperBound = (originalString.distance(from: range.upperBound, to: removedRange.upperBound) <= 0)
-		let distance = originalString.distance(from: addedRange?.upperBound ?? removedRange.lowerBound, to: removedRange.upperBound)
+	private class ReplacementsIterator : IteratorProtocol {
 		
-		return Range<String.Index>(uncheckedBounds:
-			(lower: !adjustLowerBound ? range.lowerBound : originalString.index(range.lowerBound, offsetBy: -distance),
-			 upper: !adjustUpperBound ? range.upperBound : originalString.index(range.upperBound, offsetBy: -distance))
-		)
-	}
-	
-	private static func remove(range: Range<String.Index>, in replacements: inout [Replacement], originalString: String) {
-		replace(range: range, with: nil, in: &replacements, originalString: originalString)
-	}
-	
-	private static func replace(range: Range<String.Index>, with newRange: Range<String.Index>?, in replacements: inout [Replacement], originalString: String) {
-		for (idx, var replacement) in replacements.enumerated() {
-			/* We make sure range is contained by the container range of the
-			 * replacement, or that both do not overlap. */
-			assert(!replacement.containerRange.overlaps(range) || replacement.containerRange.clamped(to: range) == range)
-			
-			replacement.range = adjustedRange(from: replacement.range, byReplacing: range, with: newRange, in: originalString)
-			replacement.containerRange = adjustedRange(from: replacement.containerRange, byReplacing: range, with: newRange, in: originalString)
-			
-			remove(range: range, in: &replacement.children, originalString: originalString)
-			replacements[idx] = replacement
+		typealias Element = Replacement
+		
+		var refString: String
+		var adjustedReplacements: [Replacement]
+		
+		init(refString rs: String, adjustedReplacements r: [Replacement]) {
+//			print("RESET I")
+			refString = rs
+			adjustedReplacements = r
 		}
+		
+		func next() -> Replacement? {
+//			print("ASKED NEXT REPLACEMENT. CURRENT INDEX PATH IS \(currentIndexPath); refString is \(refString)")
+//			defer {print(" --> NEW CURRENT INDEX PATH: \(currentIndexPath)")}
+			/* Moving currentIndexPath to next index path. Depth-first graph traversal style. */
+			if wentIn {
+				func isLastIndexInParent(_ indexPath: IndexPath) -> Bool {
+					guard let lastIndex = indexPath.last else {return false}
+					let parentIndexPath = indexPath.dropLast()
+					if parentIndexPath.isEmpty {return lastIndex == adjustedReplacements.endIndex-1}
+					else                       {return lastIndex == replacement(at: parentIndexPath).children.endIndex-1}
+				}
+				
+				if isLastIndexInParent(currentIndexPath) {currentIndexPath.removeLast(); wentIn = true}
+				else {
+					guard let lastIndex = currentIndexPath.last else {/*print(" --> RETURNING NIL"); */return nil}
+					currentIndexPath.removeLast(); currentIndexPath.append(lastIndex + 1)
+					wentIn = false
+				}
+			}
+			if !wentIn {
+				while (currentIndexPath.count == 0 && adjustedReplacements.count > 0) || (currentIndexPath.count > 0 && replacement(at: currentIndexPath).children.count > 0) {currentIndexPath.append(0)}
+				wentIn = true
+			}
+			
+			/* Returning Replacement at currentIndexPath */
+			guard currentIndexPath.count > 0 else {/*print(" --> RETURNING NIL"); */return nil}
+//			print(" --> RETURNING AT INDEX PATH \(currentIndexPath)")
+			return replacement(at: currentIndexPath)
+		}
+		
+		func reset() {
+//			print("RESET")
+			currentIndexPath = IndexPath()
+			wentIn = false
+		}
+		
+		func delete(replacementGroup: Int) {
+			delete(replacementGroup: replacementGroup, in: &adjustedReplacements)
+		}
+		
+		func replace(rangeInText replacedRange: Range<String.Index>, with string: String?) {
+			let originalString = refString
+			refString.replaceSubrange(replacedRange, with: string ?? "")
+			ReplacementsIterator.adjustReplacementRanges(replacedRange: replacedRange, with: string?.count, in: &adjustedReplacements, originalString: originalString, newString: refString)
+		}
+		
+		func delete(rangeInText replacedRange: Range<String.Index>) {
+			replace(rangeInText: replacedRange, with: nil)
+		}
+		
+		private var currentIndexPath = IndexPath()
+		private var wentIn = false
+		
+		/* range and removedRange are relative to originalString
+		 * addedDistance is relative to newString */
+		private static func adjustedRange(from range: Range<String.Index>, byReplacing removedRange: Range<String.Index>, in originalString: String, with addedDistance: (String.IndexDistance, String)?) -> Range<String.Index> {
+			let adjustLowerBound = (originalString.distance(from: range.lowerBound, to: removedRange.upperBound) <= 0)
+			let adjustUpperBound = (originalString.distance(from: range.upperBound, to: removedRange.upperBound) <= 0)
+			let removedDistance = originalString.distance(from: removedRange.lowerBound, to: removedRange.upperBound)
+			
+			let adjustedLowerBoundWithRemoval = !adjustLowerBound ? range.lowerBound : originalString.index(range.lowerBound, offsetBy: -removedDistance)
+			let adjustedUpperBoundWithRemoval = !adjustUpperBound ? range.upperBound : originalString.index(range.upperBound, offsetBy: -removedDistance)
+			
+			if let (addedDistance, newString) = addedDistance {
+				return Range<String.Index>(uncheckedBounds:
+					(lower: !adjustLowerBound ? adjustedLowerBoundWithRemoval : newString.index(adjustedLowerBoundWithRemoval, offsetBy: addedDistance),
+					 upper: !adjustUpperBound ? adjustedUpperBoundWithRemoval : newString.index(adjustedUpperBoundWithRemoval, offsetBy: addedDistance))
+				)
+			}
+			
+			return Range<String.Index>(uncheckedBounds: (lower: adjustedLowerBoundWithRemoval, upper: adjustedUpperBoundWithRemoval))
+		}
+		
+		private static func adjustReplacementRanges(replacedRange: Range<String.Index>, with distance: String.IndexDistance?, in replacements: inout [Replacement], originalString: String, newString: String) {
+			for (idx, var replacement) in replacements.enumerated() {
+				/* We make sure range is contained by the container range of the
+				 * replacement, or that both do not overlap. */
+				assert(!replacement.containerRange.overlaps(replacedRange) || replacement.containerRange.clamped(to: replacedRange) == replacedRange)
+				
+				replacement.range          = ReplacementsIterator.adjustedRange(from: replacement.range,          byReplacing: replacedRange, in: originalString, with: distance.map{ ($0, newString) })
+				replacement.containerRange = ReplacementsIterator.adjustedRange(from: replacement.containerRange, byReplacing: replacedRange, in: originalString, with: distance.map{ ($0, newString) })
+				
+				adjustReplacementRanges(replacedRange: replacedRange, with: distance, in: &replacement.children, originalString: originalString, newString: newString)
+				replacements[idx] = replacement
+			}
+		}
+		
+		private func delete(replacementGroup deletedGroupId: Int, in replacements: inout [Replacement], currentLevel: Int = 0) {
+			var idx = 0
+			while idx < replacements.count {
+				var replacement = replacements[idx]
+				
+				guard replacement.groupId != deletedGroupId else {
+					if currentLevel < currentIndexPath.endIndex {
+						switch currentIndexPath[currentLevel] {
+						case idx:
+							/* The replacement we are removing is currently being
+							 * visited. Let's relocate the current index to the
+							 * previous replacement. */
+							currentIndexPath.removeLast(currentIndexPath.count-currentLevel-1)
+							while let last = currentIndexPath.last, last == 0 {currentIndexPath.removeLast()}
+							if let last = currentIndexPath.last {currentIndexPath.removeLast(); currentIndexPath.append(last - 1)}
+							else                                {wentIn = false}
+							
+						case idx...:
+							currentIndexPath[currentLevel] -= 1
+							
+						default: (/*nop*/)
+						}
+					}
+					replacements.remove(at: idx)
+					continue
+				}
+				
+				delete(replacementGroup: deletedGroupId, in: &replacement.children, currentLevel: currentLevel+1)
+				replacements[idx] = replacement
+				
+				idx += 1
+			}
+		}
+		
+		private func replacement(at indexPath: IndexPath) -> Replacement {
+			var result: Replacement!
+			var replacements = adjustedReplacements
+			for idx in indexPath {
+				result = replacements[idx]
+				replacements = result.children
+			}
+			return result
+		}
+		
 	}
+	
+	/* **************************
+      MARK: → Parsing the XibLoc
+	   ************************** */
 	
 	private static func remove(escapeToken: String?, in replacements: inout [Replacement], source: inout SourceType, stringSource: inout String, parserHelper: SourceTypeHelper.Type) {
 		guard let escapeToken = escapeToken else {return}
 		
-		var pos = stringSource.startIndex
-		while let r = stringSource.range(of: escapeToken, options: [.literal], range: pos..<stringSource.endIndex) {
-			remove(range: r, in: &replacements, originalString: stringSource)
-			parserHelper.remove(strRange: (r, stringSource), from: &source)
-			stringSource.removeSubrange(r)
+		let iterator = ReplacementsIterator(refString: stringSource, adjustedReplacements: replacements)
+		
+		var pos = iterator.refString.startIndex
+		while let r = iterator.refString.range(of: escapeToken, options: [.literal], range: pos..<iterator.refString.endIndex) {
+			parserHelper.remove(strRange: (r, iterator.refString), from: &source)
+			iterator.delete(rangeInText: r)
 			pos = r.lowerBound
 			
-			if pos >= stringSource.endIndex {break}
-			if stringSource[r] == escapeToken {pos = stringSource.index(pos, offsetBy: escapeToken.count)}
+			if pos >= iterator.refString.endIndex {break}
+			if iterator.refString[r] == escapeToken {pos = iterator.refString.index(pos, offsetBy: escapeToken.count)}
 		}
-	}
-	
-	private static func replacement(at indexPath: IndexPath, in replacements: [Replacement]) -> Replacement {
-		var result: Replacement!
-		var replacements = replacements
-		for idx in indexPath {
-			result = replacements[idx]
-			replacements = result.children
-		}
-		return result
-	}
-	
-	private static func removeTokens(inReplacementAtIndexPath indexPath: IndexPath, from replacements: inout [Replacement], source: inout SourceType, stringSource: inout String, parserHelper: SourceTypeHelper.Type) {
-		let replacement1 = replacement(at: indexPath, in: replacements)
-		let leftTokenRange = stringSource.index(replacement1.range.lowerBound, offsetBy: -replacement1.removedLeftTokenDistance)..<replacement1.range.lowerBound
-		remove(range: leftTokenRange, in: &replacements, originalString: stringSource)
-		parserHelper.remove(strRange: (leftTokenRange, stringSource), from: &source)
-		stringSource.removeSubrange(leftTokenRange)
 		
-		let replacement2 = replacement(at: indexPath, in: replacements)
-		let rightTokenRange = replacement2.range.upperBound..<stringSource.index(replacement2.range.upperBound, offsetBy: replacement2.removedRightTokenDistance)
-		remove(range: rightTokenRange, in: &replacements, originalString: stringSource)
-		parserHelper.remove(strRange: (rightTokenRange, stringSource), from: &source)
-		stringSource.removeSubrange(rightTokenRange)
-		
-		removeTokens(from: &replacements, baseIndexPath: indexPath, source: &source, stringSource: &stringSource, parserHelper: parserHelper)
+		replacements = iterator.adjustedReplacements
+		stringSource = iterator.refString
 	}
 	
-	private static func removeTokens(from replacements: inout [Replacement], baseIndexPath: IndexPath, source: inout SourceType, stringSource: inout String, parserHelper: SourceTypeHelper.Type) {
-		let replacementsCount: Int
-		if baseIndexPath.isEmpty {replacementsCount = replacements.count}
-		else                     {replacementsCount = replacement(at: baseIndexPath, in: replacements).children.count}
-		for i in 0..<replacementsCount {
-			removeTokens(inReplacementAtIndexPath: baseIndexPath.appending(i), from: &replacements, source: &source, stringSource: &stringSource, parserHelper: parserHelper)
+	private static func removeTokens(from replacements: inout [Replacement], source: inout SourceType, stringSource: inout String, parserHelper: SourceTypeHelper.Type) {
+		let iterator = ReplacementsIterator(refString: stringSource, adjustedReplacements: replacements)
+		
+		while let replacement = iterator.next() {
+			let leftTokenRange = iterator.refString.index(replacement.range.lowerBound, offsetBy: -replacement.removedLeftTokenDistance)..<replacement.range.lowerBound
+			parserHelper.remove(strRange: (leftTokenRange, iterator.refString), from: &source)
+			iterator.delete(rangeInText: leftTokenRange)
 		}
+		iterator.reset()
+		while let replacement = iterator.next() {
+			let rightTokenRange = replacement.range.upperBound..<iterator.refString.index(replacement.range.upperBound, offsetBy: replacement.removedRightTokenDistance)
+			parserHelper.remove(strRange: (rightTokenRange, iterator.refString), from: &source)
+			iterator.delete(rangeInText: rightTokenRange)
+		}
+		
+		replacements = iterator.adjustedReplacements
+		stringSource = iterator.refString
 	}
 	
 	/** Inserts the given replacement in the given array of replacements, if
