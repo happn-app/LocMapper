@@ -7,6 +7,7 @@
  */
 
 import Foundation
+import XibLoc
 
 
 
@@ -482,10 +483,7 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		let ret = NSMutableString(string: value)
-		let regexp = try! NSRegularExpression(pattern: "\(NSRegularExpression.escapedPattern(for: openDelim)).*?\(NSRegularExpression.escapedPattern(for: closeDelim))", options: [])
-		regexp.replaceMatches(in: ret, options: [], range: NSRange(location: 0, length: ret.length), withTemplate: replacement)
-		return ret as String
+		return value.applying(xibLocInfo: XibLocResolvingInfo(simpleReplacementWithLeftToken: openDelim, rightToken: closeDelim, value: replacement))
 	}
 	
 }
@@ -547,7 +545,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		else                                                            {escapeToken = nil}
 		
 		/* Let's check the values retrieved from serialization are ok.
-		 * TODO: Check the weird open/close/middle delimiter constraints from HCUtils+Language */
+		 * TODO: Maybe check the open/close/middle delimiter constraints from XibLoc. */
 		
 		super.init()
 	}
@@ -564,10 +562,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		let ret = NSMutableString(string: value)
-		let regexp = try! NSRegularExpression(pattern: "\(NSRegularExpression.escapedPattern(for: openDelim))(.*?)\(NSRegularExpression.escapedPattern(for: middleDelim))(.*?)\(NSRegularExpression.escapedPattern(for: closeDelim))", options: [])
-		regexp.replaceMatches(in: ret, options: [], range: NSRange(location: 0, length: ret.length), withTemplate: (gender == .male ? "$1" : "$2"))
-		return ret as String
+		return value.applying(xibLocInfo: XibLocResolvingInfo(genderReplacementWithLeftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim, valueIsMale: gender == .male))
 	}
 	
 }
@@ -577,37 +572,71 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 /* ***** */
 class LocValueTransformerPluralVariantPick : LocValueTransformer {
 	
+	enum UnicodePluralValue : String {
+		case zero = "zero"
+		case one = "one"
+		case two = "two"
+		case few = "few"
+		case many = "many"
+		case other = "other"
+		init?(string: String) {
+			switch string.lowercased() {
+			case "zero",  "z", "0": self = .zero
+			case "one",   "o", "1": self = .one
+			case "two",   "t", "2": self = .two
+			case "few",   "f":      self = .few
+			case "many",  "m":      self = .many
+			case "other", "x":      self = .other
+			default: return nil
+			}
+		}
+	}
+	
 	override var isValid: Bool {
 		return true
 	}
 	
+	let unicodeValue: UnicodePluralValue
 	let openDelim: String
-	let replacement: String
+	let middleDelim: String
 	let closeDelim: String
 	let escapeToken: String?
 	
 	init(serialization: [String: Any]) throws {
-		guard
-			let od = serialization["open_delimiter"] as? String,
-			let r  = serialization["replacement"] as? String,
-			let cd = serialization["close_delimiter"] as? String
-			else
-		{
-			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing either open_delimiter, replacement or close_delimiter."])
+		guard let vs = serialization["value"] as? String, let v = UnicodePluralValue(string: vs) else {
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid plural value."])
 		}
 		
-		openDelim = od
-		replacement = r
-		closeDelim = cd
+		if let d = serialization["open_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty open delimiter, which is invalid."])}
+			openDelim = d
+		} else {openDelim = "<"}
+		
+		if let d = serialization["middle_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty middle delimiter, which is invalid."])}
+			middleDelim = d
+		} else {middleDelim = ":"}
+		
+		if let d = serialization["close_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty close delimiter, which is invalid."])}
+			closeDelim = d
+		} else {closeDelim = ">"}
+		
+		unicodeValue = v
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
 		else                                                            {escapeToken = nil}
+		
+		/* Let's check the values retrieved from serialization are ok.
+		 * TODO: Maybe check the open/close/middle delimiter constraints from XibLoc. */
+		
 		super.init()
 	}
 	
 	override func serializePrivateData() -> [String: Any] {
 		var ret = [
+			"value": unicodeValue.rawValue,
 			"open_delimiter": openDelim,
-			"replacement": replacement,
+			"middle_delimiter": middleDelim,
 			"close_delimiter": closeDelim
 		]
 		if let e = escapeToken {ret["escape_token"] = e}

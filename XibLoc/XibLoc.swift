@@ -12,21 +12,21 @@ import Foundation
 
 public extension String {
 	
-	public func applying(xibLocInfo: XibLocResolvingInfo<String, String>) throws -> String {
+	public func applying(xibLocInfo: XibLocResolvingInfo<String, String>) -> String {
 		/* TODO: Cache */
 		return ParsedXibLoc(source: self, parserHelper: StringSourceTypeHelper.self, forXibLocResolvingInfo: xibLocInfo).resolve(xibLocResolvingInfo: xibLocInfo, returnTypeHelperType: StringReturnTypeHelper.self)
 	}
 	
-	public func applying(xibLocInfo: XibLocResolvingInfo<String, NSMutableAttributedString>) throws -> NSMutableAttributedString {
+	public func applying(xibLocInfo: XibLocResolvingInfo<String, NSMutableAttributedString>) -> NSMutableAttributedString {
 		/* TODO: Cache */
 		return ParsedXibLoc(source: self, parserHelper: StringSourceTypeHelper.self, forXibLocResolvingInfo: xibLocInfo).resolve(xibLocResolvingInfo: xibLocInfo, returnTypeHelperType: NSMutableAttributedStringReturnTypeHelper.self)
 	}
 	
-	public func applying(xibLocInfo: XibLocResolvingInfo<NSMutableAttributedString, NSMutableAttributedString>, defaultAttributes: [NSAttributedStringKey: Any]?) throws -> NSMutableAttributedString {
-		return try NSMutableAttributedString(string: self, attributes: defaultAttributes).applyingMutable(xibLocInfo: xibLocInfo)
+	public func applying(xibLocInfo: XibLocResolvingInfo<NSMutableAttributedString, NSMutableAttributedString>, defaultAttributes: [NSAttributedStringKey: Any]?) -> NSMutableAttributedString {
+		return NSMutableAttributedString(string: self, attributes: defaultAttributes).applyingMutable(xibLocInfo: xibLocInfo)
 	}
 	
-//	internal func parseAsXibLocString(escapeToken: String?, simpleReplacementsToken: [XibLocResolvingInfo.OneWordTokens], orderedReplacementsTokens: [XibLocResolvingInfo.MultipleWordsTokens], pluralGroupsTokens: [XibLocResolvingInfo.MultipleWordsTokens]) throws -> ParsedXibLocString {
+//	internal func parseAsXibLocString(escapeToken: String?, simpleReplacementsToken: [XibLocResolvingInfo.OneWordTokens], orderedReplacementsTokens: [XibLocResolvingInfo.MultipleWordsTokens], pluralGroupsTokens: [XibLocResolvingInfo.MultipleWordsTokens]) -> ParsedXibLocString {
 //		return ParsedXibLocString()
 //	}
 	
@@ -34,17 +34,17 @@ public extension String {
 
 public extension NSAttributedString {
 	
-	public func applying(xibLocInfo: XibLocResolvingInfo<NSMutableAttributedString, NSMutableAttributedString>) throws -> NSMutableAttributedString {
-		if let mutableSelf = self as? NSMutableAttributedString {return try mutableSelf.applying(xibLocInfo: xibLocInfo)}
-		else                                                    {return try NSMutableAttributedString(attributedString: self).applying(xibLocInfo: xibLocInfo)}
+	public func applying(xibLocInfo: XibLocResolvingInfo<NSMutableAttributedString, NSMutableAttributedString>) -> NSMutableAttributedString {
+		if let mutableSelf = self as? NSMutableAttributedString {return mutableSelf.applying(xibLocInfo: xibLocInfo)}
+		else                                                    {return NSMutableAttributedString(attributedString: self).applying(xibLocInfo: xibLocInfo)}
 	}
 	
 }
 
 public extension NSMutableAttributedString {
 	
-	public func applyingMutable(xibLocInfo: XibLocResolvingInfo<NSMutableAttributedString, NSMutableAttributedString>) throws -> NSMutableAttributedString {
-		return try NSMutableAttributedString(attributedString: self).applying(xibLocInfo: xibLocInfo)
+	public func applyingMutable(xibLocInfo: XibLocResolvingInfo<NSMutableAttributedString, NSMutableAttributedString>) -> NSMutableAttributedString {
+		return NSMutableAttributedString(attributedString: self).applying(xibLocInfo: xibLocInfo)
 	}
 	
 }

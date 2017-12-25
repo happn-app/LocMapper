@@ -86,12 +86,28 @@ public struct XibLocResolvingInfo<SourceType, ReturnType> {
 public extension XibLocResolvingInfo where SourceType == String, ReturnType == String {
 	
 	public init(simpleReplacementWithToken token: String, value: String) {
+		self.init(simpleReplacementWithLeftToken: token, rightToken: token, value: value)
+	}
+	
+	public init(simpleReplacementWithLeftToken leftToken: String, rightToken: String, value: String) {
 		defaultPluralityDefinition = PluralityDefinition()
 		escapeToken = nil
 		attributesModifications = [:]
 		simpleSourceTypeReplacements = [:]
-		simpleReturnTypeReplacements = [OneWordTokens(token: token): value]
+		simpleReturnTypeReplacements = [OneWordTokens(leftToken: leftToken, rightToken: rightToken): value]
 		orderedReplacements = [:]
+		pluralGroups = []
+		dictionaryReplacements = nil
+		identityReplacement = { $0 }
+	}
+	
+	public init(genderReplacementWithLeftToken leftToken: String, interiorToken: String, rightToken: String, valueIsMale: Bool) {
+		defaultPluralityDefinition = PluralityDefinition()
+		escapeToken = nil
+		attributesModifications = [:]
+		simpleSourceTypeReplacements = [:]
+		simpleReturnTypeReplacements = [:]
+		orderedReplacements = [MultipleWordsTokens(leftToken: leftToken, interiorToken: interiorToken, rightToken: rightToken): valueIsMale ? 0 : 1]
 		pluralGroups = []
 		dictionaryReplacements = nil
 		identityReplacement = { $0 }
