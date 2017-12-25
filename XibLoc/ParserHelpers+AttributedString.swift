@@ -51,6 +51,13 @@ struct NSMutableAttributedStringReturnTypeHelper : ReturnTypeHelper {
 		return NSMutableAttributedString(attributedString: source.attributedSubstring(from: nsrange))
 	}
 	
+	static func remove<R>(strRange: (r: R, s: String), from source: inout NSMutableAttributedString) where R : RangeExpression, R.Bound == String.Index {
+		assert(strRange.s == source.string)
+		
+		let nsrange = NSRange(strRange.r, in: strRange.s)
+		source.replaceCharacters(in: nsrange, with: "")
+	}
+	
 	static func replace<R>(strRange: (r: R, s: String), with replacement: NSMutableAttributedString, in source: inout NSMutableAttributedString) -> String where R : RangeExpression, R.Bound == String.Index {
 		return NSMutableAttributedStringSourceTypeHelper.replace(strRange: strRange, with: replacement, in: &source)
 	}

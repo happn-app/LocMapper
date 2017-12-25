@@ -45,7 +45,9 @@ public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	
 	let simpleSourceTypeReplacements: [OneWordTokens: SourceType]
 	let orderedReplacements: [MultipleWordsTokens: Int]
-	let pluralGroups: [MultipleWordsTokens: PluralValue]
+	/* Plural groups are ordered because of the possibility of plurality
+	 * definition overrides. */
+	let pluralGroups: [(MultipleWordsTokens, PluralValue)]
 	
 	let attributesModifications: [OneWordTokens: (_ modified: inout ReturnType, _ strRange: Range<String.Index>, _ refStr: String) -> Void] /* The handler must NOT modify the string representation of the given argument. */
 	let simpleReturnTypeReplacements: [OneWordTokens: ReturnType]
@@ -75,7 +77,7 @@ public struct XibLocResolvingInfo<SourceType, ReturnType> {
 	 * "@\\[plural|one:dude¦dudes]".
 	 * Inside a dictionary, to escape a special character, just escape it with
 	 * the escape token as expected (eg. "@[escaped|colon\\::and\\|pipe]"). */
-	let dictionaryReplacements: [String: String]?
+	let dictionaryReplacements: [String: String?]?
 	
 	let identityReplacement: (_ source: SourceType) -> ReturnType
 	
@@ -90,7 +92,7 @@ public extension XibLocResolvingInfo where SourceType == String, ReturnType == S
 		simpleSourceTypeReplacements = [:]
 		simpleReturnTypeReplacements = [OneWordTokens(token: token): value]
 		orderedReplacements = [:]
-		pluralGroups = [:]
+		pluralGroups = []
 		dictionaryReplacements = nil
 		identityReplacement = { $0 }
 	}

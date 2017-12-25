@@ -34,7 +34,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
-			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
@@ -48,7 +48,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
-			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
@@ -57,12 +57,41 @@ class XibLocTests: XCTestCase {
 		)
 	}
 	
+	func testOneOrderedReplacementAboveMax() {
+		let info = XibLocResolvingInfo<String, String>(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
+			simpleSourceTypeReplacements: [:],
+			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 2],
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			identityReplacement: { $0 }
+		)
+		XCTAssertEqual(
+			try "the <first:second>".applying(xibLocInfo: info),
+			"the second"
+		)
+	}
+	
+	func testOnePluralReplacement() {
+		let n = 1
+		let info = XibLocResolvingInfo<String, String>(
+			defaultPluralityDefinition: PluralityDefinition(string: "(1)(*)"), escapeToken: nil,
+			simpleSourceTypeReplacements: [OneWordTokens(token: "#"): "\(n)"],
+			orderedReplacements: [:],
+			pluralGroups: [(MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"), .int(n))], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			identityReplacement: { $0 }
+		)
+		XCTAssertEqual(
+			try "#n# <house:houses>".applying(xibLocInfo: info),
+			"1 house"
+		)
+	}
+	
 	func testOneOrderedReplacementAndSimpleReplacement1() {
 		let info = XibLocResolvingInfo<String, String>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [OneWordTokens(token: "|"): "first"],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
-			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
@@ -84,7 +113,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [OneWordTokens(token: "|"): "first"],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
-			pluralGroups: [:], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
@@ -98,7 +127,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
-			pluralGroups: [:],
+			pluralGroups: [],
 			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
@@ -115,7 +144,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
-			pluralGroups: [:],
+			pluralGroups: [],
 			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
@@ -130,7 +159,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
-			pluralGroups: [:],
+			pluralGroups: [],
 			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
@@ -147,7 +176,7 @@ class XibLocTests: XCTestCase {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
 			simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 1],
-			pluralGroups: [:],
+			pluralGroups: [],
 			attributesModifications: [OneWordTokens(token: "$"): helperAddTestAttributeLevel],
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
@@ -162,7 +191,7 @@ class XibLocTests: XCTestCase {
 	func testOneAttributesChange() {
 		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
-			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [:],
+			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [],
 			attributesModifications: [OneWordTokens(token: "*"): helperAddTestAttributeLevel],
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
 			identityReplacement: { NSMutableAttributedString(string: $0) }
@@ -178,7 +207,7 @@ class XibLocTests: XCTestCase {
 	func testTwoOverlappingAttributesChange() {
 		let info = XibLocResolvingInfo<String, NSMutableAttributedString>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
-			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [:],
+			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [],
 			attributesModifications: [
 				OneWordTokens(token: "*"): helperAddTestAttributeLevel,
 				OneWordTokens(token: "_"): helperAddTestAttributeIndex

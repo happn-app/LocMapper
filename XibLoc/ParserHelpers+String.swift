@@ -41,6 +41,11 @@ struct StringReturnTypeHelper : ReturnTypeHelper {
 		return String(source[strRange.r])
 	}
 	
+	static func remove<R>(strRange: (r: R, s: String), from source: inout String) where R : RangeExpression, R.Bound == String.Index {
+		assert(strRange.s == source)
+		source.removeSubrange(strRange.r)
+	}
+	
 	static func replace<R>(strRange: (r: R, s: String), with replacement: ReturnType, in source: inout ReturnType) -> String where R : RangeExpression, R.Bound == String.Index {
 		return StringSourceTypeHelper.replace(strRange: strRange, with: replacement, in: &source)
 	}

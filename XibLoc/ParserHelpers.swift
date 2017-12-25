@@ -10,7 +10,7 @@ import Foundation
 
 
 /* Note: We might want to merge the source and return type helpers! They already
- *       have the replace method in common. */
+ *       have the replace and remove method in common. */
 
 
 protocol SourceTypeHelper {
@@ -47,6 +47,7 @@ protocol ReturnTypeHelper {
 	typealias StrRange<R> = (r: R, s: String) where R : RangeExpression, R.Bound == String.Index
 	
 	static func slice<R>(strRange: StrRange<R>, from source: ReturnType) -> ReturnType where R : RangeExpression, R.Bound == String.Index
+	static func remove<R>(strRange: StrRange<R>, from source: inout ReturnType) where R : RangeExpression, R.Bound == String.Index
 	static func replace<R>(strRange: StrRange<R>, with replacement: ReturnType, in source: inout ReturnType) -> String where R : RangeExpression, R.Bound == String.Index
 	
 }
