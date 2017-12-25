@@ -24,7 +24,7 @@ class XibLocTests: XCTestCase {
 	func testOneSimpleReplacement() {
 		let info = XibLocResolvingInfo(simpleReplacementWithToken: "|", value: "replacement")
 		XCTAssertEqual(
-			try "the |replaced|".applying(xibLocInfo: info),
+			"the |replaced|".applying(xibLocInfo: info),
 			"the replacement"
 		)
 	}
@@ -38,7 +38,7 @@ class XibLocTests: XCTestCase {
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
-			try "the <first:second>".applying(xibLocInfo: info),
+			"the <first:second>".applying(xibLocInfo: info),
 			"the first"
 		)
 	}
@@ -52,7 +52,7 @@ class XibLocTests: XCTestCase {
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
-			try "the <first:second>".applying(xibLocInfo: info),
+			"the <first:second>".applying(xibLocInfo: info),
 			"the second"
 		)
 	}
@@ -66,7 +66,7 @@ class XibLocTests: XCTestCase {
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
-			try "the <first:second>".applying(xibLocInfo: info),
+			"the <first:second>".applying(xibLocInfo: info),
 			"the second"
 		)
 	}
@@ -81,7 +81,7 @@ class XibLocTests: XCTestCase {
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
-			try "#n# <house:houses>".applying(xibLocInfo: info),
+			"#n# <house:houses>".applying(xibLocInfo: info),
 			"1 house"
 		)
 	}
@@ -95,15 +95,15 @@ class XibLocTests: XCTestCase {
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
-			try "the <|fiftieth|:second>".applying(xibLocInfo: info),
+			"the <|fiftieth|:second>".applying(xibLocInfo: info),
 			"the first"
 		)
 		XCTAssertEqual(
-			try "the <|1st|:second>".applying(xibLocInfo: info),
+			"the <|1st|:second>".applying(xibLocInfo: info),
 			"the first"
 		)
 		XCTAssertEqual(
-			try "the <||:second>".applying(xibLocInfo: info),
+			"the <||:second>".applying(xibLocInfo: info),
 			"the first"
 		)
 	}
@@ -117,7 +117,7 @@ class XibLocTests: XCTestCase {
 			identityReplacement: { $0 }
 		)
 		XCTAssertEqual(
-			try "the <|fiftieth|:second>".applying(xibLocInfo: info),
+			"the <|fiftieth|:second>".applying(xibLocInfo: info),
 			"the second"
 		)
 	}
@@ -134,7 +134,7 @@ class XibLocTests: XCTestCase {
 		let result = NSMutableAttributedString(string: "the ")
 		result.append(NSAttributedString(string: "first", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the <$first$:second>".applying(xibLocInfo: info),
+			"the <$first$:second>".applying(xibLocInfo: info),
 			result
 		)
 	}
@@ -149,7 +149,7 @@ class XibLocTests: XCTestCase {
 			simpleReturnTypeReplacements: [:], dictionaryReplacements: nil, identityReplacement: { NSMutableAttributedString(string: $0) }
 		)
 		XCTAssertEqual(
-			try "the <$first$:second>".applying(xibLocInfo: info),
+			"the <$first$:second>".applying(xibLocInfo: info),
 			NSMutableAttributedString(string: "the second")
 		)
 	}
@@ -166,7 +166,7 @@ class XibLocTests: XCTestCase {
 		let result = NSMutableAttributedString(string: "the ")
 		result.append(NSAttributedString(string: "first", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the $<first:second>$".applying(xibLocInfo: info),
+			"the $<first:second>$".applying(xibLocInfo: info),
 			result
 		)
 	}
@@ -183,7 +183,7 @@ class XibLocTests: XCTestCase {
 		let result = NSMutableAttributedString(string: "the ")
 		result.append(NSAttributedString(string: "second", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the $<first:second>$".applying(xibLocInfo: info),
+			"the $<first:second>$".applying(xibLocInfo: info),
 			result
 		)
 	}
@@ -199,7 +199,7 @@ class XibLocTests: XCTestCase {
 		let result = NSMutableAttributedString(string: "the ")
 		result.append(NSAttributedString(string: "test", attributes: [.accessibilityListItemLevel: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the *test*".applying(xibLocInfo: info),
+			"the *test*".applying(xibLocInfo: info),
 			result
 		)
 	}
@@ -219,7 +219,7 @@ class XibLocTests: XCTestCase {
 		result.append(NSAttributedString(string: "and", attributes: [.accessibilityListItemLevel: NSNumber(value: 0), .accessibilityListItemIndex: NSNumber(value: 0)]))
 		result.append(NSAttributedString(string: " two", attributes: [.accessibilityListItemIndex: NSNumber(value: 0)]))
 		XCTAssertEqual(
-			try "the test *one _and* two_".applying(xibLocInfo: info),
+			"the test *one _and* two_".applying(xibLocInfo: info),
 			result
 		)
 	}
