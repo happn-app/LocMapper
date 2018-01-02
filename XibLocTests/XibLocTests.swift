@@ -57,6 +57,20 @@ class XibLocTests: XCTestCase {
 		)
 	}
 	
+	func testOneOrderedReplacementTwice() {
+		let info = XibLocResolvingInfo<String, String>(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
+			simpleSourceTypeReplacements: [:],
+			orderedReplacements: [MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"): 0],
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			identityReplacement: { $0 }
+		)
+		XCTAssertEqual(
+			"the <first:second> and also <first here:second here>".applying(xibLocInfo: info),
+			"the first and also first here"
+		)
+	}
+	
 	func testOneOrderedReplacementAboveMax() {
 		let info = XibLocResolvingInfo<String, String>(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
@@ -83,6 +97,21 @@ class XibLocTests: XCTestCase {
 		XCTAssertEqual(
 			"#n# <house:houses>".applying(xibLocInfo: info),
 			"1 house"
+		)
+	}
+	
+	func testOnePluralReplacementMissingOneZone() {
+		let n = 2
+		let info = XibLocResolvingInfo<String, String>(
+			defaultPluralityDefinition: PluralityDefinition(string: "(1)(2→4:^*[^1][2→4]$)?(*)"), escapeToken: nil,
+			simpleSourceTypeReplacements: [OneWordTokens(token: "#"): "\(n)"],
+			orderedReplacements: [:],
+			pluralGroups: [(MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"), .int(n))], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			identityReplacement: { $0 }
+		)
+		XCTAssertEqual(
+			"#n# <house:houses>".applying(xibLocInfo: info),
+			"2 houses"
 		)
 	}
 	
