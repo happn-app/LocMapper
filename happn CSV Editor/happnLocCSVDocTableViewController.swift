@@ -46,8 +46,9 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 	}
 	
 	func noteFiltersHaveChanged() {
-		if let csvLocFile = csvLocFile {sortedKeys = csvLocFile.entryKeys(matchingFilters: csvLocFile.filtersMetadataValueForKey("filters") ?? []).sorted()}
-		else                           {sortedKeys = nil}
+		if let csvLocFile = csvLocFile, let filters = csvLocFile.filtersMetadataValueForKey("filters") {sortedKeys = csvLocFile.entryKeys(matchingFilters: filters).sorted()}
+		else if let csvLocFile = csvLocFile                                                            {sortedKeys = csvLocFile.entryKeys.sorted()}
+		else                                                                                           {sortedKeys = nil}
 		reloadTableData()
 	}
 	

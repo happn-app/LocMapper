@@ -113,7 +113,7 @@ class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSour
 		case .envFilter:
 			let v = tableView.makeView(withIdentifier: .checkFilter, owner: self)!
 			let env = envs[rowInSection]
-			(v.subviews.first! as! NSButton).state = (envsStatus[env] ?? false ? .on : .off)
+			(v.subviews.first! as! NSButton).state = (envsStatus[env] ?? true ? .on : .off)
 			(v.subviews.first! as! NSButton).title = env
 			(v.subviews.first! as! NSButton).tag = row
 			return v
@@ -126,7 +126,7 @@ class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSour
 		case .stateFilter:
 			let v = tableView.makeView(withIdentifier: .checkFilter, owner: self)!
 			let stateFilter = stateFilters[rowInSection]
-			(v.subviews.first! as! NSButton).state = (stateFiltersStatus[stateFilter] ?? false ? .on : .off)
+			(v.subviews.first! as! NSButton).state = (stateFiltersStatus[stateFilter] ?? true ? .on : .off)
 			(v.subviews.first! as! NSButton).title = NSLocalizedString(stateFilter + " state filter", comment: "")
 			(v.subviews.first! as! NSButton).tag = row
 			return v
@@ -172,9 +172,9 @@ class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSour
 	/* Currently we keep the envs list statically. We may want to extract it from the happnCSVLoc later. */
 	private let envs         = ["Xcode", "Android", "Windows", "RefLoc"]
 	private let stateFilters = ["todoloc", "hard_coded_values", "valid_mapped_values", "invalid_mapped_values"]
-	private lazy var section1SepIndex: Int = 1
-	private lazy var section2SepIndex: Int = self.section1SepIndex + 1 + self.envs.count
-	private lazy var section3SepIndex: Int = self.section2SepIndex + 1 + self.stateFilters.count
+	private lazy var section1SepIndex = 1
+	private lazy var section2SepIndex = section1SepIndex + 1 + envs.count
+	private lazy var section3SepIndex = section2SepIndex + 1 + stateFilters.count
 	
 	private var stringFilter = ""
 	private var envsStatus = [String: Bool]()
@@ -203,11 +203,11 @@ class happnLocCSVDocFiltersViewController: NSViewController, NSTableViewDataSour
 	
 	private func updateDocFilters() {
 		var res = [happnCSVLocFile.Filter.string(stringFilter)]
-		for env in envs {if envsStatus[env] ?? false {res.append(.env(env))}}
-		if stateFiltersStatus["todoloc"] ?? false               {res.append(.stateTodoloc)}
-		if stateFiltersStatus["hard_coded_values"] ?? false     {res.append(.stateHardCodedValues)}
-		if stateFiltersStatus["valid_mapped_values"] ?? false   {res.append(.stateMappedValid)}
-		if stateFiltersStatus["invalid_mapped_values"] ?? false {res.append(.stateMappedInvalid)}
+		for env in envs {if envsStatus[env] ?? true {res.append(.env(env))}}
+		if stateFiltersStatus["todoloc"] ?? true               {res.append(.stateTodoloc)}
+		if stateFiltersStatus["hard_coded_values"] ?? true     {res.append(.stateHardCodedValues)}
+		if stateFiltersStatus["valid_mapped_values"] ?? true   {res.append(.stateMappedValid)}
+		if stateFiltersStatus["invalid_mapped_values"] ?? true {res.append(.stateMappedInvalid)}
 		representedFilters = res
 		handlerNotifyFiltersModification?()
 	}

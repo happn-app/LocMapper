@@ -314,21 +314,21 @@ class happnCSVLocFile: TextOutputStreamable {
 	}
 	
 	func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
-		let stringFilters = filters.flatMap { filter -> String? in
+		let stringFilters = filters.flatMap{ filter -> String? in
 			if case .string(let str) = filter, !str.isEmpty {return str}
 			return nil
 		}
-		let envFilters = filters.flatMap { filter -> String? in
+		let envFilters = filters.flatMap{ filter -> String? in
 			if case .env(let env) = filter {return env}
 			return nil
 		}
-		let stateFilters = filters.filter { $0.isStateFilter }
+		let stateFilters = filters.filter{ $0.isStateFilter }
 		
 		guard !envFilters.isEmpty && !stateFilters.isEmpty else {
 			return []
 		}
 		
-		return entryKeys.filter { lineKey -> Bool in
+		return entryKeys.filter{ lineKey -> Bool in
 			/* Filter env */
 			guard envFilters.contains(lineKey.env) else {return false}
 			
