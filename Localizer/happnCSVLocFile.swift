@@ -647,7 +647,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			print(locFile, terminator: "", to: &stringsText)
 			var err: NSError?
 			do {
-				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: String.Encoding.utf16)
+				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: .utf8)
 			} catch let error as NSError {
 				err = error
 				print("Error: Cannot write file to path \(fullOutputPath), got error \(err as Any? ?? "<Unknown>")")
