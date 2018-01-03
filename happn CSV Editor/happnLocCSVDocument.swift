@@ -67,41 +67,70 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		sendRepresentedObjectToSubControllers(csvLocFile)
 	}
 	
+	override func write(to url: URL, ofType typeName: String) throws {
+		/* Let's save the UI state */
+		if let frameStr = mainWindowController?.window?.stringWithSavedFrame {csvLocFile?.setMetadataValue(frameStr, forKey: "UIWindowFrame")}
+		else                                                                 {csvLocFile?.removeMetadata(forKey: "UIWindowFrame")}
+		do    {try csvLocFile?.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
+		catch {Swift.print("*** Warning: Cannot save UIState metadata")}
+		
+		/* We ask super to write the file. In effect this will call the method
+		 * below to get the data to write in the file, then write those data. */
+		try super.write(to: url, ofType: typeName)
+		
+		/* We still need to save the metadata which are not saved in the data
+		 * (anymore; we used to save them along the data). */
+		guard let metadata = csvLocFile?.serializedMetadata() else {return}
+		metadata.withUnsafeBytes{ (ptr: UnsafePointer<Int8>) -> Void in
+			setxattr(url.absoluteURL.path, xattrMetadataName, UnsafeRawPointer(ptr), metadata.count, 0 /* Reserved, should be 0 */, 0 /* No options */)
+		}
+	}
+	
 	override func data(ofType typeName: String) throws -> Data {
 		guard let csvLocFile = csvLocFile else {
 			return Data()
 		}
 		
-		/* Let's save the UI state */
-		if let frameStr = mainWindowController?.window?.stringWithSavedFrame {csvLocFile.setMetadataValue(frameStr, forKey: "UIWindowFrame")}
-		else                                                                 {csvLocFile.removeMetadata(forKey: "UIWindowFrame")}
-		do    {try csvLocFile.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
-		catch {Swift.print("*** Warning: Cannot save UIState metadata")}
-		
 		var strData = ""
 		Swift.print(csvLocFile, terminator: "", to: &strData)
-		guard let data = strData.data(using: String.Encoding.utf8) else {
-			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot convert data to UTF8."])
+		return Data(strData.utf8)
+	}
+	
+	override func read(from url: URL, ofType typeName: String) throws {
+		assert(unserializedMetadata == nil)
+		
+		if url.isFileURL {
+			let s = getxattr(url.absoluteURL.path, xattrMetadataName, nil, 0 /* Size */, 0 /* Reserved, should be 0 */, 0 /* No options */)
+			if s >= 0 {
+				/* We have the size of the xattr we want to read. Let's read it. */
+				var serializedMetadata = Data(count: s)
+				let s2 = serializedMetadata.withUnsafeMutableBytes{ (ptr: UnsafeMutablePointer<Int8>) -> Int in
+					return getxattr(url.absoluteURL.path, xattrMetadataName, UnsafeMutableRawPointer(ptr), s, 0 /* Reserved, should be 0 */, 0 /* No options */)
+				}
+				if s2 >= 0 {
+					/* We have read the xattr. Let's unserialize them! */
+					unserializedMetadata = happnCSVLocFile.unserializedMetadata(from: serializedMetadata)
+				}
+			}
+			windowFrameToRestore = (unserializedMetadata as? [String: Any?])?["UIWindowFrame"] as? String
 		}
-		return data
+		
+		try super.read(from: url, ofType: typeName)
 	}
 	
 	override func read(from data: Data, ofType typeName: String) throws {
-		guard let fileContentStr = String(data: data, encoding: String.Encoding.utf8) else {
-			throw NSError(domain: "fr.happn.happn-CSV-Editor.happnLocCSVDocument", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
-		}
-		
-		windowFrameToRestore = fileContentStr.infoForSplitUserInfo().userInfo?["UIWindowFrame"]
-		
+		/* Note: We may wanna move this in the read from url method (above) so the
+		 * reading of the file is also done asynchronously to avoid blocking when
+		 * big files or files on slow networks are opened. */
+		let metadata = unserializedMetadata
+		unserializedMetadata = nil
 		csvLocFile = nil
-		DispatchQueue.global(qos: .userInitiated).async {
+		DispatchQueue.global(qos: .userInitiated).async{
 			do {
-				let locFile = try happnCSVLocFile(filecontent: fileContentStr, csvSeparator: ",")
-				DispatchQueue.main.async {
-					self.csvLocFile = locFile
-				}
+				let locFile = try happnCSVLocFile(filecontent: data, csvSeparator: ",", metadata: metadata)
+				DispatchQueue.main.async{ self.csvLocFile = locFile }
 			} catch {
-				DispatchQueue.main.async {
+				DispatchQueue.main.async{
 					let alert = NSAlert(error: error as NSError)
 					alert.runModal()
 					self.close()
@@ -261,7 +290,9 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	   MARK: - Private
 	   *************** */
 	
+	private let xattrMetadataName = "fr.ftw-and-co.happnLocEditor.doc-metadata"
 	private var windowFrameToRestore: String?
+	private var unserializedMetadata: Any?
 	
 	private var currentOpenPanel: NSOpenPanel?
 	

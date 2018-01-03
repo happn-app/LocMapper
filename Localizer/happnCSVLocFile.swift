@@ -174,25 +174,38 @@ class happnCSVLocFile: TextOutputStreamable {
 		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: ",")
 	}
 	
-	/* *** Init from path *** */
-	convenience init(fromPath path: String, withCSVSeparator csvSep: String) throws {
+	/* *** Init from path. The metadata should be retrieved with the
+	`unserializedMetadata(from:)` method. They are not read from the given path,
+	it is the caller responsability to retrieve them by its own means. *** */
+	convenience init(fromPath path: String, withCSVSeparator csvSep: String, metadata: Any?) throws {
 		var encoding: UInt = 0
 		var filecontent: String?
 		if FileManager.default.fileExists(atPath: path) {
 			filecontent = try NSString(contentsOfFile: path, usedEncoding: &encoding) as String
 		}
-		try self.init(filecontent: (filecontent != nil ? filecontent! : ""), csvSeparator: csvSep)
+		try self.init(filecontent: filecontent ?? "", csvSeparator: csvSep, metadata: metadata)
 	}
 	
-	/* *** Init with file content *** */
-	convenience init(filecontent: String, csvSeparator csvSep: String) throws {
+	/* *** Init with data file content. The metadata should be retrieved with the
+	`unserializedMetadata(from:)` method. *** */
+	convenience init(filecontent: Data, csvSeparator csvSep: String, metadata: Any?) throws {
+		guard let fileContentStr = String(data: filecontent, encoding: .utf8) else {
+			throw NSError(domain: "Migrator", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
+		}
+		try self.init(filecontent: fileContentStr, csvSeparator: csvSep, metadata: metadata)
+	}
+	
+	/* *** Init with file content. The metadata should be retrieved with the
+	`unserializedMetadata(from:)` method. *** */
+	convenience init(filecontent: String, csvSeparator csvSep: String, metadata: Any?) throws {
 		let defaultError = NSError(domain: "Migrator", code: 1, userInfo: nil)
 		if filecontent.isEmpty {
 			self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep)
 			return
 		}
 		
-		let (startOffset, metadata) = filecontent.infoForSplitUserInfo()
+		let warning = "todo: get rid of line below. it is kept currently for retrocompatibility with previous format which used to save metadata alongside the data"
+		let (startOffset, decodedMetadata) = filecontent.infoForSplitUserInfo()
 		
 		let parser = CSVParser(source: filecontent, startOffset: startOffset, separator: csvSep, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
@@ -280,16 +293,16 @@ class happnCSVLocFile: TextOutputStreamable {
 				entries[k] = .entries(values)
 			}
 		}
-		self.init(languages: languages, entries: entries, metadata: metadata ?? [:], csvSeparator: csvSep)
+		self.init(languages: languages, entries: entries, metadata: metadata ?? decodedMetadata ?? [:], csvSeparator: csvSep)
 	}
 	
 	/* *** Init *** */
-	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: [String: String], csvSeparator csvSep: String) {
+	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: Any?, csvSeparator csvSep: String) {
 		if csvSep.utf16.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
 		csvSeparator = csvSep
 		languages = l
 		entries = e
-		metadata = md
+		metadata = md as? [String: String] ?? [:]
 	}
 	
 	/* *******************************************
@@ -472,7 +485,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	func filtersMetadataValueForKey(_ key: String) -> [Filter]? {
 		guard let dataVal = metadata[key]?.data(using: .utf8), let filtersStr = (try? JSONSerialization.jsonObject(with: dataVal, options: [])) as? [String] else {return nil}
-		return filtersStr.flatMap{Filter(string: $0)}
+		return filtersStr.flatMap{ Filter(string: $0) }
 	}
 	
 	func setMetadataValue(_ value: String, forKey key: String) {
@@ -484,7 +497,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	}
 	
 	func setMetadataValue(_ value: [Filter], forKey key: String) throws {
-		try setMetadataValue(value.map{$0.toString()}, forKey: key)
+		try setMetadataValue(value.map{ $0.toString() }, forKey: key)
 	}
 	
 	func setMetadataValue(_ value: Any, forKey key: String) throws {
@@ -496,6 +509,21 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	func removeMetadata(forKey key: String) {
 		metadata.removeValue(forKey: key)
+	}
+	
+	func serializedMetadata() -> Data {
+		return Data("".byPrepending(userInfo: metadata).utf8)
+	}
+	
+	/** Unserialize the given metadata. Should be used when initing an instance
+	of `happnCSVLocFile`. */
+	static func unserializedMetadata(from serializedMetadata: Data) -> Any? {
+		guard let strSerializedMetadata = String(data: serializedMetadata, encoding: .utf8) else {return nil}
+		
+		let (string, decodedMetadata) = strSerializedMetadata.splitUserInfo()
+		if !string.isEmpty {print("*** Warning: Got stray data in serialized metadata. Ignoring.")}
+		
+		return decodedMetadata
 	}
 	
 	/* ***********************************
@@ -964,10 +992,6 @@ class happnCSVLocFile: TextOutputStreamable {
 	   ********************************* */
 	
 	func write<Target : TextOutputStream>(to target: inout Target) {
-		/* Writing metadata */
-		target.write("".byPrepending(userInfo: metadata))
-		
-		/* Start of the actual data */
 		target.write(
 			happnCSVLocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
 			happnCSVLocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
