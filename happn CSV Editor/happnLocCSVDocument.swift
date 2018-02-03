@@ -170,12 +170,18 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		openPanel.canChooseFiles = true
 		openPanel.allowedFileTypes = ["csv"]
 		openPanel.canChooseDirectories = false
+		if let u = latestURLToRefLocDir {openPanel.directoryURL = u}
 		
 		configureAccessoryView(accessoryView, forOpenPanel: openPanel)
 		
-		openPanel.beginSheetModal(for: windowForSheet!) { response in
+		openPanel.beginSheetModal(for: windowForSheet!){ response in
 			self.currentOpenPanel = nil
 			guard response == .OK, let url = openPanel.url else {return}
+			
+			if url != self.latestURLToRefLocDir {
+				self.latestURLToRefLocDir = url
+				self.updateChangeCount(.changeDone)
+			}
 			
 			let loadingWindow = UINavigationUtilities.createLoadingWindow()
 			self.windowForSheet?.beginSheet(loadingWindow, completionHandler: nil)
@@ -209,6 +215,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		}
 		
 		let openPanel = NSOpenPanel()
+		if let u = latestURLToKeyStructureImport {openPanel.directoryURL = u}
 		
 		/* Getting accessory view. */
 		let controller = ImportKeyStructurePanelController(nibName: .accessoryViewForImportKeyStructure, bundle: nil, csvLocFile: csvLocFile, openPanel: openPanel)!
@@ -216,7 +223,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		currentOpenPanel = openPanel
 		configureAccessoryView(controller.view, forOpenPanel: openPanel)
 		
-		openPanel.beginSheetModal(for: windowForSheet!) { response in
+		openPanel.beginSheetModal(for: windowForSheet!){ response in
 			assert(Thread.isMainThread)
 			
 			openPanel.accessoryView = nil /* Fixes a crash... (macOS 10.12 (16A239j) */
@@ -224,12 +231,12 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			
 			guard response == .OK else {return}
 			
+			if let url = openPanel.url {self.latestURLToKeyStructureImport = url}
 			controller.saveImportSettings()
 			self.updateChangeCount(.changeDone)
 			
 			/* Let's fetch all the data from the controller before dispatching
-			 * async as we want the controller to be released on the main thread
-			 * (to avoid a CATransaction warning in the logs). */
+			 * async as we want the controller to be released on the main thread. */
 			let selectedImportType = controller.selectedImportType
 			let excludedPaths = controller.excludedPaths
 			let languageName = controller.importedLanguageName
@@ -238,9 +245,9 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 			let loadingWindow = UINavigationUtilities.createLoadingWindow()
 			self.windowForSheet?.beginSheet(loadingWindow, completionHandler: nil)
 			
-			DispatchQueue.global().async {
+			DispatchQueue.global().async{
 				defer {
-					DispatchQueue.main.async {
+					DispatchQueue.main.async{
 						self.mainViewController.noteContentHasChanged()
 						self.windowForSheet?.endSheet(loadingWindow)
 						self.updateChangeCount(.changeDone)
@@ -267,7 +274,7 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 						}
 					}
 				} catch {
-					DispatchQueue.main.async {
+					DispatchQueue.main.async{
 						NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)
 					}
 				}
@@ -301,6 +308,21 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 	private var unserializedMetadata: Any?
 	
 	private var currentOpenPanel: NSOpenPanel?
+	
+	private var latestURLToKeyStructureImport: URL? {
+		get {return csvLocFile?.urlMetadataValueForKey("Key Structure Import — Latest Dir")}
+		set {
+			if let v = newValue {csvLocFile?.setMetadataValue(v, forKey: "Key Structure Import — Latest Dir")}
+			else                {csvLocFile?.removeMetadata(forKey: "Key Structure Import — Latest Dir")}
+		}
+	}
+	private var latestURLToRefLocDir: URL? {
+		get {return csvLocFile?.urlMetadataValueForKey("RefLoc Import — Latest Dir")}
+		set {
+			if let v = newValue {csvLocFile?.setMetadataValue(v, forKey: "RefLoc Import — Latest Dir")}
+			else                {csvLocFile?.removeMetadata(forKey: "RefLoc Import — Latest Dir")}
+		}
+	}
 	
 	private func sendRepresentedObjectToSubControllers(_ object: AnyObject?) {
 		for w in windowControllers {

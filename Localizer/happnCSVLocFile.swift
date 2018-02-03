@@ -491,6 +491,10 @@ public class happnCSVLocFile: TextOutputStreamable {
 		return metadata[key]
 	}
 	
+	public func urlMetadataValueForKey(_ key: String) -> URL? {
+		return metadata[key].flatMap{ URL(string: $0) }
+	}
+	
 	public func intMetadataValueForKey(_ key: String) -> Int? {
 		guard let strVal = metadata[key] else {return nil}
 		return Int(strVal)
@@ -503,6 +507,10 @@ public class happnCSVLocFile: TextOutputStreamable {
 	
 	public func setMetadataValue(_ value: String, forKey key: String) {
 		metadata[key] = value
+	}
+	
+	public func setMetadataValue(_ value: URL, forKey key: String) {
+		metadata[key] = value.absoluteString
 	}
 	
 	public func setMetadataValue(_ value: Int, forKey key: String) {
