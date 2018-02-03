@@ -7,6 +7,7 @@
  */
 
 import Foundation
+import os.log
 
 
 
@@ -35,8 +36,8 @@ class happnCSVLocFile: TextOutputStreamable {
 	let csvSeparator: String
 	private var metadata: [String: String]
 	
-	private(set) var languages: [String]
-	private var entries: [LineKey: LineValue]
+	internal(set) var languages: [String]
+	var entries: [LineKey: LineValue]
 	var entryKeys: [LineKey] {
 		return Array(entries.keys)
 	}
@@ -236,9 +237,9 @@ class happnCSVLocFile: TextOutputStreamable {
 				let filename            = row[happnCSVLocFile.PRIVATE_FILENAME_HEADER_NAME],
 				let rawComment          = row[happnCSVLocFile.PRIVATE_COMMENT_HEADER_NAME],
 				let userReadableComment = row[happnCSVLocFile.COMMENT_HEADER_NAME]
-				else
-			{
-				print("*** Warning: Invalid row \(row) found in csv file. Ignoring this row.")
+			else {
+				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }}
+				else                        {NSLog("Invalid row %@ found in csv file. Ignoring this row.", row)}
 				continue
 			}
 			
@@ -259,7 +260,8 @@ class happnCSVLocFile: TextOutputStreamable {
 					of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards]
 				))
 			} else {
-				print("*** Warning: Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
+				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }}
+				else                        {NSLog("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", rawComment)}
 				(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
 			}
 			
@@ -521,470 +523,12 @@ class happnCSVLocFile: TextOutputStreamable {
 		guard let strSerializedMetadata = String(data: serializedMetadata, encoding: .utf8) else {return nil}
 		
 		let (string, decodedMetadata) = strSerializedMetadata.splitUserInfo()
-		if !string.isEmpty {print("*** Warning: Got stray data in serialized metadata. Ignoring.")}
+		if !string.isEmpty {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got stray data in serialized metadata. Ignoring.", log: $0, type: .info) }}
+			else                        {NSLog("Got stray data in serialized metadata. Ignoring.")}
+		}
 		
 		return decodedMetadata
-	}
-	
-	/* ***********************************
-	   MARK: - Xcode Strings Files Support
-	   *********************************** */
-	
-	func mergeXcodeStringsFiles(_ stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
-		var index = 0
-		
-		let originalEntries = entries
-		entries = [:]
-		
-		let env = "Xcode"
-		var keys = [LineKey]()
-		for stringsFile in stringsFiles {
-			let (filenameNoLproj, languageName) = getLanguageAgnosticFilenameAndAddLanguageToList(stringsFile.filepath, withMapping: folderNameToLanguageName)
-			
-			var currentComment = ""
-			var currentUserReadableComment = ""
-			var currentUserReadableGroupComment = ""
-			for component in stringsFile.components {
-				switch component {
-				case let whiteSpace as XcodeStringsFile.WhiteSpace:
-					if whiteSpace.stringValue.range(of: "\n\n", options: NSString.CompareOptions.literal) != nil && !currentUserReadableComment.isEmpty {
-						if !currentUserReadableGroupComment.isEmpty {
-							currentUserReadableGroupComment += "\n\n\n"
-						}
-						currentUserReadableGroupComment += currentUserReadableComment
-						currentUserReadableComment = ""
-					}
-					currentComment += whiteSpace.stringValue
-					
-				case let comment as XcodeStringsFile.Comment:
-					if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-					currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
-					currentComment += comment.stringValue
-					
-				case let locString as XcodeStringsFile.LocalizedString:
-					let refKey = LineKey(
-						locKey: locString.key, env: env, filename: filenameNoLproj, index: index, comment: currentComment,
-						userInfo: ["=": locString.equal, ";": locString.semicolon, "'?": locString.keyHasQuotes ? "1": "0"],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue(locString.value, forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					
-				default:
-					print("Got unknown XcodeStringsFile component \(component)")
-				}
-			}
-		}
-		
-		for (refKey, val) in originalEntries {
-			/* Dropping keys not in given strings files. */
-			guard refKey.env != env || keys.contains(refKey) else {continue}
-			
-			let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-			entries[key] = val
-		}
-	}
-	
-	func exportToXcodeProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
-		var filenameToComponents = [String: [XcodeStringsComponent]]()
-		for entry_key in entries.keys.sorted() {
-			guard entry_key.env == "Xcode" else {continue}
-			
-			let keyHasQuotes    = (entry_key.userInfo["'?"] == "1")
-			let equalString     = (entry_key.userInfo["="] ?? " = ")
-			let semicolonString = (entry_key.userInfo[";"] ?? ";")
-			
-			/* Now let's parse the comment to separate the WhiteSpace and the
-			 * Comment components. */
-			var commentComponents = [XcodeStringsComponent]()
-			let commentScanner = Scanner(string: entry_key.comment)
-			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
-			while !commentScanner.isAtEnd {
-				var white: NSString?
-				if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-					commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
-				}
-				if commentScanner.scanString("/*", into: nil) {
-					var comment: NSString?
-					if commentScanner.scanUpTo("*/", into: &comment) && !commentScanner.isAtEnd {
-						commentComponents.append(XcodeStringsFile.Comment(comment! as String))
-						commentScanner.scanString("*/", into: nil)
-						if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-							commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
-						}
-					}
-				}
-			}
-			
-			for (folderName, languageName) in folderNameToLanguageName {
-				let filename = entry_key.filename.replacingOccurrences(of: "//LANGUAGE//", with: "/"+folderName+"/")
-				if filenameToComponents[filename] == nil {
-					filenameToComponents[filename] = [XcodeStringsComponent]()
-				}
-				
-				filenameToComponents[filename]! += commentComponents
-				
-				if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
-					filenameToComponents[filename]!.append(XcodeStringsFile.LocalizedString(
-						key: entry_key.locKey,
-						keyHasQuotes: keyHasQuotes,
-						equalSign: equalString,
-						value: v,
-						andSemicolon: semicolonString
-					))
-				}
-			}
-		}
-		
-		for (filename, components) in filenameToComponents {
-			let locFile = XcodeStringsFile(filepath: filename, components: components)
-			let fullOutputPath = (rootPath as NSString).appendingPathComponent(locFile.filepath)
-			
-			var stringsText = ""
-			print(locFile, terminator: "", to: &stringsText)
-			var err: NSError?
-			do {
-				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: .utf8)
-			} catch let error as NSError {
-				err = error
-				print("Error: Cannot write file to path \(fullOutputPath), got error \(err as Any? ?? "<Unknown>")")
-			}
-		}
-	}
-	
-	/* ***************************************
-	   MARK: - Android XML Loc Strings Support
-	   *************************************** */
-	
-	func mergeAndroidXMLLocStringsFiles(_ locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
-		var index = 0
-		
-		let originalEntries = entries
-		entries = [:]
-		
-		let env = "Android"
-		var keys = [LineKey]()
-		for locFile in locFiles {
-			let (filenameNoLanguage, languageName) = getLanguageAgnosticFilenameAndAddLanguageToList(locFile.filepath, withMapping: folderNameToLanguageName)
-			
-			var currentComment = ""
-			var currentUserReadableComment = ""
-			var currentUserReadableGroupComment = ""
-			
-			func handleWhiteSpace(_ whiteSpace: AndroidXMLLocFile.WhiteSpace) {
-				if whiteSpace.stringValue.range(of: "\n\n", options: NSString.CompareOptions.literal) != nil && !currentUserReadableComment.isEmpty {
-					if !currentUserReadableGroupComment.isEmpty {
-						currentUserReadableGroupComment += "\n\n\n"
-					}
-					currentUserReadableGroupComment += currentUserReadableComment
-					currentUserReadableComment = ""
-				}
-				currentComment += whiteSpace.stringValue
-			}
-			
-			func handleComment(_ comment: AndroidXMLLocFile.Comment) {
-				if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-				currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
-				currentComment += comment.stringValue
-			}
-			
-			for component in locFile.components {
-				switch component {
-				case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
-					handleWhiteSpace(whiteSpace)
-					
-				case let comment as AndroidXMLLocFile.Comment:
-					handleComment(comment)
-					
-				case let groupOpening as AndroidXMLLocFile.GenericGroupOpening:
-					let refKey = LineKey(
-						locKey: "o"+groupOpening.fullString, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("---", forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					
-				case let groupClosing as AndroidXMLLocFile.GenericGroupClosing:
-					let refKey = LineKey(
-						locKey: "c"+groupClosing.groupName+(groupClosing.nameAttr != nil ? " "+groupClosing.nameAttr! : ""),
-						env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("---", forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					
-				case let locString as AndroidXMLLocFile.StringValue:
-					let refKey = LineKey(
-						locKey: "k"+locString.key, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: ["DTA": locString.isCDATA ? "1" : "0"],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue(locString.value, forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					
-				case let arrayItem as AndroidXMLLocFile.ArrayItem:
-					let refKey = LineKey(
-						locKey: "a"+arrayItem.parentName+"\""+String(arrayItem.idx), env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue(arrayItem.value, forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					
-				case let pluralGroup as AndroidXMLLocFile.PluralGroup:
-					let refKey = LineKey(
-						locKey: "s"+pluralGroup.name, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("---".byPrepending(userInfo: pluralGroup.attributes), forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					for quantity in ["zero", "one", "two", "few", "many", "other"] {
-						if let info = pluralGroup.values[quantity], let (spaces, _) = info {
-							for space in spaces {
-								switch space {
-								case let whiteSpace as AndroidXMLLocFile.WhiteSpace:
-									handleWhiteSpace(whiteSpace)
-								case let comment as AndroidXMLLocFile.Comment:
-									handleComment(comment)
-								default:
-									fatalError("Invalid space: \(space)")
-								}
-							}
-						}
-						let pluralItem = pluralGroup.values[quantity]??.1
-						let refKey = LineKey(
-							locKey: "p"+pluralGroup.name+"\""+quantity, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: ["DTA": pluralItem != nil && pluralItem!.isCDATA ? "1" : "0"],
-							userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-						)
-						let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: true, withListOfKeys: &keys)
-						if setValue((pluralItem?.value ?? "---"), forKey: key, withLanguage: languageName) {index += 1}
-						currentComment = ""
-						currentUserReadableComment = ""
-						currentUserReadableGroupComment = ""
-					}
-					
-				default:
-					print("Got unknown AndroidXMLLocFile component \(component)")
-				}
-			}
-		}
-		
-		for (refKey, val) in originalEntries {
-			/* Dropping keys not in given strings files. */
-			guard refKey.env != env || keys.contains(refKey) else {continue}
-			
-			let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-			entries[key] = val
-		}
-	}
-	
-	func exportToAndroidProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
-		var filenameToComponents = [String: [AndroidLocComponent]]()
-		var spaces = [AndroidLocComponent /* Only WhiteSpace and Comment */]()
-		var currentPluralsUserInfoByFilename: [String /* Language */: [String: String]] = [:]
-		var currentPluralsValueByFilename: [String /* Language */: [String /* Quantity */: ([AndroidLocComponent /* Only WhiteSpace and Comment */], AndroidXMLLocFile.PluralGroup.PluralItem)?]] = [:]
-		for entry_key in entries.keys.sorted() {
-			guard entry_key.env == "Android" else {continue}
-			
-			if !entry_key.comment.isEmpty {
-				var white: NSString?
-				let scanner = Scanner(string: entry_key.comment)
-				scanner.charactersToBeSkipped = CharacterSet()
-				if scanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-					spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
-				}
-				if scanner.scanString("<!--", into: nil) {
-					var comment: NSString?
-					if scanner.scanUpTo("-->", into: &comment) && !scanner.isAtEnd {
-						spaces.append(AndroidXMLLocFile.Comment(comment! as String))
-						scanner.scanString("-->", into: nil)
-						if scanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-							spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
-						}
-					}
-				}
-				if !scanner.isAtEnd {
-					print("*** Warning: Got invalid comment \"\(entry_key.comment)\"")
-				}
-			}
-			
-			for (folderName, languageName) in folderNameToLanguageName {
-				let filename = entry_key.filename.replacingOccurrences(of: "//LANGUAGE//", with: "/"+folderName+"/")
-				if filenameToComponents[filename] == nil {
-					filenameToComponents[filename] = [AndroidLocComponent]()
-				}
-				
-				switch entry_key.locKey {
-				case let k where k.hasPrefix("o"):
-					/* We're treating a group opening */
-					filenameToComponents[filename]!.append(contentsOf: spaces)
-					filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupOpening(fullString: String(k.dropFirst())))
-					
-				case let k where k.hasPrefix("s"):
-					/* We're treating a plural group opening */
-					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let userInfo = exportedValueForKey(entry_key, withLanguage: languageName)?.splitUserInfo().userInfo {
-						currentPluralsUserInfoByFilename[filename] = userInfo
-					}
-					currentPluralsValueByFilename[filename] = [:]
-					
-				case let k where k.hasPrefix("c"):
-					/* We're treating a group closing */
-					let noC = k.dropFirst()
-					let sepBySpace = noC.components(separatedBy: " ")
-					if let plurals = currentPluralsValueByFilename[filename] {
-						/* We have a plural group being contructed. We've reached it's
-						 * closing component: let's add the finished plural to the
-						 * components. */
-						if sepBySpace.count == 2 && sepBySpace[0] == "plurals" {
-							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralGroup(name: sepBySpace[1], attributes: currentPluralsUserInfoByFilename[filename] ?? [:], values: plurals))
-						} else {
-							print("*** Warning: Got invalid plural closing key \(k). Dropping whole plurals group.")
-						}
-						currentPluralsValueByFilename.removeValue(forKey: filename)
-					}
-					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
-						filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
-					} else {
-						print("*** Warning: Got invalid closing key \(k)")
-					}
-					
-				case let k where k.hasPrefix("k"):
-					/* We're treating a string item */
-					if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
-						let stringValue: AndroidXMLLocFile.StringValue
-						if (entry_key.userInfo["DTA"] != "1") {stringValue = AndroidXMLLocFile.StringValue(key: String(k.dropFirst()), value: v)}
-						else                                  {stringValue = AndroidXMLLocFile.StringValue(key: String(k.dropFirst()), cDATAValue: v)}
-						filenameToComponents[filename]!.append(contentsOf: spaces)
-						filenameToComponents[filename]!.append(stringValue)
-					}
-					
-				case let k where k.hasPrefix("a"):
-					/* We're treating an array item */
-					if let v = exportedValueForKey(entry_key, withLanguage: languageName) {
-						filenameToComponents[filename]!.append(contentsOf: spaces)
-						let noA = k.dropFirst()
-						let sepByQuote = noA.components(separatedBy: "\"")
-						if sepByQuote.count == 2 {
-							if let idx = Int(sepByQuote[1]) {
-								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
-							} else {
-								print("*** Warning: Invalid key '\(k)': cannot find idx")
-							}
-						} else {
-							print("*** Warning: Got invalid array item key '\(k)'")
-						}
-					}
-					
-				case let k where k.hasPrefix("p"):
-					let isCData = (entry_key.userInfo["DTA"] == "1")
-					/* We're treating a plural item */
-					if currentPluralsValueByFilename[filename] != nil, let v = exportedValueForKey(entry_key, withLanguage: languageName) {
-						let noP = k.dropFirst()
-						let sepByQuote = noP.components(separatedBy: "\"")
-						if sepByQuote.count == 2 {
-							let quantity = sepByQuote[1]
-							let p = isCData ?
-								AndroidXMLLocFile.PluralGroup.PluralItem(quantity: quantity, cDATAValue: v) :
-								AndroidXMLLocFile.PluralGroup.PluralItem(quantity: quantity, value: v)
-							
-							if currentPluralsValueByFilename[filename]![quantity] != nil {
-								print("*** Warning: Got multiple plurals value for quantity '\(quantity)' (key: '\(k)')")
-							}
-							currentPluralsValueByFilename[filename]![quantity] = (spaces, p)
-						} else {
-							print("*** Warning: Got invalid plural key '\(k)' (either malformed or misplaced)")
-						}
-					}
-					
-				default:
-					print("*** Warning: Got invalid key \(entry_key.locKey)")
-				}
-			}
-			
-			spaces.removeAll()
-		}
-		for (filename, components) in filenameToComponents {
-			let locFile = AndroidXMLLocFile(pathRelativeToProject: filename, components: components)
-			let fullOutputPath = (rootPath as NSString).appendingPathComponent(locFile.filepath)
-			
-			var xmlText = ""
-			print(locFile, terminator: "", to: &xmlText)
-			var err: NSError?
-			do {
-				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: .utf8)
-			} catch let error as NSError {
-				err = error
-				print("Error: Cannot write file to path \(fullOutputPath), got error \(err as Any? ?? "<Unknown>")")
-			}
-		}
-	}
-	
-	/* ***************************************
-	   MARK: - Reference Translations Loc File
-	   *************************************** */
-	
-	let referenceTranslationsFilename = "ReferencesTranslations.csv"
-	let referenceTranslationsGroupComment = "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••"
-	let referenceTranslationsUserReadableComment = "REF TRAD. DO NOT MODIFY."
-	
-	func replaceReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
-		/* Remove all previous RefLoc entries */
-		for key in entries.keys {
-			guard key.env == "RefLoc" else {continue}
-			entries.removeValue(forKey: key)
-		}
-		
-		/* Adding languages in reference translations. But not removing languages
-		 * not in reference translations! */
-		for l in locFile.languages {
-			if !languages.contains(l) {
-				languages.append(l)
-			}
-		}
-		
-		/* Import new RefLoc entries */
-		var isFirst = true
-		for (refKey, refVals) in locFile.entries {
-			let key = LineKey(locKey: refKey, env: "RefLoc", filename: referenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? referenceTranslationsGroupComment : "", userReadableComment: referenceTranslationsUserReadableComment)
-			entries[key] = .entries(refVals)
-			isFirst = false
-		}
-	}
-	
-	func mergeReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
-		/* Adding languages in reference translations. But not removing languages
-		 * not in reference translations! */
-		for l in locFile.languages {
-			if !languages.contains(l) {
-				languages.append(l)
-			}
-		}
-		
-		/* Import new RefLoc entries */
-		var isFirst = entryKeys.contains{ $0.env == "RefLoc" }
-		for (refKey, refVals) in locFile.entries {
-			let key = LineKey(locKey: refKey, env: "RefLoc", filename: referenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? referenceTranslationsGroupComment : "", userReadableComment: referenceTranslationsUserReadableComment)
-			entries[key] = .entries(refVals)
-			isFirst = false
-		}
 	}
 	
 	/* *********************************
@@ -1056,9 +600,9 @@ class happnCSVLocFile: TextOutputStreamable {
 		}
 	}
 	
-	/* ***************
-	   MARK: - Private
-	   *************** */
+	/* **************************
+	   MARK: - Private & Internal
+	   ************************** */
 	
 	private static let PRIVATE_KEY_HEADER_NAME = "__Key"
 	private static let PRIVATE_ENV_HEADER_NAME = "__Env"
@@ -1068,7 +612,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	private static let FILENAME_HEADER_NAME = "File"
 	private static let COMMENT_HEADER_NAME = "Comments"
 	
-	private func getLanguageAgnosticFilenameAndAddLanguageToList(_ filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
+	func getLanguageAgnosticFilenameAndAddLanguageToList(_ filename: String, withMapping languageMapping: [String: String]) -> (String, String) {
 		var found = false
 		var languageName = "(Unknown)"
 		var filenameNoLproj = filename
@@ -1091,7 +635,7 @@ class happnCSVLocFile: TextOutputStreamable {
 		return (filenameNoLproj, languageName)
 	}
 	
-	private func getKeyFrom(_ refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, withListOfKeys keys: inout [LineKey]) -> LineKey {
+	func getKeyFrom(_ refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, withListOfKeys keys: inout [LineKey]) -> LineKey {
 		if let idx = keys.index(of: refKey) {
 			if keys[idx].comment != refKey.comment {
 				if useNonEmptyCommentIfOneEmptyTheOtherNot && (keys[idx].comment.isEmpty || refKey.comment.isEmpty) {
@@ -1108,7 +652,8 @@ class happnCSVLocFile: TextOutputStreamable {
 						keys[idx] = newKey
 					}
 				} else {
-					print("*** Warning: Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename)): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
+					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got different comment for same loc key \"%@\" (file %@): \"%@\" and \"%@\"", log: $0, type: .info, refKey.locKey, refKey.filename, keys[idx].comment, refKey.comment) }}
+					else                        {NSLog("Got different comment for same loc key \"%@\" (file %@): \"%@\" and \"%@\"", refKey.locKey, refKey.filename, keys[idx].comment, refKey.comment)}
 				}
 			}
 			return keys[idx]

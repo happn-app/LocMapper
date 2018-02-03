@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		7B21A38F1DE4BCDF00F81E68 /* Localizer */ = {
+		7B21A38F1DE4BCDF00F81E68 /* All */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "Localizer" */;
+			buildConfigurationList = 7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "All" */;
 			buildPhases = (
 			);
 			dependencies = (
 				7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */,
 				7B21A3961DE4BCE900F81E68 /* PBXTargetDependency */,
 			);
-			name = Localizer;
+			name = All;
 			productName = Localizer;
 		};
 /* End PBXAggregateTarget section */
@@ -25,37 +25,32 @@
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
 		7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0869A21DCB7F8700EB9486 /* Utils.swift */; };
-		7B11A5731F51AE7B0064549D /* libXibLoc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B11A5691F51AE620064549D /* libXibLoc.a */; };
-		7B11A5741F51AE810064549D /* libXibLoc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B11A5691F51AE620064549D /* libXibLoc.a */; };
-		7B11A5791F51AEAE0064549D /* XibLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBF5FE11C15C2A90024318C /* XibLoc.swift */; };
-		7B11A5811F51B17C0064549D /* XibLocTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5801F51B17C0064549D /* XibLocTests.swift */; };
-		7B11A5831F51B17C0064549D /* libXibLoc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B11A5691F51AE620064549D /* libXibLoc.a */; };
-		7B11A58A1F51B34F0064549D /* XibLocResolvingInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */; };
-		7B11A58C1F51B5D80064549D /* ParsedXibLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */; };
-		7B11A5911F51C1F70064549D /* PluralityDefinitionZoneValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5901F51C1F70064549D /* PluralityDefinitionZoneValue.swift */; };
-		7B11A5931F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5921F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift */; };
-		7B11A5951F51C27E0064549D /* PluralityDefinitionZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5941F51C27E0064549D /* PluralityDefinitionZone.swift */; };
-		7B11A5991F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5961F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift */; };
-		7B11A59A1F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5971F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift */; };
-		7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */; };
-		7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */; };
-		7B3E7AB01F5C7FD700E67EAF /* ParserHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
+		7B4CC6B820252FB60055CB74 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF69785202322D000088A52 /* XibLoc.framework */; };
+		7B4CC6C12025BB390055CB74 /* XcodeStringsParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */; };
+		7B4CC6D92025BE4E0055CB74 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
+		7B4CC6DA2025BE4E0055CB74 /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
+		7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B87D4D91A3AECD500C151A8 /* CSVParser.swift */; };
+		7B4CC6DC2025BE5D0055CB74 /* AndroidXMLLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */; };
+		7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */; };
+		7B4CC6DE2025BE680055CB74 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
+		7B4CC6DF2025BE6D0055CB74 /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
+		7B4CC6E02025BE6D0055CB74 /* happnCSVLocKeyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */; };
+		7B4CC6ED2025E08A0055CB74 /* DependencyInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */; };
+		7B4CC6F92025EE970055CB74 /* happnCSVLocFile+Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6F82025EE970055CB74 /* happnCSVLocFile+Xcode.swift */; };
 		7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */; };
 		7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */; };
 		7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */; };
 		7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */; };
 		7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7B56D2AE1DA0F25E00662EFD /* Localizable.strings */; };
 		7B637D241C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */; };
-		7B6474891FDEFCC100204E10 /* ParserHelpers+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */; };
-		7B64748B1FDF038000204E10 /* ParserHelpers+AttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B64748A1FDF038000204E10 /* ParserHelpers+AttributedString.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
 		7B6E25AA19D417BD001934ED /* stderr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A919D417BD001934ED /* stderr.swift */; };
-		7B6E25AC19D430C5001934ED /* XcodeStringsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */; };
-		7B74908E1A1600FE0021E10F /* AndroidXMLLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */; };
-		7B76A3E91F51C77B003F1FB7 /* PluralityDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B76A3E81F51C77B003F1FB7 /* PluralityDefinition.swift */; };
-		7B76A3EB1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B76A3EA1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift */; };
+		7B73DFF92025F74B00CAA391 /* libLocalizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocalizer.a */; };
+		7B76AAE12025FCED0071B896 /* libLocalizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocalizer.a */; };
+		7B76AAE22025FCF60071B896 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF69785202322D000088A52 /* XibLoc.framework */; };
+		7B76AAE52025FD070071B896 /* libLocalizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocalizer.a */; };
 		7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D811C0EF3DB0020E86B /* AppDelegate.swift */; };
 		7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */; };
 		7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D851C0EF3DB0020E86B /* happnLocCSVDocument.swift */; };
@@ -63,48 +58,27 @@
 		7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B837D891C0EF3DB0020E86B /* Main.storyboard */; };
 		7B878D691D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */; };
 		7B878D6D1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */; };
-		7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B87D4D91A3AECD500C151A8 /* CSVParser.swift */; };
-		7B9BD4DF1C108344007A096D /* happnCSVLocKeyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */; };
-		7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
-		7B9BD4E11C1087B7007A096D /* XcodeStringsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */; };
-		7B9BD4E21C1087B9007A096D /* stderr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A919D417BD001934ED /* stderr.swift */; };
-		7B9BD4E31C1087BC007A096D /* AndroidXMLLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */; };
-		7B9BD4E41C1087BF007A096D /* CSVParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B87D4D91A3AECD500C151A8 /* CSVParser.swift */; };
-		7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
-		7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
-		7BABB9591C11D99800DACD85 /* happnCSVLocKeyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */; };
-		7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
-		7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */; };
+		7B889BEA2025F04E005A961F /* happnCSVLocFile+Android.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BE92025F04E005A961F /* happnCSVLocFile+Android.swift */; };
+		7B889BF32025F117005A961F /* happnCSVLocFile+RefLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BF22025F117005A961F /* happnCSVLocFile+RefLoc.swift */; };
+		7B889BF62025F1CF005A961F /* MappingResolvingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BF52025F1CF005A961F /* MappingResolvingError.swift */; };
+		7B889BF92025F44D005A961F /* happnCSVLocKeyMappingComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BF82025F44D005A961F /* happnCSVLocKeyMappingComponent.swift */; };
+		7B889BFC2025F48A005A961F /* CSVLocKeyMappingComponentInvalid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BFB2025F48A005A961F /* CSVLocKeyMappingComponentInvalid.swift */; };
+		7B889BFE2025F4A7005A961F /* CSVLocKeyMappingComponentToConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BFD2025F4A7005A961F /* CSVLocKeyMappingComponentToConstant.swift */; };
+		7B889C002025F4D2005A961F /* CSVLocKeyMappingComponentValueTransforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889BFF2025F4D2005A961F /* CSVLocKeyMappingComponentValueTransforms.swift */; };
+		7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C022025F50F005A961F /* LocValueTransformer.swift */; };
+		7B889C052025F535005A961F /* LocValueTransformerInvalid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C042025F535005A961F /* LocValueTransformerInvalid.swift */; };
+		7B889C072025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C062025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift */; };
+		7B889C092025F578005A961F /* LocValueTransformerToUpper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C082025F578005A961F /* LocValueTransformerToUpper.swift */; };
+		7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */; };
+		7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */; };
+		7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
-		7BD43C871DC38C5F00C85277 /* UserAttributedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */; };
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
 		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
-		7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */; };
 		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7B11A5751F51AE880064549D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B11A5681F51AE620064549D;
-			remoteInfo = XibLoc;
-		};
-		7B11A5771F51AE8C0064549D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B11A5681F51AE620064549D;
-			remoteInfo = XibLoc;
-		};
-		7B11A5841F51B17C0064549D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B11A5681F51AE620064549D;
-			remoteInfo = XibLoc;
-		};
 		7B21A3931DE4BCE900F81E68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
@@ -118,6 +92,83 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7B837D7E1C0EF3DB0020E86B;
 			remoteInfo = "Localizer App";
+		};
+		7B4CC6F62025EDA80055CB74 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
+			remoteInfo = Localizer;
+		};
+		7B76AADD2025FCE30071B896 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B8BD01920026E8C009BE667;
+			remoteInfo = "XibLoc-macOS";
+		};
+		7B76AADF2025FCE90071B896 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
+			remoteInfo = Localizer;
+		};
+		7B76AAE32025FD010071B896 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
+			remoteInfo = Localizer;
+		};
+		7BF69784202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7B8BD01A20026E8C009BE667;
+			remoteInfo = "XibLoc-macOS";
+		};
+		7BF69786202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7B7A34BF20027B4600348DF4;
+			remoteInfo = "XibLoc-tvOS";
+		};
+		7BF69788202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7BC696D52002775C007BC3E9;
+			remoteInfo = "XibLoc-iOS";
+		};
+		7BF6978A202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7BB52E43200279EA007CAD7B;
+			remoteInfo = "XibLoc-watchOS";
+		};
+		7BF6978C202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7B8BD02220026E8C009BE667;
+			remoteInfo = "XibLoc-macOSTests";
+		};
+		7BF6978E202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7BC696DD2002775C007BC3E9;
+			remoteInfo = "XibLoc-iOSTests";
+		};
+		7BF69790202322D000088A52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7B7A34C720027B4700348DF4;
+			remoteInfo = "XibLoc-tvOSTests";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -137,37 +188,26 @@
 		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		7B11A5691F51AE620064549D /* libXibLoc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXibLoc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B11A57E1F51B17C0064549D /* XibLocTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XibLocTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B11A5801F51B17C0064549D /* XibLocTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XibLocTests.swift; sourceTree = "<group>"; };
-		7B11A5821F51B17C0064549D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XibLocResolvingInfo.swift; sourceTree = "<group>"; };
-		7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedXibLoc.swift; sourceTree = "<group>"; };
-		7B11A5901F51C1F70064549D /* PluralityDefinitionZoneValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValue.swift; sourceTree = "<group>"; };
-		7B11A5921F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueNumber.swift; sourceTree = "<group>"; };
-		7B11A5941F51C27E0064549D /* PluralityDefinitionZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZone.swift; sourceTree = "<group>"; };
-		7B11A5961F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueIntervalOfInts.swift; sourceTree = "<group>"; };
-		7B11A5971F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueIntervalOfFloats.swift; sourceTree = "<group>"; };
-		7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinitionZoneValueGlob.swift; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributedStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsViewController.swift; sourceTree = "<group>"; };
-		7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserHelpers.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
+		7B4CC6BE2025BB390055CB74 /* LocalizerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalizerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeStringsParserTests.swift; sourceTree = "<group>"; };
+		7B4CC6C22025BB390055CB74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B4CC6CC2025BCEF0055CB74 /* libLocalizer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLocalizer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DependencyInjection.swift; sourceTree = "<group>"; };
+		7B4CC6F82025EE970055CB74 /* happnCSVLocFile+Xcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "happnCSVLocFile+Xcode.swift"; sourceTree = "<group>"; };
 		7B560D5D1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTableViewController.swift; sourceTree = "<group>"; };
 		7B560D5F1C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocTabViewController.swift; sourceTree = "<group>"; };
 		7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingDocViewController.swift; sourceTree = "<group>"; };
 		7B560D671C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocOptionsSplitViewController.swift; sourceTree = "<group>"; };
 		7B56D2AE1DA0F25E00662EFD /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnLocCSVDocSplitViewController.swift; sourceTree = "<group>"; };
-		7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParserHelpers+String.swift"; sourceTree = "<group>"; };
-		7B64748A1FDF038000204E10 /* ParserHelpers+AttributedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParserHelpers+AttributedString.swift"; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* Localizer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Localizer; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7B6E25A919D417BD001934ED /* stderr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stderr.swift; sourceTree = "<group>"; };
 		7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeStringsFile.swift; sourceTree = "<group>"; };
 		7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidXMLLocFile.swift; sourceTree = "<group>"; };
-		7B76A3E81F51C77B003F1FB7 /* PluralityDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluralityDefinition.swift; sourceTree = "<group>"; };
-		7B76A3EA1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RandomAccessCollection+StableSort.swift"; sourceTree = "<group>"; };
 		7B837D7F1C0EF3DB0020E86B /* Localizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Localizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B837D811C0EF3DB0020E86B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocEntryViewController.swift; sourceTree = "<group>"; };
@@ -178,31 +218,45 @@
 		7B878D681D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportKeyStructure.xib; sourceTree = "<group>"; };
 		7B878D6C1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportKeyStructurePanelController.swift; sourceTree = "<group>"; };
 		7B87D4D91A3AECD500C151A8 /* CSVParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVParser.swift; sourceTree = "<group>"; };
+		7B889BE92025F04E005A961F /* happnCSVLocFile+Android.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "happnCSVLocFile+Android.swift"; sourceTree = "<group>"; };
+		7B889BF22025F117005A961F /* happnCSVLocFile+RefLoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "happnCSVLocFile+RefLoc.swift"; sourceTree = "<group>"; };
+		7B889BF52025F1CF005A961F /* MappingResolvingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MappingResolvingError.swift; sourceTree = "<group>"; };
+		7B889BF82025F44D005A961F /* happnCSVLocKeyMappingComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMappingComponent.swift; sourceTree = "<group>"; };
+		7B889BFB2025F48A005A961F /* CSVLocKeyMappingComponentInvalid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVLocKeyMappingComponentInvalid.swift; sourceTree = "<group>"; };
+		7B889BFD2025F4A7005A961F /* CSVLocKeyMappingComponentToConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVLocKeyMappingComponentToConstant.swift; sourceTree = "<group>"; };
+		7B889BFF2025F4D2005A961F /* CSVLocKeyMappingComponentValueTransforms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVLocKeyMappingComponentValueTransforms.swift; sourceTree = "<group>"; };
+		7B889C022025F50F005A961F /* LocValueTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformer.swift; sourceTree = "<group>"; };
+		7B889C042025F535005A961F /* LocValueTransformerInvalid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerInvalid.swift; sourceTree = "<group>"; };
+		7B889C062025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerSimpleStringReplacements.swift; sourceTree = "<group>"; };
+		7B889C082025F578005A961F /* LocValueTransformerToUpper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerToUpper.swift; sourceTree = "<group>"; };
+		7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerRegionDelimitersReplacement.swift; sourceTree = "<group>"; };
+		7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerGenderVariantPick.swift; sourceTree = "<group>"; };
+		7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerPluralVariantPick.swift; sourceTree = "<group>"; };
 		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMapping.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
-		7BBF5FE11C15C2A90024318C /* XibLoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLoc.swift; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationsLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
 		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
+		7BF69779202322D000088A52 /* XibLoc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XibLoc.xcodeproj; path = XibLoc/XibLoc.xcodeproj; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocFile.swift; sourceTree = "<group>"; };
 		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		7B11A5661F51AE620064549D /* Frameworks */ = {
+		7B4CC6BB2025BB390055CB74 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B73DFF92025F74B00CAA391 /* libLocalizer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7B11A57B1F51B17C0064549D /* Frameworks */ = {
+		7B4CC6C92025BCEF0055CB74 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B11A5831F51B17C0064549D /* libXibLoc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,7 +264,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B11A5741F51AE810064549D /* libXibLoc.a in Frameworks */,
+				7B76AAE12025FCED0071B896 /* libLocalizer.a in Frameworks */,
+				7B76AAE22025FCF60071B896 /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,28 +273,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B11A5731F51AE7B0064549D /* libXibLoc.a in Frameworks */,
+				7B76AAE52025FD070071B896 /* libLocalizer.a in Frameworks */,
+				7B4CC6B820252FB60055CB74 /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7B11A56A1F51AE620064549D /* XibLoc */ = {
-			isa = PBXGroup;
-			children = (
-				7BBF5FE11C15C2A90024318C /* XibLoc.swift */,
-				7B11A5891F51B34F0064549D /* XibLocResolvingInfo.swift */,
-				7B11A58B1F51B5D80064549D /* ParsedXibLoc.swift */,
-				7B3E7AAF1F5C7FD700E67EAF /* ParserHelpers.swift */,
-				7B6474881FDEFCC100204E10 /* ParserHelpers+String.swift */,
-				7B64748A1FDF038000204E10 /* ParserHelpers+AttributedString.swift */,
-				7B11A58F1F51C1940064549D /* Plurality */,
-				7B76A3EA1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift */,
-			);
-			path = XibLoc;
-			sourceTree = "<group>";
-		};
 		7B11A5721F51AE7B0064549D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -247,27 +288,64 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7B11A57F1F51B17C0064549D /* XibLocTests */ = {
+		7B4CC6BF2025BB390055CB74 /* LocalizerTests */ = {
 			isa = PBXGroup;
 			children = (
-				7B11A5801F51B17C0064549D /* XibLocTests.swift */,
-				7B11A5821F51B17C0064549D /* Info.plist */,
+				7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */,
+				7B4CC6C22025BB390055CB74 /* Info.plist */,
 			);
-			path = XibLocTests;
+			path = LocalizerTests;
 			sourceTree = "<group>";
 		};
-		7B11A58F1F51C1940064549D /* Plurality */ = {
+		7B4CC6CD2025BCEF0055CB74 /* Localizer */ = {
 			isa = PBXGroup;
 			children = (
-				7B76A3E81F51C77B003F1FB7 /* PluralityDefinition.swift */,
-				7B11A5941F51C27E0064549D /* PluralityDefinitionZone.swift */,
-				7B11A5901F51C1F70064549D /* PluralityDefinitionZoneValue.swift */,
-				7B11A5921F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift */,
-				7B11A5961F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift */,
-				7B11A5971F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift */,
-				7B11A5981F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift */,
+				7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */,
+				7B889BF42025F1AE005A961F /* Mapping */,
+				7B4CC6D82025BDA90055CB74 /* RefLoc Support */,
+				7B4CC6D72025BD8E0055CB74 /* Xcode Strings Support */,
+				7B4CC6D62025BD760055CB74 /* Android Support */,
+				7B4CC6D52025BD630055CB74 /* Utilities */,
+				7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */,
 			);
-			path = Plurality;
+			path = Localizer;
+			sourceTree = "<group>";
+		};
+		7B4CC6D52025BD630055CB74 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				7BABB9561C11C92C00DACD85 /* IOUtils.swift */,
+				7B87D4D91A3AECD500C151A8 /* CSVParser.swift */,
+				7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		7B4CC6D62025BD760055CB74 /* Android Support */ = {
+			isa = PBXGroup;
+			children = (
+				7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */,
+				7B889BE92025F04E005A961F /* happnCSVLocFile+Android.swift */,
+			);
+			path = "Android Support";
+			sourceTree = "<group>";
+		};
+		7B4CC6D72025BD8E0055CB74 /* Xcode Strings Support */ = {
+			isa = PBXGroup;
+			children = (
+				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
+				7B4CC6F82025EE970055CB74 /* happnCSVLocFile+Xcode.swift */,
+			);
+			path = "Xcode Strings Support";
+			sourceTree = "<group>";
+		};
+		7B4CC6D82025BDA90055CB74 /* RefLoc Support */ = {
+			isa = PBXGroup;
+			children = (
+				7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */,
+				7B889BF22025F117005A961F /* happnCSVLocFile+RefLoc.swift */,
+			);
+			path = "RefLoc Support";
 			sourceTree = "<group>";
 		};
 		7B560D641C17022F001DD2B0 /* Bottom-Right Pane (Details) */ = {
@@ -285,10 +363,11 @@
 			isa = PBXGroup;
 			children = (
 				7BCB27A91D2D4020005CFEB9 /* Readme.txt */,
-				7B6E25A119D4157A001934ED /* Localizer */,
+				7B4CC6CD2025BCEF0055CB74 /* Localizer */,
+				7B4CC6BF2025BB390055CB74 /* LocalizerTests */,
+				7B6E25A119D4157A001934ED /* Localizer CLI */,
 				7B837D801C0EF3DB0020E86B /* happn CSV Editor */,
-				7B11A56A1F51AE620064549D /* XibLoc */,
-				7B11A57F1F51B17C0064549D /* XibLocTests */,
+				7BF69778202322AD00088A52 /* Dependencies */,
 				7B6E25A019D4157A001934ED /* Products */,
 				7B11A5721F51AE7B0064549D /* Frameworks */,
 			);
@@ -299,27 +378,19 @@
 			children = (
 				7B6E259F19D4157A001934ED /* Localizer */,
 				7B837D7F1C0EF3DB0020E86B /* Localizer.app */,
-				7B11A5691F51AE620064549D /* libXibLoc.a */,
-				7B11A57E1F51B17C0064549D /* XibLocTests.xctest */,
+				7B4CC6BE2025BB390055CB74 /* LocalizerTests.xctest */,
+				7B4CC6CC2025BCEF0055CB74 /* libLocalizer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7B6E25A119D4157A001934ED /* Localizer */ = {
+		7B6E25A119D4157A001934ED /* Localizer CLI */ = {
 			isa = PBXGroup;
 			children = (
 				7B6E25A919D417BD001934ED /* stderr.swift */,
-				7BABB9561C11C92C00DACD85 /* IOUtils.swift */,
-				7B26DA681DC23BA3003471DA /* UserAttributedStrings.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
-				7BFA536A19D56DD100CF2A2E /* happnCSVLocFile.swift */,
-				7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */,
-				7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */,
-				7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */,
-				7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */,
-				7B87D4D91A3AECD500C151A8 /* CSVParser.swift */,
 			);
-			path = Localizer;
+			path = "Localizer CLI";
 			sourceTree = "<group>";
 		};
 		7B71565C1D95EE2700A15BC5 /* Document Root & Loading UI */ = {
@@ -389,10 +460,77 @@
 			path = "happn CSV Editor";
 			sourceTree = "<group>";
 		};
+		7B889BF42025F1AE005A961F /* Mapping */ = {
+			isa = PBXGroup;
+			children = (
+				7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */,
+				7B889BFA2025F479005A961F /* Components */,
+				7B889C012025F4FF005A961F /* Transformers */,
+				7B889BF72025F32C005A961F /* Utils */,
+			);
+			path = Mapping;
+			sourceTree = "<group>";
+		};
+		7B889BF72025F32C005A961F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				7B889BF52025F1CF005A961F /* MappingResolvingError.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		7B889BFA2025F479005A961F /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				7B889BF82025F44D005A961F /* happnCSVLocKeyMappingComponent.swift */,
+				7B889BFB2025F48A005A961F /* CSVLocKeyMappingComponentInvalid.swift */,
+				7B889BFD2025F4A7005A961F /* CSVLocKeyMappingComponentToConstant.swift */,
+				7B889BFF2025F4D2005A961F /* CSVLocKeyMappingComponentValueTransforms.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		7B889C012025F4FF005A961F /* Transformers */ = {
+			isa = PBXGroup;
+			children = (
+				7B889C022025F50F005A961F /* LocValueTransformer.swift */,
+				7B889C042025F535005A961F /* LocValueTransformerInvalid.swift */,
+				7B889C062025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift */,
+				7B889C082025F578005A961F /* LocValueTransformerToUpper.swift */,
+				7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */,
+				7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */,
+				7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */,
+			);
+			path = Transformers;
+			sourceTree = "<group>";
+		};
+		7BF69778202322AD00088A52 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				7BF69779202322D000088A52 /* XibLoc.xcodeproj */,
+			);
+			name = Dependencies;
+			path = Carthage/Checkouts;
+			sourceTree = "<group>";
+		};
+		7BF6977A202322D000088A52 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7BF69785202322D000088A52 /* XibLoc.framework */,
+				7BF69787202322D000088A52 /* XibLoc.framework */,
+				7BF69789202322D000088A52 /* XibLoc.framework */,
+				7BF6978B202322D000088A52 /* XibLoc.framework */,
+				7BF6978D202322D000088A52 /* XibLoc-macOSTests.xctest */,
+				7BF6978F202322D000088A52 /* XibLoc-iOSTests.xctest */,
+				7BF69791202322D000088A52 /* XibLoc-tvOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		7B11A5671F51AE620064549D /* Headers */ = {
+		7B4CC6CA2025BCEF0055CB74 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -402,40 +540,41 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		7B11A5681F51AE620064549D /* XibLoc */ = {
+		7B4CC6BD2025BB390055CB74 /* LocalizerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7B11A5711F51AE620064549D /* Build configuration list for PBXNativeTarget "XibLoc" */;
+			buildConfigurationList = 7B4CC6C32025BB390055CB74 /* Build configuration list for PBXNativeTarget "LocalizerTests" */;
 			buildPhases = (
-				7B11A5651F51AE620064549D /* Sources */,
-				7B11A5661F51AE620064549D /* Frameworks */,
-				7B11A5671F51AE620064549D /* Headers */,
+				7B4CC6BA2025BB390055CB74 /* Sources */,
+				7B4CC6BB2025BB390055CB74 /* Frameworks */,
+				7B4CC6BC2025BB390055CB74 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				7B4CC6F72025EDA80055CB74 /* PBXTargetDependency */,
 			);
-			name = XibLoc;
-			productName = XibLoc;
-			productReference = 7B11A5691F51AE620064549D /* libXibLoc.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		7B11A57D1F51B17C0064549D /* XibLocTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 7B11A5861F51B17C0064549D /* Build configuration list for PBXNativeTarget "XibLocTests" */;
-			buildPhases = (
-				7B11A57A1F51B17C0064549D /* Sources */,
-				7B11A57B1F51B17C0064549D /* Frameworks */,
-				7B11A57C1F51B17C0064549D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				7B11A5851F51B17C0064549D /* PBXTargetDependency */,
-			);
-			name = XibLocTests;
-			productName = XibLocTests;
-			productReference = 7B11A57E1F51B17C0064549D /* XibLocTests.xctest */;
+			name = LocalizerTests;
+			productName = LocalizerTests;
+			productReference = 7B4CC6BE2025BB390055CB74 /* LocalizerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7B4CC6CB2025BCEF0055CB74 /* Localizer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B4CC6D22025BCEF0055CB74 /* Build configuration list for PBXNativeTarget "Localizer" */;
+			buildPhases = (
+				7B4CC6C82025BCEF0055CB74 /* Sources */,
+				7B4CC6C92025BCEF0055CB74 /* Frameworks */,
+				7B4CC6CA2025BCEF0055CB74 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7B76AADE2025FCE30071B896 /* PBXTargetDependency */,
+			);
+			name = Localizer;
+			productName = Localizer;
+			productReference = 7B4CC6CC2025BCEF0055CB74 /* libLocalizer.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 		7B6E259E19D4157A001934ED /* Localizer CLI */ = {
 			isa = PBXNativeTarget;
@@ -448,7 +587,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				7B11A5761F51AE880064549D /* PBXTargetDependency */,
+				7B76AAE02025FCE90071B896 /* PBXTargetDependency */,
 			);
 			name = "Localizer CLI";
 			productName = Localizer;
@@ -466,7 +605,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				7B11A5781F51AE8C0064549D /* PBXTargetDependency */,
+				7B76AAE42025FD010071B896 /* PBXTargetDependency */,
 			);
 			name = "Localizer App";
 			productName = "happn CSV Editor";
@@ -480,20 +619,20 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 0710;
-				LastSwiftUpdateCheck = 0900;
+				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = happn;
 				TargetAttributes = {
-					7B11A5681F51AE620064549D = {
-						CreatedOnToolsVersion = 9.0;
-						LastSwiftMigration = 0900;
-					};
-					7B11A57D1F51B17C0064549D = {
-						CreatedOnToolsVersion = 9.0;
-						ProvisioningStyle = Automatic;
-					};
 					7B21A38F1DE4BCDF00F81E68 = {
 						CreatedOnToolsVersion = 8.1;
+						ProvisioningStyle = Automatic;
+					};
+					7B4CC6BD2025BB390055CB74 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					7B4CC6CB2025BCEF0055CB74 = {
+						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
 					7B6E259E19D4157A001934ED = {
@@ -519,19 +658,77 @@
 			mainGroup = 7B6E259619D4157A001934ED;
 			productRefGroup = 7B6E25A019D4157A001934ED /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7BF6977A202322D000088A52 /* Products */;
+					ProjectRef = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
-				7B11A5681F51AE620064549D /* XibLoc */,
-				7B21A38F1DE4BCDF00F81E68 /* Localizer */,
+				7B21A38F1DE4BCDF00F81E68 /* All */,
+				7B4CC6CB2025BCEF0055CB74 /* Localizer */,
+				7B4CC6BD2025BB390055CB74 /* LocalizerTests */,
 				7B6E259E19D4157A001934ED /* Localizer CLI */,
 				7B837D7E1C0EF3DB0020E86B /* Localizer App */,
-				7B11A57D1F51B17C0064549D /* XibLocTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		7BF69785202322D000088A52 /* XibLoc.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = XibLoc.framework;
+			remoteRef = 7BF69784202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF69787202322D000088A52 /* XibLoc.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = XibLoc.framework;
+			remoteRef = 7BF69786202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF69789202322D000088A52 /* XibLoc.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = XibLoc.framework;
+			remoteRef = 7BF69788202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF6978B202322D000088A52 /* XibLoc.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = XibLoc.framework;
+			remoteRef = 7BF6978A202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF6978D202322D000088A52 /* XibLoc-macOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "XibLoc-macOSTests.xctest";
+			remoteRef = 7BF6978C202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF6978F202322D000088A52 /* XibLoc-iOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "XibLoc-iOSTests.xctest";
+			remoteRef = 7BF6978E202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF69791202322D000088A52 /* XibLoc-tvOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "XibLoc-tvOSTests.xctest";
+			remoteRef = 7BF69790202322D000088A52 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
-		7B11A57C1F51B17C0064549D /* Resources */ = {
+		7B4CC6BC2025BB390055CB74 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -554,32 +751,42 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7B11A5651F51AE620064549D /* Sources */ = {
+		7B4CC6BA2025BB390055CB74 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B11A5911F51C1F70064549D /* PluralityDefinitionZoneValue.swift in Sources */,
-				7B11A5951F51C27E0064549D /* PluralityDefinitionZone.swift in Sources */,
-				7B76A3EB1F53402F003F1FB7 /* RandomAccessCollection+StableSort.swift in Sources */,
-				7B11A59B1F51C2AC0064549D /* PluralityDefinitionZoneValueGlob.swift in Sources */,
-				7B11A5991F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfInts.swift in Sources */,
-				7B11A58A1F51B34F0064549D /* XibLocResolvingInfo.swift in Sources */,
-				7B3E7AB01F5C7FD700E67EAF /* ParserHelpers.swift in Sources */,
-				7B11A5791F51AEAE0064549D /* XibLoc.swift in Sources */,
-				7B6474891FDEFCC100204E10 /* ParserHelpers+String.swift in Sources */,
-				7B64748B1FDF038000204E10 /* ParserHelpers+AttributedString.swift in Sources */,
-				7B11A59A1F51C2AC0064549D /* PluralityDefinitionZoneValueIntervalOfFloats.swift in Sources */,
-				7B11A5931F51C22F0064549D /* PluralityDefinitionZoneValueNumber.swift in Sources */,
-				7B76A3E91F51C77B003F1FB7 /* PluralityDefinition.swift in Sources */,
-				7B11A58C1F51B5D80064549D /* ParsedXibLoc.swift in Sources */,
+				7B4CC6C12025BB390055CB74 /* XcodeStringsParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7B11A57A1F51B17C0064549D /* Sources */ = {
+		7B4CC6C82025BCEF0055CB74 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B11A5811F51B17C0064549D /* XibLocTests.swift in Sources */,
+				7B4CC6D92025BE4E0055CB74 /* IOUtils.swift in Sources */,
+				7B4CC6DA2025BE4E0055CB74 /* UserAttributedStrings.swift in Sources */,
+				7B889C002025F4D2005A961F /* CSVLocKeyMappingComponentValueTransforms.swift in Sources */,
+				7B889BF32025F117005A961F /* happnCSVLocFile+RefLoc.swift in Sources */,
+				7B889BFE2025F4A7005A961F /* CSVLocKeyMappingComponentToConstant.swift in Sources */,
+				7B889C092025F578005A961F /* LocValueTransformerToUpper.swift in Sources */,
+				7B4CC6ED2025E08A0055CB74 /* DependencyInjection.swift in Sources */,
+				7B4CC6F92025EE970055CB74 /* happnCSVLocFile+Xcode.swift in Sources */,
+				7B889C052025F535005A961F /* LocValueTransformerInvalid.swift in Sources */,
+				7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */,
+				7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */,
+				7B4CC6DC2025BE5D0055CB74 /* AndroidXMLLocFile.swift in Sources */,
+				7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */,
+				7B889BF62025F1CF005A961F /* MappingResolvingError.swift in Sources */,
+				7B889BFC2025F48A005A961F /* CSVLocKeyMappingComponentInvalid.swift in Sources */,
+				7B4CC6E02025BE6D0055CB74 /* happnCSVLocKeyMapping.swift in Sources */,
+				7B4CC6DE2025BE680055CB74 /* ReferenceTranslationsLocFile.swift in Sources */,
+				7B889BF92025F44D005A961F /* happnCSVLocKeyMappingComponent.swift in Sources */,
+				7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */,
+				7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */,
+				7B889BEA2025F04E005A961F /* happnCSVLocFile+Android.swift in Sources */,
+				7B889C072025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift in Sources */,
+				7B4CC6DF2025BE6D0055CB74 /* happnCSVLocFile.swift in Sources */,
+				7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,15 +795,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
-				7BABB9571C11C92C00DACD85 /* IOUtils.swift in Sources */,
-				7B74908E1A1600FE0021E10F /* AndroidXMLLocFile.swift in Sources */,
-				7BFA536B19D56DD100CF2A2E /* happnCSVLocFile.swift in Sources */,
-				7BCB27AB1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */,
 				7B6E25AA19D417BD001934ED /* stderr.swift in Sources */,
-				7B6E25AC19D430C5001934ED /* XcodeStringsFile.swift in Sources */,
-				7B87D4DA1A3AECD500C151A8 /* CSVParser.swift in Sources */,
-				7B9BD4DF1C108344007A096D /* happnCSVLocKeyMapping.swift in Sources */,
-				7B26DA691DC23BA3003471DA /* UserAttributedStrings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,27 +806,18 @@
 				7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */,
 				7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */,
 				7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */,
-				7B9BD4E01C1087B3007A096D /* happnCSVLocFile.swift in Sources */,
 				7B637D241C16DFC900C4BD7C /* happnLocCSVDocSplitViewController.swift in Sources */,
-				7BD43C871DC38C5F00C85277 /* UserAttributedStrings.swift in Sources */,
 				7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */,
 				7B560D601C16FF11001DD2B0 /* happnLocCSVDocTabViewController.swift in Sources */,
 				7B878D6D1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift in Sources */,
 				7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */,
 				7B560D5E1C16ED49001DD2B0 /* happnLocCSVDocTableViewController.swift in Sources */,
-				7BABB9581C11C94B00DACD85 /* IOUtils.swift in Sources */,
 				7B560D681C172B54001DD2B0 /* happnLocCSVDocOptionsSplitViewController.swift in Sources */,
-				7BCB27AC1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift in Sources */,
-				7B9BD4E41C1087BF007A096D /* CSVParser.swift in Sources */,
-				7B9BD4E21C1087B9007A096D /* stderr.swift in Sources */,
 				7B27768D1D4E8D0E0041811E /* happnLocCSVDocOptionsViewController.swift in Sources */,
 				7B837D861C0EF3DB0020E86B /* happnLocCSVDocument.swift in Sources */,
-				7B9BD4E31C1087BC007A096D /* AndroidXMLLocFile.swift in Sources */,
 				7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */,
-				7BABB9591C11D99800DACD85 /* happnCSVLocKeyMapping.swift in Sources */,
 				7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */,
 				7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */,
-				7B9BD4E11C1087B7007A096D /* XcodeStringsFile.swift in Sources */,
 				7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -635,21 +825,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7B11A5761F51AE880064549D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7B11A5681F51AE620064549D /* XibLoc */;
-			targetProxy = 7B11A5751F51AE880064549D /* PBXContainerItemProxy */;
-		};
-		7B11A5781F51AE8C0064549D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7B11A5681F51AE620064549D /* XibLoc */;
-			targetProxy = 7B11A5771F51AE8C0064549D /* PBXContainerItemProxy */;
-		};
-		7B11A5851F51B17C0064549D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7B11A5681F51AE620064549D /* XibLoc */;
-			targetProxy = 7B11A5841F51B17C0064549D /* PBXContainerItemProxy */;
-		};
 		7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7B6E259E19D4157A001934ED /* Localizer CLI */;
@@ -659,6 +834,26 @@
 			isa = PBXTargetDependency;
 			target = 7B837D7E1C0EF3DB0020E86B /* Localizer App */;
 			targetProxy = 7B21A3951DE4BCE900F81E68 /* PBXContainerItemProxy */;
+		};
+		7B4CC6F72025EDA80055CB74 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B4CC6CB2025BCEF0055CB74 /* Localizer */;
+			targetProxy = 7B4CC6F62025EDA80055CB74 /* PBXContainerItemProxy */;
+		};
+		7B76AADE2025FCE30071B896 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "XibLoc-macOS";
+			targetProxy = 7B76AADD2025FCE30071B896 /* PBXContainerItemProxy */;
+		};
+		7B76AAE02025FCE90071B896 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B4CC6CB2025BCEF0055CB74 /* Localizer */;
+			targetProxy = 7B76AADF2025FCE90071B896 /* PBXContainerItemProxy */;
+		};
+		7B76AAE42025FD010071B896 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B4CC6CB2025BCEF0055CB74 /* Localizer */;
+			targetProxy = 7B76AAE32025FD010071B896 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -674,109 +869,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		7B11A56F1F51AE620064549D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				EXECUTABLE_PREFIX = lib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
-			};
-			name = Debug;
-		};
-		7B11A5701F51AE620064549D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_PREFIX = lib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
-		7B11A5871F51B17C0064549D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = XibLocTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.XibLocTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
-			};
-			name = Debug;
-		};
-		7B11A5881F51B17C0064549D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = XibLocTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.XibLocTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
 		7B21A3911DE4BCDF00F81E68 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -791,10 +883,71 @@
 			};
 			name = Release;
 		};
+		7B4CC6C42025BB390055CB74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = LocalizerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocalizerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		7B4CC6C52025BB390055CB74 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = LocalizerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocalizerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+		7B4CC6D32025BCEF0055CB74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				EXECUTABLE_PREFIX = lib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		7B4CC6D42025BCEF0055CB74 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				EXECUTABLE_PREFIX = lib;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
 		7B6E25A419D4157A001934ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -814,6 +967,7 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -844,6 +998,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -863,6 +1018,7 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
@@ -899,7 +1055,6 @@
 				CURRENT_PROJECT_VERSION = 14;
 				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -951,29 +1106,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7B11A5711F51AE620064549D /* Build configuration list for PBXNativeTarget "XibLoc" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7B11A56F1F51AE620064549D /* Debug */,
-				7B11A5701F51AE620064549D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		7B11A5861F51B17C0064549D /* Build configuration list for PBXNativeTarget "XibLocTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7B11A5871F51B17C0064549D /* Debug */,
-				7B11A5881F51B17C0064549D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "Localizer" */ = {
+		7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "All" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7B21A3911DE4BCDF00F81E68 /* Debug */,
 				7B21A3921DE4BCDF00F81E68 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7B4CC6C32025BB390055CB74 /* Build configuration list for PBXNativeTarget "LocalizerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B4CC6C42025BB390055CB74 /* Debug */,
+				7B4CC6C52025BB390055CB74 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7B4CC6D22025BCEF0055CB74 /* Build configuration list for PBXNativeTarget "Localizer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B4CC6D32025BCEF0055CB74 /* Debug */,
+				7B4CC6D42025BCEF0055CB74 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

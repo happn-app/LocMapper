@@ -71,8 +71,11 @@ class happnLocCSVDocument: NSDocument, NSTokenFieldDelegate {
 		/* Let's save the UI state */
 		if let frameStr = mainWindowController?.window?.stringWithSavedFrame {csvLocFile?.setMetadataValue(frameStr, forKey: "UIWindowFrame")}
 		else                                                                 {csvLocFile?.removeMetadata(forKey: "UIWindowFrame")}
-		do    {try csvLocFile?.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
-		catch {Swift.print("*** Warning: Cannot save UIState metadata")}
+		do {try csvLocFile?.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
+		catch {
+			if #available(OSX 10.12, *) {os_log("Cannot save UIState metadata", type: .info)}
+			else                        {NSLog("Cannot save UIState metadata")}
+		}
 		
 		/* We ask super to write the file. In effect this will call the method
 		 * below to get the data to write in the file, then write those data. */

@@ -110,7 +110,7 @@ class happnLocCSVDocTableViewController : NSViewController, NSTableViewDataSourc
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return}
 		guard let tableColumn = tableColumn, !Set(arrayLiteral: "ENV", "KEY").contains(tableColumn.identifier.rawValue) else {return}
 		
-		guard let strValue = (object as? String)?.replacingOccurrences(of: "\n", with: "\\n") else {return}
+		guard let strValue = object as? String else {return}
 		_ = csvLocFile.setValue(strValue, forKey: key, withLanguage: tableColumn.identifier.rawValue)
 		
 		DispatchQueue.main.async {

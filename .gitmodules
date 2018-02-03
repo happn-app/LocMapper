@@ -1,0 +1,3 @@
+[submodule "Carthage/Checkouts/XibLoc"]
+	path = Carthage/Checkouts/XibLoc
+	url = ssh://git@github.com/happn-app/XibLoc.git

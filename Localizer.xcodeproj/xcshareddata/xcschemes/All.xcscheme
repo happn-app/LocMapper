@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7B4CC6CB2025BCEF0055CB74"
-               BuildableName = "libLocalizer.a"
-               BlueprintName = "Localizer"
+               BlueprintIdentifier = "7B21A38F1DE4BCDF00F81E68"
+               BuildableName = "All"
+               BlueprintName = "All"
                ReferencedContainer = "container:Localizer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,26 +29,7 @@
       language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7B4CC6BD2025BB390055CB74"
-               BuildableName = "LocalizerTests.xctest"
-               BlueprintName = "LocalizerTests"
-               ReferencedContainer = "container:Localizer.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B4CC6CB2025BCEF0055CB74"
-            BuildableName = "libLocalizer.a"
-            BlueprintName = "Localizer"
-            ReferencedContainer = "container:Localizer.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -66,9 +47,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B4CC6CB2025BCEF0055CB74"
-            BuildableName = "libLocalizer.a"
-            BlueprintName = "Localizer"
+            BlueprintIdentifier = "7B21A38F1DE4BCDF00F81E68"
+            BuildableName = "All"
+            BlueprintName = "All"
             ReferencedContainer = "container:Localizer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -84,9 +65,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7B4CC6CB2025BCEF0055CB74"
-            BuildableName = "libLocalizer.a"
-            BlueprintName = "Localizer"
+            BlueprintIdentifier = "7B21A38F1DE4BCDF00F81E68"
+            BuildableName = "All"
+            BlueprintName = "All"
             ReferencedContainer = "container:Localizer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
