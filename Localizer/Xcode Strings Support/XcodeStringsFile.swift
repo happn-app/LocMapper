@@ -164,7 +164,7 @@ class XcodeStringsFile: TextOutputStreamable {
 				key: key, keyHasQuotes: keyHasQuotes,
 				equalSign: postKey.reduce("", { $0 + $1.stringValue }) + "=" + preValue.reduce("", { $0 + $1.stringValue }),
 				value: value, valueHasQuotes: valueHasQuotes,
-				semicolon: postValue.reduce("", { $0 + $1.stringValue }) + "=")
+				semicolon: postValue.reduce("", { $0 + $1.stringValue }) + ";")
 			components.append(contentsOf: preKey)
 			components.append(localizedString)
 		}
@@ -204,16 +204,19 @@ class XcodeStringsFile: TextOutputStreamable {
 	confirm_prestring_comment_start -> wait_end_prestring_star_comment [label=" * "];
 	confirm_prestring_comment_start -> wait_end_prestring_slash_comment [label=" / "];
 	confirm_prestring_comment_start -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+	confirm_prestring_comment_start -> wait_separator_token [label=" \"white\" "];
 	confirm_prestring_comment_start -> SUCCESS [label=" \"separatorToken\" "];
 	confirm_prestring_comment_start -> ERROR;
 	wait_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
 	wait_end_prestring_star_comment -> wait_end_prestring_star_comment;
+	confirm_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
 	confirm_end_prestring_star_comment -> wait_string_start [label=" / "];
 	confirm_end_prestring_star_comment -> wait_end_prestring_star_comment;
 	wait_end_prestring_slash_comment -> wait_string_start [label=" \\n "];
 	wait_end_prestring_slash_comment -> wait_end_prestring_slash_comment;
 
 	wait_end_string_no_double_quotes -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+	wait_end_string_no_double_quotes -> SUCCESS [label=" \"separatorToken\" "];
 	wait_end_string_no_double_quotes -> wait_separator_token [label=" \"white\" "];
 	wait_end_string_no_double_quotes -> ERROR;
 	wait_end_string -> treat_string_escaped_char [label=" \\ "];
@@ -230,6 +233,7 @@ class XcodeStringsFile: TextOutputStreamable {
 	confirm_poststring_comment_start -> ERROR;
 	wait_end_poststring_star_comment -> confirm_end_poststring_star_comment [label=" * "];
 	wait_end_poststring_star_comment -> wait_end_poststring_star_comment;
+	confirm_end_poststring_star_comment -> confirm_end_poststring_star_comment [label = " * "];
 	confirm_end_poststring_star_comment -> wait_separator_token [label = " / "];
 	confirm_end_poststring_star_comment -> wait_end_poststring_star_comment;
 	wait_end_poststring_slash_comment -> wait_separator_token [label=" \\n "];
@@ -238,20 +242,29 @@ class XcodeStringsFile: TextOutputStreamable {
 
 extension XcodeStringsFile {
 	
+	private enum EOFHandling {
+		case nop
+		case earlyEOF
+		case addWhite
+		case addDoubleSlashedComment
+	}
+	
 	private static func parseString(source: String, startIdx: inout String.Index, separatorToken: Character) -> (preString: [XcodeStringsComponent], (string: String, hadQuotes: Bool, postString: [XcodeStringsComponent])?)? {
 		assert(!"/*\"".contains(separatorToken))
-		var engine: ((Character) -> Bool)?
-		
 		/* Engine state */
-		var earlyEOF = false
 		var hasQuote = false
 		var currentString = ""
+		var engine: ((Character) -> Bool)?
+		var eofHandling = EOFHandling.addWhite
 		
+		/* Results */
 		var string: String?
 		var preString = [XcodeStringsComponent]()
 		var postString = [XcodeStringsComponent]()
 		
 		func wait_string_start(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_string_start: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_string_start: %@", String(c))}
 			if isWhiteChar(c) {
 				currentString.append(c)
 				return true
@@ -259,6 +272,7 @@ extension XcodeStringsFile {
 			if c == "/" {
 				if !currentString.isEmpty {preString.append(WhiteSpace(currentString))}
 				currentString = ""
+				eofHandling = .earlyEOF
 				engine = confirm_prestring_comment_start
 				return true
 			}
@@ -266,12 +280,14 @@ extension XcodeStringsFile {
 				if !currentString.isEmpty {preString.append(WhiteSpace(currentString))}
 				currentString = ""
 				hasQuote = true
+				eofHandling = .earlyEOF
 				engine = wait_end_string
 				return true
 			}
 			if isValidUnquotedStringChar(c) {
 				if !currentString.isEmpty {preString.append(WhiteSpace(currentString))}
 				currentString = String(c)
+				eofHandling = .earlyEOF
 				engine = wait_end_string_no_double_quotes
 				return true
 			}
@@ -279,21 +295,35 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_prestring_comment_start(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("confirm_prestring_comment_start: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("confirm_prestring_comment_start: %@", String(c))}
 			if c == separatorToken {
 				string = "/"
+				currentString = ""
+				eofHandling = .nop
 				engine = nil
 				return true
 			}
 			if c == "*" {
+				eofHandling = .earlyEOF
 				engine = wait_end_prestring_star_comment
 				return true
 			}
 			if c == "/" {
+				eofHandling = .addDoubleSlashedComment
 				engine = wait_end_prestring_slash_comment
+				return true
+			}
+			if isWhiteChar(c) {
+				string = "/"
+				currentString = String(c)
+				eofHandling = .earlyEOF
+				engine = wait_separator_token
 				return true
 			}
 			if isValidUnquotedStringChar("/") && isValidUnquotedStringChar(c) {
 				currentString = "/" + String(c)
+				eofHandling = .earlyEOF
 				engine = wait_end_string_no_double_quotes
 				return true
 			}
@@ -301,7 +331,10 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_prestring_star_comment(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_end_prestring_star_comment: %@", String(c))}
 			if c == "*" {
+				eofHandling = .earlyEOF
 				engine = confirm_end_prestring_star_comment
 				return true
 			}
@@ -310,22 +343,32 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_end_prestring_star_comment(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("confirm_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("confirm_end_prestring_star_comment: %@", String(c))}
 			if c == "/" {
 				preString.append(Comment(currentString, doubleSlashed: false))
 				currentString = ""
+				eofHandling = .addWhite
 				engine = wait_string_start
 				return true
 			}
-			engine = wait_end_prestring_star_comment
 			currentString += "*"
+			if c == "*" {
+				return true
+			}
 			currentString.append(c)
+			eofHandling = .earlyEOF
+			engine = wait_end_prestring_star_comment
 			return true
 		}
 		
 		func wait_end_prestring_slash_comment(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_end_prestring_slash_comment: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_end_prestring_slash_comment: %@", String(c))}
 			if c == "\n" {
 				preString.append(Comment(currentString, doubleSlashed: true))
 				currentString = ""
+				eofHandling = .addWhite
 				engine = wait_string_start
 				return true
 			}
@@ -334,13 +377,23 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_string_no_double_quotes(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_end_string_no_double_quotes: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_end_string_no_double_quotes: %@", String(c))}
 			if isValidUnquotedStringChar(c) {
 				currentString.append(c)
+				return true
+			}
+			if c == separatorToken {
+				string = currentString
+				currentString = ""
+				eofHandling = .nop
+				engine = nil
 				return true
 			}
 			if isWhiteChar(c) {
 				string = currentString
 				currentString = String(c)
+				eofHandling = .earlyEOF
 				engine = wait_separator_token
 				return true
 			}
@@ -348,14 +401,18 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_string(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_end_string: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_end_string: %@", String(c))}
 			if c == "\\" {
 				currentString.append(c)
+				eofHandling = .earlyEOF
 				engine = treat_string_escaped_char
 				return true
 			}
 			if c == "\"" {
 				string = currentString
 				currentString = ""
+				eofHandling = .earlyEOF
 				engine = wait_separator_token
 				return true
 			}
@@ -364,21 +421,28 @@ extension XcodeStringsFile {
 		}
 		
 		func treat_string_escaped_char(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("treat_string_escaped_char: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("treat_string_escaped_char: %@", String(c))}
 			currentString.append(c)
+			eofHandling = .earlyEOF
 			engine = wait_end_string
 			return true
 		}
 		
 		func wait_separator_token(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_separator_token: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_separator_token: %@", String(c))}
 			if c == separatorToken {
-				if !currentString.isEmpty {preString.append(WhiteSpace(currentString))}
+				if !currentString.isEmpty {postString.append(WhiteSpace(currentString))}
 				currentString = ""
+				eofHandling = .nop
 				engine = nil
 				return true
 			}
 			if c == "/" {
-				if !currentString.isEmpty {preString.append(WhiteSpace(currentString))}
+				if !currentString.isEmpty {postString.append(WhiteSpace(currentString))}
 				currentString = ""
+				eofHandling = .earlyEOF
 				engine = confirm_poststring_comment_start
 				return true
 			}
@@ -390,11 +454,15 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_poststring_comment_start(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("confirm_poststring_comment_start: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("confirm_poststring_comment_start: %@", String(c))}
 			if c == "*" {
+				eofHandling = .earlyEOF
 				engine = wait_end_poststring_star_comment
 				return true
 			}
 			if c == "/" {
+				eofHandling = .earlyEOF
 				engine = wait_end_poststring_slash_comment
 				return true
 			}
@@ -402,7 +470,10 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_poststring_star_comment(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_end_poststring_star_comment: %@", String(c))}
 			if c == "*" {
+				eofHandling = .earlyEOF
 				engine = confirm_end_poststring_star_comment
 				return true
 			}
@@ -411,22 +482,32 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_end_poststring_star_comment(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("confirm_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("confirm_end_poststring_star_comment: %@", String(c))}
 			if c == "/" {
-				preString.append(Comment(currentString, doubleSlashed: false))
+				postString.append(Comment(currentString, doubleSlashed: false))
 				currentString = ""
+				eofHandling = .earlyEOF
 				engine = wait_separator_token
 				return true
 			}
 			currentString += "*"
+			if c == "*" {
+				return true
+			}
 			currentString.append(c)
+			eofHandling = .earlyEOF
 			engine = wait_end_poststring_star_comment
 			return true
 		}
 		
 		func wait_end_poststring_slash_comment(_ c: Character) -> Bool {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("wait_end_poststring_slash_comment: %@", log: $0, type: .debug, String(c)) }}
+			else                        {NSLog("wait_end_poststring_slash_comment: %@", String(c))}
 			if c == "\n" {
-				preString.append(Comment(currentString, doubleSlashed: true))
+				postString.append(Comment(currentString, doubleSlashed: true))
 				currentString = ""
+				eofHandling = .earlyEOF
 				engine = wait_separator_token
 				return true
 			}
@@ -434,14 +515,23 @@ extension XcodeStringsFile {
 			return true
 		}
 		
+		var isEOF = true
 		engine = wait_string_start
 		for c in source[startIdx...] {
+			guard let engine = engine else {isEOF = false; break}
+			
 			startIdx = source.index(after: startIdx)
-			guard let engine = engine else {break}
 			guard engine(c) else {return nil}
 		}
 		
-		guard !earlyEOF else {return nil}
+		if isEOF {
+			switch eofHandling {
+			case .nop:                     (/*nop*/)
+			case .earlyEOF:                return nil
+			case .addWhite:                if !currentString.isEmpty {assert(string == nil); preString.append(WhiteSpace(currentString))}
+			case .addDoubleSlashedComment:                            assert(string == nil); preString.append(Comment(currentString, doubleSlashed: true))
+			}
+		}
 		
 		if let string = string {
 			let quote = hasQuote ? "\"" : ""

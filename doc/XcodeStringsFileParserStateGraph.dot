@@ -13,16 +13,19 @@ digraph States {
 	confirm_prestring_comment_start -> wait_end_prestring_star_comment [label=" * "];
 	confirm_prestring_comment_start -> wait_end_prestring_slash_comment [label=" / "];
 	confirm_prestring_comment_start -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+	confirm_prestring_comment_start -> wait_separator_token [label=" \"white\" "];
 	confirm_prestring_comment_start -> SUCCESS [label=" \"separatorToken\" "];
 	confirm_prestring_comment_start -> ERROR;
 	wait_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
 	wait_end_prestring_star_comment -> wait_end_prestring_star_comment;
+	confirm_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
 	confirm_end_prestring_star_comment -> wait_string_start [label=" / "];
 	confirm_end_prestring_star_comment -> wait_end_prestring_star_comment;
 	wait_end_prestring_slash_comment -> wait_string_start [label=" \\n "];
 	wait_end_prestring_slash_comment -> wait_end_prestring_slash_comment;
 
 	wait_end_string_no_double_quotes -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+	wait_end_string_no_double_quotes -> SUCCESS [label=" \"separatorToken\" "];
 	wait_end_string_no_double_quotes -> wait_separator_token [label=" \"white\" "];
 	wait_end_string_no_double_quotes -> ERROR;
 	wait_end_string -> treat_string_escaped_char [label=" \\ "];
@@ -39,6 +42,7 @@ digraph States {
 	confirm_poststring_comment_start -> ERROR;
 	wait_end_poststring_star_comment -> confirm_end_poststring_star_comment [label=" * "];
 	wait_end_poststring_star_comment -> wait_end_poststring_star_comment;
+	confirm_end_poststring_star_comment -> confirm_end_poststring_star_comment [label = " * "];
 	confirm_end_poststring_star_comment -> wait_separator_token [label = " / "];
 	confirm_end_poststring_star_comment -> wait_end_poststring_star_comment;
 	wait_end_poststring_slash_comment -> wait_separator_token [label=" \\n "];
