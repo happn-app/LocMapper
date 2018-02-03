@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				7BB7096420262F3A007222BE /* PBXTargetDependency */,
 				7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */,
 				7B21A3961DE4BCE900F81E68 /* PBXTargetDependency */,
 			);
@@ -116,6 +117,13 @@
 			remoteInfo = Localizer;
 		};
 		7B76AAE32025FD010071B896 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
+			remoteInfo = Localizer;
+		};
+		7BB7096320262F3A007222BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
 			proxyType = 1;
@@ -858,6 +866,11 @@
 			isa = PBXTargetDependency;
 			target = 7B4CC6CB2025BCEF0055CB74 /* Localizer */;
 			targetProxy = 7B76AAE32025FD010071B896 /* PBXContainerItemProxy */;
+		};
+		7BB7096420262F3A007222BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B4CC6CB2025BCEF0055CB74 /* Localizer */;
+			targetProxy = 7BB7096320262F3A007222BE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
