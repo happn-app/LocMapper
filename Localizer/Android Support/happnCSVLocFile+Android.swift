@@ -123,7 +123,7 @@ extension happnCSVLocFile {
 						}
 						let pluralItem = pluralGroup.values[quantity]??.1
 						let refKey = LineKey(
-							locKey: "p"+pluralGroup.name+"\""+quantity, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: ["DTA": pluralItem != nil && pluralItem!.isCDATA ? "1" : "0"],
+							locKey: "p"+pluralGroup.name+"\""+quantity, env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: ["DTA": (pluralItem.flatMap{ $0.isCDATA } ?? false) ? "1" : "0"],
 							userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 						)
 						let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: true, withListOfKeys: &keys)

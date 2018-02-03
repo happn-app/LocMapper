@@ -285,7 +285,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 					var attrsCopy = attributeDict
 					attrsCopy.removeValue(forKey: "name")
 					currentPluralAttributes = attrsCopy
-					if let name = attrs["name"] {status = .inPlurals(name); currentGroupName = name; addingSpacesToPlural = true; currentPluralValues = [:]}
+					if let name = attrs["name"] {status = .inPlurals(name); currentGroupName = name; currentPluralValues = [:]}
 					else                        {status = .error}
 				
 				case (.inArray, "item"):
@@ -312,6 +312,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 				addSpaceComponent(WhiteSpace(currentChars))
 				currentChars = ""
 			}
+			addingSpacesToPlural = (addingSpacesToPlural || elementName == "plurals")
 			
 			if elementName != "string" && elementName != "plurals" && elementName != "item" {
 				components.append(GenericGroupOpening(groupName: elementName, attributes: attrs))

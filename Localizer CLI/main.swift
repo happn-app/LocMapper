@@ -116,11 +116,11 @@ let folderNameToLanguageNameForTests = [
 	"he.lproj": "עברית — Hebrew", "ko.lproj": "한국어 — Korean"
 ]
 let androidLanguageFolderNamesForTests = [
-	"values": " English", "values-fr": "Français — French", "values-de": "Deutsch — German",
+	"values": " English"/*, "values-fr": "Français — French", "values-de": "Deutsch — German",
 	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt-rBR": "Português brasileiro — Portuguese (Brasil)",
 	"values-pt": "Português europeu — Portuguese (Portugal)", "values-tr": "Türkçe — Turkish",
 	"values-zh": "中文(香港) — Chinese (Traditional)", "values-th": "ภาษาไทย — Thai", "values-ja": "日本語 — Japanese",
-	"values-pl": "Polszczyzna — Polish" , "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",
+	"values-pl": "Polszczyzna — Polish" , "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",*/
 	/*"values-he": "עברית — Hebrew", "values-ko": "한국어 — Korean"*/
 ]
 
@@ -291,11 +291,11 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc android ref.happnloc", withCSVSeparator: ",") else {
+		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/happnGogol/ loc android.happnloc", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
-		csv.exportToAndroidProjectWithRoot("\(basePathForTests)/HappnAndroid/happn/src/main/res/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
+		csv.exportToAndroidProjectWithRoot("\(basePathForTests)/happnGogol/happnAndroid/happn/src/main/res/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
 		exit(0)
 	
 	default:
