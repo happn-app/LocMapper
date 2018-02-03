@@ -32,7 +32,7 @@ protocol XcodeStringsComponent {
 	
 }
 
-class XcodeStringsFile: TextOutputStreamable {
+public class XcodeStringsFile: TextOutputStreamable {
 	
 	let filepath: String
 	let components: [XcodeStringsComponent]
@@ -96,7 +96,7 @@ class XcodeStringsFile: TextOutputStreamable {
 	}
 	
 	/* If included_paths is nil (default), no inclusion check will be done. */
-	class func stringsFilesInProject(_ root_folder: String, excluded_paths: [String], included_paths: [String]? = nil) throws -> [XcodeStringsFile] {
+	public static func stringsFilesInProject(_ root_folder: String, excluded_paths: [String], included_paths: [String]? = nil) throws -> [XcodeStringsFile] {
 		guard let e = FileManager.default.enumerator(atPath: root_folder) else {
 			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(root_folder)."])
 		}
@@ -176,6 +176,7 @@ class XcodeStringsFile: TextOutputStreamable {
 		self.components = components
 	}
 	
+	public
 	func write<Target : TextOutputStream>(to target: inout Target) {
 		for component in components {
 			component.stringValue.write(to: &target)

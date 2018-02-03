@@ -8,6 +8,8 @@
 
 import Cocoa
 
+import Localizer
+
 
 
 class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSComboBoxDelegate, NSTextDelegate {
@@ -132,7 +134,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			else {throw NSError(domain: errorDomain, code: 2, userInfo: nil)}
 			
 			/* Converting deserialized representations to actual transforms */
-			let transforms = try serializedTransforms.map { serialization -> LocValueTransformer in
+			let transforms = try serializedTransforms.map{ serialization -> LocValueTransformer in
 				let transform = LocValueTransformer.createComponentTransformFromSerialization(serialization)
 				guard transform.isValid else {
 					throw NSError(domain: errorDomain, code: 3, userInfo: nil)
@@ -236,7 +238,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 				comboBox.objectValue = component.sourceKey
 				comboBox.cell?.representedObject = component.sourceKey
 				comboBox.placeholderString = "Type to search for a key"
-				let serializedTransforms = component.subTransformComponents.map {return $0.serialize()}
+				let serializedTransforms = component.subTransformComponents.map{ return $0.serialize() }
 				if
 					let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: [.prettyPrinted]),
 					let jsonStr = String(data: jsonData, encoding: .utf8)

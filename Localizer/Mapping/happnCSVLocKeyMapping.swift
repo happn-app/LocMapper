@@ -11,14 +11,14 @@ import os.log
 
 
 
-class happnCSVLocKeyMapping {
+public class happnCSVLocKeyMapping {
 	
-	let originalStringRepresentation: String
-	var components: [happnCSVLocKeyMappingComponent]?
+	public let originalStringRepresentation: String
+	public var components: [happnCSVLocKeyMappingComponent]?
 	
 	/** Compute whether the given transform is valid (do not check for
 	existence of keys for mapping components though). */
-	var isValid: Bool {
+	public var isValid: Bool {
 		guard let components = components else {return false}
 		for c in components {guard c.isValid else {return false}}
 		return true
@@ -30,7 +30,7 @@ class happnCSVLocKeyMapping {
 	
 	If the string representation is invalid (invalid JSON, etc.), a fully inited
 	object is returned with nil components. */
-	convenience init?(stringRepresentation: String) {
+	public convenience init?(stringRepresentation: String) {
 		guard !stringRepresentation.isEmpty else {return nil}
 		
 		guard
@@ -55,7 +55,7 @@ class happnCSVLocKeyMapping {
 		self.init(components: serializedComponents.map {happnCSVLocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
 	}
 	
-	convenience init(components: [happnCSVLocKeyMappingComponent]) {
+	public convenience init(components: [happnCSVLocKeyMappingComponent]) {
 		self.init(components: components, stringRepresentation: happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components))
 	}
 	
@@ -64,7 +64,7 @@ class happnCSVLocKeyMapping {
 		originalStringRepresentation = stringRepresentation
 	}
 	
-	func stringRepresentation() -> String {
+	public func stringRepresentation() -> String {
 		if let components = components {
 			return happnCSVLocKeyMapping.stringRepresentationFromComponentsList(components)
 		} else {
@@ -72,7 +72,7 @@ class happnCSVLocKeyMapping {
 		}
 	}
 	
-	func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
+	public func apply(forLanguage language: String, entries: [happnCSVLocFile.LineKey: happnCSVLocFile.LineValue]) throws -> String {
 		guard isValid, let components = components else {
 			throw MappingResolvingError.invalidMapping
 		}

@@ -31,14 +31,14 @@ private extension String {
    MARK: -
    ******* */
 
-class happnCSVLocFile: TextOutputStreamable {
+public class happnCSVLocFile: TextOutputStreamable {
 	
-	let csvSeparator: String
+	public let csvSeparator: String
 	private var metadata: [String: String]
 	
-	internal(set) var languages: [String]
+	public internal(set) var languages: [String]
 	var entries: [LineKey: LineValue]
-	var entryKeys: [LineKey] {
+	public var entryKeys: [LineKey] {
 		return Array(entries.keys)
 	}
 	
@@ -47,23 +47,34 @@ class happnCSVLocFile: TextOutputStreamable {
 	           Key for each entries in the happn CSV loc file.
 	   ******************************************************* */
 	
-	struct LineKey: Equatable, Hashable, Comparable {
-		let locKey: String
-		let env: String
-		let filename: String
+	public struct LineKey: Equatable, Hashable, Comparable {
+		public let locKey: String
+		public let env: String
+		public let filename: String
 		
 		/* Used when comparing for lt or gt, but not for equality */
-		let index: Int
+		public let index: Int
 		
 		/* Not used when comparing line keys. Both keys are store in the "comment"
 		 * column. We could (should?) use a json in its own column for the
 		 * userInfo... but why do simply what can be done in a complicated way? */
-		let comment: String
-		let userInfo: [String: String]
+		public let comment: String
+		public let userInfo: [String: String]
 		
 		/* Not used when comparing line keys */
-		let userReadableGroupComment: String
-		let userReadableComment: String
+		public let userReadableGroupComment: String
+		public let userReadableComment: String
+		
+		public init(locKey k: String, env e: String, filename f: String, index i: Int, comment c: String, userInfo ui: [String: String], userReadableGroupComment urgc: String, userReadableComment urc: String) {
+			locKey = k
+			env = e
+			filename = f
+			index = i
+			comment = c
+			userInfo = ui
+			userReadableGroupComment = urgc
+			userReadableComment = urc
+		}
 		
 		static func parse(attributedComment: String) -> (comment: String, userInfo: [String: String]) {
 			let (str, optionalUserInfo) = attributedComment.splitUserInfo()
@@ -73,11 +84,11 @@ class happnCSVLocFile: TextOutputStreamable {
 			return (comment: str, userInfo: userInfo)
 		}
 		
-		var fullComment: String {
+		public var fullComment: String {
 			return comment.byPrepending(userInfo: userInfo)
 		}
 		
-		var hashValue: Int {
+		public var hashValue: Int {
 			return locKey.hashValue &+ env.hashValue &+ filename.hashValue
 		}
 	}
@@ -87,25 +98,25 @@ class happnCSVLocFile: TextOutputStreamable {
 	           Either a mapping or a dictionary of language/value.
 	   *********************************************************** */
 	
-	enum LineValue {
+	public enum LineValue {
 		case mapping(happnCSVLocKeyMapping)
 		case entries([String /* Language */: String /* Value */])
 		
-		var mapping: happnCSVLocKeyMapping? {
+		public var mapping: happnCSVLocKeyMapping? {
 			switch self {
 			case .mapping(let mapping): return mapping
 			default:                    return nil
 			}
 		}
 		
-		var entries: [String: String]? {
+		public var entries: [String: String]? {
 			switch self {
 			case .entries(let entries): return entries
 			default:                    return nil
 			}
 		}
 		
-		func entryForLanguage(_ language: String) -> String? {
+		public func entryForLanguage(_ language: String) -> String? {
 			guard let entries = entries else {return nil}
 			return entries[language]
 		}
@@ -115,12 +126,12 @@ class happnCSVLocFile: TextOutputStreamable {
 	   MARK: - Filter Enum
 	   ******************* */
 	
-	enum Filter {
+	public enum Filter {
 		case string(String)
 		case env(String)
 		case stateTodoloc, stateHardCodedValues, stateMappedValid, stateMappedInvalid
 		
-		init?(string: String) {
+		public init?(string: String) {
 			guard let first = string.first else {return nil}
 			let substring = String(string.dropFirst())
 			
@@ -141,7 +152,7 @@ class happnCSVLocFile: TextOutputStreamable {
 			}
 		}
 		
-		func toString() -> String {
+		public func toString() -> String {
 			switch self {
 			case .string(let str):      return "s" + str
 			case .env(let env):         return "e" + env
@@ -152,17 +163,17 @@ class happnCSVLocFile: TextOutputStreamable {
 			}
 		}
 		
-		var isStringFilter: Bool {
+		public var isStringFilter: Bool {
 			guard case .string = self else {return false}
 			return true
 		}
 		
-		var isEnvFilter: Bool {
+		public var isEnvFilter: Bool {
 			guard case .env = self else {return false}
 			return true
 		}
 		
-		var isStateFilter: Bool {
+		public var isStateFilter: Bool {
 			return !isStringFilter && !isEnvFilter
 		}
 	}
@@ -171,14 +182,14 @@ class happnCSVLocFile: TextOutputStreamable {
 	   MARK: - Initializers
 	   ******************** */
 	
-	convenience init() {
+	public convenience init() {
 		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: ",")
 	}
 	
 	/* *** Init from path. The metadata should be retrieved with the
 	`unserializedMetadata(from:)` method. They are not read from the given path,
 	it is the caller responsability to retrieve them by its own means. *** */
-	convenience init(fromPath path: String, withCSVSeparator csvSep: String, metadata: Any?) throws {
+	public convenience init(fromPath path: String, withCSVSeparator csvSep: String, metadata: Any? = nil) throws {
 		var encoding: UInt = 0
 		var filecontent: String?
 		if FileManager.default.fileExists(atPath: path) {
@@ -189,7 +200,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	/* *** Init with data file content. The metadata should be retrieved with the
 	`unserializedMetadata(from:)` method. *** */
-	convenience init(filecontent: Data, csvSeparator csvSep: String, metadata: Any?) throws {
+	public convenience init(filecontent: Data, csvSeparator csvSep: String, metadata: Any?) throws {
 		guard let fileContentStr = String(data: filecontent, encoding: .utf8) else {
 			throw NSError(domain: "Migrator", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
 		}
@@ -315,7 +326,7 @@ class happnCSVLocFile: TextOutputStreamable {
 		return (entries[key] != nil)
 	}
 	
-	func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
+	public func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
 		let stringFilters = filters.flatMap{ filter -> String? in
 			if case .string(let str) = filter, !str.isEmpty {return str}
 			return nil
@@ -375,7 +386,7 @@ class happnCSVLocFile: TextOutputStreamable {
 		}
 	}
 	
-	func lineValueForKey(_ key: LineKey) -> LineValue? {
+	public func lineValueForKey(_ key: LineKey) -> LineValue? {
 		return entries[key]
 	}
 	
@@ -389,7 +400,7 @@ class happnCSVLocFile: TextOutputStreamable {
 		case noValue
 	}
 	
-	func editorDisplayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
+	public func editorDisplayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
 		do {
 			return try resolvedValueForKey(key, withLanguage: language)
 		} catch _ as ValueResolvingError {
@@ -424,7 +435,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	- returns: `true` if the value of the key was indeed a mapping and has been
 	converted, `false` if nothing had to be done (value was already hard-coded or
 	not present). */
-	func convertKeyToHardCoded(_ key: LineKey) -> Bool {
+	public func convertKeyToHardCoded(_ key: LineKey) -> Bool {
 		guard case .mapping? = entries[key] else {
 			return false
 		}
@@ -444,7 +455,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	- returns: `true` if the key had to be added to the list of entries, `false`
 	if the key was already present and was only modified. */
-	func setValue(_ val: String, forKey key: LineKey, withLanguage language: String) -> Bool {
+	public func setValue(_ val: String, forKey key: LineKey, withLanguage language: String) -> Bool {
 		let created: Bool
 		var entriesForKey: [String: String]
 		if case .entries(let e)? = entries[key] {created = false;               entriesForKey = e}
@@ -470,56 +481,56 @@ class happnCSVLocFile: TextOutputStreamable {
 	
 	- returns: `true` if the key had to be added to the list of entries, `false`
 	if the key was already present and was only modified. */
-	func setValue(_ val: LineValue, forKey key: LineKey) -> Bool {
+	public func setValue(_ val: LineValue, forKey key: LineKey) -> Bool {
 		let created = (entries[key] == nil)
 		entries[key] = val
 		return created
 	}
 	
-	func stringMetadataValueForKey(_ key: String) -> String? {
+	public func stringMetadataValueForKey(_ key: String) -> String? {
 		return metadata[key]
 	}
 	
-	func intMetadataValueForKey(_ key: String) -> Int? {
+	public func intMetadataValueForKey(_ key: String) -> Int? {
 		guard let strVal = metadata[key] else {return nil}
 		return Int(strVal)
 	}
 	
-	func filtersMetadataValueForKey(_ key: String) -> [Filter]? {
+	public func filtersMetadataValueForKey(_ key: String) -> [Filter]? {
 		guard let dataVal = metadata[key]?.data(using: .utf8), let filtersStr = (try? JSONSerialization.jsonObject(with: dataVal, options: [])) as? [String] else {return nil}
 		return filtersStr.flatMap{ Filter(string: $0) }
 	}
 	
-	func setMetadataValue(_ value: String, forKey key: String) {
+	public func setMetadataValue(_ value: String, forKey key: String) {
 		metadata[key] = value
 	}
 	
-	func setMetadataValue(_ value: Int, forKey key: String) {
+	public func setMetadataValue(_ value: Int, forKey key: String) {
 		metadata[key] = String(value)
 	}
 	
-	func setMetadataValue(_ value: [Filter], forKey key: String) throws {
+	public func setMetadataValue(_ value: [Filter], forKey key: String) throws {
 		try setMetadataValue(value.map{ $0.toString() }, forKey: key)
 	}
 	
-	func setMetadataValue(_ value: Any, forKey key: String) throws {
+	public func setMetadataValue(_ value: Any, forKey key: String) throws {
 		guard let str = String(data: try JSONSerialization.data(withJSONObject: value, options: []), encoding: .utf8) else {
 			throw NSError(domain: "happnCSVLocFile set filters metadata value", code: 1, userInfo: nil)
 		}
 		metadata[key] = str
 	}
 	
-	func removeMetadata(forKey key: String) {
+	public func removeMetadata(forKey key: String) {
 		metadata.removeValue(forKey: key)
 	}
 	
-	func serializedMetadata() -> Data {
+	public func serializedMetadata() -> Data {
 		return Data("".byPrepending(userInfo: metadata).utf8)
 	}
 	
 	/** Unserialize the given metadata. Should be used when initing an instance
 	of `happnCSVLocFile`. */
-	static func unserializedMetadata(from serializedMetadata: Data) -> Any? {
+	public static func unserializedMetadata(from serializedMetadata: Data) -> Any? {
 		guard let strSerializedMetadata = String(data: serializedMetadata, encoding: .utf8) else {return nil}
 		
 		let (string, decodedMetadata) = strSerializedMetadata.splitUserInfo()
@@ -535,7 +546,7 @@ class happnCSVLocFile: TextOutputStreamable {
 	   MARK: - Streamable Implementation
 	   ********************************* */
 	
-	func write<Target : TextOutputStream>(to target: inout Target) {
+	public func write<Target : TextOutputStream>(to target: inout Target) {
 		target.write(
 			happnCSVLocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
 			happnCSVLocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
@@ -668,11 +679,11 @@ class happnCSVLocFile: TextOutputStreamable {
    MARK: - LineKey Operators
    ************************* */
 
-func ==(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
+public func ==(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	return k1.locKey == k2.locKey && k1.env == k2.env && k1.filename == k2.filename
 }
 
-func <=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
+public func <=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	if k1.env      > k2.env      {return true}
 	if k1.env      < k2.env      {return false}
 	if k1.filename < k2.filename {return true}
@@ -682,7 +693,7 @@ func <=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	return k1.locKey <= k2.locKey
 }
 
-func >=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
+public func >=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	if k1.env      < k2.env      {return true}
 	if k1.env      > k2.env      {return false}
 	if k1.filename > k2.filename {return true}
@@ -692,7 +703,7 @@ func >=(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	return k1.locKey >= k2.locKey
 }
 
-func <(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
+public func <(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	if k1.env      > k2.env      {return true}
 	if k1.env      < k2.env      {return false}
 	if k1.filename < k2.filename {return true}
@@ -702,7 +713,7 @@ func <(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	return k1.locKey < k2.locKey
 }
 
-func >(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
+public func >(k1: happnCSVLocFile.LineKey, k2: happnCSVLocFile.LineKey) -> Bool {
 	if k1.env      < k2.env      {return true}
 	if k1.env      > k2.env      {return false}
 	if k1.filename > k2.filename {return true}

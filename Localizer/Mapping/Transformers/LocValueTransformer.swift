@@ -11,9 +11,9 @@ import os.log
 
 
 
-class LocValueTransformer {
+public class LocValueTransformer {
 	
-	var isValid: Bool {
+	public var isValid: Bool {
 		fatalError("isValid is abstract.")
 	}
 	
@@ -24,7 +24,7 @@ class LocValueTransformer {
 	LocValueTransformerInvalid that will simply hold the serialization and will
 	not do any transform. This allows storing the given invalid transform so it
 	is not lost when the transform is serialized back. */
-	static func createComponentTransformFromSerialization(_ serialization: [String: Any]) -> LocValueTransformer {
+	public static func createComponentTransformFromSerialization(_ serialization: [String: Any]) -> LocValueTransformer {
 		do {
 			guard let type = serialization["__type"] as? String else {
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid loc value transformer component: Key __type is undefined or not a string."])
@@ -52,7 +52,7 @@ class LocValueTransformer {
 		}
 	}
 	
-	final func serialize() -> [String: Any] {
+	public final func serialize() -> [String: Any] {
 		var serializedData = self.serializePrivateData()
 		switch self {
 		case _ as LocValueTransformerSimpleStringReplacements:    serializedData["__type"] = "simple_string_replacements"

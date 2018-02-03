@@ -40,7 +40,7 @@ extension happnCSVLocFile {
 		}
 	}
 	
-	func mergeReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
+	public func mergeReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
 		/* Adding languages in reference translations. But not removing languages
 		 * not in reference translations! */
 		for l in locFile.languages {

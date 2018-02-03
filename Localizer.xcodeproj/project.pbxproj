@@ -72,6 +72,7 @@
 		7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */; };
 		7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */; };
 		7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */; };
+		7BB7096220261AC2007222BE /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB7095A20261AC2007222BE /* IOUtils.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
 		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
@@ -234,6 +235,7 @@
 		7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerPluralVariantPick.swift; sourceTree = "<group>"; };
 		7B9BD4DE1C108344007A096D /* happnCSVLocKeyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = happnCSVLocKeyMapping.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
+		7BB7095A20261AC2007222BE /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationsLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
@@ -387,6 +389,7 @@
 		7B6E25A119D4157A001934ED /* Localizer CLI */ = {
 			isa = PBXGroup;
 			children = (
+				7BB7095A20261AC2007222BE /* IOUtils.swift */,
 				7B6E25A919D417BD001934ED /* stderr.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
 			);
@@ -796,6 +799,7 @@
 			files = (
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
 				7B6E25AA19D417BD001934ED /* stderr.swift in Sources */,
+				7BB7096220261AC2007222BE /* IOUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -921,7 +925,6 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				EXECUTABLE_PREFIX = lib;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1042,6 +1045,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 14;
+				PRODUCT_MODULE_NAME = LocalizerCLI;
 				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 4.0;
@@ -1053,6 +1057,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 14;
+				PRODUCT_MODULE_NAME = LocalizerCLI;
 				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 4.0;
@@ -1067,13 +1072,13 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 14;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = M8JS42FSNG;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "happn CSV Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.happnLocEditor";
+				PRODUCT_MODULE_NAME = LocalizerApp;
 				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 4.0;
@@ -1087,7 +1092,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = M8JS42FSNG;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1095,9 +1099,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.happnLocEditor";
+				PRODUCT_MODULE_NAME = LocalizerApp;
 				PRODUCT_NAME = Localizer;
 				SDKROOT = macosx;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

@@ -8,6 +8,8 @@
 
 import Cocoa
 
+import Localizer
+
 
 
 class happnLocCSVDocContentSplitViewController : NSSplitViewController {

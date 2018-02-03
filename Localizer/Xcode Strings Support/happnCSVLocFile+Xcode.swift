@@ -13,7 +13,7 @@ import os.log
 
 extension happnCSVLocFile {
 	
-	func mergeXcodeStringsFiles(_ stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
+	public func mergeXcodeStringsFiles(_ stringsFiles: [XcodeStringsFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
 		let originalEntries = entries
@@ -72,7 +72,7 @@ extension happnCSVLocFile {
 		}
 	}
 	
-	func exportToXcodeProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
+	public func exportToXcodeProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [XcodeStringsComponent]]()
 		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Xcode" else {continue}

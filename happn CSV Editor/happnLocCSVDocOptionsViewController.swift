@@ -8,6 +8,8 @@
 
 import Cocoa
 
+import Localizer
+
 
 
 private extension NSUserInterfaceItemIdentifier {

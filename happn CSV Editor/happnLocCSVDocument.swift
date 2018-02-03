@@ -7,6 +7,9 @@
  */
 
 import Cocoa
+import os.log
+
+import Localizer
 
 
 

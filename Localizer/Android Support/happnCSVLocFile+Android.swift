@@ -13,7 +13,7 @@ import os.log
 
 extension happnCSVLocFile {
 	
-	func mergeAndroidXMLLocStringsFiles(_ locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
+	public func mergeAndroidXMLLocStringsFiles(_ locFiles: [AndroidXMLLocFile], folderNameToLanguageName: [String: String]) {
 		var index = 0
 		
 		let originalEntries = entries
@@ -149,7 +149,7 @@ extension happnCSVLocFile {
 		}
 	}
 	
-	func exportToAndroidProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
+	public func exportToAndroidProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
 		var filenameToComponents = [String: [AndroidLocComponent]]()
 		var spaces = [AndroidLocComponent /* Only WhiteSpace and Comment */]()
 		var currentPluralsUserInfoByFilename: [String /* Language */: [String: String]] = [:]

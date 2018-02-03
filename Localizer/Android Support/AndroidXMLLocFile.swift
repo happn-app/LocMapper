@@ -37,7 +37,7 @@ private extension String {
 	
 }
 
-class AndroidXMLLocFile: TextOutputStreamable {
+public class AndroidXMLLocFile: TextOutputStreamable {
 	
 	let filepath: String
 	let components: [AndroidLocComponent]
@@ -455,7 +455,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		}
 	}
 	
-	class func locFilesInProject(_ root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
+	public static func locFilesInProject(_ root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
 		var parsed_loc_files = [AndroidXMLLocFile]()
 		for languageFolder in languageFolderNames {
 			for stringsFilename in stringsFilenames {
@@ -474,7 +474,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		return parsed_loc_files
 	}
 	
-	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
+	public convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
 		assert(!path.hasPrefix("/"))
 		let url = URL(fileURLWithPath: path, relativeTo: URL(fileURLWithPath: projectPath))
 		try self.init(pathRelativeToProject: path, fileURL: url)
@@ -505,7 +505,7 @@ class AndroidXMLLocFile: TextOutputStreamable {
 		components = c
 	}
 	
-	func write<Target: TextOutputStream>(to target: inout Target) {
+	public func write<Target: TextOutputStream>(to target: inout Target) {
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n".write(to: &target)
 		for component in components {
 			component.stringValue.write(to: &target)

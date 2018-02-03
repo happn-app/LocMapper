@@ -8,6 +8,8 @@
 
 import AppKit
 
+import Localizer
+
 
 
 class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate {

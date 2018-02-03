@@ -11,7 +11,7 @@ import os.log
 
 
 
-class happnCSVLocKeyMappingComponent {
+public class happnCSVLocKeyMappingComponent {
 	
 	/**
 	Instantiate the correct subclass for the given serialization.
@@ -47,7 +47,7 @@ class happnCSVLocKeyMappingComponent {
 	
 	/** Subclasses must implement to check if mapping is syntactically valid (do
 	not check if resolving component is possible). */
-	var isValid: Bool {
+	public var isValid: Bool {
 		fatalError("This computed property is abstract.")
 	}
 	

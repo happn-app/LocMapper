@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Localizer
+
 
 
 func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout TargetStream) {

@@ -11,16 +11,16 @@ import os.log
 
 
 
-class ReferenceTranslationsLocFile {
+public class ReferenceTranslationsLocFile {
 	
 	typealias Key = String
 	typealias Value = String
-	typealias Language = String
+	public typealias Language = String
 	
 	private(set) var languages: [Language]
 	private(set) var entries: [Key: [Language: Value]]
 	
-	convenience init(fromURL url: URL, languages: [Language], csvSeparator: String = ",") throws {
+	public convenience init(fromURL url: URL, languages: [Language], csvSeparator: String = ",") throws {
 		var encoding = String.Encoding.utf8
 		let filecontent = try String(contentsOf: url, usedEncoding: &encoding)
 		try self.init(filecontent: filecontent, languages: languages, csvSeparator: csvSeparator)

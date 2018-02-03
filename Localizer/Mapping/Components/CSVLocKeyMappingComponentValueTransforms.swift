@@ -10,18 +10,18 @@ import Foundation
 
 
 
-class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent {
+public class CSVLocKeyMappingComponentValueTransforms : happnCSVLocKeyMappingComponent {
 	
-	override var isValid: Bool {
+	public override var isValid: Bool {
 		for transform in subTransformComponents {guard transform.isValid else {return false}}
 		return true
 	}
 	
-	let sourceKey: happnCSVLocFile.LineKey
+	public let sourceKey: happnCSVLocFile.LineKey
 	
-	let subTransformComponents: [LocValueTransformer]
+	public let subTransformComponents: [LocValueTransformer]
 	
-	init(sourceKey k: happnCSVLocFile.LineKey, subTransformsComponents s: [LocValueTransformer]) {
+	public init(sourceKey k: happnCSVLocFile.LineKey, subTransformsComponents s: [LocValueTransformer]) {
 		sourceKey = k
 		subTransformComponents = s
 	}
