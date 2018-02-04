@@ -1,6 +1,6 @@
 /*
  * main.swift
- * Localizer
+ * Localizer CLI
  *
  * Created by François Lamboley on 9/25/14.
  * Copyright (c) 2014 happn. All rights reserved.
@@ -155,7 +155,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print("Exporting from Xcode project...")
 		do {
 			let parsed_strings_files = try XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths)
-			let csv = try happnCSVLocFile(fromPath: output, withCSVSeparator: csvSeparator)
+			let csv = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
 			csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name)
 			var csvText = ""
 			print(csv, terminator: "", to: &csvText)
@@ -178,7 +178,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		
 		print("Importing to Xcode project...")
 		do {
-			let csv = try happnCSVLocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+			let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
 			csv.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
 		} catch let error as NSError {
 			print("Got error while importing: \(error)", to: &mx_stderr)
@@ -206,7 +206,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		print("Exporting from Android project...")
 		do {
 			let parsed_loc_files = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
-			let csv = try happnCSVLocFile(fromPath: output, withCSVSeparator: csvSeparator)
+			let csv = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
 			csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: folder_name_to_language_name)
 			var csvText = ""
 			print(csv, terminator: "", to: &csvText)
@@ -236,7 +236,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		
 		print("Importing to Android project...")
 		do {
-			let csv = try happnCSVLocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+			let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
 			csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
 		} catch let error as NSError {
 			print("Got error while importing: \(error)", to: &mx_stderr)
@@ -246,11 +246,11 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_export":
-		guard let parsed_strings_files = try? XcodeStringsFile.stringsFilesInProject("\(basePathForTests)/happn/", excluded_paths: ["Dependencies/", ".git/"]) else {
+		guard let parsed_strings_files = try? XcodeStringsFile.stringsFilesInProject("\(basePathForTests)/happnApple/happn/", excluded_paths: ["Dependencies/", ".git/"]) else {
 			print("Error reading Xcode strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -264,20 +264,20 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_xcode_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
-		csv.exportToXcodeProjectWithRoot("\(basePathForTests)/happn/", folderNameToLanguageName: folderNameToLanguageNameForTests)
+		csv.exportToXcodeProjectWithRoot("\(basePathForTests)/happnApple/happn/", folderNameToLanguageName: folderNameToLanguageNameForTests)
 		exit(0)
 	
 	/* Convenient command for debug purposes */
 	case "test_android_export":
-		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("\(basePathForTests)/HappnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys).sorted()) else {
+		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("\(basePathForTests)/happnGogol/happnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys).sorted()) else {
 			print("Error reading Android strings files", to: &mx_stderr)
 			exit(255)
 		}
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
+		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}
@@ -291,7 +291,7 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 	
 	/* Convenient command for debug purposes */
 	case "test_android_import":
-		guard let csv = try? happnCSVLocFile(fromPath: "\(basePathForTests)/happnGogol/ loc android.happnloc", withCSVSeparator: ",") else {
+		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/happnGogol/ loc android.happnloc", withCSVSeparator: ",") else {
 			print("Error reading CSV Loc file", to: &mx_stderr)
 			exit(255)
 		}

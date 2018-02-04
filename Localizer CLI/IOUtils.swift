@@ -1,6 +1,6 @@
 /*
  * IOUtils.swift
- * Localizer
+ * Localizer CLI
  *
  * Created by François Lamboley on 12/4/15.
  * Copyright © 2015 happn. All rights reserved.
