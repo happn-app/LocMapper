@@ -12,6 +12,8 @@ import Foundation
 
 class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 	
+	override class var serializedType: String {return "simple_string_replacements"}
+	
 	override var isValid: Bool {
 		return true
 	}

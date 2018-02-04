@@ -13,6 +13,8 @@ import XibLoc
 
 class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	
+	override class var serializedType: String {return "gender_variant_pick"}
+	
 	enum Gender {
 		case male, female
 		init?(string: String) {

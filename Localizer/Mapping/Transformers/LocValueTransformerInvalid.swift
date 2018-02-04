@@ -12,6 +12,8 @@ import Foundation
 
 class LocValueTransformerInvalid : LocValueTransformer {
 	
+	override class var serializedType: String {return "__invalid__"}
+	
 	override var isValid: Bool {
 		return false
 	}

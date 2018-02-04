@@ -12,6 +12,8 @@ import Foundation
 
 class LocValueTransformerToUpper : LocValueTransformer {
 	
+	override class var serializedType: String {return "to_upper"}
+	
 	override var isValid: Bool {
 		return true
 	}

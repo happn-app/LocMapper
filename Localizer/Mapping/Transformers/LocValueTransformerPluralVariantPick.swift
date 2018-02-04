@@ -15,6 +15,8 @@ import XibLoc
 
 class LocValueTransformerPluralVariantPick : LocValueTransformer {
 	
+	override class var serializedType: String {return "plural_variant_pick"}
+	
 	enum UnicodePluralValue : String {
 		case zero = "zero"
 		case one = "one"
