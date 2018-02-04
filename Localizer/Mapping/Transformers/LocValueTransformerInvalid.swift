@@ -27,7 +27,7 @@ class LocValueTransformerInvalid : LocValueTransformer {
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		throw NSError()
+		throw MappingResolvingError.invalidMapping
 	}
 	
 }
