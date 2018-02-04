@@ -12,6 +12,8 @@ import Foundation
 
 enum MappingResolvingError : Error {
 	case invalidMapping
-	case keyNotFound
 	case mappedToMappedKey /* When mapping points to a mapped key. This is invalid to avoid infinite recursions... */
+	
+	case keyNotFound
+	case languageNotFound
 }

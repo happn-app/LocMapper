@@ -86,8 +86,8 @@ extension LocFile {
 	}
 	
 	public func exportedValueForKey(_ key: LineKey, withLanguage language: String) -> String? {
-		let warning = "why replace the \n here?"
-		let v = editorDisplayedValueForKey(key, withLanguage: language).replacingOccurrences(of: "\n", with: "\\n")
+        let warning = "why replace the \n here?"
+        let v = editorDisplayedValueForKey(key, withLanguage: language).replacingOccurrences(of: "\n", with: "\\n")
 		return (v != "---" ? v : nil)
 	}
 	
@@ -99,6 +99,7 @@ extension LocFile {
 		} catch let error as MappingResolvingError {
 			switch error {
 			case .invalidMapping, .mappedToMappedKey: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
+			case .languageNotFound:                   return "!¡!TODOLOC_LANGUAGENOTFOUND!¡!"
 			case .keyNotFound:                        return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
 			}
 		} catch {
