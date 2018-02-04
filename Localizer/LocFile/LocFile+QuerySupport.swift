@@ -86,8 +86,7 @@ extension LocFile {
 	}
 	
 	public func exportedValueForKey(_ key: LineKey, withLanguage language: String) -> String? {
-        let warning = "why replace the \n here?"
-        let v = editorDisplayedValueForKey(key, withLanguage: language).replacingOccurrences(of: "\n", with: "\\n")
+		let v = editorDisplayedValueForKey(key, withLanguage: language)
 		return (v != "---" ? v : nil)
 	}
 	
