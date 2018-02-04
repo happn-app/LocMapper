@@ -12,7 +12,7 @@ import Localizer
 
 
 
-class LocEntryAdvancedMappingViewController: NSViewController {
+class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 	
 	private(set) var dirty = false {
 		didSet {

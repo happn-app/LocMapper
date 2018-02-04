@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -598,7 +599,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="185" height="294"/>
                                 <clipView key="contentView" wantsLayer="YES" drawsBackground="NO" copiesOnScroll="NO" id="owX-7j-aGy">
                                     <rect key="frame" x="0.0" y="0.0" width="185" height="294"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView wantsLayer="YES" verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="34" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="n3b-ZV-g19" customClass="TextFieldSelectableTableView" customModule="LocalizerApp" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="185" height="294"/>
@@ -737,7 +738,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                                 <clipView key="contentView" wantsLayer="YES" id="pAX-vR-riB">
                                     <rect key="frame" x="1" y="0.0" width="448" height="299"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView wantsLayer="YES" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" multipleSelection="NO" autosaveColumns="NO" headerView="oxT-8k-YZv" id="Zul-MP-I7T">
                                             <rect key="frame" x="0.0" y="0.0" width="448" height="276"/>
@@ -830,7 +831,7 @@
                                 <rect key="frame" x="10" y="10" width="430" height="104"/>
                                 <clipView key="contentView" wantsLayer="YES" copiesOnScroll="NO" id="ObE-OG-5En">
                                     <rect key="frame" x="0.0" y="0.0" width="430" height="104"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView wantsLayer="YES" editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="8Nh-Ot-zly">
                                             <rect key="frame" x="0.0" y="0.0" width="430" height="104"/>
@@ -943,7 +944,7 @@
                                 <rect key="frame" x="10" y="36" width="430" height="80"/>
                                 <clipView key="contentView" wantsLayer="YES" id="QMx-5j-OJV">
                                     <rect key="frame" x="1" y="1" width="428" height="78"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="m35-Mw-091">
                                             <rect key="frame" x="0.0" y="0.0" width="430" height="78"/>
@@ -1048,7 +1049,7 @@ Gw
                                 <rect key="frame" x="10" y="36" width="430" height="259"/>
                                 <clipView key="contentView" wantsLayer="YES" id="8O3-Pg-GCe">
                                     <rect key="frame" x="1" y="1" width="428" height="257"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView wantsLayer="YES" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" findStyle="panel" allowsUndo="YES" allowsNonContiguousLayout="YES" id="RYO-qy-Cak">
                                             <rect key="frame" x="0.0" y="0.0" width="430" height="257"/>
@@ -1066,7 +1067,7 @@ Gw
                                             </attributedString>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <connections>
-                                                <outlet property="delegate" destination="Pxz-rI-HMY" id="G5h-wl-043"/>
+                                                <outlet property="delegate" destination="Pxz-rI-HMY" id="yjp-PU-kfU"/>
                                             </connections>
                                         </textView>
                                     </subviews>
