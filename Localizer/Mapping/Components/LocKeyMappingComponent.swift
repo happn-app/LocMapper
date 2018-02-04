@@ -13,6 +13,10 @@ import os.log
 
 public class LocKeyMappingComponent {
 	
+	class var serializedType: String {
+		fatalError("serializedType is abstract.")
+	}
+	
 	/**
 	Instantiate the correct subclass for the given serialization.
 	
@@ -29,18 +33,16 @@ public class LocKeyMappingComponent {
 			let c: LocKeyMappingComponent
 			
 			switch type {
-			case "to_constant":      c = try LocKeyMappingComponentToConstant(serialization: serialization)
-			case "value_transforms": c = try LocKeyMappingComponentValueTransforms(serialization: serialization)
+			case LocKeyMappingComponentToConstant.serializedType:      c = try LocKeyMappingComponentToConstant(serialization: serialization)
+			case LocKeyMappingComponentValueTransforms.serializedType: c = try LocKeyMappingComponentValueTransforms(serialization: serialization)
 			default:
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid mapping component: Unknown __type value \"\(type)\"."])
 			}
 			
 			return c
 		} catch {
-			if let errMsg = (error as NSError).userInfo[NSLocalizedDescriptionKey] as? String {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, errMsg) }}
-				else                        {NSLog("Got error: %@", errMsg)}
-			}
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }}
+			else                        {NSLog("Got error: %@", String(describing: error))}
 			return LocKeyMappingComponentInvalid(serialization: serialization)
 		}
 	}
@@ -53,12 +55,7 @@ public class LocKeyMappingComponent {
 	
 	final func serialize() -> [String: Any] {
 		var serializedData = self.serializePrivateData()
-		if      self is LocKeyMappingComponentToConstant      {serializedData["__type"] = "to_constant"}
-		else if self is LocKeyMappingComponentValueTransforms {serializedData["__type"] = "value_transforms"}
-		else {
-			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Did not get a type for component %@", log: $0, type: .info, String(describing: self)) }}
-			else                        {NSLog("Did not get a type for component %@", String(describing: self))}
-		}
+		if !(self is LocKeyMappingComponentInvalid) {serializedData["__type"] = type(of: self).serializedType}
 		return serializedData
 	}
 	

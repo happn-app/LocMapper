@@ -12,6 +12,8 @@ import Foundation
 
 public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 	
+	override class var serializedType: String {return "value_transforms"}
+	
 	public override var isValid: Bool {
 		for transform in subTransformComponents {guard transform.isValid else {return false}}
 		return true

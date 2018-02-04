@@ -12,6 +12,8 @@ import Foundation
 
 class LocKeyMappingComponentToConstant : LocKeyMappingComponent {
 	
+	override class var serializedType: String {return "to_constant"}
+	
 	override var isValid: Bool {
 		return true
 	}
