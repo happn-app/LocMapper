@@ -48,7 +48,7 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	}
 	
 	func noteFiltersHaveChanged() {
-		if let csvLocFile = csvLocFile, let filters = csvLocFile.filtersMetadataValueForKey("filters") {sortedKeys = csvLocFile.entryKeys(matchingFilters: filters).sorted()}
+		if let csvLocFile = csvLocFile, let filters = csvLocFile.filtersMetadataValueForKey("filters") {sortedKeys = csvLocFile.entryKeys(matchingFilters: filters + [.uiPresentable]).sorted()}
 		else if let csvLocFile = csvLocFile                                                            {sortedKeys = csvLocFile.entryKeys.sorted()}
 		else                                                                                           {sortedKeys = nil}
 		reloadTableData()

@@ -66,6 +66,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "test_android_import"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "version"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

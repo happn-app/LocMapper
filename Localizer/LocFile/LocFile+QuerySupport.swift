@@ -31,52 +31,67 @@ extension LocFile {
 			return nil
 		}
 		let stateFilters = filters.filter{ $0.isStateFilter }
+		let showUIHidden = filters.contains{ if case .uiHidden = $0 {return true} else {return false} }
+		let showUIPresentable = filters.contains{ if case .uiPresentable = $0 {return true} else {return false} }
 		
-		guard !envFilters.isEmpty && !stateFilters.isEmpty else {
+		guard !envFilters.isEmpty && !stateFilters.isEmpty && (showUIHidden || showUIPresentable) else {
 			return []
 		}
 		
+		func stringFilter(_ stringFilter: String, match lineKey: LineKey) -> Bool {
+			/* A string filter is a key and value filter. The two of them should be
+			 * joined with a comma (eg. “value_filter,key_filter”). If the string
+			 * filter does not contain a comma, it is considered to be a single
+			 * value filter. If it has more than one comma, everything after the
+			 * last one is the key filter, the rest is the value filter. */
+			let keyFilter: String
+			let contentFilter: String
+			let stringComponents = stringFilter.components(separatedBy: ",")
+			if let filter = stringComponents.last, stringComponents.count > 1 {
+				keyFilter = filter
+				contentFilter = stringComponents.dropLast().joined(separator: ",")
+			} else {
+				keyFilter = ""
+				contentFilter = stringFilter
+			}
+			
+			/* Let's process the key filter */
+			if !keyFilter.isEmpty {
+				guard [lineKey.locKey, lineKey.filename].contains(where: { k -> Bool in
+					return k.range(of: keyFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+				}) else {return false}
+			}
+			
+			/* Now we process the value filter */
+			if !contentFilter.isEmpty {
+				guard self.languages.contains(where: { l -> Bool in
+					let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
+					return str.range(of: contentFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+				}) else {return false}
+			}
+			
+			return true
+		}
+		
 		return entryKeys.filter{ lineKey -> Bool in
-			/* Filter env */
+			/* Env filters */
 			guard envFilters.contains(lineKey.env) else {return false}
 			
-			/* Filter state */
+			/* UI filters */
+			if !showUIHidden || !showUIPresentable {
+				let isUIHidden = (lineKey.env == "Android" && ["o", "s", "c"].contains{ lineKey.locKey.first == $0 })
+				guard showUIPresentable ||  isUIHidden else {return false}
+				guard showUIHidden      || !isUIHidden else {return false}
+			}
+			
+			/* State filters */
 			let warning = "todo: state filters"
 			
-			/* Search filter */
-			if !stringFilters.isEmpty {
-				for stringFilter in stringFilters {
-					let stringComponents = stringFilter.components(separatedBy: ",")
-					let keyFilter: String?
-					let contentFilter: String
-					if let filter = stringComponents.last, stringComponents.count > 1 {
-						keyFilter = filter.isEmpty ? nil : filter
-						contentFilter = stringComponents[0..<stringComponents.count-2].joined(separator: ",")
-					} else {
-						keyFilter = nil
-						contentFilter = stringFilter
-					}
-					var keyOk = true
-					if let keyFilter = keyFilter {
-						keyOk = false
-						for k in [lineKey.locKey, lineKey.filename] {
-							if k.range(of: keyFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
-								keyOk = true
-								break
-							}
-						}
-					}
-					guard keyOk else {return false}
-					guard !contentFilter.isEmpty else {return true}
-					for l in self.languages {
-						let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
-						if str.range(of: contentFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil {
-							return true
-						}
-					}
-				}
-				return false
-			}
+			/* Search filters */
+			guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
+				stringFilter(f, match: lineKey)
+			}) else {return false}
+			
 			return true
 		}
 	}
@@ -86,11 +101,16 @@ extension LocFile {
 	}
 	
 	public func exportedValueForKey(_ key: LineKey, withLanguage language: String) -> String? {
-		let v = editorDisplayedValueForKey(key, withLanguage: language)
+		let v = resolvedValueErrorInValueForKey(key, withLanguage: language)
 		return (v != "---" ? v : nil)
 	}
 	
 	public func editorDisplayedValueForKey(_ key: LineKey, withLanguage language: String) -> String {
+		let v = resolvedValueErrorInValueForKey(key, withLanguage: language)
+		return (v != "---" ? v : "(Skipped Value)")
+	}
+	
+	private func resolvedValueErrorInValueForKey(_ key: LineKey, withLanguage language: String) -> String {
 		do {
 			return try resolvedValueForKey(key, withLanguage: language)
 		} catch _ as ValueResolvingError {
@@ -106,7 +126,7 @@ extension LocFile {
 		}
 	}
 	
-	public func resolvedValueForKey(_ key: LineKey, withLanguage language: String) throws -> String {
+	private func resolvedValueForKey(_ key: LineKey, withLanguage language: String) throws -> String {
 		guard let v = entries[key] else {throw ValueResolvingError.keyNotFound}
 		switch v {
 		case .entries(let entries):
@@ -123,8 +143,10 @@ extension LocFile {
 	   ******************* */
 	
 	public enum Filter {
+		
 		case string(String)
 		case env(String)
+		case uiPresentable, uiHidden
 		case stateTodoloc, stateHardCodedValues, stateMappedValid, stateMappedInvalid
 		
 		public init?(string: String) {
@@ -141,6 +163,13 @@ extension LocFile {
 				default: return nil
 				}
 				
+			case "u":
+				switch substring {
+				case "p":  self = .uiPresentable
+				case "h":  self = .uiHidden
+				default: return nil
+				}
+				
 			case "s": self = .string(substring)
 			case "e": self = .env(substring)
 				
@@ -152,6 +181,8 @@ extension LocFile {
 			switch self {
 			case .string(let str):      return "s" + str
 			case .env(let env):         return "e" + env
+			case .uiPresentable:        return "up"
+			case .uiHidden:             return "uh"
 			case .stateTodoloc:         return "tt"
 			case .stateHardCodedValues: return "tv"
 			case .stateMappedValid:     return "tmv"
@@ -169,9 +200,17 @@ extension LocFile {
 			return true
 		}
 		
-		public var isStateFilter: Bool {
-			return !isStringFilter && !isEnvFilter
+		public var isUIFilter: Bool {
+			switch self {
+			case .uiPresentable, .uiHidden: return true
+			default:                        return false
+			}
 		}
+		
+		public var isStateFilter: Bool {
+			return !isStringFilter && !isEnvFilter && !isUIFilter
+		}
+		
 	}
 	
 }

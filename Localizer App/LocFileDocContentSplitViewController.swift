@@ -71,7 +71,7 @@ class LocFileDocContentSplitViewController : NSSplitViewController {
 		}
 		locEntryViewController.handlerSearchMappingKey = { [weak self] str in
 			guard let locFile = self?.representedObject as? LocFile else {return []}
-			return locFile.entryKeys(matchingFilters: [.string(str), .env("RefLoc"), .stateHardCodedValues])
+			return locFile.entryKeys(matchingFilters: [.string(str), .env("RefLoc"), .stateHardCodedValues, .uiPresentable])
 		}
 		locEntryViewController.handlerLineKeyToString = { [weak self] linekey in
 			guard let locFile = self?.representedObject as? LocFile else {return "<Internal Error>"}

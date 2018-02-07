@@ -57,6 +57,7 @@ class LocFileDocFiltersViewController : NSViewController, NSTableViewDataSource,
 				case .stateHardCodedValues: stateFiltersStatus["hard_coded_values"] = true
 				case .stateMappedValid:     stateFiltersStatus["valid_mapped_values"] = true
 				case .stateMappedInvalid:   stateFiltersStatus["invalid_mapped_values"] = true
+				case .uiHidden, .uiPresentable: (/*nop*/)
 				}
 			}
 			
