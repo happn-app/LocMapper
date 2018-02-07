@@ -49,15 +49,19 @@ class LocFileDocFiltersViewController : NSViewController, NSTableViewDataSource,
 			stringFilter = ""
 			envsStatus.removeAll()
 			stateFiltersStatus.removeAll()
-			for filter in representedObject as? [LocFile.Filter] ?? [] {
-				switch filter {
-				case .string(let str):      stringFilter = str
-				case .env(let env):         envsStatus[env] = true
-				case .stateTodoloc:         stateFiltersStatus["todoloc"] = true
-				case .stateHardCodedValues: stateFiltersStatus["hard_coded_values"] = true
-				case .stateMappedValid:     stateFiltersStatus["valid_mapped_values"] = true
-				case .stateMappedInvalid:   stateFiltersStatus["invalid_mapped_values"] = true
-				case .uiHidden, .uiPresentable: (/*nop*/)
+			if let filters = representedObject as? [LocFile.Filter] {
+				for env in envs {envsStatus[env] = false}
+				for stateFilter in stateFilters {stateFiltersStatus[stateFilter] = false}
+				for filter in filters {
+					switch filter {
+					case .string(let str):      stringFilter = str
+					case .env(let env):         envsStatus[env] = true
+					case .stateTodoloc:         stateFiltersStatus["todoloc"] = true
+					case .stateHardCodedValues: stateFiltersStatus["hard_coded_values"] = true
+					case .stateMappedValid:     stateFiltersStatus["valid_mapped_values"] = true
+					case .stateMappedInvalid:   stateFiltersStatus["invalid_mapped_values"] = true
+					case .uiHidden, .uiPresentable: (/*nop*/)
+					}
 				}
 			}
 			
