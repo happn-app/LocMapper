@@ -26,20 +26,24 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	let replacement: String
 	
 	init(serialization: [String: Any]) throws {
-		guard
-			let od = serialization["open_delimiter"] as? String, !od.isEmpty,
-			let cd = serialization["close_delimiter"] as? String, !cd.isEmpty,
-			let r  = serialization["replacement"] as? String
-			else
-		{
+		guard let r  = serialization["replacement"] as? String else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid or missing open_delimiter, close_delimiter or replacement."])
 		}
 		
-		openDelim = od
-		closeDelim = cd
+		if let d = serialization["open_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty open delimiter, which is invalid."])}
+			openDelim = d
+		} else {openDelim = "|"}
+		
+		if let d = serialization["close_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty close delimiter, which is invalid."])}
+			closeDelim = d
+		} else {closeDelim = "|"}
+		
 		replacement = r
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
 		else                                                            {escapeToken = nil}
+		
 		super.init()
 	}
 	
