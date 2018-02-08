@@ -130,7 +130,7 @@ extension LocFile : TextOutputStreamable {
 				 * language/value. */
 				var values = [String: String]()
 				for l in languages {
-					if let v = row[l] {
+					if let v = row[l], v != LocFile.todolocToken {
 						values[l] = v
 					}
 				}
@@ -202,7 +202,7 @@ extension LocFile : TextOutputStreamable {
 			)
 			if case .entries(let entries) = value {
 				for language in languages {
-					target.write(csvSeparator + (entries[language] ?? "!¡!TODOLOC!¡!").csvCellValueWithSeparator(csvSeparator))
+					target.write(csvSeparator + (entries[language] ?? LocFile.todolocToken).csvCellValueWithSeparator(csvSeparator))
 				}
 			}
 			target.write("\n")
@@ -212,6 +212,8 @@ extension LocFile : TextOutputStreamable {
 	/* ***************
 	   MARK: - Private
 	   *************** */
+	
+	static let todolocToken = "!¡!TODOLOC!¡!"
 	
 	private static let PRIVATE_KEY_HEADER_NAME = "__Key"
 	private static let PRIVATE_ENV_HEADER_NAME = "__Env"

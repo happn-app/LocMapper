@@ -34,8 +34,7 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 			let filename     = serialization["filename"] as? String,
 			let locKey       = serialization["loc_key"] as? String,
 			let dtransform_s = serialization["transforms"]
-			else
-		{
+		else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Some keys are missing or invalid."])
 		}
 		let dtransforms: [[String: Any]]
@@ -55,11 +54,11 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 			userReadableGroupComment: "",
 			userReadableComment: ""
 		)
-		subTransformComponents = dtransforms.map {return LocValueTransformer.createComponentTransformFromSerialization($0)}
+		subTransformComponents = dtransforms.map{ LocValueTransformer.createComponentTransformFromSerialization($0) }
 	}
 	
 	override func serializePrivateData() -> [String: Any] {
-		let serializedTransforms = subTransformComponents.map {return $0.serialize()}
+		let serializedTransforms = subTransformComponents.map{ $0.serialize() }
 		
 		return [
 			"env":        sourceKey.env,
@@ -73,7 +72,7 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		switch entries[sourceKey] {
 		case nil:                   throw MappingResolvingError.keyNotFound
 		case .mapping?:             throw MappingResolvingError.mappedToMappedKey
-		case .entries(let values)?: return try subTransformComponents.reduce(values[language] ?? "") { try $1.apply(toValue: $0, withLanguage: language) }
+		case .entries(let values)?: return try subTransformComponents.reduce(values[language] ?? ""){ try $1.apply(toValue: $0, withLanguage: language) }
 		}
 	}
 	

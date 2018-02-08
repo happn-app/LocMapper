@@ -410,7 +410,10 @@
 				7B6E25A019D4157A001934ED /* Products */,
 				7B11A5721F51AE7B0064549D /* Frameworks */,
 			);
+			indentWidth = 3;
 			sourceTree = "<group>";
+			tabWidth = 3;
+			usesTabs = 1;
 		};
 		7B6E25A019D4157A001934ED /* Products */ = {
 			isa = PBXGroup;

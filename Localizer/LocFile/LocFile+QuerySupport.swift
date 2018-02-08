@@ -22,56 +22,46 @@ extension LocFile {
 	}
 	
 	public func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
-		let stringFilters = filters.flatMap{ filter -> String? in
-			if case .string(let str) = filter, !str.isEmpty {return str}
+		let stringFilters = filters.flatMap{ filter -> (key: String, content: String)? in
+			if case .string(let str) = filter, !str.isEmpty {
+				/* A string filter is a key and value filter. The two of them should
+				 * be joined with a comma (eg. “value_filter,key_filter”).
+				 * If the string filter does not contain a comma, it is considered
+				 * to be a single value filter. If it has more than one comma,
+				 * everything after the last one is the key filter, the rest is the
+				 * value filter. */
+				let keyFilter: String
+				let contentFilter: String
+				let stringComponents = str.components(separatedBy: ",")
+				if let filter = stringComponents.last, stringComponents.count > 1 {
+					keyFilter = filter
+					contentFilter = stringComponents.dropLast().joined(separator: ",")
+				} else {
+					keyFilter = ""
+					contentFilter = str
+				}
+				return (key: keyFilter, content: contentFilter)
+			}
 			return nil
 		}
+		
 		let envFilters = filters.flatMap{ filter -> String? in
 			if case .env(let env) = filter {return env}
 			return nil
 		}
-		let stateFilters = filters.filter{ $0.isStateFilter }
-		let showUIHidden = filters.contains{ if case .uiHidden = $0 {return true} else {return false} }
-		let showUIPresentable = filters.contains{ if case .uiPresentable = $0 {return true} else {return false} }
 		
-		guard !envFilters.isEmpty && !stateFilters.isEmpty && (showUIHidden || showUIPresentable) else {
-			return []
-		}
+		let showStateTodoloc = filters.contains{ $0.isStateTodolocCase }
+		let showStateHardCoded = filters.contains{ $0.isStateHardCodedValuesCase }
+		let showStateMappedValid = filters.contains{ $0.isStateMappedValidCase }
+		let showStateMappedInvalid = filters.contains{ $0.isStateMappedInvalidCase }
 		
-		func stringFilter(_ stringFilter: String, match lineKey: LineKey) -> Bool {
-			/* A string filter is a key and value filter. The two of them should be
-			 * joined with a comma (eg. “value_filter,key_filter”). If the string
-			 * filter does not contain a comma, it is considered to be a single
-			 * value filter. If it has more than one comma, everything after the
-			 * last one is the key filter, the rest is the value filter. */
-			let keyFilter: String
-			let contentFilter: String
-			let stringComponents = stringFilter.components(separatedBy: ",")
-			if let filter = stringComponents.last, stringComponents.count > 1 {
-				keyFilter = filter
-				contentFilter = stringComponents.dropLast().joined(separator: ",")
-			} else {
-				keyFilter = ""
-				contentFilter = stringFilter
-			}
-			
-			/* Let's process the key filter */
-			if !keyFilter.isEmpty {
-				guard [lineKey.locKey, lineKey.filename].contains(where: { k -> Bool in
-					return k.range(of: keyFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
-				}) else {return false}
-			}
-			
-			/* Now we process the value filter */
-			if !contentFilter.isEmpty {
-				guard self.languages.contains(where: { l -> Bool in
-					let str = editorDisplayedValueForKey(lineKey, withLanguage: l)
-					return str.range(of: contentFilter, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
-				}) else {return false}
-			}
-			
-			return true
-		}
+		let showUIHidden = filters.contains{ $0.isUIHiddenCase }
+		let showUIPresentable = filters.contains{ $0.isUIPresentableCase }
+		
+		guard
+			(showStateTodoloc || showStateHardCoded || showStateMappedValid || showStateMappedInvalid) &&
+			(showUIHidden || showUIPresentable)
+		else {return []}
 		
 		return entryKeys.filter{ lineKey -> Bool in
 			/* Env filters */
@@ -84,13 +74,54 @@ extension LocFile {
 				guard showUIHidden      || !isUIHidden else {return false}
 			}
 			
-			/* State filters */
-			let warning = "todo: state filters"
-			
-			/* Search filters */
-			guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
-				stringFilter(f, match: lineKey)
-			}) else {return false}
+			/* State and string filters (done in the same block to avoid looping on
+			 * entries twice...) */
+			if !stringFilters.isEmpty || !showStateTodoloc || !showStateHardCoded || !showStateMappedValid || !showStateMappedInvalid {
+				/* Let's process the key filters */
+				guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
+					guard !f.key.isEmpty else {return true}
+					guard [lineKey.locKey, lineKey.filename].contains(where: { k -> Bool in
+						return k.range(of: f.key, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+					}) else {return false}
+					return true
+				}) else {return false}
+				
+				/* Now we process the state and the string filters */
+				switch entries[lineKey] {
+				case .entries(let entries)?:
+					/* State filters */
+					guard showStateTodoloc || showStateHardCoded else {return false}
+					let values = languages.flatMap{ entries[$0] }
+					if languages.count != values.count {guard showStateTodoloc   else {return false}}
+					else                               {guard showStateHardCoded else {return false}}
+					/* String filters */
+					guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
+						guard !f.content.isEmpty else {return true}
+						guard values.contains(where: { k -> Bool in
+							return k.range(of: f.content, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+						}) else {return false}
+						return true
+					}) else {return false}
+					
+				case .mapping(let mapping)?:
+					/* State filters */
+					guard showStateMappedValid || showStateMappedInvalid else {return false}
+					let values = languages.flatMap{ try? mapping.apply(forLanguage: $0, entries: entries) }
+					if languages.count != values.count {guard showStateMappedInvalid else {return false}}
+					else                               {guard showStateMappedValid   else {return false}}
+					/* String filters */
+					guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
+						guard !f.content.isEmpty else {return true}
+						guard values.contains(where: { k -> Bool in
+							return k.range(of: f.content, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+						}) else {return false}
+						return true
+					}) else {return false}
+					
+				case nil:
+					guard showStateTodoloc else {return false}
+				}
+			}
 			
 			return true
 		}
@@ -114,7 +145,7 @@ extension LocFile {
 		do {
 			return try resolvedValueForKey(key, withLanguage: language)
 		} catch _ as ValueResolvingError {
-			return "!¡!TODOLOC!¡!"
+			return LocFile.todolocToken
 		} catch let error as MappingResolvingError {
 			switch error {
 			case .invalidMapping, .mappedToMappedKey: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
@@ -147,7 +178,7 @@ extension LocFile {
 		case string(String)
 		case env(String)
 		case uiPresentable, uiHidden
-		case stateTodoloc, stateHardCodedValues, stateMappedValid, stateMappedInvalid
+		case stateTodoloc, stateHardCodedValues /* And, implicitely NOT todoloc */, stateMappedValid, stateMappedInvalid
 		
 		public init?(string: String) {
 			guard let first = string.first else {return nil}
@@ -200,15 +231,34 @@ extension LocFile {
 			return true
 		}
 		
-		public var isUIFilter: Bool {
-			switch self {
-			case .uiPresentable, .uiHidden: return true
-			default:                        return false
-			}
+		public var isUIPresentableCase: Bool {
+			guard case .uiPresentable = self else {return false}
+			return true
 		}
 		
-		public var isStateFilter: Bool {
-			return !isStringFilter && !isEnvFilter && !isUIFilter
+		public var isUIHiddenCase: Bool {
+			guard case .uiHidden = self else {return false}
+			return true
+		}
+		
+		public var isStateTodolocCase: Bool {
+			guard case .stateTodoloc = self else {return false}
+			return true
+		}
+		
+		public var isStateHardCodedValuesCase: Bool {
+			guard case .stateHardCodedValues = self else {return false}
+			return true
+		}
+		
+		public var isStateMappedValidCase: Bool {
+			guard case .stateMappedValid = self else {return false}
+			return true
+		}
+		
+		public var isStateMappedInvalidCase: Bool {
+			guard case .stateMappedInvalid = self else {return false}
+			return true
 		}
 		
 	}
