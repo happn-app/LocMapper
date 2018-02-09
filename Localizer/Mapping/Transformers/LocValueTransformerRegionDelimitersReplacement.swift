@@ -58,7 +58,12 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		return value.applying(xibLocInfo: XibLocResolvingInfo(simpleReplacementWithLeftToken: openDelim, rightToken: closeDelim, value: replacement))
+		let xibLocInfo = Str2StrXibLocInfo(
+			defaultPluralityDefinition: PluralityDefinition(),
+			simpleSourceTypeReplacements: [OneWordTokens(leftToken: openDelim, rightToken: closeDelim): { str in self.replacement.replacingOccurrences(of: "__DELIMITED_VALUE__", with: str) }],
+			identityReplacement: { $0 }
+		)
+		return value.applying(xibLocInfo: xibLocInfo)
 	}
 	
 }
