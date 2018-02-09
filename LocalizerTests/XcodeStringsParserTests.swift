@@ -110,6 +110,15 @@ class XcodeStringsParserTests: XCTestCase {
 		)
 	}
 	
+	func testDoubleStarAtEndOfComment() {
+		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "/* ***/")
+			else {XCTFail("Cannot parse input"); return}
+		XCTAssertEqual(
+			parsed.components.map{ $0.stringValue },
+			[XcodeStringsFile.Comment(" **", doubleSlashed: false)].map{ $0.stringValue }
+		)
+	}
+	
 	func testParseSimpleXcodeStringsFile1() {
 		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: """
 			"hello" = "Hello!";
