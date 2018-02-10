@@ -17,10 +17,6 @@ extension LocFile : TextOutputStreamable {
 	   MARK: - Deserialization
 	   *********************** */
 	
-	public convenience init() {
-		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: ",")
-	}
-	
 	/* *** Init from path. The metadata should be retrieved with the
 	`unserializedMetadata(from:)` method. They are not read from the given path,
 	it is the caller responsability to retrieve them by its own means. *** */
@@ -46,8 +42,8 @@ extension LocFile : TextOutputStreamable {
 	`unserializedMetadata(from:)` method. *** */
 	convenience init(filecontent: String, csvSeparator csvSep: String, metadata: Any?) throws {
 		let defaultError = NSError(domain: "Migrator", code: 1, userInfo: nil)
-		if filecontent.isEmpty {
-			self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep)
+		guard !filecontent.isEmpty else {
+			self.init(csvSeparator: csvSep)
 			return
 		}
 		
@@ -56,17 +52,16 @@ extension LocFile : TextOutputStreamable {
 			throw defaultError
 		}
 		
-		var languages = [String]()
+		let languages: [String]
 		var entries = [LineKey: LineValue]()
 		
 		/* Retrieving languages from header */
-		for h in parser.fieldNames {
-			if h != LocFile.PRIVATE_KEY_HEADER_NAME && h != LocFile.PRIVATE_ENV_HEADER_NAME && h != LocFile.PRIVATE_FILENAME_HEADER_NAME &&
-				h != LocFile.PRIVATE_COMMENT_HEADER_NAME && h != LocFile.PRIVATE_MAPPINGS_HEADER_NAME && h != LocFile.FILENAME_HEADER_NAME &&
-				h != LocFile.COMMENT_HEADER_NAME {
-				languages.append(h)
-			}
-		}
+		let nonLanguageHeaders = Set([
+			LocFile.PRIVATE_KEY_HEADER_NAME, LocFile.PRIVATE_ENV_HEADER_NAME, LocFile.PRIVATE_FILENAME_HEADER_NAME,
+			LocFile.PRIVATE_COMMENT_HEADER_NAME, LocFile.PRIVATE_MAPPINGS_HEADER_NAME,
+			LocFile.FILENAME_HEADER_NAME, LocFile.COMMENT_HEADER_NAME
+		])
+		languages = parser.fieldNames.filter{ !nonLanguageHeaders.contains($0) }
 		
 		var i = 0
 		var groupComment = ""
@@ -87,7 +82,7 @@ extension LocFile : TextOutputStreamable {
 			}
 			
 			/* Does the row have a valid environment? */
-			if env.isEmpty {
+			guard !env.isEmpty else {
 				/* If the environment is empty, we may have a group comment row */
 				groupComment = userReadableComment
 				continue
@@ -122,11 +117,11 @@ extension LocFile : TextOutputStreamable {
 			groupComment = ""
 			
 			if let mappingStr = row[LocFile.PRIVATE_MAPPINGS_HEADER_NAME], let mapping = LocKeyMapping(stringRepresentation: mappingStr) {
-				/* We have a mapping (may be invalid though). Let's set it for the
-				 * current line key. */
+				/* We have a non-empty mapping (may be invalid though, but we don't
+				 * check for validity here). Let's set it for the current line key. */
 				entries[k] = .mapping(mapping)
 			} else {
-				/* No valid mapping. Value for current line key is dictionary of
+				/* No non-empty mapping. Value for current line key is dictionary of
 				 * language/value. */
 				var values = [String: String]()
 				for l in languages {
@@ -137,7 +132,8 @@ extension LocFile : TextOutputStreamable {
 				entries[k] = .entries(values)
 			}
 		}
-		self.init(languages: languages, entries: entries, metadata: metadata, csvSeparator: csvSep)
+		let warning = "todo"
+		self.init(languages: languages, entries: entries, metadata: metadata, csvSeparator: csvSep, serializationStyle: .csvFriendly)
 	}
 	
 	/* *********************
@@ -147,14 +143,14 @@ extension LocFile : TextOutputStreamable {
 	public func write<Target : TextOutputStream>(to target: inout Target) {
 		target.write(
 			LocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-				LocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-				LocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-				LocFile.PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-				LocFile.PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
+			LocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			LocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			LocFile.PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
+			LocFile.PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
 		target.write(
 			csvSeparator + LocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
-				csvSeparator + LocFile.COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
+			csvSeparator + LocFile.COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
 		for language in languages {
 			target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))

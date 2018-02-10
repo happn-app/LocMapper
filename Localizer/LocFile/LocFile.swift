@@ -14,7 +14,6 @@ import os.log
 /* Note: Should probably be a struct... */
 public class LocFile {
 	
-	public let csvSeparator: String
 	internal var metadata: [String: String]
 	
 	public internal(set) var languages: [String]
@@ -23,17 +22,30 @@ public class LocFile {
 		return Array(entries.keys)
 	}
 	
+	/* Serialization options */
+	public enum SerializationStyle : String {
+		case csvFriendly = "csv"
+		case gitFriendly = "git"
+	}
+	public var csvSeparator: String {willSet {if newValue.utf16.count != 1 {fatalError("Cannot use \"\(newValue)\" as a CSV separator")}}}
+	public var serializationStyle: SerializationStyle
+	
 	/* ********************
 	   MARK: - Initializers
 	   ******************** */
 	
 	/* *** Init *** */
-	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: Any?, csvSeparator csvSep: String) {
-		if csvSep.utf16.count != 1 {NSException(name: NSExceptionName(rawValue: "Invalid Separator"), reason: "Cannot use \"\(csvSep)\" as a CSV separator", userInfo: nil).raise()}
+	init(languages l: [String], entries e: [LineKey: LineValue], metadata md: Any?, csvSeparator csvSep: String, serializationStyle ss: SerializationStyle) {
+		if csvSep.utf16.count != 1 {fatalError("Cannot use \"\(csvSep)\" as a CSV separator")}
+		serializationStyle = ss
 		csvSeparator = csvSep
 		languages = l
 		entries = e
 		metadata = md as? [String: String] ?? [:]
+	}
+	
+	public convenience init(csvSeparator csvSep: String = ",") {
+		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep, serializationStyle: .csvFriendly)
 	}
 	
 	/** Remove the references to a language from the given path and add the
