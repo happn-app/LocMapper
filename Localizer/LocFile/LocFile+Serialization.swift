@@ -347,40 +347,23 @@ extension LocFile : TextOutputStreamable {
 		let written: String
 		do {
 			if encodingInfo.compressedUserInfo {
-				var inputData = Data(userInfo.utf8) /* var because we'll pass the bytes to zlib, which requires a mutable pointer */
+				let inputData = Data(userInfo.utf8)
 				var outputData = Data(count: Int(compressBound(uLong(inputData.count))) + MemoryLayout<Int32>.size)
 				
 				/* Let's write the size of the uncompressed data */
 				var s = Int32(inputData.count) /* Will crash if input is more that 4 (or maybe 2) GiB. Also, we don't care. */
 				outputData[0..<MemoryLayout<Int32>.size] = Data(buffer: UnsafeBufferPointer<Int32>(start: &s, count: 1))
 				
-				/* Now let's compress the body and write it to the output data */
-				var stream = z_stream(); stream.zalloc = nil; stream.zfree = nil; stream.opaque = nil
-				let initRet = deflateInit2_(&stream, Z_BEST_COMPRESSION, Z_DEFLATED, 15 /* Best compression */, 8 /* Default (from doc) */, Z_DEFAULT_STRATEGY, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size)) /* We cannot use deflateInit2 in Swift as it is a #define... */
-				guard initRet == Z_OK else {throw NSError(domain: "__internal__", code: 1, userInfo: nil)}
-				defer {deflateEnd(&stream)}
-				
+				var destLen = uLongf(outputData.count - MemoryLayout<Int32>.size)
 				try outputData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutablePointer<Bytef>) in
-					stream.next_out = outputBytes + MemoryLayout<Int32>.size
-					stream.avail_out = uInt(outputData.count - MemoryLayout<Int32>.size)
-					
-					try inputData.withUnsafeMutableBytes{ (inputBytes: UnsafeMutablePointer<Bytef>) in
-						stream.next_in = inputBytes
-						stream.avail_in = uInt(inputData.count)
-						while deflate(&stream, Z_NO_FLUSH) == Z_OK {/*nop*/}
-						
-						/* If more data to add, change stream.next_in, stream.avail_in
-						 * and call the “while” above again. */
-						
-						var retFinishStream: Int32
-						repeat {retFinishStream = deflate(&stream, Z_FINISH)} while retFinishStream == Z_OK
-						guard retFinishStream == Z_STREAM_END else {throw NSError(domain: "__internal__", code: 1, userInfo: nil)}
-//						var destLen = uLongf(outputData.count - MemoryLayout<Int32>.size)
-//						compress2(outputBytes + MemoryLayout<Int32>.size, &destLen, inputBytes, uLong(inputData.count), 9)
+					try inputData.withUnsafeBytes{ (inputBytes: UnsafePointer<Bytef>) in
+						guard compress2(outputBytes + MemoryLayout<Int32>.size, &destLen, inputBytes, uLong(inputData.count), 9) == Z_OK else {
+							throw NSError(domain: "__internal__", code: 1, userInfo: nil)
+						}
 					}
 				}
 				
-				outputData.count -= Int(stream.avail_out)
+				outputData.count = Int(destLen) + MemoryLayout<Int32>.size
 				written = outputData.base64EncodedString()
 			} else {
 				written = "__" + userInfo + "__"
@@ -432,25 +415,16 @@ extension LocFile : TextOutputStreamable {
 		compressedData = compressedData.dropFirst(MemoryLayout<Int32>.size)
 		var uncompressedData = Data(count: Int(s))
 		
-		var stream = z_stream(); stream.zalloc = nil; stream.zfree = nil; stream.opaque = nil
-		let initRet = inflateInit_(&stream, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size)) /* We cannot use inflateInit in Swift as it is a #define... */
-		guard initRet == Z_OK else {return nil}
-		defer {inflateEnd(&stream)}
-		
 		do {
-			try compressedData.withUnsafeMutableBytes{ (inputBytes: UnsafeMutablePointer<Bytef>) in
-				stream.next_in = inputBytes
-				stream.avail_in = uInt(compressedData.count)
-				
+			var outputLength = uLongf(s)
+			try compressedData.withUnsafeBytes{ (inputBytes: UnsafePointer<Bytef>) in
 				try uncompressedData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutablePointer<Bytef>) in
-					stream.next_out = outputBytes
-					stream.avail_out = uInt(uncompressedData.count)
-					
-					var retFinishStream: Int32
-					repeat {retFinishStream = inflate(&stream, Z_FINISH)} while retFinishStream == Z_OK
-					guard retFinishStream == Z_STREAM_END else {throw NSError(domain: "__internal__", code: 1, userInfo: nil)}
+					guard uncompress(outputBytes, &outputLength, inputBytes, uLong(compressedData.count)) == Z_OK else {
+						throw NSError(domain: "__internal__", code: 1, userInfo: nil)
+					}
 				}
 			}
+			uncompressedData.count = Int(outputLength)
 		} catch {
 			return nil
 		}
