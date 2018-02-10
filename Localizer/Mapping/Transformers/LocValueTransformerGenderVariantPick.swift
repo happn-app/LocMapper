@@ -47,6 +47,8 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid gender."])
 		}
 		
+		gender = g
+		
 		if let d = serialization["open_delimiter"] as? String {
 			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty open delimiter, which is invalid."])}
 			openDelim = d
@@ -62,12 +64,8 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 			closeDelim = d
 		} else {closeDelim = "´"}
 		
-		gender = g
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
 		else                                                            {escapeToken = nil}
-		
-		/* Let's check the values retrieved from serialization are ok.
-		 * TODO: Maybe check the open/close/middle delimiter constraints from XibLoc. */
 		
 		super.init()
 	}

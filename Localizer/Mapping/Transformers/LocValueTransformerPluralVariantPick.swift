@@ -41,48 +41,65 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		return true
 	}
 	
-	let unicodeValue: UnicodePluralValue
-	let openDelim: String
-	let middleDelim: String
-	let closeDelim: String
+	let numberReplacement: String
+	let numberOpenDelim: String
+	let numberCloseDelim: String
+	
+	let pluralUnicodeValue: UnicodePluralValue
+	let pluralOpenDelim: String
+	let pluralMiddleDelim: String
+	let pluralCloseDelim: String
+	
 	let escapeToken: String?
 	
 	init(serialization: [String: Any]) throws {
-		guard let vs = serialization["value"] as? String, let v = UnicodePluralValue(string: vs) else {
-			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid plural value."])
+		guard let vs = serialization["plural_value"] as? String, let v = UnicodePluralValue(string: vs), let nr = serialization["number_replacement"] as? String else {
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid plural value or number replacement."])
 		}
 		
-		if let d = serialization["open_delimiter"] as? String {
-			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty open delimiter, which is invalid."])}
-			openDelim = d
-		} else {openDelim = "<"}
+		numberReplacement = nr
+		pluralUnicodeValue = v
 		
-		if let d = serialization["middle_delimiter"] as? String {
-			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty middle delimiter, which is invalid."])}
-			middleDelim = d
-		} else {middleDelim = ":"}
+		if let d = serialization["number_open_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty number open delimiter, which is invalid."])}
+			numberOpenDelim = d
+		} else {numberOpenDelim = "#"}
 		
-		if let d = serialization["close_delimiter"] as? String {
-			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty close delimiter, which is invalid."])}
-			closeDelim = d
-		} else {closeDelim = ">"}
+		if let d = serialization["number_close_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty number close delimiter, which is invalid."])}
+			numberCloseDelim = d
+		} else {numberCloseDelim = "#"}
 		
-		unicodeValue = v
+		if let d = serialization["plural_open_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty plural open delimiter, which is invalid."])}
+			pluralOpenDelim = d
+		} else {pluralOpenDelim = "<"}
+		
+		if let d = serialization["plural_middle_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty plural middle delimiter, which is invalid."])}
+			pluralMiddleDelim = d
+		} else {pluralMiddleDelim = ":"}
+		
+		if let d = serialization["plural_close_delimiter"] as? String {
+			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty plural close delimiter, which is invalid."])}
+			pluralCloseDelim = d
+		} else {pluralCloseDelim = ">"}
+		
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
 		else                                                            {escapeToken = nil}
-		
-		/* Let's check the values retrieved from serialization are ok.
-		 * TODO: Maybe check the open/close/middle delimiter constraints from XibLoc. */
 		
 		super.init()
 	}
 	
 	override func serializePrivateData() -> [String: Any] {
 		var ret = [
-			"value": unicodeValue.rawValue,
-			"open_delimiter": openDelim,
-			"middle_delimiter": middleDelim,
-			"close_delimiter": closeDelim
+			"number_replacement": numberReplacement,
+			"number_open_delimiter": numberOpenDelim,
+			"number_close_delimiter": numberCloseDelim,
+			"plural_value": pluralUnicodeValue.rawValue,
+			"plural_open_delimiter": pluralOpenDelim,
+			"plural_middle_delimiter": pluralMiddleDelim,
+			"plural_close_delimiter": pluralCloseDelim
 		]
 		if let e = escapeToken {ret["escape_token"] = e}
 		return ret
@@ -114,14 +131,14 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		let pluralityDefinition: PluralityDefinition
 		if Set(["thai", "chinese", "japanese"]).contains(where: { language.range(of: $0) != nil }) {
 			pluralityDefinition = PluralityDefinition(string: "(*)")
-			n = (unicodeValue == .other ? 1 : nil)
+			n = (pluralUnicodeValue == .other ? 1 : nil)
 		} else if Set(["english", "german", "spanish", "italian", "hungarian", "turkish", "greek", "french", "portuguese"]).contains(where: { language.range(of: $0) != nil }) {
 			/* Technically, for French and Brazilian Portuguese, the plurality
 			 * definition is "(0:1)(*)", but as we use 1 and 2 for the values of n,
 			 * we don't care about the difference in the 0 case for these two
 			 * languages! */
 			pluralityDefinition = PluralityDefinition(string: "(1)(*)")
-			switch unicodeValue {
+			switch pluralUnicodeValue {
 			case .one:   n = 1
 			case .other: n = 2
 			default:     n = nil
@@ -131,7 +148,7 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 			 *       static values when resolving the string... Let's put it anyway
 			 *       for reference. */
 			pluralityDefinition = PluralityDefinition(string: "(1)(2→4:^*[^1][2→4]$)?(*)")
-			switch unicodeValue {
+			switch pluralUnicodeValue {
 			case .one:   n = 1
 			case .few:   n = 2
 			case .many:  n = 5
@@ -143,7 +160,7 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 			 *       static values when resolving the string... Let's put it anyway
 			 *       for reference. */
 			pluralityDefinition = PluralityDefinition(string: "(1:^*[^1]1$)(2→4:^*[^1][2→4]$)?(*)")
-			switch unicodeValue {
+			switch pluralUnicodeValue {
 			case .one:   n = 1
 			case .few:   n = 2
 			case .many:  n = 5
@@ -157,8 +174,8 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		
 		let xibLocInfo = Str2StrXibLocInfo(
 			defaultPluralityDefinition: pluralityDefinition, escapeToken: escapeToken,
-			simpleSourceTypeReplacements: [OneWordTokens(token: "#"): { _ in "%1$d" }],
-			pluralGroups: [(MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim), .int(nn))],
+			simpleSourceTypeReplacements: [OneWordTokens(leftToken: numberOpenDelim, rightToken: numberCloseDelim): { _ in self.numberReplacement }],
+			pluralGroups: [(MultipleWordsTokens(leftToken: pluralOpenDelim, interiorToken: pluralMiddleDelim, rightToken: pluralCloseDelim), .int(nn))],
 			identityReplacement: { $0 }
 		)
 		return value.applying(xibLocInfo: xibLocInfo)

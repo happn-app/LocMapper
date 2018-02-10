@@ -26,6 +26,7 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 		}
 		
 		replacements = r
+		
 		super.init()
 	}
 	
