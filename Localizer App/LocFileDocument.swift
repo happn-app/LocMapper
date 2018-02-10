@@ -98,6 +98,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 		}
 		
 		var strData = ""
+		csvLocFile.serializationStyle = .gitFriendly
 		Swift.print(csvLocFile, terminator: "", to: &strData)
 		return Data(strData.utf8)
 	}

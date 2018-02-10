@@ -41,7 +41,7 @@ extension LocFile {
 			
 			func handleComment(_ comment: AndroidXMLLocFile.Comment) {
 				if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-				currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
+				currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 				currentComment += comment.stringValue
 			}
 			

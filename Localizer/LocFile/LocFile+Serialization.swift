@@ -8,6 +8,7 @@
 
 import Foundation
 import os.log
+import zlib
 
 
 
@@ -57,29 +58,40 @@ extension LocFile : TextOutputStreamable {
 		
 		/* Retrieving languages from header */
 		let nonLanguageHeaders = Set([
-			LocFile.PRIVATE_KEY_HEADER_NAME, LocFile.PRIVATE_ENV_HEADER_NAME, LocFile.PRIVATE_FILENAME_HEADER_NAME,
-			LocFile.PRIVATE_COMMENT_HEADER_NAME, LocFile.PRIVATE_MAPPINGS_HEADER_NAME,
-			LocFile.FILENAME_HEADER_NAME, LocFile.COMMENT_HEADER_NAME
+			LocFile.KEY_HEADER_NAME, LocFile.ENV_HEADER_NAME, LocFile.PRIVATE_FILENAME_HEADER_NAME, LocFile.PRIVATE_USERINFO_HEADER_NAME,
+			LocFile.PRIVATE_MAPPING_HEADER_NAME, LocFile.PRIVATE_ENCODING_INFO_HEADER_NAME,
+			LocFile.FILENAME_HEADER_NAME, LocFile.COMMENTS_HEADER_NAME
 		])
 		languages = parser.fieldNames.filter{ !nonLanguageHeaders.contains($0) }
+		
+		var decodingInfo = EncodingInfo()
 		
 		var i = 0
 		var groupComment = ""
 		for row in parsedRows {
-			/* We drop empty rows. */
-			guard !row.reduce(true, { result, keyval in result && keyval.1.isEmpty }) else {continue}
+			/* Let's retrieve the new decoding info if needed */
+			if let decodingInfoStr = row[LocFile.PRIVATE_ENCODING_INFO_HEADER_NAME], !decodingInfoStr.isEmpty {
+				decodingInfo = EncodingInfo(string: decodingInfoStr)
+			}
+			
+			/* We drop empty rows (or rows only containing decoding info) */
+			guard row.contains(where: { !$0.value.isEmpty && $0.key != LocFile.PRIVATE_ENCODING_INFO_HEADER_NAME }) else {continue}
 			
 			guard
-				let locKey              = row[LocFile.PRIVATE_KEY_HEADER_NAME],
-				let env                 = row[LocFile.PRIVATE_ENV_HEADER_NAME],
-				let filename            = row[LocFile.PRIVATE_FILENAME_HEADER_NAME],
-				let rawComment          = row[LocFile.PRIVATE_COMMENT_HEADER_NAME],
-				let userReadableComment = row[LocFile.COMMENT_HEADER_NAME]
+				let locKey                     = row[LocFile.KEY_HEADER_NAME],
+				let env                        = row[LocFile.ENV_HEADER_NAME],
+				let filename                   = row[LocFile.PRIVATE_FILENAME_HEADER_NAME],
+				let encodedRawComment          = row[LocFile.PRIVATE_USERINFO_HEADER_NAME],
+				let encodedUserReadableComment = row[LocFile.COMMENTS_HEADER_NAME]
 			else {
-					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }}
-					else                        {NSLog("Invalid row %@ found in csv file. Ignoring this row.", row)}
-					continue
+				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }}
+				else                        {NSLog("Invalid row %@ found in csv file. Ignoring this row.", row)}
+				continue
 			}
+			
+			let userReadableComment: String
+			if decodingInfo.oneLineStrings {userReadableComment = LocFile.decodeOneLineString(encodedUserReadableComment)}
+			else                           {userReadableComment = encodedUserReadableComment}
 			
 			/* Does the row have a valid environment? */
 			guard !env.isEmpty else {
@@ -89,17 +101,28 @@ extension LocFile : TextOutputStreamable {
 			}
 			
 			/* Let's get the comment and the user info */
+			let rawComment: String
+			if decodingInfo.oneLineStrings {rawComment = LocFile.decodeOneLineString(encodedRawComment)}
+			else                           {rawComment = encodedRawComment}
+			
 			let comment: String
 			let userInfo: [String: String]
-			if rawComment.hasPrefix("__") && rawComment.hasSuffix("__") {
-				let prefixAndSuffixLess = rawComment
-					.replacingOccurrences(of: "__", with: "", options: [NSString.CompareOptions.anchored])
-					.replacingOccurrences(of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards])
-				(comment, userInfo) = LineKey.parse(attributedComment: prefixAndSuffixLess)
+			if decodingInfo.compressedUserInfo {
+				guard let uncompressed = LocFile.decompressString(rawComment) else {
+					throw NSError(domain: "Migrator", code: 2, userInfo: [NSLocalizedDescriptionKey: "Got error while uncompressing comment \"\(rawComment)\""])
+				}
+				(comment, userInfo) = LineKey.parse(attributedComment: uncompressed)
 			} else {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }}
-				else                        {NSLog("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", rawComment)}
-				(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
+				if rawComment.hasPrefix("__") && rawComment.hasSuffix("__") {
+					let prefixAndSuffixLess = rawComment
+						.replacingOccurrences(of: "__", with: "", options: [NSString.CompareOptions.anchored])
+						.replacingOccurrences(of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards])
+					(comment, userInfo) = LineKey.parse(attributedComment: prefixAndSuffixLess)
+				} else {
+					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }}
+					else                        {NSLog("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", rawComment)}
+					(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
+				}
 			}
 			
 			/* Let's create the line key */
@@ -116,7 +139,9 @@ extension LocFile : TextOutputStreamable {
 			i += 1
 			groupComment = ""
 			
-			if let mappingStr = row[LocFile.PRIVATE_MAPPINGS_HEADER_NAME], let mapping = LocKeyMapping(stringRepresentation: mappingStr) {
+			if let mappingStr = row[LocFile.PRIVATE_MAPPING_HEADER_NAME].flatMap({ decodingInfo.oneLineStrings ? LocFile.decodeOneLineString($0) : $0 }),
+				let mapping = LocKeyMapping(stringRepresentation: mappingStr)
+			{
 				/* We have a non-empty mapping (may be invalid though, but we don't
 				 * check for validity here). Let's set it for the current line key. */
 				entries[k] = .mapping(mapping)
@@ -125,41 +150,40 @@ extension LocFile : TextOutputStreamable {
 				 * language/value. */
 				var values = [String: String]()
 				for l in languages {
-					if let v = row[l], v != LocFile.todolocToken {
+					if let v = row[l].flatMap({ decodingInfo.oneLineStrings ? LocFile.decodeOneLineString($0) : $0 }), v != LocFile.todolocToken {
 						values[l] = v
 					}
 				}
 				entries[k] = .entries(values)
 			}
 		}
-		let warning = "todo"
-		self.init(languages: languages, entries: entries, metadata: metadata, csvSeparator: csvSep, serializationStyle: .csvFriendly)
+		self.init(languages: languages, entries: entries, metadata: metadata, csvSeparator: csvSep, serializationStyle: decodingInfo.oneLineStrings ? .gitFriendly : .csvFriendly)
 	}
 	
 	/* *********************
-      MARK: - Serialization
+	   MARK: - Serialization
 	   ********************* */
 	
 	public func write<Target : TextOutputStream>(to target: inout Target) {
-		target.write(
-			LocFile.PRIVATE_KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-			LocFile.PRIVATE_ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-			LocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-			LocFile.PRIVATE_COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-			LocFile.PRIVATE_MAPPINGS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
-		)
-		target.write(
-			csvSeparator + LocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
-			csvSeparator + LocFile.COMMENT_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
-		)
-		for language in languages {
-			target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))
-		}
-		target.write("\n")
-		var previousBasename: String?
-		for entry_key in entries.keys.sorted() {
-			let value = entries[entry_key]!
+		writeHeaders(to: &target)
+		
+		/* Compute and write the decoding Info */
+		let encodingInfo: EncodingInfo
+		switch serializationStyle {
+		case .csvFriendly:
+			encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: false)
+			target.write([String](repeating: csvSeparator, count: 3 + languages.count + 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
 			
+		case .gitFriendly:
+			encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: true)
+			target.write([String](repeating: csvSeparator, count: 3).joined() + "⚠️ This file has been saved with the “git friendly” option. Please do not edit manually unless you know what you’re doing.".csvCellValueWithSeparator(csvSeparator))
+			target.write([String](repeating: csvSeparator, count: languages.count + 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
+		}
+		
+		var previousBasename: String?
+		var previousEncodingInfo = encodingInfo
+		for entry_key in entries.keys.sorted() {
+			/* Computing user readable file name and writing file change separator if needed */
 			var basename = entry_key.filename
 			if let slashRange = basename.range(of: "/", options: .backwards) {
 				if slashRange.lowerBound != basename.endIndex {
@@ -170,36 +194,20 @@ extension LocFile : TextOutputStreamable {
 			if basename.hasSuffix(".strings") {basename = (basename as NSString).deletingPathExtension}
 			
 			if basename != previousBasename {
+				target.write([String](repeating: csvSeparator, count: 3 + languages.count + 4).joined() + "\n")
+				target.write(csvSeparator + csvSeparator)
+				/* We assume (quite reasonably) that basename will always be on one line (no need to use write(multilineText:to:) to write the value) */
+				target.write(("\\o/ \\o/ \\o/ " + basename + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
+				target.write([String](repeating: csvSeparator, count: 1 + languages.count + 4).joined() + "\n")
 				previousBasename = basename
-				target.write("\n")
-				target.write(csvSeparator + csvSeparator + csvSeparator + csvSeparator + csvSeparator)
-				target.write(("\\o/ \\o/ \\o/ " + previousBasename! + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
-				target.write(csvSeparator + "\n")
 			}
 			
-			/* Writing group comment */
-			if !entry_key.userReadableGroupComment.isEmpty {
-				target.write(csvSeparator + csvSeparator + csvSeparator + csvSeparator + csvSeparator + csvSeparator)
-				target.write(entry_key.userReadableGroupComment.csvCellValueWithSeparator(csvSeparator))
-				target.write("\n")
-			}
-			
-			let comment = "__" + entry_key.fullComment + "__" /* Adding text in front and at the end so editors won't fuck up the csv */
-			target.write(
-				entry_key.locKey.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-					entry_key.env.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-					entry_key.filename.csvCellValueWithSeparator(csvSeparator) + csvSeparator +
-					comment.csvCellValueWithSeparator(csvSeparator) + csvSeparator
-			)
-			if case .mapping(let mapping) = value {target.write(mapping.stringRepresentation().csvCellValueWithSeparator(csvSeparator))}
-			target.write(
-				csvSeparator + basename.csvCellValueWithSeparator(csvSeparator) +
-					csvSeparator + entry_key.userReadableComment.csvCellValueWithSeparator(csvSeparator)
-			)
-			if case .entries(let entries) = value {
-				for language in languages {
-					target.write(csvSeparator + (entries[language] ?? LocFile.todolocToken).csvCellValueWithSeparator(csvSeparator))
-				}
+			let value = entries[entry_key]!
+			let actualEncodingInfo = write(key: entry_key, value: value, userReadableFilename: basename, encodingInfo: encodingInfo, to: &target)
+			target.write(csvSeparator)
+			if actualEncodingInfo != previousEncodingInfo {
+				target.write(actualEncodingInfo.serialized().csvCellValueWithSeparator(csvSeparator)) /* PRIVATE_ENCODING_INFO_HEADER_NAME */
+				previousEncodingInfo = actualEncodingInfo
 			}
 			target.write("\n")
 		}
@@ -211,12 +219,243 @@ extension LocFile : TextOutputStreamable {
 	
 	static let todolocToken = "!¡!TODOLOC!¡!"
 	
-	private static let PRIVATE_KEY_HEADER_NAME = "__Key"
-	private static let PRIVATE_ENV_HEADER_NAME = "__Env"
-	private static let PRIVATE_FILENAME_HEADER_NAME = "__Filename"
-	private static let PRIVATE_COMMENT_HEADER_NAME = "__Comments"
-	private static let PRIVATE_MAPPINGS_HEADER_NAME = "__Mappings"
-	private static let FILENAME_HEADER_NAME = "File"
-	private static let COMMENT_HEADER_NAME = "Comments"
+	private static let KEY_HEADER_NAME = "Key" /* Affects exports to environment’s loc file formats, but also user readable */
+	private static let ENV_HEADER_NAME = "Env" /* Affects exports to environment’s loc file formats, but also user readable */
+	private static let FILENAME_HEADER_NAME = "File"     /* Only for information to the reader */
+	private static let COMMENTS_HEADER_NAME = "Comments" /* Only for information to the reader */
+	private static let PRIVATE_FILENAME_HEADER_NAME = "__Filename" /* Private, affects exports to environment’s loc file formats */
+	private static let PRIVATE_USERINFO_HEADER_NAME = "__UserInfo" /* Private, affects exports to environment’s loc file formats */
+	private static let PRIVATE_MAPPING_HEADER_NAME = "__Mapping"   /* Private, affects exports to environment’s loc file formats */
+	private static let PRIVATE_ENCODING_INFO_HEADER_NAME = "__Fmt" /* Private, affects decoding of other columns */
+	
+	private struct EncodingInfo : Equatable {
+		
+		var compressedUserInfo: Bool
+		var oneLineStrings: Bool
+		
+		init() {
+			compressedUserInfo = false
+			oneLineStrings = false
+		}
+		
+		init(compressedUserInfo cui: Bool, oneLineStrings ols: Bool) {
+			compressedUserInfo = cui
+			oneLineStrings = ols
+		}
+		
+		init(string: String) {
+			let (_, userInfo) = string.splitUserInfo()
+			compressedUserInfo = userInfo?["cui"] == "1"
+			oneLineStrings = userInfo?["ols"] == "1"
+		}
+		
+		func serialized() -> String {
+			return "".byPrepending(userInfo: [
+				"cui": compressedUserInfo ? "1" : "0",
+				"ols": oneLineStrings ? "1" : "0"
+			])
+		}
+		
+		static func ==(lhs: EncodingInfo, rhs: EncodingInfo) -> Bool {
+			return lhs.compressedUserInfo == rhs.compressedUserInfo && lhs.oneLineStrings == rhs.oneLineStrings
+		}
+		
+	}
+	
+	private func writeHeaders<Target : TextOutputStream>(to target: inout Target) {
+		/* These columns are useful to a casual reader */
+		target.write(
+			LocFile.KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + LocFile.ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + LocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + LocFile.COMMENTS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
+		)
+		/* The languages */
+		for language in languages {
+			target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))
+		}
+		/* Private stuff we use for mapping and some structural information */
+		target.write(
+			csvSeparator + LocFile.PRIVATE_MAPPING_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + LocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + LocFile.PRIVATE_USERINFO_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + LocFile.PRIVATE_ENCODING_INFO_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
+		)
+		target.write("\n")
+	}
+	
+	/* - Returns: The actual EncodingInfo that were used when writing the data */
+	private func write<Target : TextOutputStream>(key: LineKey, value: LineValue, userReadableFilename basename: String, encodingInfo: EncodingInfo, to target: inout Target) -> EncodingInfo {
+		var encodingInfo = encodingInfo
+		
+		/* Writing group comment */
+		if !key.userReadableGroupComment.isEmpty {
+			target.write(csvSeparator + csvSeparator + csvSeparator)
+			write(multilineText: key.userReadableGroupComment, encodingInfo: encodingInfo, to: &target)
+			target.write([String](repeating: csvSeparator, count: languages.count + 4).joined())
+			target.write("\n")
+		}
+		
+		target.write(
+			key.locKey.csvCellValueWithSeparator(csvSeparator) +
+			csvSeparator + key.env.csvCellValueWithSeparator(csvSeparator) +  /* ENV_HEADER_NAME */
+			csvSeparator + basename.csvCellValueWithSeparator(csvSeparator) + /* FILENAME_HEADER_NAME */
+			csvSeparator
+		)
+		write(multilineText: key.userReadableComment, encodingInfo: encodingInfo, to: &target) /* COMMENTS_HEADER_NAME */
+		switch value {
+		case .entries(let entries):
+			for language in languages {
+				target.write(csvSeparator)
+				write(multilineText: entries[language] ?? LocFile.todolocToken, encodingInfo: encodingInfo, to: &target)
+			}
+			target.write(csvSeparator) /* PRIVATE_MAPPING_HEADER_NAME (empty) */
+			
+		case .mapping(let mapping):
+			target.write([String](repeating: csvSeparator, count: languages.count + 1).joined())
+			write(multilineText: mapping.stringRepresentation(), encodingInfo: encodingInfo, to: &target) /* PRIVATE_MAPPING_HEADER_NAME */
+		}
+		
+		target.write(
+			csvSeparator + key.filename.csvCellValueWithSeparator(csvSeparator) + /* PRIVATE_FILENAME_HEADER_NAME; we assume the filename will always be on one line... */
+			csvSeparator
+		)
+		
+		let compressionError = write(userInfo: key.fullComment, encodingInfo: encodingInfo, to: &target) /* PRIVATE_USERINFO_HEADER_NAME */
+		if compressionError {encodingInfo.compressedUserInfo = false}
+		return encodingInfo
+	}
+	
+	private func write<Target : TextOutputStream>(multilineText: String, encodingInfo: EncodingInfo, to target: inout Target) {
+		if !encodingInfo.oneLineStrings {
+			/* Simply print the string as-is */
+			target.write(multilineText.csvCellValueWithSeparator(csvSeparator))
+		} else {
+			/* Let's transform the string to have it on one line only (only treating \n and \r cases; not sure there are others anyway) */
+			let oneLineStr = multilineText
+				.replacingOccurrences(of: " " /* 1 hairsp */, with: "  " /* 2 hairsp */)
+				.replacingOccurrences(of: "\n", with: "     " /* 1 hairsp + 4 spaces */)
+				.replacingOccurrences(of: "\r", with: "    "  /* 1 hairsp + 3 spaces */)
+			target.write(oneLineStr.csvCellValueWithSeparator(csvSeparator))
+		}
+	}
+	
+	/** - Returns: `false` if was supposed to compressed, but got error while
+	compressing, `true` otherwise. */
+	private func write<Target : TextOutputStream>(userInfo: String, encodingInfo: EncodingInfo, to target: inout Target) -> Bool {
+		let gotError: Bool
+		let written: String
+		do {
+			if encodingInfo.compressedUserInfo {
+				var inputData = Data(userInfo.utf8) /* var because we'll pass the bytes to zlib, which requires a mutable pointer */
+				var outputData = Data(count: Int(compressBound(uLong(inputData.count))) + MemoryLayout<Int32>.size)
+				
+				/* Let's write the size of the uncompressed data */
+				var s = Int32(inputData.count) /* Will crash if input is more that 4 (or maybe 2) GiB. Also, we don't care. */
+				outputData[0..<MemoryLayout<Int32>.size] = Data(buffer: UnsafeBufferPointer<Int32>(start: &s, count: 1))
+				
+				/* Now let's compress the body and write it to the output data */
+				var stream = z_stream(); stream.zalloc = nil; stream.zfree = nil; stream.opaque = nil
+				let initRet = deflateInit2_(&stream, Z_BEST_COMPRESSION, Z_DEFLATED, 15 /* Best compression */, 8 /* Default (from doc) */, Z_DEFAULT_STRATEGY, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size)) /* We cannot use deflateInit2 in Swift as it is a #define... */
+				guard initRet == Z_OK else {throw NSError(domain: "__internal__", code: 1, userInfo: nil)}
+				defer {deflateEnd(&stream)}
+				
+				try outputData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutablePointer<Bytef>) in
+					stream.next_out = outputBytes + MemoryLayout<Int32>.size
+					stream.avail_out = uInt(outputData.count - MemoryLayout<Int32>.size)
+					
+					try inputData.withUnsafeMutableBytes{ (inputBytes: UnsafeMutablePointer<Bytef>) in
+						stream.next_in = inputBytes
+						stream.avail_in = uInt(inputData.count)
+						while deflate(&stream, Z_NO_FLUSH) == Z_OK {/*nop*/}
+						
+						/* If more data to add, change stream.next_in, stream.avail_in
+						 * and call the “while” above again. */
+						
+						var retFinishStream: Int32
+						repeat {retFinishStream = deflate(&stream, Z_FINISH)} while retFinishStream == Z_OK
+						guard retFinishStream == Z_STREAM_END else {throw NSError(domain: "__internal__", code: 1, userInfo: nil)}
+//						var destLen = uLongf(outputData.count - MemoryLayout<Int32>.size)
+//						compress2(outputBytes + MemoryLayout<Int32>.size, &destLen, inputBytes, uLong(inputData.count), 9)
+					}
+				}
+				
+				outputData.count -= Int(stream.avail_out)
+				written = outputData.base64EncodedString()
+			} else {
+				written = "__" + userInfo + "__"
+			}
+			gotError = false
+		} catch {
+			/* If we have a problem compressing the data, we fall back to
+			 * uncompressed. */
+			written = "__" + userInfo + "__"
+			gotError = true
+		}
+		write(multilineText: written, encodingInfo: encodingInfo, to: &target)
+		return gotError
+	}
+	
+	private static func decodeOneLineString(_ string: String) -> String {
+		func replace(_ replaced: String, with newValue: String, in string: inout String) {
+			var searchRange = string.startIndex..<string.endIndex
+			while let r = string.range(of: replaced, options: .literal, range: searchRange) {
+				var c = 0
+				var checked = r.lowerBound
+				while checked != string.startIndex {
+					checked = string.index(before: checked)
+					if string[checked] == " " {c += 1}
+					else                      {break}
+				}
+				
+				if c % 2 == 0 {
+					string.replaceSubrange(r, with: newValue)
+					searchRange = r.lowerBound..<string.endIndex
+				} else {
+					searchRange = r.upperBound..<string.endIndex
+				}
+			}
+		}
+		
+		var string = string
+		replace("     ", with: "\n", in: &string)
+		replace("    ", with: "\r", in: &string)
+		string = string.replacingOccurrences(of: "  ", with: " ")
+		return string
+	}
+	
+	private static func decompressString(_ string: String) -> String? {
+		guard var compressedData = Data(base64Encoded: string), compressedData.count >= MemoryLayout<Int32>.size else {return nil}
+		
+		/* let retrieve the size of the uncompressed data */
+		let s: Int32 = compressedData.withUnsafeBytes{ ptr in ptr.pointee }
+		compressedData = compressedData.dropFirst(MemoryLayout<Int32>.size)
+		var uncompressedData = Data(count: Int(s))
+		
+		var stream = z_stream(); stream.zalloc = nil; stream.zfree = nil; stream.opaque = nil
+		let initRet = inflateInit_(&stream, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size)) /* We cannot use inflateInit in Swift as it is a #define... */
+		guard initRet == Z_OK else {return nil}
+		defer {inflateEnd(&stream)}
+		
+		do {
+			try compressedData.withUnsafeMutableBytes{ (inputBytes: UnsafeMutablePointer<Bytef>) in
+				stream.next_in = inputBytes
+				stream.avail_in = uInt(compressedData.count)
+				
+				try uncompressedData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutablePointer<Bytef>) in
+					stream.next_out = outputBytes
+					stream.avail_out = uInt(uncompressedData.count)
+					
+					var retFinishStream: Int32
+					repeat {retFinishStream = inflate(&stream, Z_FINISH)} while retFinishStream == Z_OK
+					guard retFinishStream == Z_STREAM_END else {throw NSError(domain: "__internal__", code: 1, userInfo: nil)}
+				}
+			}
+		} catch {
+			return nil
+		}
+		
+		return String(data: uncompressedData, encoding: .utf8)
+	}
 	
 }

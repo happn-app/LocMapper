@@ -22,9 +22,9 @@ extension LocFile {
 		/* Used when comparing for lt or gt, but not for equality */
 		public let index: Int
 		
-		/* Not used when comparing line keys. Both keys are store in the "comment"
-		 * column. We could (should?) use a json in its own column for the
-		 * userInfo... but why do simply what can be done in a complicated way? */
+		/* Not used when comparing line keys. Both values are store in the
+		 * "__UserInfo" column. We could (should!) use a json in its own column
+		 * for the userInfo... but why go simple when there is a complicated way? */
 		public let comment: String
 		public let userInfo: [String: String]
 		
