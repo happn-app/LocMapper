@@ -112,7 +112,10 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		
 		let n: Int?
 		let pluralityDefinition: PluralityDefinition
-		if Set(["english", "german", "spanish", "italian", "hungarian", "turkish", "thai", "chinese", "japanese", "greek", "french", "portuguese"]).contains(where: { language.range(of: $0) != nil }) {
+		if Set(["thai", "chinese", "japanese"]).contains(where: { language.range(of: $0) != nil }) {
+			pluralityDefinition = PluralityDefinition(string: "(*)")
+			n = (unicodeValue == .other ? 1 : nil)
+		} else if Set(["english", "german", "spanish", "italian", "hungarian", "turkish", "greek", "french", "portuguese"]).contains(where: { language.range(of: $0) != nil }) {
 			/* Technically, for French and Brazilian Portuguese, the plurality
 			 * definition is "(0:1)(*)", but as we use 1 and 2 for the values of n,
 			 * we don't care about the difference in the 0 case for these two
@@ -148,14 +151,14 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 			default:     n = nil
 			}
 		} else {
-			throw MappingResolvingError.languageNotFound
+			throw MappingResolvingError.unknownLanguage
 		}
 		guard let nn = n else {return "---"} /* Code for “this value should be ignored” */
 		
 		let xibLocInfo = Str2StrXibLocInfo(
-			defaultPluralityDefinition: pluralityDefinition,
+			defaultPluralityDefinition: pluralityDefinition, escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [OneWordTokens(token: "#"): { _ in "%1$d" }],
-			pluralGroups: [(MultipleWordsTokens(leftToken: "<", interiorToken: ":", rightToken: ">"), .int(nn))],
+			pluralGroups: [(MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim), .int(nn))],
 			identityReplacement: { $0 }
 		)
 		return value.applying(xibLocInfo: xibLocInfo)

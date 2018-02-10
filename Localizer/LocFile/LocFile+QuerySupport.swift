@@ -149,7 +149,7 @@ extension LocFile {
 		} catch let error as MappingResolvingError {
 			switch error {
 			case .invalidMapping, .mappedToMappedKey: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
-			case .languageNotFound:                   return "!¡!TODOLOC_LANGUAGENOTFOUND!¡!"
+			case .unknownLanguage:                    return "!¡!TODOLOC_UNKNOWNLANGUAGE!¡!"
 			case .keyNotFound:                        return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
 			}
 		} catch {

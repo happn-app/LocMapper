@@ -15,5 +15,5 @@ enum MappingResolvingError : Error {
 	case mappedToMappedKey /* When mapping points to a mapped key. This is invalid to avoid infinite recursions... */
 	
 	case keyNotFound
-	case languageNotFound
+	case unknownLanguage
 }

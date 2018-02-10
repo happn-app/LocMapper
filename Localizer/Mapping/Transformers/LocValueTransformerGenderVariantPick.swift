@@ -84,7 +84,12 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		return value.applying(xibLocInfo: XibLocResolvingInfo(genderReplacementWithLeftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim, valueIsMale: gender == .male))
+		return value.applying(xibLocInfo:
+			XibLocResolvingInfo(
+				genderReplacementWithLeftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim,
+				escapeToken: escapeToken, valueIsMale: gender == .male
+			)
+		)
 	}
 	
 }
