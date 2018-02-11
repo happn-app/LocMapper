@@ -88,7 +88,6 @@ extension LocFile {
 			let commentScanner = Scanner(string: entry_key.comment)
 			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
 			while !commentScanner.isAtEnd {
-				let warning = "if comment string is malformatted, we can totally infinite loop here, no?"
 				var white: NSString?
 				if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
 					commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
@@ -98,10 +97,6 @@ extension LocFile {
 					if commentScanner.scanUpTo("*/", into: &comment) && !commentScanner.isAtEnd {
 						commentComponents.append(XcodeStringsFile.Comment(comment! as String, doubleSlashed: false))
 						commentScanner.scanString("*/", into: nil)
-						let warning = "mmmh... is the if below really needed??"
-						if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-							commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
-						}
 					}
 				}
 				if commentScanner.scanString("//", into: nil) {
@@ -109,11 +104,12 @@ extension LocFile {
 					if commentScanner.scanUpTo("\n", into: &comment) && !commentScanner.isAtEnd {
 						commentComponents.append(XcodeStringsFile.Comment(comment! as String, doubleSlashed: true))
 						commentScanner.scanString("\n", into: nil)
-						let warning = "mmmh... is the if below really needed??"
-						if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-							commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
-						}
 					}
+				}
+				var invalid: NSString?
+				if commentScanner.scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.intersection(CharacterSet(charactersIn: "/")), into: &invalid) {
+					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid!) }}
+					else                        {NSLog("Found invalid string in comment; ignoring: “%@”", invalid!)}
 				}
 			}
 			
