@@ -335,7 +335,7 @@ extension LocFile : TextOutputStreamable {
 			let oneLineStr = multilineText
 				.replacingOccurrences(of: " " /* 1 hairsp */, with: "  " /* 2 hairsp */)
 				.replacingOccurrences(of: "\n", with: "     " /* 1 hairsp + 4 spaces */)
-				.replacingOccurrences(of: "\r", with: "    "  /* 1 hairsp + 3 spaces */)
+				.replacingOccurrences(of: "\r", with: "     " /* 1 hairsp + 4 nbsp */)
 			target.write(oneLineStr.csvCellValueWithSeparator(csvSeparator))
 		}
 	}
@@ -402,7 +402,7 @@ extension LocFile : TextOutputStreamable {
 		
 		var string = string
 		replace("     ", with: "\n", in: &string)
-		replace("    ", with: "\r", in: &string)
+		replace("     ", with: "\r", in: &string)
 		string = string.replacingOccurrences(of: "  ", with: " ")
 		return string
 	}
