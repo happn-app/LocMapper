@@ -42,7 +42,7 @@ extension LocFile : TextOutputStreamable {
 	/* *** Init with file content. The metadata should be retrieved with the
 	`unserializedMetadata(from:)` method. *** */
 	convenience init(filecontent: String, csvSeparator csvSep: String, metadata: Any?) throws {
-		let defaultError = NSError(domain: "Migrator", code: 1, userInfo: nil)
+		let defaultError = NSError(domain: "Migrator", code: 2, userInfo: nil)
 		guard !filecontent.isEmpty else {
 			self.init(csvSeparator: csvSep)
 			return
@@ -109,7 +109,7 @@ extension LocFile : TextOutputStreamable {
 			let userInfo: [String: String]
 			if decodingInfo.compressedUserInfo {
 				guard let uncompressed = LocFile.decompressString(rawComment) else {
-					throw NSError(domain: "Migrator", code: 2, userInfo: [NSLocalizedDescriptionKey: "Got error while uncompressing comment \"\(rawComment)\""])
+					throw NSError(domain: "Migrator", code: 3, userInfo: [NSLocalizedDescriptionKey: "Got error while uncompressing comment \"\(rawComment)\""])
 				}
 				(comment, userInfo) = LineKey.parse(attributedComment: uncompressed)
 			} else {

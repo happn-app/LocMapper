@@ -49,7 +49,7 @@
 		7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7B56D2AE1DA0F25E00662EFD /* Localizable.strings */; };
 		7B637D241C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
-		7B6E25AA19D417BD001934ED /* stderr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A919D417BD001934ED /* stderr.swift */; };
+		7B73887E20306C0100E56088 /* stdstreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B73887620306C0100E56088 /* stdstreams.swift */; };
 		7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE22025FCF60071B896 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF69785202322D000088A52 /* XibLoc.framework */; };
@@ -79,7 +79,6 @@
 		7B9414FB20275A1C00D74EFA /* LocFile+EditingSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FA20275A1C00D74EFA /* LocFile+EditingSupport.swift */; };
 		7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FC20275A9D00D74EFA /* LocFile+QuerySupport.swift */; };
 		7B9414FF20275D4300D74EFA /* String+CSVUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FE20275D4300D74EFA /* String+CSVUtils.swift */; };
-		7BB7096220261AC2007222BE /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB7095A20261AC2007222BE /* IOUtils.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
 		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
@@ -223,8 +222,8 @@
 		7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocContentSplitViewController.swift; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* locmapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = locmapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		7B6E25A919D417BD001934ED /* stderr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stderr.swift; sourceTree = "<group>"; };
 		7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeStringsFile.swift; sourceTree = "<group>"; };
+		7B73887620306C0100E56088 /* stdstreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stdstreams.swift; sourceTree = "<group>"; };
 		7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidXMLLocFile.swift; sourceTree = "<group>"; };
 		7B837D7F1C0EF3DB0020E86B /* LocMapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocMapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B837D811C0EF3DB0020E86B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -256,7 +255,6 @@
 		7B9414FE20275D4300D74EFA /* String+CSVUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+CSVUtils.swift"; sourceTree = "<group>"; };
 		7B9BD4DE1C108344007A096D /* LocKeyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocKeyMapping.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
-		7BB7095A20261AC2007222BE /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* ReferenceTranslationsLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReferenceTranslationsLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
@@ -429,8 +427,7 @@
 		7B6E25A119D4157A001934ED /* LocMapper CLI */ = {
 			isa = PBXGroup;
 			children = (
-				7BB7095A20261AC2007222BE /* IOUtils.swift */,
-				7B6E25A919D417BD001934ED /* stderr.swift */,
+				7B73887620306C0100E56088 /* stdstreams.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
 			);
 			path = "LocMapper CLI";
@@ -845,8 +842,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
-				7B6E25AA19D417BD001934ED /* stderr.swift in Sources */,
-				7BB7096220261AC2007222BE /* IOUtils.swift in Sources */,
+				7B73887E20306C0100E56088 /* stdstreams.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

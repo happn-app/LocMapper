@@ -13,25 +13,32 @@ import LocMapper
 
 
 func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout TargetStream) {
-	print("Usage: \(program_name) command [args ...]", to: &stream)
-	print("", to: &stream)
-	print("Commands are:", to: &stream)
-	print("   version", to: &stream)
-	print("      Shows the current version of the tool", to: &stream)
-	print("", to: &stream)
-	print("   export_from_xcode [--csv_separator=separator] [--exclude=excluded_path ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", to: &stream)
-	print("      Exports and merges all the .strings files in the project to output_file.csv, excluding all paths containing any excluded_path", to: &stream)
-	print("", to: &stream)
-	print("   import_to_xcode [--csv_separator=separator] input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", to: &stream)
-	print("      Imports and merges input_file.csv to the existing .strings in the project", to: &stream)
-	print("", to: &stream)
-	print("   export_from_android [--csv_separator=separator] [--res-folder=res_folder] [--strings-filename=name ...] root_folder output_file.csv folder_language_name human_language_name [folder_language_name human_language_name ...]", to: &stream)
-	print("      Exports and merges the localization files of the android project to output_file.csv", to: &stream)
-	print("", to: &stream)
-	print("   import_to_android [--csv_separator=separator] [--res-folder=res_folder] [--strings-filename=name ...] input_file.csv root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]", to: &stream)
-	print("      Imports and merges input_file.csv to the existing strings files of the android project", to: &stream)
-	print("", to: &stream)
-	print("For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.", to: &stream)
+	print("""
+	Usage: \(program_name) command [args ...]
+	
+	Commands are:
+	   version
+	      Shows the current version of the tool
+	
+	   merge_xcode_locs [--csv_separator=separator] [--exclude-list=excluded_path,...] [--include-list=included_path,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
+	      Merges (or creates if output does not exists) all the .strings files in the
+	      project in output_file.lcm.
+	      Excludes strings whose path match any item in the any exclude list.
+	      If an include list is given, also filter paths not matching any item in the
+	      include list.
+	
+		export_to_xcode [--encoding=encoding] [--csv_separator=separator] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
+	      Exports locs from the given input lcm in the Xcode project at the root_folder path.
+	      Strings files are written as UTF-16 by default. Supported encoding for the --encoding option are utf8 and utf16.
+	
+	   merge_android_locs [--csv_separator=separator] [--res-folder=res_folder] [--strings-filenames=name,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
+	      Merges (or creates if output does not exists) the given strings files in output_file.lcm.
+	
+	   export_to_android [--csv_separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
+	      Exports locs from the given input lcm in the Android project at the root_folder path.
+	
+	For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.
+	""", to: &stream)
 }
 
 /* Returns the arg at the given index, or prints "Syntax error: error_message"
@@ -39,8 +46,8 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
  * given to the program */
 func argAtIndexOrExit(_ i: Int, error_message: String) -> String {
 	guard CommandLine.arguments.count > i else {
-		print("Syntax error: \(error_message)", to: &mx_stderr)
-		usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
+		print("Syntax error: \(error_message)", to: &stderrStream)
+		usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
 		exit(1)
 	}
 	
@@ -55,16 +62,16 @@ func getFolderToHumanLanguageNamesFromIndex(_ i: Int) -> [String: String] {
 		let folder_name = argAtIndexOrExit(i, error_message: "INTERNAL ERROR"); i += 1
 		let language_name = argAtIndexOrExit(i, error_message: "Language name is required for a given folder name"); i += 1
 		guard folder_name_to_language_name[folder_name] == nil else {
-			print("Syntax error: Folder name \(folder_name) defined more than once", to: &mx_stderr)
-			usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
+			print("Syntax error: Folder name \(folder_name) defined more than once", to: &stderrStream)
+			usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
 			exit(1)
 		}
 		folder_name_to_language_name[folder_name] = language_name
 	}
 	
 	guard folder_name_to_language_name.count > 0 else {
-		print("Syntax error: Expected at least one language. Got none.", to: &mx_stderr)
-		usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
+		print("Syntax error: Expected at least one language. Got none.", to: &stderrStream)
+		usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
 		exit(1)
 	}
 	
@@ -134,17 +141,19 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 			print("locmapper version \(Int(versionNumber))")
 			exit(0)
 		} else {
-			print("Cannot get version number", to: &mx_stderr)
+			print("Cannot get version number", to: &stderrStream)
 			exit(2)
 		}
 	
-	/* Export from Xcode */
-	case "export_from_xcode":
+	/* Merge Xcode Locs */
+	case "merge_xcode_locs":
 		var i = 2
 		
+		var included_paths: [String]?
 		var excluded_paths = [String]()
 		i = getLongArgs(argIdx: i, longArgs: [
-			"exclude":       {(value: String) in excluded_paths.append(value)},
+			"exclude-list":  {(value: String) in excluded_paths = value.components(separatedBy: ",")},
+			"include-list":  {(value: String) in included_paths = value.components(separatedBy: ",")},
 			"csv_separator": {(value: String) in csvSeparator = value}]
 		)
 		
@@ -152,50 +161,70 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		
-		print("Exporting from Xcode project...")
+		print("Merging from Xcode project...")
 		do {
-			let parsed_strings_files = try XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths)
-			let csv = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
-			csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folder_name_to_language_name)
-			var csvText = ""
-			print(csv, terminator: "", to: &csvText)
-			try writeText(csvText, toFile: output, usingEncoding: String.Encoding.utf8)
+			print("   Finding and parsing Xcode locs...")
+			let parsedXcodeStringsFiles = try XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths, included_paths: included_paths)
+			print("   Parsing original LocMapper file...")
+			let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
+			print("   Merging...")
+			locFile.mergeXcodeStringsFiles(parsedXcodeStringsFiles, folderNameToLanguageName: folder_name_to_language_name)
+			print("   Writing merged file...")
+			var stream = try FileHandleOutputStream(forPath: output)
+			print(locFile, terminator: "", to: &stream)
+			print("Done")
 		} catch let error as NSError {
-			print("Got error while exporting: \(error)", to: &mx_stderr)
+			print("Got error while merging: \(error)", to: &stderrStream)
 			exit(Int32(error.code))
 		}
 		exit(0)
 	
-	/* Import to Xcode */
-	case "import_to_xcode":
+	/* Export to Xcode */
+	case "export_to_xcode":
 		var i = 2
 		
-		i = getLongArgs(argIdx: i, longArgs: ["csv_separator": {(value: String) in csvSeparator = value}])
+		var encodingStr = "utf16"
+		i = getLongArgs(argIdx: i, longArgs: [
+			"encoding": {(value: String) in encodingStr = value},
+			"csv_separator": {(value: String) in csvSeparator = value}]
+		)
+		
+		let encoding: String.Encoding
+		switch encodingStr.lowercased() {
+		case "utf8", "utf-8": encoding = .utf8
+		case "utf16", "utf-16": encoding = .utf16
+		default:
+			print("Unsupported encoding \(encodingStr)", to: &stderrStream)
+			exit(1)
+		}
 		
 		let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		
-		print("Importing to Xcode project...")
+		print("Exporting to Xcode project...")
 		do {
-			let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
-			csv.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
+			print("   Parsing LocMapper file...")
+			let locFile = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+			print("   Writing locs to Xcode project...")
+			locFile.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name, encoding: encoding)
+			print("Done")
 		} catch let error as NSError {
-			print("Got error while importing: \(error)", to: &mx_stderr)
+			print("Got error while exporting: \(error)", to: &stderrStream)
 			exit(Int32(error.code))
 		}
 		exit(0)
 	
 	/* Export from Android */
-	case "export_from_android":
+	case "merge_android_locs":
 		var i = 2
 		
 		var res_folder = "res"
 		var strings_filenames = [String]()
 		i = getLongArgs(argIdx: i, longArgs: [
-			"res-folder":       {(value: String) in res_folder = value},
-			"strings-filename": {(value: String) in strings_filenames.append(value)},
-			"csv_separator":    {(value: String) in csvSeparator = value}]
+			"res-folder":        {(value: String) in res_folder = value},
+			"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
+			"csv_separator":     {(value: String) in csvSeparator = value}]
 		)
 		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 		
@@ -205,28 +234,30 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		
 		print("Exporting from Android project...")
 		do {
-			let parsed_loc_files = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
-			let csv = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
-			csv.mergeAndroidXMLLocStringsFiles(parsed_loc_files, folderNameToLanguageName: folder_name_to_language_name)
-			var csvText = ""
-			print(csv, terminator: "", to: &csvText)
-			try writeText(csvText, toFile: output, usingEncoding: String.Encoding.utf8)
+			print("   Parsing Android locs...")
+			let parsedAndroidLocFiles = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
+			print("   Parsing original LocMapper file...")
+			let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
+			print("   Merging...")
+			locFile.mergeAndroidXMLLocStringsFiles(parsedAndroidLocFiles, folderNameToLanguageName: folder_name_to_language_name)
+			print("   Writing merged file...")
+			var stream = try FileHandleOutputStream(forPath: output)
+			print(locFile, terminator: "", to: &stream)
+			print("Done")
 		} catch let error as NSError {
-			print("Got error while exporting: \(error)", to: &mx_stderr)
+			print("Got error while exporting: \(error)", to: &stderrStream)
 			exit(Int32(error.code))
 		}
 		exit(0)
 	
 	/* Import to Android */
-	case "import_to_android":
+	case "export_to_android":
 		var i = 2
 		
-		var res_folder = "res"
 		var strings_filenames = [String]()
 		i = getLongArgs(argIdx: i, longArgs: [
-			"res-folder":       {(value: String) in res_folder = value},
-			"strings-filename": {(value: String) in strings_filenames.append(value)},
-			"csv_separator":    {(value: String) in csvSeparator = value}]
+			"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
+			"csv_separator":     {(value: String) in csvSeparator = value}]
 		)
 		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 		
@@ -234,72 +265,21 @@ switch argAtIndexOrExit(1, error_message: "Command is required") {
 		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
 		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 		
-		print("Importing to Android project...")
+		print("Exporting to Android project...")
 		do {
+			print("   Parsing LocMapper file...")
 			let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+			print("   Writing locs to Android project...")
 			csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
+			print("Done")
 		} catch let error as NSError {
-			print("Got error while importing: \(error)", to: &mx_stderr)
+			print("Got error while exporting: \(error)", to: &stderrStream)
 			exit(Int32(error.code))
 		}
 		exit(0)
 	
-	/* Convenient command for debug purposes */
-	case "test_xcode_export":
-		guard let parsed_strings_files = try? XcodeStringsFile.stringsFilesInProject("\(basePathForTests)/happnApple/happn/", excluded_paths: ["Dependencies/", ".git/"]) else {
-			print("Error reading Xcode strings files", to: &mx_stderr)
-			exit(255)
-		}
-		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
-			print("Error reading CSV Loc file", to: &mx_stderr)
-			exit(255)
-		}
-		csv.mergeXcodeStringsFiles(parsed_strings_files, folderNameToLanguageName: folderNameToLanguageNameForTests)
-		print("CSV: ")
-		print(csv, terminator: "")
-		var csvText = ""
-		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
-		exit(0)
-	
-	/* Convenient command for debug purposes */
-	case "test_xcode_import":
-		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
-			print("Error reading CSV Loc file", to: &mx_stderr)
-			exit(255)
-		}
-		csv.exportToXcodeProjectWithRoot("\(basePathForTests)/happnApple/happn/", folderNameToLanguageName: folderNameToLanguageNameForTests)
-		exit(0)
-	
-	/* Convenient command for debug purposes */
-	case "test_android_export":
-		guard let parsed_strings_files = try? AndroidXMLLocFile.locFilesInProject("\(basePathForTests)/happnGogol/happnAndroid/", resFolder: "happn/src/main/res", stringsFilenames: ["strings.xml"], languageFolderNames: Array(androidLanguageFolderNamesForTests.keys).sorted()) else {
-			print("Error reading Android strings files", to: &mx_stderr)
-			exit(255)
-		}
-		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/ loc.csv", withCSVSeparator: ",") else {
-			print("Error reading CSV Loc file", to: &mx_stderr)
-			exit(255)
-		}
-		csv.mergeAndroidXMLLocStringsFiles(parsed_strings_files, folderNameToLanguageName: androidLanguageFolderNamesForTests)
-		print("CSV: ")
-		print(csv, terminator: "")
-		var csvText = ""
-		print(csv, terminator: "", to: &csvText)
-		_ = try? writeText(csvText, toFile: "\(basePathForTests)/ loc.csv", usingEncoding: String.Encoding.utf8)
-		exit(0)
-	
-	/* Convenient command for debug purposes */
-	case "test_android_import":
-		guard let csv = try? LocFile(fromPath: "\(basePathForTests)/happnGogol/ loc android.happnloc", withCSVSeparator: ",") else {
-			print("Error reading CSV Loc file", to: &mx_stderr)
-			exit(255)
-		}
-		csv.exportToAndroidProjectWithRoot("\(basePathForTests)/happnGogol/happnAndroid/happn/src/main/res/", folderNameToLanguageName: androidLanguageFolderNamesForTests)
-		exit(0)
-	
 	default:
-		print("Unknown command \(CommandLine.arguments[1])", to: &mx_stderr)
-		usage(program_name: CommandLine.arguments[0], stream: &mx_stderr)
+		print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)
+		usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
 		exit(2)
 }

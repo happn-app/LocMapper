@@ -482,7 +482,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 	}
 	
 	convenience init(pathRelativeToProject: String, fileURL url: URL) throws {
-		let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
+		let error: NSError! = NSError(domain: "Migrator", code: 4, userInfo: nil)
 		let xmlParser: XMLParser! = XMLParser(contentsOf: url)
 		if xmlParser == nil {
 			/* Must init before failing */

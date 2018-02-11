@@ -72,7 +72,7 @@ extension LocFile {
 		}
 	}
 	
-	public func exportToXcodeProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String]) {
+	public func exportToXcodeProjectWithRoot(_ rootPath: String, folderNameToLanguageName: [String: String], encoding: String.Encoding = .utf16) {
 		var filenameToComponents = [String: [XcodeStringsComponent]]()
 		for entry_key in entries.keys.sorted() {
 			guard entry_key.env == "Xcode" else {continue}
@@ -107,7 +107,7 @@ extension LocFile {
 					}
 				}
 				var invalid: NSString?
-				if commentScanner.scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.intersection(CharacterSet(charactersIn: "/")), into: &invalid) {
+				if commentScanner.scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/")), into: &invalid) {
 					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid!) }}
 					else                        {NSLog("Found invalid string in comment; ignoring: “%@”", invalid!)}
 				}
@@ -142,7 +142,7 @@ extension LocFile {
 			print(locFile, terminator: "", to: &stringsText)
 			var err: NSError?
 			do {
-				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: .utf8)
+				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: encoding)
 			} catch let error as NSError {
 				err = error
 				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }}
