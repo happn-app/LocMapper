@@ -60,7 +60,7 @@ func getFolderToHumanLanguageNamesFromIndex(_ i: Int) -> [String: String] {
 	var i = i
 	while i < CommandLine.arguments.count {
 		let folder_name = argAtIndexOrExit(i, error_message: "INTERNAL ERROR"); i += 1
-		let language_name = argAtIndexOrExit(i, error_message: "Language name is required for a given folder name"); i += 1
+		let language_name = argAtIndexOrExit(i, error_message: "Language name is required for given folder name \(folder_name)"); i += 1
 		guard folder_name_to_language_name[folder_name] == nil else {
 			print("Syntax error: Folder name \(folder_name) defined more than once", to: &stderrStream)
 			usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
