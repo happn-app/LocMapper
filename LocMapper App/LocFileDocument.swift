@@ -198,8 +198,8 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 				}
 				
 				do {
-					let referenceTranslations = try ReferenceTranslationsLocFile(fromURL: url, languages: languages, csvSeparator: ",")
-					csvLocFile.mergeReferenceTranslationsWithLocFile(referenceTranslations)
+					let referenceTranslations = try XibRefLocFile(fromURL: url, languages: languages, csvSeparator: ",")
+					csvLocFile.mergeRefLocsWithXibRefLocFile(referenceTranslations)
 				} catch let error {
 					DispatchQueue.main.async {
 						NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)

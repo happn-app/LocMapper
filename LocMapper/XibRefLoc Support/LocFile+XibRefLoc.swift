@@ -16,7 +16,7 @@ extension LocFile {
 	static let referenceTranslationsGroupComment = "••••••••••••••••••••••••••••••••••••• START OF REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••"
 	static let referenceTranslationsUserReadableComment = "REF TRAD. DO NOT MODIFY."
 	
-	func replaceReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
+	func replaceRefLocsWithXibRefLocFile(_ xibRefLocFile: XibRefLocFile) {
 		/* Remove all previous RefLoc entries */
 		for key in entries.keys {
 			guard key.env == "RefLoc" else {continue}
@@ -25,7 +25,7 @@ extension LocFile {
 		
 		/* Adding languages in reference translations. But not removing languages
 		 * not in reference translations! */
-		for l in locFile.languages {
+		for l in xibRefLocFile.languages {
 			if !languages.contains(l) {
 				languages.append(l)
 			}
@@ -33,17 +33,17 @@ extension LocFile {
 		
 		/* Import new RefLoc entries */
 		var isFirst = true
-		for (refKey, refVals) in locFile.entries {
+		for (refKey, refVals) in xibRefLocFile.entries {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.referenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.referenceTranslationsGroupComment : "", userReadableComment: LocFile.referenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
 			isFirst = false
 		}
 	}
 	
-	public func mergeReferenceTranslationsWithLocFile(_ locFile: ReferenceTranslationsLocFile) {
+	public func mergeRefLocsWithXibRefLocFile(_ xibRefLocFile: XibRefLocFile) {
 		/* Adding languages in reference translations. But not removing languages
 		 * not in reference translations! */
-		for l in locFile.languages {
+		for l in xibRefLocFile.languages {
 			if !languages.contains(l) {
 				languages.append(l)
 			}
@@ -51,7 +51,7 @@ extension LocFile {
 		
 		/* Import new RefLoc entries */
 		var isFirst = entryKeys.contains{ $0.env == "RefLoc" }
-		for (refKey, refVals) in locFile.entries {
+		for (refKey, refVals) in xibRefLocFile.entries {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.referenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.referenceTranslationsGroupComment : "", userReadableComment: LocFile.referenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
 			isFirst = false
