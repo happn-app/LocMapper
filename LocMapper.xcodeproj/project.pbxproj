@@ -80,6 +80,8 @@
 		7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FC20275A9D00D74EFA /* LocFile+QuerySupport.swift */; };
 		7B9414FF20275D4300D74EFA /* String+CSVUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FE20275D4300D74EFA /* String+CSVUtils.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
+		7BEC5D5820444E7F0056AEB9 /* StdRefLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */; };
+		7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */; };
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
 		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
 		7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF725B02027607C004C33B6 /* LocFile+Serialization.swift */; };
@@ -258,6 +260,8 @@
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibRefLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
+		7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StdRefLocFile.swift; sourceTree = "<group>"; };
+		7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LocFile+StdRefLoc.swift"; sourceTree = "<group>"; };
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
 		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
 		7BF69779202322D000088A52 /* XibLoc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XibLoc.xcodeproj; path = XibLoc/XibLoc.xcodeproj; sourceTree = "<group>"; };
@@ -338,7 +342,7 @@
 			children = (
 				7B16428B2027511B000AE458 /* LocFile */,
 				7B889BF42025F1AE005A961F /* Mapping */,
-				7B4CC6D82025BDA90055CB74 /* XibRefLoc Support */,
+				7B4CC6D82025BDA90055CB74 /* RefLoc Support */,
 				7B4CC6D72025BD8E0055CB74 /* Xcode Strings Support */,
 				7B4CC6D62025BD760055CB74 /* Android Support */,
 				7B4CC6D52025BD630055CB74 /* Utilities */,
@@ -376,13 +380,13 @@
 			path = "Xcode Strings Support";
 			sourceTree = "<group>";
 		};
-		7B4CC6D82025BDA90055CB74 /* XibRefLoc Support */ = {
+		7B4CC6D82025BDA90055CB74 /* RefLoc Support */ = {
 			isa = PBXGroup;
 			children = (
-				7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */,
-				7B889BF22025F117005A961F /* LocFile+XibRefLoc.swift */,
+				7BEC5D5420444E590056AEB9 /* XibRefLoc */,
+				7BEC5D5520444E650056AEB9 /* StdRefLoc */,
 			);
-			path = "XibRefLoc Support";
+			path = "RefLoc Support";
 			sourceTree = "<group>";
 		};
 		7B560D641C17022F001DD2B0 /* Bottom-Right Pane (Details) */ = {
@@ -542,6 +546,24 @@
 				7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */,
 			);
 			path = Transformers;
+			sourceTree = "<group>";
+		};
+		7BEC5D5420444E590056AEB9 /* XibRefLoc */ = {
+			isa = PBXGroup;
+			children = (
+				7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */,
+				7B889BF22025F117005A961F /* LocFile+XibRefLoc.swift */,
+			);
+			path = XibRefLoc;
+			sourceTree = "<group>";
+		};
+		7BEC5D5520444E650056AEB9 /* StdRefLoc */ = {
+			isa = PBXGroup;
+			children = (
+				7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */,
+				7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */,
+			);
+			path = StdRefLoc;
 			sourceTree = "<group>";
 		};
 		7BF69778202322AD00088A52 /* Dependencies */ = {
@@ -815,6 +837,7 @@
 				7B889C052025F535005A961F /* LocValueTransformerInvalid.swift in Sources */,
 				7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */,
 				7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */,
+				7BEC5D5820444E7F0056AEB9 /* StdRefLocFile.swift in Sources */,
 				7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */,
 				7B4CC6DC2025BE5D0055CB74 /* AndroidXMLLocFile.swift in Sources */,
 				7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */,
@@ -823,6 +846,7 @@
 				7B889BFC2025F48A005A961F /* LocKeyMappingComponentInvalid.swift in Sources */,
 				7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */,
 				7B4CC6DE2025BE680055CB74 /* XibRefLocFile.swift in Sources */,
+				7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */,
 				7B889BF92025F44D005A961F /* LocKeyMappingComponent.swift in Sources */,
 				7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */,
 				7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */,

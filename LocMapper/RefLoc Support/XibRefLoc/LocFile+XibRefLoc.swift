@@ -1,5 +1,5 @@
 /*
- * LocFile+RefLoc.swift
+ * LocFile+XibRefLoc.swift
  * LocMapper
  *
  * Created by François Lamboley on 2/3/18.
