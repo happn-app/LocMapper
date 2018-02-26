@@ -37,6 +37,13 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	   export_to_android [--csv_separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
+	   convert_xibrefloc_to_stdrefloc [--csv_separator=separator] input_file.csv output_file.csv
+	      Take a XibLoc-styled (with tokens for plurals, gender, etc.) and convert it to a more
+	      usual format (one key per plural/gender/etc. variations).
+	
+	   convert_stdrefloc_to_xibrefloc [--csv_separator=separator] input_file.csv output_file.csv
+	      Does the inverse of convert_xibrefloc_to_stdrefloc.
+	
 	For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.
 	""", to: &stream)
 }
@@ -111,175 +118,163 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 }
 
 
-let basePathForTests = "/Users/frizlab/Documents/Projects"
-//let basePathForTests = "/Users/frizlab/Work/Doing/FTW and Co"
-
-let folderNameToLanguageNameForTests = [
-	"en.lproj": " English", "fr.lproj": "Français — French", "de.lproj": "Deutsch — German",
-	"it.lproj": "Italiano — Italian", "es.lproj": "Español — Spanish", "pt.lproj": "Português brasileiro — Portuguese (Brasil)",
-	"pt-PT.lproj": "Português europeu — Portuguese (Portugal)", "tr.lproj": "Türkçe — Turkish",
-	"zh-Hant.lproj": "中文(香港) — Chinese (Traditional)", "th.lproj": "ภาษาไทย — Thai", "ja.lproj": "日本語 — Japanese",
-	"pl.lproj": "Polszczyzna — Polish", "hu.lproj": "Magyar — Hungarian", "ru.lproj": "Русский язык — Russian",
-	"he.lproj": "עברית — Hebrew", "ko.lproj": "한국어 — Korean"
-]
-let androidLanguageFolderNamesForTests = [
-	"values": " English"/*, "values-fr": "Français — French", "values-de": "Deutsch — German",
-	"values-it": "Italiano — Italian", "values-es": "Español — Spanish", "values-pt-rBR": "Português brasileiro — Portuguese (Brasil)",
-	"values-pt": "Português europeu — Portuguese (Portugal)", "values-tr": "Türkçe — Turkish",
-	"values-zh": "中文(香港) — Chinese (Traditional)", "values-th": "ภาษาไทย — Thai", "values-ja": "日本語 — Japanese",
-	"values-pl": "Polszczyzna — Polish" , "values-hu": "Magyar — Hungarian", "values-ru": "Русский язык — Russian",*/
-	/*"values-he": "עברית — Hebrew", "values-ko": "한국어 — Korean"*/
-]
-
 var csvSeparator = ","
 switch argAtIndexOrExit(1, error_message: "Command is required") {
-	/* Version */
-	case "version":
-		let hdl = dlopen(nil, 0)
-		defer {if let hdl = hdl {dlclose(hdl)}}
-		if let versionNumber = hdl.flatMap({ dlsym($0, "locmapperVersionNumber") })?.assumingMemoryBound(to: Double.self).pointee {
-			print("locmapper version \(Int(versionNumber))")
-			exit(0)
-		} else {
-			print("Cannot get version number", to: &stderrStream)
-			exit(2)
-		}
-	
-	/* Merge Xcode Locs */
-	case "merge_xcode_locs":
-		var i = 2
-		
-		var included_paths: [String]?
-		var excluded_paths = [String]()
-		i = getLongArgs(argIdx: i, longArgs: [
-			"exclude-list":  {(value: String) in excluded_paths = value.components(separatedBy: ",")},
-			"include-list":  {(value: String) in included_paths = value.components(separatedBy: ",")},
-			"csv_separator": {(value: String) in csvSeparator = value}]
-		)
-		
-		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-		let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
-		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-		
-		print("Merging from Xcode project...")
-		do {
-			print("   Finding and parsing Xcode locs...")
-			let parsedXcodeStringsFiles = try XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths, included_paths: included_paths)
-			print("   Parsing original LocMapper file...")
-			let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
-			print("   Merging...")
-			locFile.mergeXcodeStringsFiles(parsedXcodeStringsFiles, folderNameToLanguageName: folder_name_to_language_name)
-			print("   Writing merged file...")
-			var stream = try FileHandleOutputStream(forPath: output)
-			print(locFile, terminator: "", to: &stream)
-			print("Done")
-		} catch let error as NSError {
-			print("Got error while merging: \(error)", to: &stderrStream)
-			exit(Int32(error.code))
-		}
+/* Version */
+case "version":
+	let hdl = dlopen(nil, 0)
+	defer {if let hdl = hdl {dlclose(hdl)}}
+	if let versionNumber = hdl.flatMap({ dlsym($0, "locmapperVersionNumber") })?.assumingMemoryBound(to: Double.self).pointee {
+		print("locmapper version \(Int(versionNumber))")
 		exit(0)
-	
-	/* Export to Xcode */
-	case "export_to_xcode":
-		var i = 2
-		
-		var encodingStr = "utf16"
-		i = getLongArgs(argIdx: i, longArgs: [
-			"encoding": {(value: String) in encodingStr = value},
-			"csv_separator": {(value: String) in csvSeparator = value}]
-		)
-		
-		let encoding: String.Encoding
-		switch encodingStr.lowercased() {
-		case "utf8", "utf-8": encoding = .utf8
-		case "utf16", "utf-16": encoding = .utf16
-		default:
-			print("Unsupported encoding \(encodingStr)", to: &stderrStream)
-			exit(1)
-		}
-		
-		let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
-		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-		
-		print("Exporting to Xcode project...")
-		do {
-			print("   Parsing LocMapper file...")
-			let locFile = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
-			print("   Writing locs to Xcode project...")
-			locFile.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name, encoding: encoding)
-			print("Done")
-		} catch let error as NSError {
-			print("Got error while exporting: \(error)", to: &stderrStream)
-			exit(Int32(error.code))
-		}
-		exit(0)
-	
-	/* Export from Android */
-	case "merge_android_locs":
-		var i = 2
-		
-		var res_folder = "res"
-		var strings_filenames = [String]()
-		i = getLongArgs(argIdx: i, longArgs: [
-			"res-folder":        {(value: String) in res_folder = value},
-			"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
-			"csv_separator":     {(value: String) in csvSeparator = value}]
-		)
-		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
-		
-		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-		let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
-		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-		
-		print("Exporting from Android project...")
-		do {
-			print("   Parsing Android locs...")
-			let parsedAndroidLocFiles = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
-			print("   Parsing original LocMapper file...")
-			let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
-			print("   Merging...")
-			locFile.mergeAndroidXMLLocStringsFiles(parsedAndroidLocFiles, folderNameToLanguageName: folder_name_to_language_name)
-			print("   Writing merged file...")
-			var stream = try FileHandleOutputStream(forPath: output)
-			print(locFile, terminator: "", to: &stream)
-			print("Done")
-		} catch let error as NSError {
-			print("Got error while exporting: \(error)", to: &stderrStream)
-			exit(Int32(error.code))
-		}
-		exit(0)
-	
-	/* Import to Android */
-	case "export_to_android":
-		var i = 2
-		
-		var strings_filenames = [String]()
-		i = getLongArgs(argIdx: i, longArgs: [
-			"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
-			"csv_separator":     {(value: String) in csvSeparator = value}]
-		)
-		if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
-		
-		let input_path = argAtIndexOrExit(i, error_message: "Input file (CSV) is required"); i += 1
-		let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-		let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-		
-		print("Exporting to Android project...")
-		do {
-			print("   Parsing LocMapper file...")
-			let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
-			print("   Writing locs to Android project...")
-			csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
-			print("Done")
-		} catch let error as NSError {
-			print("Got error while exporting: \(error)", to: &stderrStream)
-			exit(Int32(error.code))
-		}
-		exit(0)
-	
-	default:
-		print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)
-		usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
+	} else {
+		print("Cannot get version number", to: &stderrStream)
 		exit(2)
+	}
+	
+/* Merge Xcode Locs */
+case "merge_xcode_locs":
+	var i = 2
+	
+	var included_paths: [String]?
+	var excluded_paths = [String]()
+	i = getLongArgs(argIdx: i, longArgs: [
+		"exclude-list":  {(value: String) in excluded_paths = value.components(separatedBy: ",")},
+		"include-list":  {(value: String) in included_paths = value.components(separatedBy: ",")},
+		"csv_separator": {(value: String) in csvSeparator = value}]
+	)
+	
+	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
+	let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
+	let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	
+	print("Merging from Xcode project...")
+	do {
+		print("   Finding and parsing Xcode locs...")
+		let parsedXcodeStringsFiles = try XcodeStringsFile.stringsFilesInProject(root_folder, excluded_paths: excluded_paths, included_paths: included_paths)
+		print("   Parsing original LocMapper file...")
+		let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
+		print("   Merging...")
+		locFile.mergeXcodeStringsFiles(parsedXcodeStringsFiles, folderNameToLanguageName: folder_name_to_language_name)
+		print("   Writing merged file...")
+		var stream = try FileHandleOutputStream(forPath: output)
+		print(locFile, terminator: "", to: &stream)
+		print("Done")
+	} catch let error as NSError {
+		print("Got error while merging: \(error)", to: &stderrStream)
+		exit(Int32(error.code))
+	}
+	exit(0)
+	
+/* Export to Xcode */
+case "export_to_xcode":
+	var i = 2
+	
+	var encodingStr = "utf16"
+	i = getLongArgs(argIdx: i, longArgs: [
+		"encoding": {(value: String) in encodingStr = value},
+		"csv_separator": {(value: String) in csvSeparator = value}]
+	)
+	
+	let encoding: String.Encoding
+	switch encodingStr.lowercased() {
+	case "utf8", "utf-8": encoding = .utf8
+	case "utf16", "utf-16": encoding = .utf16
+	default:
+		print("Unsupported encoding \(encodingStr)", to: &stderrStream)
+		exit(1)
+	}
+	
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
+	let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	
+	print("Exporting to Xcode project...")
+	do {
+		print("   Parsing LocMapper file...")
+		let locFile = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+		print("   Writing locs to Xcode project...")
+		locFile.exportToXcodeProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name, encoding: encoding)
+		print("Done")
+	} catch let error as NSError {
+		print("Got error while exporting: \(error)", to: &stderrStream)
+		exit(Int32(error.code))
+	}
+	exit(0)
+	
+/* Export from Android */
+case "merge_android_locs":
+	var i = 2
+	
+	var res_folder = "res"
+	var strings_filenames = [String]()
+	i = getLongArgs(argIdx: i, longArgs: [
+		"res-folder":        {(value: String) in res_folder = value},
+		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
+		"csv_separator":     {(value: String) in csvSeparator = value}]
+	)
+	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
+	
+	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
+	let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
+	let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	
+	print("Exporting from Android project...")
+	do {
+		print("   Parsing Android locs...")
+		let parsedAndroidLocFiles = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
+		print("   Parsing original LocMapper file...")
+		let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
+		print("   Merging...")
+		locFile.mergeAndroidXMLLocStringsFiles(parsedAndroidLocFiles, folderNameToLanguageName: folder_name_to_language_name)
+		print("   Writing merged file...")
+		var stream = try FileHandleOutputStream(forPath: output)
+		print(locFile, terminator: "", to: &stream)
+		print("Done")
+	} catch let error as NSError {
+		print("Got error while exporting: \(error)", to: &stderrStream)
+		exit(Int32(error.code))
+	}
+	exit(0)
+	
+/* Import to Android */
+case "export_to_android":
+	var i = 2
+	
+	var strings_filenames = [String]()
+	i = getLongArgs(argIdx: i, longArgs: [
+		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
+		"csv_separator":     {(value: String) in csvSeparator = value}]
+	)
+	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
+	
+	let input_path = argAtIndexOrExit(i, error_message: "Input file (CSV) is required"); i += 1
+	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
+	let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	
+	print("Exporting to Android project...")
+	do {
+		print("   Parsing LocMapper file...")
+		let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+		print("   Writing locs to Android project...")
+		csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
+		print("Done")
+	} catch let error as NSError {
+		print("Got error while exporting: \(error)", to: &stderrStream)
+		exit(Int32(error.code))
+	}
+	exit(0)
+	
+case "convert_xibrefloc_to_stdrefloc":
+	print("Not implemented", to: &stderrStream)
+	exit(2)
+	
+case "convert_stdrefloc_to_xibrefloc":
+	print("Not implemented", to: &stderrStream)
+	exit(2)
+	
+default:
+	print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)
+	usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
+	exit(2)
 }
