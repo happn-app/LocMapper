@@ -195,7 +195,7 @@ extension LocFile {
 				case let k where k.hasPrefix("s"):
 					/* We're treating a plural group opening */
 					filenameToComponents[filename]!.append(contentsOf: spaces)
-					if let userInfo = exportedValueForKey(entry_key, withLanguage: languageName)?.splitUserInfo().userInfo {
+					if let userInfo = exportedValueForKey(entry_key, withLanguage: languageName)?.splitPrependedUserInfo().userInfo {
 						currentPluralsUserInfoByFilename[filename] = userInfo
 					}
 					currentPluralsValueByFilename[filename] = [:]

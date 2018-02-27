@@ -12,7 +12,7 @@ import Foundation
 
 extension String {
 	
-	func infoForSplitUserInfo() -> (stringStartOffset: Int, userInfo: [String: String]?) {
+	func infoForSplitPrependedUserInfo() -> (stringStartOffset: Int, userInfo: [String: String]?) {
 		enum State {
 			case waitStartKey
 			case waitEndKey
@@ -81,8 +81,8 @@ extension String {
 	into the user info and the remaining string. If parsing the string fails, the
 	userInfo will contain nil and string will be the original string. If parsing
 	the string succeed, userInfo will never be nil. It might be empty though. */
-	func splitUserInfo() -> (string: String, userInfo: [String: String]?) {
-		let (offset, userInfo) = infoForSplitUserInfo()
+	func splitPrependedUserInfo() -> (string: String, userInfo: [String: String]?) {
+		let (offset, userInfo) = infoForSplitPrependedUserInfo()
 		return (string: String(dropFirst(offset)), userInfo: userInfo)
 	}
 	
@@ -91,7 +91,8 @@ extension String {
 	
 	    str.byPrepending(userInfo: userInfo) == "".byPrepending(userInfo: userInfo) + str
 	
-	Use `infoForSplitUserInfo` or `splitUserInfo` to de-serialize the user info.
+	Use `infoForSplitPrependedUserInfo` or `splitPrependedUserInfo` to
+	de-serialize the user info.
 	
 	- returns: The new string with the serialized user info. */
 	func byPrepending(userInfo: [String: String]) -> String {

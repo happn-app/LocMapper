@@ -67,7 +67,7 @@ extension LocFile {
 	public static func unserializedMetadata(from serializedMetadata: Data) -> Any? {
 		guard let strSerializedMetadata = String(data: serializedMetadata, encoding: .utf8) else {return nil}
 		
-		let (string, decodedMetadata) = strSerializedMetadata.splitUserInfo()
+		let (string, decodedMetadata) = strSerializedMetadata.splitPrependedUserInfo()
 		if !string.isEmpty {
 			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got stray data in serialized metadata. Ignoring.", log: $0, type: .info) }}
 			else                        {NSLog("Got stray data in serialized metadata. Ignoring.")}

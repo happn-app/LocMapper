@@ -44,7 +44,7 @@ extension LocFile {
 		}
 		
 		static func parse(attributedComment: String) -> (comment: String, userInfo: [String: String]) {
-			let (str, optionalUserInfo) = attributedComment.splitUserInfo()
+			let (str, optionalUserInfo) = attributedComment.splitPrependedUserInfo()
 			guard let userInfo = optionalUserInfo else {
 				return (comment: attributedComment, userInfo: [:])
 			}

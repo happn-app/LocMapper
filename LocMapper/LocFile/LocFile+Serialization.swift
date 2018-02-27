@@ -244,7 +244,7 @@ extension LocFile : TextOutputStreamable {
 		}
 		
 		init(string: String) {
-			let (_, userInfo) = string.splitUserInfo()
+			let (_, userInfo) = string.splitPrependedUserInfo()
 			compressedUserInfo = userInfo?["cui"] == "1"
 			oneLineStrings = userInfo?["ols"] == "1"
 		}

@@ -13,7 +13,7 @@ import os.log
 
 protocol AndroidLocComponent {
 	
-	var stringValue: String { get }
+	var stringValue: String {get}
 	
 }
 
@@ -21,17 +21,17 @@ private extension String {
 	
 	var xmlTextValue: String {
 		var v = self
-//		v = v.stringByReplacingOccurrencesOfString("\\", withString: "\\\\", options: NSStringCompareOptions.LiteralSearch)
-		v = v.replacingOccurrences(of: "'", with: "\\'", options: NSString.CompareOptions.literal)
-		v = v.replacingOccurrences(of: "&", with: "&amp;", options: NSString.CompareOptions.literal)
-		v = v.replacingOccurrences(of: "<", with: "&lt;", options: NSString.CompareOptions.literal)
-		v = v.replacingOccurrences(of: ">", with: "&gt;", options: NSString.CompareOptions.literal) /* Shouldn't be needed... */
+//		v = v.replacingOccurrences(of: "\\", with: "\\\\",  options: .literal)
+		v = v.replacingOccurrences(of: "'",  with: "\\'",   options: .literal)
+		v = v.replacingOccurrences(of: "&",  with: "&amp;", options: .literal)
+		v = v.replacingOccurrences(of: "<",  with: "&lt;",  options: .literal)
+		v = v.replacingOccurrences(of: ">",  with: "&gt;",  options: .literal) /* Shouldn't be needed... */
 		return v
 	}
 	var valueFromXMLText: String {
 		var v = self
-		v = v.replacingOccurrences(of: "\\'", with: "'", options: NSString.CompareOptions.literal)
-		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: NSString.CompareOptions.literal)
+		v = v.replacingOccurrences(of: "\\'",  with: "'",  options: .literal)
+		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: .literal)
 		return v
 	}
 	
