@@ -19,11 +19,19 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		return true
 	}
 	
+	let replacement: String
 	let openDelim: String
 	let closeDelim: String
+	
 	let escapeToken: String?
 	
-	let replacement: String
+	init(replacement r: String, openDelim od: String, closeDelim cd: String, escapeToken e: String? = nil) {
+		replacement = r
+		openDelim = od
+		closeDelim = cd
+		
+		escapeToken = e
+	}
 	
 	init(serialization: [String: Any]) throws {
 		guard let r = serialization["replacement"] as? String else {

@@ -218,6 +218,7 @@ extension LocFile : TextOutputStreamable {
 	   *************** */
 	
 	static let todolocToken = "!¡!TODOLOC!¡!"
+	static let internalLocMapperErrorToken = "!¡!TODOLOC_INTERNALLOCMAPPERERROR!¡!"
 	
 	private static let KEY_HEADER_NAME = "Key" /* Affects exports to environment’s loc file formats, but also user readable */
 	private static let ENV_HEADER_NAME = "Env" /* Affects exports to environment’s loc file formats, but also user readable */

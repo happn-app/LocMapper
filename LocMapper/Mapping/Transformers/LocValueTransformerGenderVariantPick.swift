@@ -40,7 +40,17 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	let openDelim: String
 	let middleDelim: String
 	let closeDelim: String
+	
 	let escapeToken: String?
+	
+	init(gender g: Gender, openDelim od: String, middleDelim md: String, closeDelim cd: String, escapeToken e: String? = nil) {
+		gender = g
+		openDelim = od
+		middleDelim = md
+		closeDelim = cd
+		
+		escapeToken = e
+	}
 	
 	init(serialization: [String: Any]) throws {
 		guard let gs = serialization["gender"] as? String, let g = Gender(string: gs) else {

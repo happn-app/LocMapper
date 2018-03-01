@@ -1,5 +1,5 @@
 /*
- * UserAttributedStrings.swift
+ * PrependedUserInfoStrings.swift
  * LocMapper
  *
  * Created by François Lamboley on 10/27/16.

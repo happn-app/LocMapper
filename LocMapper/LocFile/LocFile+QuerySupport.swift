@@ -153,7 +153,7 @@ extension LocFile {
 			case .keyNotFound:                        return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
 			}
 		} catch {
-			return "!¡!TODOLOC_INTERNALLOCMAPPERERROR!¡!"
+			return LocFile.internalLocMapperErrorToken
 		}
 	}
 	

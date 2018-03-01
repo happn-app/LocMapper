@@ -66,11 +66,27 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "help"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "version"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "convert_xibrefloc_to_stdrefloc"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/frizlab/Downloads/xibrefloc.csv"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/frizlab/Downloads/stdrefloc.csv"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot; English&quot; &quot;Fran&#xe7;ais &#x2014; French&quot; &quot;Deutsch &#x2014; German&quot; &quot;Espa&#xf1;ol &#x2014; Spanish&quot; &quot;Italiano &#x2014; Italian&quot; &quot;Magyar &#x2014; Hungarian&quot; &quot;Polszczyzna &#x2014; Polish&quot; &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot; &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot; &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot;"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
