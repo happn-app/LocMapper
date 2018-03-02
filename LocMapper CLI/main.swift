@@ -37,11 +37,11 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	   export_to_android [--csv_separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
-	   convert_xibrefloc_to_stdrefloc [--csv_separator=separator] input_file.csv output_file.csv
+	   convert_xibrefloc_to_stdrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Take a XibLoc-styled (with tokens for plurals, gender, etc.) and convert it to a more
 	      usual format (one key per plural/gender/etc. variations).
 	
-	   convert_stdrefloc_to_xibrefloc [--csv_separator=separator] input_file.csv output_file.csv
+	   convert_stdrefloc_to_xibrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Does the inverse of convert_xibrefloc_to_stdrefloc.
 	
 	For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.
@@ -118,6 +118,7 @@ func getLongArgs(argIdx: Int, longArgs: [String: (String) -> Void]) -> Int {
 }
 
 
+var i = 2
 var csvSeparator = ","
 switch argAtIndexOrExit(1, error_message: "Command is required") {
 /* Version */
@@ -134,8 +135,6 @@ case "version":
 	
 /* Merge Xcode Locs */
 case "merge_xcode_locs":
-	var i = 2
-	
 	var included_paths: [String]?
 	var excluded_paths = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
@@ -168,8 +167,6 @@ case "merge_xcode_locs":
 	
 /* Export to Xcode */
 case "export_to_xcode":
-	var i = 2
-	
 	var encodingStr = "utf16"
 	i = getLongArgs(argIdx: i, longArgs: [
 		"encoding": {(value: String) in encodingStr = value},
@@ -204,8 +201,6 @@ case "export_to_xcode":
 	
 /* Export from Android */
 case "merge_android_locs":
-	var i = 2
-	
 	var res_folder = "res"
 	var strings_filenames = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
@@ -239,8 +234,6 @@ case "merge_android_locs":
 	
 /* Import to Android */
 case "export_to_android":
-	var i = 2
-	
 	var strings_filenames = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
 		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
@@ -266,8 +259,36 @@ case "export_to_android":
 	exit(0)
 	
 case "convert_xibrefloc_to_stdrefloc":
-	print("Not implemented", to: &stderrStream)
-	exit(2)
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv_separator": {(value: String) in csvSeparator = value}]
+	)
+	var languages = [String]()
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	let output_path = argAtIndexOrExit(i, error_message: "Output file is required"); i += 1
+	repeat {
+		languages.append(argAtIndexOrExit(i, error_message: "At least one language is required")); i += 1
+	} while i < CommandLine.arguments.count
+	
+	print("Converting from Xib Ref Loc to Std Ref Loc...")
+	do {
+		print("   Parsing source...")
+		let f = try XibRefLocFile(fromURL: URL(fileURLWithPath: input_path, isDirectory: false), languages: languages, csvSeparator: csvSeparator)
+		print("   Converting to Std Ref Loc...")
+		let s = StdRefLocFile(xibRefLoc: f)
+		
+		print("   Merging in Loc File...")
+		let locFile = LocFile()
+		locFile.mergeRefLocsWithStdRefLocFile(s)
+		
+		print("   Exporting Loc File to Std Ref Loc...")
+		locFile.exportStdRefLoc(to: output_path, csvSeparator: csvSeparator)
+		print("Done")
+	} catch {
+		print("Got error while converting: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
+	
+	exit(0)
 	
 case "convert_stdrefloc_to_xibrefloc":
 	print("Not implemented", to: &stderrStream)
