@@ -98,11 +98,23 @@ public class StdRefLocFile {
 				let (_, v) = $0
 				return v.applying(xibLocInfo: stdGenderDetectionInfo) != v
 			}
-			/* Let's detect #<:> plural */
+			/* Let's detect {⟷} gender */
+			let braceGenderDetectionInfo = Str2StrXibLocInfo(genderReplacementWithLeftToken: "{", interiorToken: "⟷", rightToken: "}", valueIsMale: true)
+			let hasBraceGender = xibLocValues.contains{
+				let (_, v) = $0
+				return v.applying(xibLocInfo: braceGenderDetectionInfo) != v
+			}
+			/* Let's detect ##<:> plural */
 			let stdPluralDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "<", rightToken: ">", value: "")
 			let hasStdPlural = xibLocValues.contains{
 				let (_, v) = $0
 				return v.applying(xibLocInfo: stdPluralDetectionInfo) != v
+			}
+			/* Let's detect ## string replacements */
+			let sharpReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "#", rightToken: "#", value: "")
+			let hasSharpReplacement = !hasStdPlural && xibLocValues.contains{
+				let (_, v) = $0
+				return v.applying(xibLocInfo: sharpReplacementDetectionInfo) != v
 			}
 			
 			var i = 0
@@ -124,22 +136,37 @@ public class StdRefLocFile {
 					LocValueTransformerGenderVariantPick(gender: .female, openDelim: "`", middleDelim: "¦", closeDelim: "´")
 				].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
 			}
+			if hasBraceGender {
+				transformersList = [
+					LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "{", middleDelim: "⟷", closeDelim: "}"),
+					LocValueTransformerGenderVariantPick(gender: .female, openDelim: "{", middleDelim: "⟷", closeDelim: "}")
+				].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			}
 			if hasStdReplacement {
 				i += 1
 				transformersList = [
 					LocValueTransformerRegionDelimitersReplacement(replacement: "%\(i)$s", openDelim: "|", closeDelim: "|")
 				].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
 			}
+			if hasSharpReplacement {
+				i += 1
+				transformersList = [
+					LocValueTransformerRegionDelimitersReplacement(replacement: "%\(i)$d", openDelim: "#", closeDelim: "#")
+				].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			}
 			var values = [Language: Value]()
 			for transformers in transformersList {
 				for (l, v) in xibLocValues {
-					let newValue = (try? transformers.reduce(v, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
+					let unpercentedValue = v
+						.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: "%%@", with: "%s")
+						.replacingOccurrences(of: "%%d", with: "%d").replacingOccurrences(of: "%%0.*f", with: "%0.*f")
+						.replacingOccurrences(of: "%%1$s", with: "%1$s").replacingOccurrences(of: "%%2$s", with: "%2$s")
+					let newValue = (try? transformers.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
 					values[l, default: []].append(TaggedString(value: newValue, tags: StdRefLocFile.tags(from: transformers)))
 				}
 			}
 			entriesBuilding[xibLocKey] = values
 		}
-		print(entriesBuilding)
 		entries = entriesBuilding
 	}
 	
