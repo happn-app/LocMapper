@@ -32,3 +32,32 @@ func writeText(_ text: String, toFile filePath: String, usingEncoding encoding: 
 		throw NSError(domain: "LocMapperErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(filePath) for writing"])
 	}
 }
+
+
+class FileHandleOutputStream : TextOutputStream {
+	
+	let closeOnDeinit: Bool
+	let fileHandle: FileHandle
+	
+	convenience init(forPath path: String, fileManager: FileManager = .default) throws {
+		try Data().write(to: URL(fileURLWithPath: path), options: []) /* We do not delete original file if present to keep xattrs... */
+		guard let fh = FileHandle(forWritingAtPath: path) else {
+			throw NSError(domain: "LocMapperErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(path) for writing"])
+		}
+		self.init(fh: fh, closeOnDeinit: true)
+	}
+	
+	init(fh: FileHandle, closeOnDeinit c: Bool = false) {
+		closeOnDeinit = c
+		fileHandle = fh
+	}
+	
+	deinit {
+		if closeOnDeinit {fileHandle.closeFile()}
+	}
+	
+	func write(_ string: String) {
+		fileHandle.write(Data(string.utf8))
+	}
+	
+}
