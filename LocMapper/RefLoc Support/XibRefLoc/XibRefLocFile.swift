@@ -49,4 +49,16 @@ public class XibRefLocFile {
 		entries = entriesBuilding
 	}
 	
+	public init(stdRefLoc: StdRefLocFile) {
+		languages = stdRefLoc.languages
+		
+		var entriesBuilding = [Key: [Language: Value]]()
+		for (key, taggedValuesPerLanguage) in stdRefLoc.entries {
+			for (language, taggedValues) in taggedValuesPerLanguage {
+				
+			}
+		}
+		entries = entriesBuilding
+	}
+	
 }
