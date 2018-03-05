@@ -706,9 +706,7 @@
 					};
 					7B837D7E1C0EF3DB0020E86B = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = M8JS42FSNG;
 						LastSwiftMigration = 0900;
-						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -1155,10 +1153,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 18;
-				DEVELOPMENT_TEAM = M8JS42FSNG;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "LocMapper App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -1176,10 +1172,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 18;
-				DEVELOPMENT_TEAM = M8JS42FSNG;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "LocMapper App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
