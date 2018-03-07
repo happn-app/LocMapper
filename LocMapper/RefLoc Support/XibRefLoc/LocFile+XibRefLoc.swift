@@ -34,7 +34,7 @@ extension LocFile {
 		/* Import new XibRefLoc entries */
 		var isFirst = true
 		for (refKey, refVals) in xibRefLocFile.entries {
-			let key = LineKey(locKey: refKey, env: "XibRefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
+			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
 			isFirst = false
 		}
@@ -52,7 +52,7 @@ extension LocFile {
 		/* Import new XibRefLoc entries */
 		var isFirst = entryKeys.contains{ $0.env == "XibRefLoc" || $0.env == "RefLoc" }
 		for (refKey, refVals) in xibRefLocFile.entries {
-			let key = LineKey(locKey: refKey, env: "XibRefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
+			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
 			isFirst = false
 		}
