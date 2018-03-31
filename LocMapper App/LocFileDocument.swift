@@ -159,7 +159,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 		/* Getting accessory view. */
 		var objects: NSArray?
 		Bundle.main.loadNibNamed(.accessoryViewForImportReferenceTranslations, owner: nil, topLevelObjects: &objects)
-		let accessoryView = (objects ?? []).flatMap{ $0 as? NSView }.first!
+		let accessoryView = (objects ?? []).compactMap{ $0 as? NSView }.first!
 		let tokenField = accessoryView.viewWithTag(1) as! NSTokenField
 		
 		tokenField.delegate = self

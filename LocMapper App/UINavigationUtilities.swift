@@ -21,7 +21,7 @@ class UINavigationUtilities {
 	static func createLoadingWindow() -> NSWindow {
 		var objects: NSArray?
 		Bundle.main.loadNibNamed(.loadingWindow, owner: nil, topLevelObjects: &objects)
-		let window = (objects ?? []).flatMap{ $0 as? NSWindow }.first!
+		let window = (objects ?? []).compactMap{ $0 as? NSWindow }.first!
 		for v in window.contentView!.subviews.first!.subviews {
 			if let p = v as? NSProgressIndicator {
 				p.startAnimation(nil)

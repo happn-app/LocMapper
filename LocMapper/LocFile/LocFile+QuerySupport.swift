@@ -22,7 +22,7 @@ extension LocFile {
 	}
 	
 	public func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
-		let stringFilters = filters.flatMap{ filter -> (key: String, content: String)? in
+		let stringFilters = filters.compactMap{ filter -> (key: String, content: String)? in
 			if case .string(let str) = filter, !str.isEmpty {
 				/* A string filter is a key and value filter. The two of them should
 				 * be joined with a comma (eg. “value_filter,key_filter”).
@@ -45,7 +45,7 @@ extension LocFile {
 			return nil
 		}
 		
-		let envFilters = filters.flatMap{ filter -> String? in
+		let envFilters = filters.compactMap{ filter -> String? in
 			if case .env(let env) = filter {return env}
 			return nil
 		}
@@ -91,7 +91,7 @@ extension LocFile {
 				case .entries(let entries)?:
 					/* State filters */
 					guard showStateTodoloc || showStateHardCoded else {return false}
-					let values = languages.flatMap{ entries[$0] }
+					let values = languages.compactMap{ entries[$0] }
 					if languages.count != values.count {guard showStateTodoloc   else {return false}}
 					else                               {guard showStateHardCoded else {return false}}
 					/* String filters */
@@ -106,7 +106,7 @@ extension LocFile {
 				case .mapping(let mapping)?:
 					/* State filters */
 					guard showStateMappedValid || showStateMappedInvalid else {return false}
-					let values = languages.flatMap{ try? mapping.apply(forLanguage: $0, entries: entries) }
+					let values = languages.compactMap{ try? mapping.apply(forLanguage: $0, entries: entries) }
 					if languages.count != values.count {guard showStateMappedInvalid else {return false}}
 					else                               {guard showStateMappedValid   else {return false}}
 					/* String filters */

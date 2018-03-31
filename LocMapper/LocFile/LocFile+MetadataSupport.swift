@@ -28,7 +28,7 @@ extension LocFile {
 	
 	public func filtersMetadataValueForKey(_ key: String) -> [Filter]? {
 		guard let dataVal = metadata[key]?.data(using: .utf8), let filtersStr = (try? JSONSerialization.jsonObject(with: dataVal, options: [])) as? [String] else {return nil}
-		return filtersStr.flatMap{ Filter(string: $0) }
+		return filtersStr.compactMap{ Filter(string: $0) }
 	}
 	
 	public func setMetadataValue(_ value: String, forKey key: String) {
