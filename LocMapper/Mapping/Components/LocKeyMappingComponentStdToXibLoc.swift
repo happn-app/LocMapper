@@ -48,6 +48,7 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 			)
 			taggedKeysBuilding.append(TaggedObject(value: key, tags: tags))
 		}
+		guard taggedKeysBuilding.count > 0 else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "0 tagged keys in \"tagged_keys\"."])}
 		taggedKeys = taggedKeysBuilding
 	}
 	
@@ -74,11 +75,10 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 			}
 		}
 		
-		return Std2Xib.untaggedValue(from: taggedValues)
-		
-//		for entry in entries.keys.filter({ $0.env == baseSourceKey.env && $0.filename == baseSourceKey.filename && $0.locKey.hasPrefix(baseSourceKey.locKey) }) {
-//			print(entry)
-//		}
+		do {return try Std2Xib.untaggedValue(from: taggedValues, with: language)}
+		catch Std2XibError.invalidTag {throw MappingResolvingError.invalidMapping}
+		catch Std2XibError.unknownLanguage {throw MappingResolvingError.unknownLanguage}
+		catch {throw error}
 	}
 	
 }

@@ -28,7 +28,7 @@ struct Xib2Std {
 			return v.applying(xibLocInfo: stdGenderDetectionInfo) != v
 		}
 		/* Let's detect {⟷} gender */
-		let braceGenderDetectionInfo = Str2StrXibLocInfo(genderReplacementWithLeftToken: "{", interiorToken: "⟷", rightToken: "}", valueIsMale: true)
+		let braceGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "{", rightToken: "}", value: "")
 		let hasBraceGender = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: braceGenderDetectionInfo) != v
@@ -45,7 +45,7 @@ struct Xib2Std {
 			let (_, v) = $0
 			return v.applying(xibLocInfo: sharpReplacementDetectionInfo) != v
 		}
-	
+		
 		var i = 0
 		var transformersList = [[LocValueTransformer]](arrayLiteral: [])
 		if hasStdPlural {
@@ -97,7 +97,7 @@ struct Xib2Std {
 		return values
 	}
 	
-	private static func tags(from transformers: [LocValueTransformer]) -> [String] {
+	static func tags(from transformers: [LocValueTransformer]) -> [String] {
 		var res = [String]()
 		for t in transformers {
 			switch t {

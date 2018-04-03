@@ -121,6 +121,9 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 	/* https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 	 * https://www.unicode.org/reports/tr35/tr35-numbers.html#Operands
 	 *
+	 * Remember to update applyReverseNonReplacements in the Std2Xib file when
+	 * updating this language list.
+	 *
 	 * English:               one:i=1&v=0
 	 * German:                one:i=1&v=0
 	 * Spanish:               one:n=1
