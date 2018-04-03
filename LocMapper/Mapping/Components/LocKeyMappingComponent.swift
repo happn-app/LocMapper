@@ -35,6 +35,7 @@ public class LocKeyMappingComponent {
 			switch type {
 			case LocKeyMappingComponentToConstant.serializedType:      c = try LocKeyMappingComponentToConstant(serialization: serialization)
 			case LocKeyMappingComponentValueTransforms.serializedType: c = try LocKeyMappingComponentValueTransforms(serialization: serialization)
+			case LocKeyMappingComponentStdToXibLoc.serializedType:     c = try LocKeyMappingComponentStdToXibLoc(serialization: serialization)
 			default:
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid mapping component: Unknown __type value \"\(type)\"."])
 			}
