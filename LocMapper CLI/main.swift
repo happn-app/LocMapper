@@ -38,11 +38,15 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
 	   convert_xibrefloc_to_stdrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
-	      Take a XibLoc-styled (with tokens for plurals, gender, etc.) and convert it to a more
+	      Take a XibLoc-styled RefLoc (with tokens for plurals, gender, etc.) and convert it to a more
 	      usual format (one key per plural/gender/etc. variations).
 	
 	   convert_stdrefloc_to_xibrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Does the inverse of convert_xibrefloc_to_stdrefloc.
+	
+	   standardize_refloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
+	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
+	      Only the data is kept; all the metadata is gotten rid of. The keys are sorted alphabetically.
 	
 	For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.
 	""", to: &stream)
@@ -291,8 +295,68 @@ case "convert_xibrefloc_to_stdrefloc":
 	exit(0)
 	
 case "convert_stdrefloc_to_xibrefloc":
-	print("Not implemented", to: &stderrStream)
-	exit(2)
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv_separator": {(value: String) in csvSeparator = value}]
+	)
+	var languages = [String]()
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	let output_path = argAtIndexOrExit(i, error_message: "Output file is required"); i += 1
+	repeat {
+		languages.append(argAtIndexOrExit(i, error_message: "At least one language is required")); i += 1
+	} while i < CommandLine.arguments.count
+	
+	print("Converting from Std Ref Loc to Xib Ref Loc...")
+	do {
+		print("   Parsing source...")
+		let f = try StdRefLocFile(fromURL: URL(fileURLWithPath: input_path, isDirectory: false), languages: languages, csvSeparator: csvSeparator)
+		print("   Converting to Xib Ref Loc...")
+		let s = try XibRefLocFile(stdRefLoc: f)
+		
+		print("   Merging in Loc File...")
+		let locFile = LocFile()
+		locFile.mergeRefLocsWithXibRefLocFile(s)
+		
+		print("   Exporting Loc File to Xib Ref Loc...")
+		locFile.exportXibRefLoc(to: output_path, csvSeparator: csvSeparator)
+		print("Done")
+	} catch {
+		print("Got error while converting: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
+	
+	exit(0)
+	
+case "standardize_refloc":
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv_separator": {(value: String) in csvSeparator = value}]
+	)
+	var languages = [String]()
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	let output_path = argAtIndexOrExit(i, error_message: "Output file is required"); i += 1
+	repeat {
+		languages.append(argAtIndexOrExit(i, error_message: "At least one language is required")); i += 1
+	} while i < CommandLine.arguments.count
+	
+	print("Standardizing Ref Loc...")
+	do {
+		/* We use XibRefLocFile to parse and output the file because this format
+		 * does not do any transformation on the values it reads and outputs. */
+		print("   Parsing source...")
+		let f = try XibRefLocFile(fromURL: URL(fileURLWithPath: input_path, isDirectory: false), languages: languages, csvSeparator: csvSeparator)
+		
+		print("   Merging in Loc File...")
+		let locFile = LocFile()
+		locFile.mergeRefLocsWithXibRefLocFile(f)
+		
+		print("   Exporting Loc File to Ref Loc...")
+		locFile.exportXibRefLoc(to: output_path, csvSeparator: csvSeparator)
+		print("Done")
+	} catch {
+		print("Got error while converting: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
+	
+	exit(0)
 	
 default:
 	print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)

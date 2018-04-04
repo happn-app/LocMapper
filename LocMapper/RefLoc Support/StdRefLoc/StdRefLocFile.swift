@@ -37,12 +37,7 @@ public class StdRefLocFile {
 		for row in parsedRows {
 			guard let keyStr = row["KEY"], !keyStr.isEmpty else {continue}
 			let taggedKey = TaggedString(string: keyStr)
-			if entriesBuilding[taggedKey.value] != nil {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, String(describing: keyStr)) }}
-				else                        {NSLog("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", String(describing: keyStr))}
-			}
-			
-			var values = [Language: Value]()
+			var values = entriesBuilding[taggedKey.value] ?? [:]
 			for language in sourceLanguages {values[language, default: []].append(TaggedString(value: row[language] ?? "", tags: taggedKey.tags))}
 			entriesBuilding[taggedKey.value] = values
 		}

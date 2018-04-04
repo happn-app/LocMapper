@@ -45,19 +45,22 @@ public class XibRefLocFile {
 			for language in sourceLanguages {values[language] = row[language] ?? ""}
 			entriesBuilding[key] = values
 		}
+		
 		languages = sourceLanguages
 		entries = entriesBuilding
 	}
 	
-	public init(stdRefLoc: StdRefLocFile) {
-		languages = stdRefLoc.languages
-		
+	public init(stdRefLoc: StdRefLocFile) throws {
 		var entriesBuilding = [Key: [Language: Value]]()
 		for (key, taggedValuesPerLanguage) in stdRefLoc.entries {
+			var values = [Language: Value]()
 			for (language, taggedValues) in taggedValuesPerLanguage {
-				
+				values[language] = try Std2Xib.untaggedValue(from: taggedValues, with: language)
 			}
+			entriesBuilding[key] = values
 		}
+		
+		languages = stdRefLoc.languages
 		entries = entriesBuilding
 	}
 	

@@ -7,6 +7,7 @@
  */
 
 import Foundation
+import os.log
 
 
 
@@ -55,6 +56,28 @@ extension LocFile {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
 			isFirst = false
+		}
+	}
+	
+	public func exportXibRefLoc(to path: String, csvSeparator: String) {
+		do {
+			var stream = try FileHandleOutputStream(forPath: path)
+			
+			/* Printing header */
+			print("KEY".csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)
+			for l in languages {print(csvSeparator + l.csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)}
+			print("", to: &stream)
+			
+			/* Printing values */
+			for k in entryKeys.sorted() {
+				guard k.env == "XibRefLoc" || k.env == "RefLoc" else {continue}
+				print(k.locKey.csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)
+				for l in languages {print(csvSeparator + (exportedValueForKey(k, withLanguage: l) ?? "---").csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)}
+				print("", to: &stream)
+			}
+		} catch {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, path, String(describing: error)) }}
+			else                        {NSLog("Cannot write file to path %@, got error %@", path, String(describing: error))}
 		}
 	}
 	
