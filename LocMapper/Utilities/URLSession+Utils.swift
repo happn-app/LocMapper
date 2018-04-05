@@ -49,4 +49,15 @@ extension URLSession {
 		return parsedJson
 	}
 	
+	func fetchJSONAndCheckResponse(request: URLRequest) -> [String: Any?]? {
+		guard
+			let json = fetchJSON(request: request),
+			let response = json["response"] as? [String: Any?],
+			response["status"] as? String == "success",
+			response["code"] as? String == "200"
+		else {return nil}
+		
+		return json
+	}
+	
 }

@@ -48,6 +48,10 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
 	      Only the data is kept; all the metadata is gotten rid of. The keys are sorted alphabetically.
 	
+	   upload_stdrefloc_to_lokalise [--csv_separator=separator] lokalise_rw_token lokalise_project_id input_file.csv refloc_language_name lokalise_language_name [refloc_language_name lokalise_language_name ...]
+	      Upload an Std Ref Loc file to lokalise. DROPS EVERYTHING IN THE PROJECT (but does a snapshot first).
+	      The translations will be marked for platform “Other.”
+	
 	For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.
 	""", to: &stream)
 }
@@ -357,6 +361,32 @@ case "standardize_refloc":
 	}
 	
 	exit(0)
+	
+case "upload_stdrefloc_to_lokalise":
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv_separator": {(value: String) in csvSeparator = value}]
+	)
+	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
+	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	let refloc_to_lokalise_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	
+	print("Uploading Std Ref Loc to Localize project \(project_id)...")
+	do {
+		print("   Parsing source...")
+		let f = try StdRefLocFile(fromURL: URL(fileURLWithPath: input_path, isDirectory: false), languages: Array(refloc_to_lokalise_language_name.keys), csvSeparator: csvSeparator)
+		
+		print("   Merging in Loc File...")
+		let locFile = LocFile()
+		locFile.mergeRefLocsWithStdRefLocFile(f)
+		
+		print("   Exporting Loc File to Lokalise...")
+		try locFile.exportStdRefLocToLokalise(token: token, projectId: project_id, reflocToLokaliseLanguageName: refloc_to_lokalise_language_name, takeSnapshot: true, logPrefix: "      ")
+		print("Done")
+	} catch {
+		print("Got error while uploading: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
 	
 default:
 	print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)
