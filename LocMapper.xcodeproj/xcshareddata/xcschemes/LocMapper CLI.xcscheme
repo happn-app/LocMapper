@@ -75,7 +75,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "upload_stdrefloc_to_lokalise"
+            argument = "upload_xibrefloc_to_lokalise"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -87,7 +87,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/frizlab/Downloads/stdrefloc.csv"
+            argument = "/Users/frizlab/Downloads/xibrefloc.csv"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
