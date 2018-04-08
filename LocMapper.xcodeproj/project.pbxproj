@@ -31,6 +31,7 @@
 		7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1F24DE20750E900025FC49 /* URLSession+Utils.swift */; };
 		7B1F24E8207652460025FC49 /* URLRequest+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1F24E7207652460025FC49 /* URLRequest+Utils.swift */; };
 		7B27768D1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift */; };
+		7B439E1E2078C48300E744CF /* Xib2Lokalise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B439E162078C48300E744CF /* Xib2Lokalise.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
 		7B4CC6B820252FB60055CB74 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF69785202322D000088A52 /* XibLoc.framework */; };
 		7B4CC6C12025BB390055CB74 /* XcodeStringsParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */; };
@@ -218,6 +219,7 @@
 		7B1F24E7207652460025FC49 /* URLRequest+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLRequest+Utils.swift"; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* PrependedUserInfoStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrependedUserInfoStrings.swift; sourceTree = "<group>"; };
 		7B27768C1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocFiltersViewController.swift; sourceTree = "<group>"; };
+		7B439E162078C48300E744CF /* Xib2Lokalise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Xib2Lokalise.swift; sourceTree = "<group>"; };
 		7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryContextViewController.swift; sourceTree = "<group>"; };
 		7B4CC6BE2025BB390055CB74 /* LocMapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocMapperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeStringsParserTests.swift; sourceTree = "<group>"; };
@@ -573,6 +575,7 @@
 			children = (
 				7BA84F27207396B50029D46A /* Xib2Std.swift */,
 				7BA84F292073A4220029D46A /* Std2Xib.swift */,
+				7B439E162078C48300E744CF /* Xib2Lokalise.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -879,6 +882,7 @@
 				7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */,
 				7B4CC6DE2025BE680055CB74 /* XibRefLocFile.swift in Sources */,
 				7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */,
+				7B439E1E2078C48300E744CF /* Xib2Lokalise.swift in Sources */,
 				7B889BF92025F44D005A961F /* LocKeyMappingComponent.swift in Sources */,
 				7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */,
 				7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */,

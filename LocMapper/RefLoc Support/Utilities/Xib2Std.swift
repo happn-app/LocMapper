@@ -7,6 +7,7 @@
  */
 
 import Foundation
+import os.log
 
 import XibLoc
 
@@ -14,7 +15,11 @@ import XibLoc
 
 struct Xib2Std {
 	
-	static func taggedValues(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value]) -> [StdRefLocFile.Language: StdRefLocFile.Value] {
+	/* Guarantees on return value:
+	 *    - Each array will contains at least one element;
+	 *    - Each elements inside an array will be kind of the same subclass of
+	 *      LocValueTransformer. */
+	static func computeTransformersGroups(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], useLokalisePlaceholderFormat: Bool = false) -> [[LocValueTransformer]] {
 		/* Let's detect || string replacements */
 		let stdReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithToken: "|", value: "")
 		let hasStdReplacement = xibLocValues.contains{
@@ -47,51 +52,67 @@ struct Xib2Std {
 		}
 		
 		var i = 0
-		var transformersList = [[LocValueTransformer]](arrayLiteral: [])
+		var results = [[LocValueTransformer]]()
 		if hasStdPlural {
 			i += 1
-			transformersList = [
-				LocValueTransformerPluralVariantPick(numberReplacement: "%\(i)$d", numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .zero,  pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
-				LocValueTransformerPluralVariantPick(numberReplacement: "%\(i)$d", numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .one,   pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
-				LocValueTransformerPluralVariantPick(numberReplacement: "%\(i)$d", numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .two,   pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
-				LocValueTransformerPluralVariantPick(numberReplacement: "%\(i)$d", numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .few,   pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
-				LocValueTransformerPluralVariantPick(numberReplacement: "%\(i)$d", numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .many,  pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
-				LocValueTransformerPluralVariantPick(numberReplacement: "%\(i)$d", numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .other, pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">")
-			].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			let numberReplacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "d", tokens: useLokalisePlaceholderFormat ? ("#", "#") : nil)
+			results.append([
+				LocValueTransformerPluralVariantPick(numberReplacement: numberReplacement, numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .zero,  pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
+				LocValueTransformerPluralVariantPick(numberReplacement: numberReplacement, numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .one,   pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
+				LocValueTransformerPluralVariantPick(numberReplacement: numberReplacement, numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .two,   pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
+				LocValueTransformerPluralVariantPick(numberReplacement: numberReplacement, numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .few,   pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
+				LocValueTransformerPluralVariantPick(numberReplacement: numberReplacement, numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .many,  pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">"),
+				LocValueTransformerPluralVariantPick(numberReplacement: numberReplacement, numberOpenDelim: "#", numberCloseDelim: "#", pluralUnicodeValue: .other, pluralOpenDelim: "<", pluralMiddleDelim: ":", pluralCloseDelim: ">")
+			])
 		}
 		if hasStdGender {
-			transformersList = [
+			results.append([
 				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "`", middleDelim: "¦", closeDelim: "´"),
 				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "`", middleDelim: "¦", closeDelim: "´")
-			].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			])
 		}
 		if hasBraceGender {
-			transformersList = [
+			results.append([
 				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "{", middleDelim: "⟷", closeDelim: "}"),
 				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "{", middleDelim: "⟷", closeDelim: "}")
-			].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			])
 		}
 		if hasStdReplacement {
 			i += 1
-			transformersList = [
-				LocValueTransformerRegionDelimitersReplacement(replacement: "%\(i)$s", openDelim: "|", closeDelim: "|")
-			].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "s", tokens: useLokalisePlaceholderFormat ? ("|", "|") : nil)
+			results.append([
+				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "|", closeDelim: "|")
+			])
 		}
 		if hasSharpReplacement {
 			i += 1
-			transformersList = [
-				LocValueTransformerRegionDelimitersReplacement(replacement: "%\(i)$d", openDelim: "#", closeDelim: "#")
-			].flatMap{ nt in transformersList.map{ ts in ts + [nt] } }
+			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "d", tokens: useLokalisePlaceholderFormat ? ("#", "#") : nil)
+			results.append([
+				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "#", closeDelim: "#")
+			])
 		}
+		return results
+	}
+	
+	static func convertTransformersGroupsToStdLocEntryActions(_ transformersGroups: [[LocValueTransformer]]) -> [[LocValueTransformer]] {
+		var results = [[LocValueTransformer]](arrayLiteral: [])
+		for transformersGroup in transformersGroups {
+			results = transformersGroup.flatMap{ nt in results.map{ ts in ts + [nt] } }
+		}
+		return results
+	}
+	
+	static func taggedValues(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value]) -> [StdRefLocFile.Language: StdRefLocFile.Value] {
+		let stdLocEntryActions = convertTransformersGroupsToStdLocEntryActions(computeTransformersGroups(from: xibLocValues))
 		var values = [StdRefLocFile.Language: StdRefLocFile.Value]()
-		for transformers in transformersList {
+		for stdLocEntryAction in stdLocEntryActions {
 			for (l, v) in xibLocValues {
 				let unpercentedValue = v
 					.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: "%%@", with: "%s")
 					.replacingOccurrences(of: "%%d", with: "%d").replacingOccurrences(of: "%%0.*f", with: "%0.*f")
 					.replacingOccurrences(of: "%%1$s", with: "%1$s").replacingOccurrences(of: "%%2$s", with: "%2$s")
-				let newValue = (try? transformers.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
-				values[l, default: []].append(TaggedString(value: newValue, tags: Xib2Std.tags(from: transformers)))
+				let newValue = (try? stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
+				values[l, default: []].append(TaggedString(value: newValue, tags: Xib2Std.tags(from: stdLocEntryAction)))
 			}
 		}
 		return values
@@ -142,5 +163,37 @@ struct Xib2Std {
 	}
 	
 	private init() {/* The struct is only a containter for utility methods */}
+	
+	private static func simpleReplacementForStdConversion(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], idx: Int, formatSpecifier: String, tokens: (String, String)?) -> String {
+		let printfReplacement = "%\(idx)$\(formatSpecifier)"
+		guard let (leftToken, rightToken) = tokens else {return printfReplacement}
+		
+		if let r = simpleReplacementContent(from: xibLocValues, leftToken: leftToken, rightToken: rightToken) {return "[\(printfReplacement):\(r)]"}
+		else {
+			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Cannot get name of replacement (tokens %{public}@ and %{public}@) with values %@", log: $0, type: .info, leftToken, rightToken, xibLocValues) }}
+			else                        {NSLog("Cannot get name of replacement (tokens %@ and %@) with values %@", leftToken, rightToken, xibLocValues)}
+			return printfReplacement
+		}
+	}
+	
+	private static func simpleReplacementContent(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], leftToken: String, rightToken: String) -> String? {
+		var r: String?
+		let numberReplacementNameRetriever = Str2StrXibLocInfo(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
+			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [], attributesModifications: [:],
+			simpleReturnTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { r = $0; return "" }],
+			dictionaryReplacements: nil, identityReplacement: { $0 }
+		)
+		
+		if let englishValue = xibLocValues.first(where: { $0.key.lowercased().range(of: "english") != nil })?.value {
+			_ = englishValue.applying(xibLocInfo: numberReplacementNameRetriever)
+			if let r = r {return r}
+		}
+		for (_, v) in xibLocValues {
+			_ = v.applying(xibLocInfo: numberReplacementNameRetriever)
+			if r != nil {return r}
+		}
+		return nil
+	}
 	
 }

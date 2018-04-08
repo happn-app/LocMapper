@@ -374,14 +374,10 @@ case "upload_xibrefloc_to_lokalise":
 	print("Uploading Xib Ref Loc to Localize project \(project_id)...")
 	do {
 		print("   Parsing source...")
-		let f = try XibRefLocFile(fromURL: URL(fileURLWithPath: input_path, isDirectory: false), languages: Array(refloc_to_lokalise_language_name.keys), csvSeparator: csvSeparator)
-		
-		print("   Merging in Loc File...")
-		let locFile = LocFile()
-		locFile.mergeRefLocsWithXibRefLocFile(f)
+		let xibLoc = try XibRefLocFile(fromURL: URL(fileURLWithPath: input_path, isDirectory: false), languages: Array(refloc_to_lokalise_language_name.keys), csvSeparator: csvSeparator)
 		
 		print("   Exporting Loc File to Lokalise...")
-		try locFile.exportXibRefLocToLokalise(token: token, projectId: project_id, reflocToLokaliseLanguageName: refloc_to_lokalise_language_name, takeSnapshot: true, logPrefix: "      ")
+		try xibLoc.exportToLokalise(token: token, projectId: project_id, reflocToLokaliseLanguageName: refloc_to_lokalise_language_name, takeSnapshot: true, logPrefix: "      ")
 		print("Done")
 	} catch {
 		print("Got error while uploading: \(error)", to: &stderrStream)

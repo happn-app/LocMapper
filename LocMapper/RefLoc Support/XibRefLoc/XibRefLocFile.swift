@@ -64,4 +64,124 @@ public class XibRefLocFile {
 		entries = entriesBuilding
 	}
 	
+	public func exportToLokalise(token: String, projectId: String, reflocToLokaliseLanguageName: [String: String], takeSnapshot: Bool, logPrefix: String?) throws {
+		let batchSize = 13
+		
+		let baseURL = URL(string: "https://api.lokalise.co/api/")!
+		let baseQueryItems = [
+			URLQueryItem(name: "api_token", value: token),
+			URLQueryItem(name: "id", value: projectId)
+		]
+		
+		/* Let's construct the data we send to Lokalise before doing anything on
+		 * Lokalise! (This step can fail.) */
+		if let p = logPrefix {print(p + "Converting Xib Ref Loc to Lokalise Ref Loc...")}
+		let lokaliseEntries = try entries.mapValues{ try Xib2Lokalise.lokaliseValues(from: $0) }
+		
+		if let p = logPrefix {print(p + "Computing JSON data to send to Lokalise...")}
+		var currentTranslations = [[String: Any]]()
+		var translationsPayloads = [String]()
+		var totalTranslations = 0
+		let tagMapping = [
+			"gm": "male_me",
+			"gf": "female_me",
+			"g{⟷}m": "male_other",
+			"g{⟷}f": "female_other"
+		]
+		
+		func addCurrentTranslationsToPayloads() throws {
+			guard currentTranslations.count > 0 else {return}
+			let td = try JSONSerialization.data(withJSONObject: currentTranslations, options: [])
+			guard let ts = String(data: td, encoding: .utf8) else {throw NSError(domain: "LocFile+XibRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot create string from JSON encoded data to send to Lokalise"])}
+			translationsPayloads.append(ts)
+			currentTranslations.removeAll()
+		}
+		
+		for k in lokaliseEntries.keys.sorted() {
+			let v = lokaliseEntries[k]!
+			
+			var currentTranslationsBuilding = [String: [String: Any]]()
+			for (language, taggedValues) in v {
+				guard let lokaliseLanguage = reflocToLokaliseLanguageName[language] else {continue}
+				for taggedValue in taggedValues {
+					var curT: [String: Any]
+					let tags = taggedValue.tags.map{ tagMapping[$0] ?? $0 }
+					let key = k + (tags.count > 0 ? " - " + tags.joined(separator: ", ") : "")
+					
+					if let t = currentTranslationsBuilding[key] {curT = t}
+					else {
+						curT = [
+							"key": key,
+							"platform_mask": 16,
+							"hidden": 0,
+							"tags": taggedValue.tags.map{ tag -> String in
+								if let mTag = tagMapping[tag] {return mTag}
+								return "lcm:" + tag
+							}
+						]
+					}
+					
+					var curV: Any
+					switch taggedValue.value {
+					case .value(let v): curV = (v.isEmpty || v == "---" ? "[VOID]" : v)
+					case .plural(let p):
+						var plural = [String: String]()
+						if let z = p.zero  {plural["zero"]  = z}
+						if let z = p.one   {plural["one"]   = z}
+						if let z = p.two   {plural["two"]   = z}
+						if let z = p.few   {plural["few"]   = z}
+						if let z = p.many  {plural["many"]  = z}
+						if let z = p.other {plural["other"] = z}
+						curT["plural"] = key
+						curV = plural
+					}
+					var curTranslations = curT["translations"] as! [String: Any]? ?? [:]
+					curTranslations[lokaliseLanguage] = curV
+					curT["translations"] = curTranslations
+					
+					currentTranslationsBuilding[key] = curT
+				}
+			}
+			currentTranslations.append(contentsOf: currentTranslationsBuilding.values)
+			totalTranslations += currentTranslationsBuilding.count
+			if currentTranslations.count >= batchSize {try addCurrentTranslationsToPayloads()}
+		}
+		try addCurrentTranslationsToPayloads()
+		
+		/* Taking a snapshot if asked */
+		if takeSnapshot {
+			if let p = logPrefix {print(p + "Creating snapshot on Lokalise...")}
+			
+			let dateFormatter = ISO8601DateFormatter()
+			dateFormatter.formatOptions = [.withFullDate, .withFullTime]
+			
+			let queryItems = baseQueryItems + [URLQueryItem(name: "title", value: dateFormatter.string(from: Date()) + " — LocMapper Snapshot")]
+			let request = URLRequest(baseURL: baseURL, relativePath: "project/snapshot", httpMethod: "POST", queryItems: queryItems, queryInBody: true)!
+			
+			guard URLSession.shared.fetchJSONAndCheckResponse(request: request) != nil else {throw NSError(domain: "LocFile+XibRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot create snapshot"])}
+		}
+		
+		/* Dropping all translations */
+		do {
+			if let p = logPrefix {print(p + "Dropping all translations on Lokalise...")}
+			let request = URLRequest(baseURL: baseURL, relativePath: "project/empty", httpMethod: "POST", queryItems: baseQueryItems, queryInBody: true)!
+			guard URLSession.shared.fetchJSONAndCheckResponse(request: request) != nil else {throw NSError(domain: "LocFile+XibRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot empty the project"])}
+		}
+		
+		/* Uploading new translations */
+		do {
+			var c = 0
+			if let p = logPrefix {print(p + "Uploading new translations to Lokalise...")}
+			for t in translationsPayloads {
+				c += batchSize
+				let queryItems = baseQueryItems + [URLQueryItem(name: "data", value: t)]
+				let request = URLRequest(baseURL: baseURL, relativePath: "string/set", httpMethod: "POST", queryItems: queryItems, queryInBody: true)!
+				guard URLSession.shared.fetchJSONAndCheckResponse(request: request) != nil else {throw NSError(domain: "LocFile+XibRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot upload some translations; stopping now"])}
+				if let p = logPrefix {print(p + "   Uploaded at least \(min(c, totalTranslations))/\(totalTranslations)")}
+			}
+		}
+		
+		if let p = logPrefix {print(p + "Done")}
+	}
+	
 }

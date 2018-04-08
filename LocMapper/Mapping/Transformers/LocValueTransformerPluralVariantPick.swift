@@ -65,6 +65,19 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		escapeToken = e
 	}
 	
+	init(copying base: LocValueTransformerPluralVariantPick, numberReplacement nr: String? = nil, numberOpenDelim nod: String? = nil, numberCloseDelim ncd: String? = nil, pluralUnicodeValue puv: UnicodePluralValue? = nil, pluralOpenDelim pod: String? = nil, pluralMiddleDelim pmd: String? = nil, pluralCloseDelim pcd: String? = nil, escapeToken e: String?? = nil) {
+		numberReplacement = nr ?? base.numberReplacement
+		numberOpenDelim = nod ?? base.numberOpenDelim
+		numberCloseDelim = ncd ?? base.numberCloseDelim
+		
+		pluralUnicodeValue = puv ?? base.pluralUnicodeValue
+		pluralOpenDelim = pod ?? base.pluralOpenDelim
+		pluralMiddleDelim = pmd ?? base.pluralMiddleDelim
+		pluralCloseDelim = pcd ?? base.pluralCloseDelim
+		
+		escapeToken = e ?? base.escapeToken
+	}
+	
 	init(serialization: [String: Any]) throws {
 		guard let vs = serialization["plural_value"] as? String, let v = UnicodePluralValue(string: vs), let nr = serialization["number_replacement"] as? String else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid plural value or number replacement."])
