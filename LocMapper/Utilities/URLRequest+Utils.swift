@@ -29,7 +29,7 @@ extension URLRequest {
 		httpMethod = m
 		
 		if queryInBody {
-			guard let queryString = components.percentEncodedQuery else {return nil}
+			guard let queryString = components.percentEncodedQuery?.addingPercentEncoding(withAllowedCharacters: CharacterSet(charactersIn: "+").inverted) else {return nil}
 			httpBody = Data(queryString.utf8)
 		}
 	}
