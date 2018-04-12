@@ -142,7 +142,15 @@ public class XibRefLocFile {
 					currentTranslationsBuilding[key] = curT
 				}
 			}
-			currentTranslations.append(contentsOf: currentTranslationsBuilding.values)
+			currentTranslations.append(contentsOf: currentTranslationsBuilding.values.filter{ t -> Bool in /* The filter remove all empty (contains only "[VOID]") translations */
+				return (t["translations"] as! [String: Any]).values.contains{ v in
+					switch v {
+					case let s as String: return s != "[VOID]"
+					case let d as [String: String]: return d.values.contains{ $0 != "[VOID]" }
+					default: fatalError("Invalid trad")
+					}
+				}
+			})
 			totalTranslations += currentTranslationsBuilding.count
 			if currentTranslations.count >= batchSize {try addCurrentTranslationsToPayloads()}
 		}
