@@ -171,8 +171,13 @@ struct Xib2Std {
 		/* When stripping whitespaces and newlines from r in the line below, we
 		 * assume whitespaces and newlines are all represented on a single unicode
 		 * scalar. */
-		if let r = simpleReplacementContent(from: xibLocValues, leftToken: leftToken, rightToken: rightToken) {return "[\(printfReplacement):\(r.filter{ $0.unicodeScalars.count != 1 || !CharacterSet.whitespacesAndNewlines.contains($0.unicodeScalars.first!) })]"}
-		else {
+		if let r = simpleReplacementContent(from: xibLocValues, leftToken: leftToken, rightToken: rightToken) {
+			let r = String(r
+				.filter{ $0.unicodeScalars.count != 1 || !CharacterSet.whitespacesAndNewlines.contains($0.unicodeScalars.first!) }
+				.map{ $0.unicodeScalars.count != 1 || !CharacterSet.alphanumerics.contains($0.unicodeScalars.first!) ? Character("_") : $0 }
+			)
+			return "[\(printfReplacement):\(r)]"
+		} else {
 			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Cannot get name of replacement (tokens %{public}@ and %{public}@) with values %@", log: $0, type: .info, leftToken, rightToken, xibLocValues) }}
 			else                        {NSLog("Cannot get name of replacement (tokens %@ and %@) with values %@", leftToken, rightToken, xibLocValues)}
 			return printfReplacement
