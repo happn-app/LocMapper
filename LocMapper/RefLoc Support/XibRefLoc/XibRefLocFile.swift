@@ -114,7 +114,7 @@ public class XibRefLocFile {
 							"key": key,
 							"platform_mask": 16,
 							"hidden": 0,
-							"tags": taggedValue.tags.flatMap{ tag -> [String] in
+							"tags": ["locmapper"] + taggedValue.tags.flatMap{ tag -> [String] in
 								if let mTag = tagMapping[tag] {return mTag}
 								return ["lcm:" + tag]
 							}
@@ -138,7 +138,7 @@ public class XibRefLocFile {
 					var curTranslations = curT["translations"] as! [String: Any]? ?? [:]
 					curTranslations[lokaliseLanguage] = curV
 					curT["translations"] = curTranslations
-					
+
 					currentTranslationsBuilding[key] = curT
 				}
 			}
