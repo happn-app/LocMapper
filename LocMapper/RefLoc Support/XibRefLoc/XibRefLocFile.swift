@@ -86,7 +86,9 @@ public class XibRefLocFile {
 			"gm": ["male_other", "gender"],
 			"gf": ["female_other", "gender"],
 			"g{⟷}m": ["male_me", "gender"],
-			"g{⟷}f": ["female_me", "gender"]
+			"g{⟷}f": ["female_me", "gender"],
+			"r": ["variable_string"],
+			"r##": ["variable_number"]
 		]
 		
 		func addCurrentTranslationsToPayloads() throws {
