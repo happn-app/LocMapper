@@ -52,8 +52,8 @@ struct Xib2Lokalise {
 		for stdLocEntryAction in stdLocEntryActions {
 			for (l, v) in xibLocValues {
 				let unpercentedValue = v
-					.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: "%%@", with: "[%s:unnamed]")
-					.replacingOccurrences(of: "%%d", with: "[%d:unnamed]").replacingOccurrences(of: "%%0.*f", with: "%0.*f")
+					.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: "%%@", with: "[%1$s:unnamed]")
+					.replacingOccurrences(of: "%%d", with: "[%1$d:unnamed]").replacingOccurrences(of: "%%0.*f", with: "%0.*f")
 					.replacingOccurrences(of: "%%1$s", with: "[%1$s:unnamed]").replacingOccurrences(of: "%%2$s", with: "[%2$s:unnamed]")
 				let newValue = try stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })
 				let lokaliseValue: LokaliseValue
