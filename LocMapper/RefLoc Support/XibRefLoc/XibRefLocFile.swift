@@ -83,10 +83,10 @@ public class XibRefLocFile {
 		var translationsPayloads = [String]()
 		var totalTranslations = 0
 		let tagMapping = [
-			"gm": "male_me",
-			"gf": "female_me",
-			"g{⟷}m": "male_other",
-			"g{⟷}f": "female_other"
+			"gm": ["male_other", "gender"],
+			"gf": ["female_other", "gender"],
+			"g{⟷}m": ["male_me", "gender"],
+			"g{⟷}f": ["female_me", "gender"]
 		]
 		
 		func addCurrentTranslationsToPayloads() throws {
@@ -105,7 +105,7 @@ public class XibRefLocFile {
 				guard let lokaliseLanguage = reflocToLokaliseLanguageName[language] else {continue}
 				for taggedValue in taggedValues {
 					var curT: [String: Any]
-					let tags = taggedValue.tags.map{ tagMapping[$0] ?? $0 }
+					let tags = taggedValue.tags.flatMap{ tagMapping[$0] ?? [$0] }
 					let key = k + (tags.count > 0 ? " - " + tags.joined(separator: ", ") : "")
 					
 					if let t = currentTranslationsBuilding[key] {curT = t}
@@ -114,9 +114,9 @@ public class XibRefLocFile {
 							"key": key,
 							"platform_mask": 16,
 							"hidden": 0,
-							"tags": taggedValue.tags.map{ tag -> String in
+							"tags": taggedValue.tags.flatMap{ tag -> [String] in
 								if let mTag = tagMapping[tag] {return mTag}
-								return "lcm:" + tag
+								return ["lcm:" + tag]
 							}
 						]
 					}
