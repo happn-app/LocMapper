@@ -131,11 +131,11 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/frizlab/Downloads/xibrefloc.csv"
+            argument = "/Users/frizlab/Downloads/xibrefloc.raw.csv"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/frizlab/Downloads/xibrefloc_std.csv"
+            argument = "/Users/frizlab/Downloads/xibrefloc.csv"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument

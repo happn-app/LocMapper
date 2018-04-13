@@ -65,7 +65,7 @@ public class XibRefLocFile {
 	}
 	
 	public func exportToLokalise(token: String, projectId: String, reflocToLokaliseLanguageName: [String: String], takeSnapshot: Bool, logPrefix: String?) throws {
-		let batchSize = 13
+		let batchSize = 7
 		
 		let baseURL = URL(string: "https://api.lokalise.co/api/")!
 		let baseQueryItems = [
@@ -83,12 +83,14 @@ public class XibRefLocFile {
 		var translationsPayloads = [String]()
 		var totalTranslations = 0
 		let tagMapping = [
-			"gm": ["male_other", "gender"],
-			"gf": ["female_other", "gender"],
-			"g{⟷}m": ["male_me", "gender"],
-			"g{⟷}f": ["female_me", "gender"],
-			"r": ["variable_string"],
-			"r##": ["variable_number"]
+			"gm": ["lcm:male_other", "gender"],
+			"gf": ["lcm:female_other", "gender"],
+			"g{⟷}m": ["lcm:male_me", "gender"],
+			"g{⟷}f": ["lcm:female_me", "gender"],
+			"g⎡⟡⎤m": ["lcm:male_either", "gender"],
+			"g⎡⟡⎤f": ["lcm:female_both", "gender"],
+			"r": ["lcm:variable_string"],
+			"r##": ["lcm:variable_number"]
 		]
 		
 		func addCurrentTranslationsToPayloads() throws {

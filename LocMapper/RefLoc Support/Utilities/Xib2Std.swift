@@ -20,11 +20,32 @@ struct Xib2Std {
 	 *    - Each elements inside an array will be kind of the same subclass of
 	 *      LocValueTransformer. */
 	static func computeTransformersGroups(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], useLokalisePlaceholderFormat: Bool = false) -> [[LocValueTransformer]] {
+		/* Let's detect $$ string replacements (checked to only happen with "$n$") */
+		let hasDollarReplacement = xibLocValues.contains{
+			let (_, v) = $0
+			return v.range(of: "$n$") != nil
+		}
+		/* Let's detect %% string replacements (checked to only happen for build info) */
+		let hasPercentReplacement = xibLocValues.contains{
+			let (_, v) = $0
+			return v.range(of: "%%build") != nil
+		}
 		/* Let's detect || string replacements */
 		let stdReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithToken: "|", value: "")
 		let hasStdReplacement = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: stdReplacementDetectionInfo) != v
+		}
+		/* Let's detect ^^ string replacements (checked to only happen for specific cases we check here...) */
+		let hasHatReplacement = xibLocValues.contains{
+			let (_, v) = $0
+			return v.range(of: "^workplace^") != nil || v.range(of: "^marketing version^") != nil
+		}
+		/* Let's detect 👓👓 string replacements */
+		let eyesReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithToken: "👓", value: "")
+		let hasEyesReplacement = xibLocValues.contains{
+			let (_, v) = $0
+			return v.applying(xibLocInfo: eyesReplacementDetectionInfo) != v
 		}
 		/* Let's detect `¦´ gender */
 		let stdGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "`", rightToken: "´", value: "")
@@ -36,7 +57,13 @@ struct Xib2Std {
 		let braceGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "{", rightToken: "}", value: "")
 		let hasBraceGender = xibLocValues.contains{
 			let (_, v) = $0
-			return v.applying(xibLocInfo: braceGenderDetectionInfo) != v
+			return v.range(of: "{LINK}") == nil && v.applying(xibLocInfo: braceGenderDetectionInfo) != v
+		}
+		/* Let's detect ⎡⟡⎤ gender */
+		let orientalQuotesGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "⎡", rightToken: "⎤", value: "")
+		let hasOrientalQuotesGender = xibLocValues.contains{
+			let (_, v) = $0
+			return v.applying(xibLocInfo: orientalQuotesGenderDetectionInfo) != v
 		}
 		/* Let's detect ##<:> plural */
 		let stdPluralDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "<", rightToken: ">", value: "")
@@ -77,6 +104,26 @@ struct Xib2Std {
 				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "{", middleDelim: "⟷", closeDelim: "}")
 			])
 		}
+		if hasOrientalQuotesGender {
+			results.append([
+				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "⎡", middleDelim: "⟡", closeDelim: "⎤"),
+				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "⎡", middleDelim: "⟡", closeDelim: "⎤")
+			])
+		}
+		if hasDollarReplacement {
+			i += 1
+			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "s", tokens: useLokalisePlaceholderFormat ? ("$", "$") : nil)
+			results.append([
+				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "$", closeDelim: "$")
+			])
+		}
+		if hasPercentReplacement {
+			i += 1
+			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "s", tokens: useLokalisePlaceholderFormat ? ("%%", "%%") : nil)
+			results.append([
+				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "%%", closeDelim: "%%")
+			])
+		}
 		if hasStdReplacement {
 			i += 1
 			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "s", tokens: useLokalisePlaceholderFormat ? ("|", "|") : nil)
@@ -91,6 +138,20 @@ struct Xib2Std {
 				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "#", closeDelim: "#")
 			])
 		}
+		if hasHatReplacement {
+			i += 1
+			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "s", tokens: useLokalisePlaceholderFormat ? ("^", "^") : nil)
+			results.append([
+				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "^", closeDelim: "^")
+			])
+		}
+		if hasEyesReplacement {
+			i += 1
+			let replacement = simpleReplacementForStdConversion(from: xibLocValues, idx: i, formatSpecifier: "s", tokens: useLokalisePlaceholderFormat ? ("👓", "👓") : nil)
+			results.append([
+				LocValueTransformerRegionDelimitersReplacement(replacement: replacement, openDelim: "👓", closeDelim: "👓")
+			])
+		}
 		return results
 	}
 	
@@ -103,16 +164,25 @@ struct Xib2Std {
 	}
 	
 	static func taggedValues(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value]) -> [StdRefLocFile.Language: StdRefLocFile.Value] {
-		let stdLocEntryActions = convertTransformersGroupsToStdLocEntryActions(computeTransformersGroups(from: xibLocValues))
+		let preprocessedXibLocValues = xibLocValues.mapValues{ v -> (String, Bool) in
+			let doublePercented = v.replacingOccurrences(of: "%", with: "%%")
+			let unpercented = doublePercented
+				.replacingOccurrences(of: "%%@", with: "%1$s").replacingOccurrences(of: "%%d", with: "%1$d")
+				.replacingOccurrences(of: "%%1$s", with: "%1$s").replacingOccurrences(of: "%%2$s", with: "%2$s")
+				.replacingOccurrences(of: "%%0.*f", with: "%1$0.*f")
+			return (unpercented, doublePercented != unpercented)
+		}
+		
+		let stdLocEntryActions = convertTransformersGroupsToStdLocEntryActions(computeTransformersGroups(from: preprocessedXibLocValues.mapValues{ $0.0 }))
 		var values = [StdRefLocFile.Language: StdRefLocFile.Value]()
 		for stdLocEntryAction in stdLocEntryActions {
-			for (l, v) in xibLocValues {
-				let unpercentedValue = v
-					.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: "%%@", with: "%s")
-					.replacingOccurrences(of: "%%d", with: "%d").replacingOccurrences(of: "%%0.*f", with: "%0.*f")
-					.replacingOccurrences(of: "%%1$s", with: "%1$s").replacingOccurrences(of: "%%2$s", with: "%2$s")
+			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
+				if addPrintfReplacementTag && !stdLocEntryAction.isEmpty {
+					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got a printf-style replacement AND a std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }}
+					else                        {NSLog("Got a printf-style replacement AND a std loc entry action (%@)", stdLocEntryAction)}
+				}
 				let newValue = (try? stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
-				values[l, default: []].append(TaggedString(value: newValue, tags: Xib2Std.tags(from: stdLocEntryAction)))
+				values[l, default: []].append(TaggedString(value: newValue, tags: Xib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
 			}
 		}
 		return values
@@ -149,10 +219,13 @@ struct Xib2Std {
 				res.append(tag)
 				
 			case let replacement as LocValueTransformerRegionDelimitersReplacement:
-				assert(![replacement.openDelim, replacement.closeDelim].contains{ $0.count != 1 }, "Unsupported replacement transformer: contains a delimiter whose count is not 1: \(t)")
+				assert(![replacement.openDelim, replacement.closeDelim].contains{ $0.count != 1 && $0 != "%%" }, "Unsupported replacement transformer: contains a delimiter whose count is not 1: \(t)")
 				var tag = "r"
 				let delimiters = replacement.openDelim + replacement.closeDelim
-				if delimiters != "||" {tag += delimiters}
+				if delimiters != "||" {
+					if delimiters == "%%%%" {tag += "%%"}
+					else                    {tag += delimiters}
+				}
 				res.append(tag)
 				
 			default:
