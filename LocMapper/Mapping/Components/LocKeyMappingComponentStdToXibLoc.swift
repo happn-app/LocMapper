@@ -20,8 +20,8 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 	
 	let taggedKeys: [TaggedObject<LocFile.LineKey>]
 	
-	init(serialization: [String: Any]) throws {
-		guard let keys = serialization["tagged_keys"] as? [[String: Any]] else {
+	init(serialization: [String: Any?]) throws {
+		guard let keys = serialization["tagged_keys"] as? [[String: Any?]] else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "No tagged keys."])
 		}
 		
@@ -52,8 +52,8 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 		taggedKeys = taggedKeysBuilding
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
-		var serializedTaggedKeys = [[String: Any]]()
+	override func serializePrivateData() -> [String: Any?] {
+		var serializedTaggedKeys = [[String: Any?]]()
 		for taggedKey in taggedKeys {
 			serializedTaggedKeys.append([
 				"env":      taggedKey.value.env,

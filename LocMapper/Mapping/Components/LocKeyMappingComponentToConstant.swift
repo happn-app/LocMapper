@@ -20,7 +20,7 @@ class LocKeyMappingComponentToConstant : LocKeyMappingComponent {
 	
 	let constant: String
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		guard let c = serialization["constant"] as? String else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Key \"constant\" is either undefined or not a String."])
 		}
@@ -29,7 +29,7 @@ class LocKeyMappingComponentToConstant : LocKeyMappingComponent {
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
+	override func serializePrivateData() -> [String: Any?] {
 		return ["constant": constant]
 	}
 	

@@ -24,7 +24,7 @@ public class LocKeyMappingComponent {
 	`LocKeyMappingComponentInvalid` that will simply hold the serialization
 	and will not do any transform. This allows storing the given invalid
 	transform so it is not lost when the transform is serialized back. */
-	static func createCSVLocKeyMappingFromSerialization(_ serialization: [String: Any]) -> LocKeyMappingComponent {
+	static func createCSVLocKeyMappingFromSerialization(_ serialization: [String: Any?]) -> LocKeyMappingComponent {
 		do {
 			guard let type = serialization["__type"] as? String else {
 				throw NSError(domain: "MigratorInternal", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got invalid mapping component: Key __type is undefined or not a string."])
@@ -54,13 +54,13 @@ public class LocKeyMappingComponent {
 		fatalError("This computed property is abstract.")
 	}
 	
-	final func serialize() -> [String: Any] {
+	final func serialize() -> [String: Any?] {
 		var serializedData = self.serializePrivateData()
 		if !(self is LocKeyMappingComponentInvalid) {serializedData["__type"] = type(of: self).serializedType}
 		return serializedData
 	}
 	
-	func serializePrivateData() -> [String: Any] {
+	func serializePrivateData() -> [String: Any?] {
 		preconditionFailure("This method is abstract")
 	}
 	

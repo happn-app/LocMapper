@@ -128,9 +128,9 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			
 			/* Deserializing the text using JSON format */
 			let jsonObject = try JSONSerialization.jsonObject(with: transformData, options: [])
-			let serializedTransforms: [[String: AnyObject]]
-			if      let array  = jsonObject as? [[String: AnyObject]] {serializedTransforms = array}
-			else if let simple = jsonObject as?  [String: AnyObject]  {serializedTransforms = [simple]}
+			let serializedTransforms: [[String: Any?]]
+			if      let array  = jsonObject as? [[String: Any?]] {serializedTransforms = array}
+			else if let simple = jsonObject as?  [String: Any?]  {serializedTransforms = [simple]}
 			else {throw NSError(domain: errorDomain, code: 2, userInfo: nil)}
 			
 			/* Converting deserialized representations to actual transforms */

@@ -13,6 +13,19 @@ import XibLoc
 
 
 
+private extension XibLocResolvingInfo where SourceType == String, ReturnType == String {
+	
+	init(simpleReplacementWithLeftToken leftToken: String, rightToken: String, value: String, escapeToken: String?) {
+		self.init(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
+			simpleSourceTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { _ in value }],
+			orderedReplacements: [:], pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			identityReplacement: { $0 }
+		)
+	}
+	
+}
+
 struct Xib2Std {
 	
 	/* Guarantees on return value:
@@ -48,31 +61,31 @@ struct Xib2Std {
 			return v.applying(xibLocInfo: eyesReplacementDetectionInfo) != v
 		}
 		/* Let's detect `¦´ gender */
-		let stdGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "`", rightToken: "´", value: "")
+		let stdGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "`", rightToken: "´", value: "", escapeToken: "~")
 		let hasStdGender = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: stdGenderDetectionInfo) != v
 		}
 		/* Let's detect {⟷} gender */
-		let braceGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "{", rightToken: "}", value: "")
+		let braceGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "{", rightToken: "}", value: "", escapeToken: "~")
 		let hasBraceGender = xibLocValues.contains{
 			let (_, v) = $0
 			return v.range(of: "{LINK}") == nil && v.applying(xibLocInfo: braceGenderDetectionInfo) != v
 		}
 		/* Let's detect ⎡⟡⎤ gender */
-		let orientalQuotesGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "⎡", rightToken: "⎤", value: "")
+		let orientalQuotesGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "⎡", rightToken: "⎤", value: "", escapeToken: "~")
 		let hasOrientalQuotesGender = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: orientalQuotesGenderDetectionInfo) != v
 		}
 		/* Let's detect ##<:> plural */
-		let stdPluralDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "<", rightToken: ">", value: "")
+		let stdPluralDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "<", rightToken: ">", value: "", escapeToken: "~")
 		let hasStdPlural = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: stdPluralDetectionInfo) != v
 		}
 		/* Let's detect ## string replacements */
-		let sharpReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "#", rightToken: "#", value: "")
+		let sharpReplacementDetectionInfo = Str2StrXibLocInfo(replacements: ["#": ""])
 		let hasSharpReplacement = !hasStdPlural && xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: sharpReplacementDetectionInfo) != v
@@ -244,7 +257,7 @@ struct Xib2Std {
 		/* When stripping whitespaces and newlines from r in the line below, we
 		 * assume whitespaces and newlines are all represented on a single unicode
 		 * scalar. */
-		if let r = simpleReplacementContent(from: xibLocValues, leftToken: leftToken, rightToken: rightToken) {
+		if let r = simpleReplacementContent(from: xibLocValues, leftToken: leftToken, rightToken: rightToken, escapeToken: "~") {
 			let r = String(r
 				.filter{ $0.unicodeScalars.count != 1 || !CharacterSet.whitespacesAndNewlines.contains($0.unicodeScalars.first!) }
 				.map{ $0.unicodeScalars.count != 1 || !CharacterSet.alphanumerics.contains($0.unicodeScalars.first!) ? Character("_") : $0 }
@@ -257,10 +270,10 @@ struct Xib2Std {
 		}
 	}
 	
-	private static func simpleReplacementContent(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], leftToken: String, rightToken: String) -> String? {
+	private static func simpleReplacementContent(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], leftToken: String, rightToken: String, escapeToken: String?) -> String? {
 		var r: String?
 		let numberReplacementNameRetriever = Str2StrXibLocInfo(
-			defaultPluralityDefinition: PluralityDefinition(), escapeToken: nil,
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [], attributesModifications: [:],
 			simpleReturnTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { r = $0; return "" }],
 			dictionaryReplacements: nil, identityReplacement: { $0 }

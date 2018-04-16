@@ -52,7 +52,7 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 	
 	let escapeToken: String?
 	
-	init(numberReplacement nr: String, numberOpenDelim nod: String, numberCloseDelim ncd: String, pluralUnicodeValue puv: UnicodePluralValue, pluralOpenDelim pod: String, pluralMiddleDelim pmd: String, pluralCloseDelim pcd: String, escapeToken e: String? = nil) {
+	init(numberReplacement nr: String, numberOpenDelim nod: String, numberCloseDelim ncd: String, pluralUnicodeValue puv: UnicodePluralValue, pluralOpenDelim pod: String, pluralMiddleDelim pmd: String, pluralCloseDelim pcd: String, escapeToken e: String? = "~") {
 		numberReplacement = nr
 		numberOpenDelim = nod
 		numberCloseDelim = ncd
@@ -78,7 +78,7 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		escapeToken = e ?? base.escapeToken
 	}
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		guard let vs = serialization["plural_value"] as? String, let v = UnicodePluralValue(string: vs), let nr = serialization["number_replacement"] as? String else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid plural value or number replacement."])
 		}
@@ -112,23 +112,22 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		} else {pluralCloseDelim = ">"}
 		
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
-		else                                                            {escapeToken = nil}
+		else                                                            {escapeToken = "~"}
 		
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
-		var ret = [
+	override func serializePrivateData() -> [String: Any?] {
+		return [
 			"number_replacement": numberReplacement,
 			"number_open_delimiter": numberOpenDelim,
 			"number_close_delimiter": numberCloseDelim,
 			"plural_value": pluralUnicodeValue.rawValue,
 			"plural_open_delimiter": pluralOpenDelim,
 			"plural_middle_delimiter": pluralMiddleDelim,
-			"plural_close_delimiter": pluralCloseDelim
+			"plural_close_delimiter": pluralCloseDelim,
+			"escape_token": escapeToken
 		]
-		if let e = escapeToken {ret["escape_token"] = e}
-		return ret
 	}
 	
 	/* https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html

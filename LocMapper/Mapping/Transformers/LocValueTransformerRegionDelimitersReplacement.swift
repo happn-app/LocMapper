@@ -25,7 +25,7 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 	
 	let escapeToken: String?
 	
-	init(replacement r: String, openDelim od: String, closeDelim cd: String, escapeToken e: String? = nil) {
+	init(replacement r: String, openDelim od: String, closeDelim cd: String, escapeToken e: String? = "~") {
 		replacement = r
 		openDelim = od
 		closeDelim = cd
@@ -33,7 +33,7 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		escapeToken = e
 	}
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		guard let r = serialization["replacement"] as? String else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid or missing open_delimiter, close_delimiter or replacement."])
 		}
@@ -51,19 +51,18 @@ class LocValueTransformerRegionDelimitersReplacement : LocValueTransformer {
 		} else {closeDelim = "|"}
 		
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
-		else                                                            {escapeToken = nil}
+		else                                                            {escapeToken = "~"}
 		
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
-		var ret = [
+	override func serializePrivateData() -> [String: Any?] {
+		return [
 			"open_delimiter": openDelim,
 			"close_delimiter": closeDelim,
-			"replacement": replacement
+			"replacement": replacement,
+			"escape_token": escapeToken
 		]
-		if let e = escapeToken {ret["escape_token"] = e}
-		return ret
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {

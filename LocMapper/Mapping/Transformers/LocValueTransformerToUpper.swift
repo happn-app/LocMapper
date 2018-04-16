@@ -18,11 +18,11 @@ class LocValueTransformerToUpper : LocValueTransformer {
 		return true
 	}
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
+	override func serializePrivateData() -> [String: Any?] {
 		return [:]
 	}
 	

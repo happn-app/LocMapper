@@ -109,7 +109,7 @@ public class XibRefLocFile {
 				guard let lokaliseLanguage = reflocToLokaliseLanguageName[language] else {continue}
 				for taggedValue in taggedValues {
 					var curT: [String: Any]
-					let tags = taggedValue.tags.flatMap{ tagMapping[$0] ?? [$0] }
+					let tags = Set(taggedValue.tags.flatMap{ tagMapping[$0] ?? [$0] })
 					let key = k + (tags.count > 0 ? " - " + tags.joined(separator: ", ") : "")
 					
 					if let t = currentTranslationsBuilding[key] {curT = t}

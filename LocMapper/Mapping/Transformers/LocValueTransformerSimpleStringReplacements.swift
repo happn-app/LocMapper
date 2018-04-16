@@ -20,7 +20,7 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 	
 	let replacements: [String: String]
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		guard let r = serialization["replacements"] as? [String: String] else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Key \"replacements\" is either undefined or not [String: String]."])
 		}
@@ -30,7 +30,7 @@ class LocValueTransformerSimpleStringReplacements : LocValueTransformer {
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
+	override func serializePrivateData() -> [String: Any?] {
 		return ["replacements": replacements]
 	}
 	

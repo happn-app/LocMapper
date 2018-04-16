@@ -42,9 +42,9 @@ public class LocKeyMapping {
 			self.init(components: nil, stringRepresentation: stringRepresentation)
 			return
 		}
-		let serializedComponents: [[String: AnyObject]]
-		if      let array = serializedComponent_s as? [[String: AnyObject]] {serializedComponents = array}
-		else if let simple = serializedComponent_s as? [String: AnyObject]  {serializedComponents = [simple]}
+		let serializedComponents: [[String: Any?]]
+		if      let array = serializedComponent_s as? [[String: Any?]] {serializedComponents = array}
+		else if let simple = serializedComponent_s as? [String: Any?]  {serializedComponents = [simple]}
 		else {
 			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Invalid mapping; cannot convert string to array of dictionary: \"%@\"", log: $0, type: .info, stringRepresentation) }}
 			else                        {NSLog("Invalid mapping; cannot convert string to array of dictionary: \"%@\"", stringRepresentation)}
@@ -52,7 +52,7 @@ public class LocKeyMapping {
 			return
 		}
 		
-		self.init(components: serializedComponents.map {LocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0)}, stringRepresentation: stringRepresentation)
+		self.init(components: serializedComponents.map{ LocKeyMappingComponent.createCSVLocKeyMappingFromSerialization($0) }, stringRepresentation: stringRepresentation)
 	}
 	
 	public convenience init(components: [LocKeyMappingComponent]) {
@@ -86,10 +86,10 @@ public class LocKeyMapping {
 	}
 	
 	private static func stringRepresentationFromComponentsList(_ components: [LocKeyMappingComponent]) -> String {
-		let allSerialized = components.map {$0.serialize()}
+		let allSerialized = components.map{ $0.serialize() }
 		return try! String(
 			data: JSONSerialization.data(
-				withJSONObject: (allSerialized.count == 1 ? allSerialized[0] as AnyObject : allSerialized as AnyObject),
+				withJSONObject: (allSerialized.count == 1 ? allSerialized[0] : allSerialized),
 				options: [.prettyPrinted]
 			),
 			encoding: .utf8

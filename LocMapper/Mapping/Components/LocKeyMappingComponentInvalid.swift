@@ -18,13 +18,13 @@ class LocKeyMappingComponentInvalid : LocKeyMappingComponent {
 		return false
 	}
 	
-	let invalidSerialization: [String: Any]
+	let invalidSerialization: [String: Any?]
 	
-	init(serialization: [String: Any]) {
+	init(serialization: [String: Any?]) {
 		invalidSerialization = serialization
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
+	override func serializePrivateData() -> [String: Any?] {
 		return invalidSerialization
 	}
 	

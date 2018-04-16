@@ -43,7 +43,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	
 	let escapeToken: String?
 	
-	init(gender g: Gender, openDelim od: String, middleDelim md: String, closeDelim cd: String, escapeToken e: String? = nil) {
+	init(gender g: Gender, openDelim od: String, middleDelim md: String, closeDelim cd: String, escapeToken e: String? = "~") {
 		gender = g
 		openDelim = od
 		middleDelim = md
@@ -52,7 +52,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		escapeToken = e
 	}
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		guard let gs = serialization["gender"] as? String, let g = Gender(string: gs) else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid gender."])
 		}
@@ -75,27 +75,28 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		} else {closeDelim = "´"}
 		
 		if let e = serialization["escape_token"] as? String, !e.isEmpty {escapeToken = e}
-		else                                                            {escapeToken = nil}
+		else                                                            {escapeToken = "~"}
 		
 		super.init()
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
-		var ret = [
+	override func serializePrivateData() -> [String: Any?] {
+		return [
 			"gender": gender.toString(),
 			"open_delimiter": openDelim,
 			"middle_delimiter": middleDelim,
-			"close_delimiter": closeDelim
+			"close_delimiter": closeDelim,
+			"escape_token": escapeToken
 		]
-		if let e = escapeToken {ret["escape_token"] = e}
-		return ret
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		return value.applying(xibLocInfo:
 			XibLocResolvingInfo(
-				genderReplacementWithLeftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim,
-				escapeToken: escapeToken, valueIsMale: gender == .male
+				defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken, simpleSourceTypeReplacements: [:],
+				orderedReplacements: [MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim): (gender == .male ? 0 : 1)],
+				pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+				identityReplacement: { $0 }
 			)
 		)
 	}

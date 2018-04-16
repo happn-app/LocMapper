@@ -65,7 +65,14 @@ struct Xib2Lokalise {
 					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got a printf-style replacement AND a std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }}
 					else                        {NSLog("Got a printf-style replacement AND a std loc entry action (%@)", stdLocEntryAction)}
 				}
-				let newValue = try stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })
+				/* About .replacingOccurrences(of: "~", with: "~~"):
+				 *    - All the Xib replacements have an escape token;
+				 *    - We know only the plural actually uses this escape token;
+				 *    - So we escape the escape when not applying the plural.
+				 * The correct solution would be to merge the different transformers
+				 * somehow (but this is not a trivial task, and I don't want to do
+				 * it). */
+				let newValue = try stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0.replacingOccurrences(of: "~", with: "~~"), withLanguage: l) })
 				let lokaliseValue: LokaliseValue
 				if let pluralTransformerBase = pluralTransformerBase {
 					/* We have a plural! Let's treat it. */

@@ -28,7 +28,7 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		subTransformComponents = s
 	}
 	
-	init(serialization: [String: Any]) throws {
+	init(serialization: [String: Any?]) throws {
 		guard
 			let env          = serialization["env"] as? String,
 			let filename     = serialization["filename"] as? String,
@@ -37,9 +37,9 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Some keys are missing or invalid."])
 		}
-		let dtransforms: [[String: Any]]
-		if      let array = dtransform_s as? [[String: Any]] {dtransforms = array}
-		else if let simple = dtransform_s as? [String: Any]  {dtransforms = [simple]}
+		let dtransforms: [[String: Any?]]
+		if      let array = dtransform_s as? [[String: Any?]] {dtransforms = array}
+		else if let simple = dtransform_s as? [String: Any?]  {dtransforms = [simple]}
 		else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot convert transforms to array of dictionary from serialization: \"\(serialization)\"."])
 		}
@@ -57,7 +57,7 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		subTransformComponents = dtransforms.map{ LocValueTransformer.createComponentTransformFromSerialization($0) }
 	}
 	
-	override func serializePrivateData() -> [String: Any] {
+	override func serializePrivateData() -> [String: Any?] {
 		let serializedTransforms = subTransformComponents.map{ $0.serialize() }
 		
 		return [
