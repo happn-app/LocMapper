@@ -20,7 +20,7 @@ extension LocFile {
 	func replaceRefLocsWithXibRefLocFile(_ xibRefLocFile: XibRefLocFile) {
 		/* Remove all previous XibRefLoc entries */
 		for key in entries.keys {
-			guard key.env == "XibRefLoc" || key.env == "RefLoc" else {continue}
+			guard key.env == "RefLoc" else {continue}
 			entries.removeValue(forKey: key)
 		}
 		
@@ -51,7 +51,7 @@ extension LocFile {
 		}
 		
 		/* Import new XibRefLoc entries */
-		var isFirst = entryKeys.contains{ $0.env == "XibRefLoc" || $0.env == "RefLoc" }
+		var isFirst = entryKeys.contains{ $0.env == "RefLoc" }
 		for (refKey, refVals) in xibRefLocFile.entries {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
 			entries[key] = .entries(refVals)
@@ -70,7 +70,7 @@ extension LocFile {
 			
 			/* Printing values */
 			for k in entryKeys.sorted() {
-				guard k.env == "XibRefLoc" || k.env == "RefLoc" else {continue}
+				guard k.env == "RefLoc" else {continue}
 				print(k.locKey.csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)
 				for l in languages {print(csvSeparator + (exportedValueForKey(k, withLanguage: l) ?? "---").csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)}
 				print("", to: &stream)
