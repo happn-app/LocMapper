@@ -75,7 +75,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "upload_xibrefloc_to_lokalise"
+            argument = "merge_lokalise_trads_as_stdrefloc"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -83,12 +83,32 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "523466495ac52784c96951.97363715"
+            argument = "449255225ad5bd06a38f48.52880051"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/frizlab/Downloads/xibrefloc.csv"
+            argument = "/Users/frizlab/Downloads/mapping_android.lcm"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "upload_xibrefloc_to_lokalise"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "23eb5599fe48acb7ae68b279c5c6451f8d305e9b"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "449255225ad5bd06a38f48.52880051"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/frizlab/Downloads/xibrefloc.csv"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
