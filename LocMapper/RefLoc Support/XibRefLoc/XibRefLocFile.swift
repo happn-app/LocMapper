@@ -87,8 +87,6 @@ public class XibRefLocFile {
 			"gf": ["lcm:female_other", "gender"],
 			"g{⟷}m": ["lcm:male_me", "gender"],
 			"g{⟷}f": ["lcm:female_me", "gender"],
-			"g⎡⟡⎤m": ["lcm:male_either", "gender"],
-			"g⎡⟡⎤f": ["lcm:female_both", "gender"],
 			"r": ["lcm:variable_string"],
 			"r##": ["lcm:variable_number"]
 		]

@@ -72,12 +72,6 @@ struct Xib2Std {
 			let (_, v) = $0
 			return v.range(of: "{LINK}") == nil && v.applying(xibLocInfo: braceGenderDetectionInfo) != v
 		}
-		/* Let's detect ⎡⟡⎤ gender */
-		let orientalQuotesGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "⎡", rightToken: "⎤", value: "", escapeToken: "~")
-		let hasOrientalQuotesGender = xibLocValues.contains{
-			let (_, v) = $0
-			return v.applying(xibLocInfo: orientalQuotesGenderDetectionInfo) != v
-		}
 		/* Let's detect ##<:> plural */
 		let stdPluralDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "<", rightToken: ">", value: "", escapeToken: "~")
 		let hasStdPlural = xibLocValues.contains{
@@ -115,12 +109,6 @@ struct Xib2Std {
 			results.append([
 				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "{", middleDelim: "⟷", closeDelim: "}"),
 				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "{", middleDelim: "⟷", closeDelim: "}")
-			])
-		}
-		if hasOrientalQuotesGender {
-			results.append([
-				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "⎡", middleDelim: "⟡", closeDelim: "⎤"),
-				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "⎡", middleDelim: "⟡", closeDelim: "⎤")
 			])
 		}
 		if hasDollarReplacement {
