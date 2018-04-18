@@ -45,10 +45,13 @@ extension LocFile {
 			return nil
 		}
 		
-		let envFilters = filters.compactMap{ filter -> String? in
+		let envFilters: Set<String>
+		let envFiltersRaw = Set(filters.compactMap{ filter -> String? in
 			if case .env(let env) = filter {return env}
 			return nil
-		}
+		})
+		if envFiltersRaw.contains("RefLoc") {envFilters = envFiltersRaw.union(["StdRefLoc", "XibRefLoc"])}
+		else                                {envFilters = envFiltersRaw}
 		
 		let showStateTodoloc = filters.contains{ $0.isStateTodolocCase }
 		let showStateHardCoded = filters.contains{ $0.isStateHardCodedValuesCase }

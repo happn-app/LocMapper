@@ -37,10 +37,10 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	   export_to_android [--csv_separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
-	   merge_lokalise_trads_as_stdrefloc [--csv_separator=separator] lokalise_r_token lokalise_project_id merged_file.lcm refloc_language_name lokalise_language_name [refloc_language_name lokalise_language_name ...]
+	   merge_lokalise_trads_as_stdrefloc [--csv_separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the StdRefLoc format.
 	
-	   merge_lokalise_trads_as_xibrefloc [--csv_separator=separator] lokalise_r_token lokalise_project_id merged_file.lcm refloc_language_name lokalise_language_name [refloc_language_name lokalise_language_name ...]
+	   merge_lokalise_trads_as_xibrefloc [--csv_separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the XibRefLoc format.
 	
 	   standardize_refloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
@@ -143,8 +143,8 @@ case "merge_xcode_locs":
 	i = getLongArgs(argIdx: i, longArgs: [
 		"exclude-list":  {(value: String) in excluded_paths = value.components(separatedBy: ",")},
 		"include-list":  {(value: String) in included_paths = value.components(separatedBy: ",")},
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value}
+	])
 	
 	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
 	let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
@@ -173,8 +173,8 @@ case "export_to_xcode":
 	var encodingStr = "utf16"
 	i = getLongArgs(argIdx: i, longArgs: [
 		"encoding": {(value: String) in encodingStr = value},
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value}
+	])
 	
 	let encoding: String.Encoding
 	switch encodingStr.lowercased() {
@@ -209,8 +209,8 @@ case "merge_android_locs":
 	i = getLongArgs(argIdx: i, longArgs: [
 		"res-folder":        {(value: String) in res_folder = value},
 		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
-		"csv_separator":     {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator":     {(value: String) in csvSeparator = value}
+	])
 	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 	
 	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
@@ -240,8 +240,8 @@ case "export_to_android":
 	var strings_filenames = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
 		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
-		"csv_separator":     {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator":     {(value: String) in csvSeparator = value}
+	])
 	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 	
 	let input_path = argAtIndexOrExit(i, error_message: "Input file (CSV) is required"); i += 1
@@ -263,18 +263,21 @@ case "export_to_android":
 	
 case "merge_lokalise_trads_as_stdrefloc":
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value},
+		"merge-style": {(value: String) in csvSeparator = value}
+	])
 	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
 	let merged_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
-	let refloc_to_lokalise_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	let lokalise_to_refloc_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 	print("Merging Lokalise Trads as StdRefLoc in LocFile...")
 	do {
-		print("   Parsing source...")
-		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
+		print("   Creating StdRefLoc from Lokalise...")
+		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, logPrefix: "      ")
 		
-		/** TODO: The Merge **/
+		print("   Parsing source and merging StdRefLoc...")
+		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
+		locFile.mergeRefLocsWithStdRefLocFile(stdRefLoc)
 		
 		print("   Writing merged file...")
 		var stream = try FileHandleOutputStream(forPath: merged_path)
@@ -287,12 +290,13 @@ case "merge_lokalise_trads_as_stdrefloc":
 	
 case "merge_lokalise_trads_as_xibrefloc":
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value},
+		"merge-style": {(value: String) in csvSeparator = value}
+	])
 	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
 	let merged_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
-	let refloc_to_lokalise_language_name = getFolderToHumanLanguageNamesFromIndex(i)
+	let lokalise_to_refloc_language_name = getFolderToHumanLanguageNamesFromIndex(i)
 	print("Merging Lokalise Trads as XibRefLoc in LocFile...")
 	do {
 		print("   Parsing source...")
@@ -311,8 +315,8 @@ case "merge_lokalise_trads_as_xibrefloc":
 	
 case "standardize_refloc":
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value}
+	])
 	var languages = [String]()
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	let output_path = argAtIndexOrExit(i, error_message: "Output file is required"); i += 1
@@ -347,8 +351,8 @@ case "convert_xibrefloc_to_stdrefloc":
 	 *       Take a XibLoc-styled RefLoc (with tokens for plurals, gender, etc.) and convert it to a more
 	 *       usual format (one key per plural/gender/etc. variations). */
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value}
+	])
 	var languages = [String]()
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	let output_path = argAtIndexOrExit(i, error_message: "Output file is required"); i += 1
@@ -382,8 +386,8 @@ case "convert_stdrefloc_to_xibrefloc":
 	 *    convert_stdrefloc_to_xibrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	 *       Does the inverse of convert_xibrefloc_to_stdrefloc. */
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value}
+	])
 	var languages = [String]()
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	let output_path = argAtIndexOrExit(i, error_message: "Output file is required"); i += 1
@@ -418,8 +422,8 @@ case "upload_xibrefloc_to_lokalise":
 	 *       Upload an Xib Ref Loc file to lokalise. DROPS EVERYTHING IN THE PROJECT (but does a snapshot first).
 	 *       The translations will be marked for platform “Other.”*/
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}]
-	)
+		"csv_separator": {(value: String) in csvSeparator = value}
+	])
 	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
