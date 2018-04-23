@@ -130,7 +130,7 @@ public class StdRefLocFile {
 		
 		var entriesBuilding = [Key: [Language: Value]]()
 		for (xibLocKey, xibLocValues) in xibRefLoc.entries {
-			entriesBuilding[xibLocKey] = Xib2Std.taggedValues(from: xibLocValues)
+			entriesBuilding[xibLocKey] = HappnXib2Std.taggedValues(from: xibLocValues)
 		}
 		entries = entriesBuilding
 	}

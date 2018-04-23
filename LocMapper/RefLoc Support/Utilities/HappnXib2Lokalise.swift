@@ -1,5 +1,5 @@
 /*
- * Xib2Lokalise.swift
+ * HappnXib2Lokalise.swift
  * LocMapper
  *
  * Created by François Lamboley on 03/04/2018.
@@ -13,7 +13,55 @@ import XibLoc
 
 
 
-struct Xib2Lokalise {
+/** **NOT** foolproof. Well actually, there are many cases that are not working.
+The whole thing has been done and thought for the happn case.
+
+Here are some raw notes from when I did the Xib2Std conversion process:
+```
+DONE MANUALLY
+————————————————————————————————————————————————
+|::| (App | A7O-gV-3m4.normalTitle & App | Wlf-dI-ogc.text)
+
+
+NOT DONE
+————————————————————————————————————————————————
+⑃⑂⑃ (Localizable | n days)
+remove default plurality definition
+
+
+DONE
+————————————————————————————————————————————————
+`¦´ should be other by default
+add tag “gender”
++ converted to spaces
+remove when all is [VOID]
+%@ %s no 1$
+remove all spaces in variable names
+new tag: locmapper
+new tag: variable (for %etc)
+⎡croisés⟡croisées⎤
+#n#/$n$
+%%
+^^
+👓 <- translate to %s
+{LINK}
+à gérer chelou “Localizable | n unread<:s> conversations”
+
+
+PROBLEMS
+————————————————————————————————————————————————
+Hungarian, key “User Profiles | avm: number of songs exceeded”: no plural
+Hungarian, key “User Profiles | n common friends”: no plural
+Hungarian, key “User Profiles | n common interests”: no plural
+Hungarian, key “Notifications | reward invite non-premium”: no plural
+Polish, key “Home | crossed paths N times”: no plural
+Hungarian, key “Invite | 8Sj-sP-UWp.text”: no plural
+Hungarian, key “Notifications | reward new account non-premium”: no plural
+Russian, key “Photo Album | b6c-10-mWH.text”: no plural
+Hungarian, key “Pop-Ups | invite friends explanation non-premium line 2”: no plural
+Hungarian, key “Pop-Ups | follow twitter explanation non-premium line 2”: no plural
+``` */
+struct HappnXib2Lokalise {
 	
 	typealias Language = String
 	
@@ -49,15 +97,15 @@ struct Xib2Lokalise {
 			return (unpercented, doublePercented != unpercented)
 		}
 		
-		let transformersGroups = Xib2Std.computeTransformersGroups(from: preprocessedXibLocValues.mapValues{ $0.0 }, useLokalisePlaceholderFormat: true)
+		let transformersGroups = HappnXib2Std.computeTransformersGroups(from: preprocessedXibLocValues.mapValues{ $0.0 }, useLokalisePlaceholderFormat: true)
 		assert(!transformersGroups.contains{ ts in ts.contains{ t in type(of: t) != type(of: ts.first!) } })
 		
 		let pluralTransformers = transformersGroups.compactMap{ $0 as? [LocValueTransformerPluralVariantPick] }
-		guard pluralTransformers.count <= 1 else {throw NSError(domain: "Xib2Lokalise", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got more than one plural in a translation; don't know how to handle to send to Lokalise"])}
+		guard pluralTransformers.count <= 1 else {throw NSError(domain: "HappnXib2Lokalise", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got more than one plural in a translation; don't know how to handle to send to Lokalise"])}
 		
 		let pluralTransformerBase = pluralTransformers.first?.first
 		
-		let stdLocEntryActions = Xib2Std.convertTransformersGroupsToStdLocEntryActions(transformersGroups.filter{ !($0.first is LocValueTransformerPluralVariantPick) })
+		let stdLocEntryActions = HappnXib2Std.convertTransformersGroupsToStdLocEntryActions(transformersGroups.filter{ !($0.first is LocValueTransformerPluralVariantPick) })
 		var values = [Language: [TaggedObject<LokaliseValue>]]()
 		for stdLocEntryAction in stdLocEntryActions {
 			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
@@ -87,7 +135,7 @@ struct Xib2Lokalise {
 				} else {
 					lokaliseValue = .value(newValue)
 				}
-				values[l, default: []].append(TaggedObject<LokaliseValue>(value: lokaliseValue, tags: Xib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
+				values[l, default: []].append(TaggedObject<LokaliseValue>(value: lokaliseValue, tags: HappnXib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
 			}
 		}
 		return values

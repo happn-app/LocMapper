@@ -180,7 +180,7 @@ struct Std2Xib {
 				throw Std2XibError.unknownLanguage
 			}
 			
-			tagsToMatch = Xib2Std.tags(from: pluralValues.map{
+			tagsToMatch = HappnXib2Std.tags(from: pluralValues.map{
 				LocValueTransformerPluralVariantPick(numberReplacement: plural.numberReplacement, numberOpenDelim: plural.numberOpenDelim, numberCloseDelim: plural.numberCloseDelim, pluralUnicodeValue: $0, pluralOpenDelim: openDelim, pluralMiddleDelim: middleDelim, pluralCloseDelim: closeDelim)
 			})
 		} else if let gender = genders.first {
@@ -191,7 +191,7 @@ struct Std2Xib {
 			newPlurals = plurals
 			newGenders = Array(genders.dropFirst())
 			
-			tagsToMatch = Xib2Std.tags(from: [
+			tagsToMatch = HappnXib2Std.tags(from: [
 				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
 				LocValueTransformerGenderVariantPick(gender: .female, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim)
 			])

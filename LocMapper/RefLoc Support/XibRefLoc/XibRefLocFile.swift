@@ -76,7 +76,7 @@ public class XibRefLocFile {
 		/* Let's construct the data we send to Lokalise before doing anything on
 		 * Lokalise! (This step can fail.) */
 		if let p = logPrefix {print(p + "Converting Xib Ref Loc to Lokalise Ref Loc...")}
-		let lokaliseEntries = try entries.mapValues{ try Xib2Lokalise.lokaliseValues(from: $0) }
+		let lokaliseEntries = try entries.mapValues{ try HappnXib2Lokalise.lokaliseValues(from: $0) }
 		
 		if let p = logPrefix {print(p + "Computing JSON data to send to Lokalise...")}
 		var currentTranslations = [[String: Any]]()

@@ -1,5 +1,5 @@
 /*
- * Xib2Std.swift
+ * HappnXib2Std.swift
  * LocMapper
  *
  * Created by François Lamboley on 03/04/2018.
@@ -13,20 +13,9 @@ import XibLoc
 
 
 
-private extension XibLocResolvingInfo where SourceType == String, ReturnType == String {
-	
-	init(simpleReplacementWithLeftToken leftToken: String, rightToken: String, value: String, escapeToken: String?) {
-		self.init(
-			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
-			simpleSourceTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { _ in value }],
-			orderedReplacements: [:], pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-			identityReplacement: { $0 }
-		)
-	}
-	
-}
-
-struct Xib2Std {
+/** **NOT** foolproof. Well actually, there are many cases that are not working.
+See HappnXib2Lokalise. */
+struct HappnXib2Std {
 	
 	/* Guarantees on return value:
 	 *    - Each array will contains at least one element;
@@ -183,7 +172,7 @@ struct Xib2Std {
 					else                        {NSLog("Got a printf-style replacement AND a std loc entry action (%@)", stdLocEntryAction)}
 				}
 				let newValue = (try? stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
-				values[l, default: []].append(TaggedString(value: newValue, tags: Xib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
+				values[l, default: []].append(TaggedString(value: newValue, tags: HappnXib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
 			}
 		}
 		return values
@@ -276,6 +265,20 @@ struct Xib2Std {
 			if r != nil {return r}
 		}
 		return nil
+	}
+	
+}
+
+
+private extension XibLocResolvingInfo where SourceType == String, ReturnType == String {
+	
+	init(simpleReplacementWithLeftToken leftToken: String, rightToken: String, value: String, escapeToken: String?) {
+		self.init(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
+			simpleSourceTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { _ in value }],
+			orderedReplacements: [:], pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			identityReplacement: { $0 }
+		)
 	}
 	
 }
