@@ -75,7 +75,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "merge_lokalise_trads_as_stdrefloc"
+            argument = "merge_lokalise_trads_as_xibrefloc"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -87,7 +87,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/frizlab/Downloads/mapping_android.lcm"
+            argument = "/Users/frizlab/Downloads/mapping_ios.lcm"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

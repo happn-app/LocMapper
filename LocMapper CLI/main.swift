@@ -297,12 +297,17 @@ case "merge_lokalise_trads_as_xibrefloc":
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
 	let merged_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	let lokalise_to_refloc_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-	print("Merging Lokalise Trads as XibRefLoc in LocFile...")
+	print("Merging Lokalise Trads as StdRefLoc in LocFile...")
 	do {
-		print("   Parsing source...")
-		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
+		print("   Creating StdRefLoc from Lokalise...")
+		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, logPrefix: "      ")
 		
-		/** TODO: The Merge **/
+		print("   Converting StdRefLoc to XibRefLoc...")
+		let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
+		
+		print("   Parsing source and merging XibRefLoc...")
+		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
+		locFile.mergeRefLocsWithXibRefLocFile(xibRefLoc)
 		
 		print("   Writing merged file...")
 		var stream = try FileHandleOutputStream(forPath: merged_path)
