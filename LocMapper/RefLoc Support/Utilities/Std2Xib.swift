@@ -277,7 +277,7 @@ struct Std2Xib {
 		var ret = openDelim
 		for v in values {
 			if !first {ret += middleDelim}
-			ret += v
+			ret += Set([openDelim, middleDelim, closeDelim]).reduce(v, { $0.replacingOccurrences(of: $1, with: "~" + $1) })
 			first = false
 		}
 		ret += closeDelim
