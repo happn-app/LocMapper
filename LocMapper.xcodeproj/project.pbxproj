@@ -95,6 +95,7 @@
 		7BFE27542045F30900B2EC34 /* AppendedTagsStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */; };
 		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
 		7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */; };
+		7BFE558C208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE558B208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -286,6 +287,7 @@
 		7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendedTagsStrings.swift; sourceTree = "<group>"; };
 		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerRegexReplacements.swift; sourceTree = "<group>"; };
+		7BFE558B208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerOrderedReplacementVariantPick.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -567,6 +569,7 @@
 				7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */,
 				7B889C082025F578005A961F /* LocValueTransformerToUpper.swift */,
 				7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */,
+				7BFE558B208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift */,
 				7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */,
 				7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */,
 			);
@@ -880,6 +883,7 @@
 				7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */,
 				7B889BF62025F1CF005A961F /* MappingResolvingError.swift in Sources */,
 				7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */,
+				7BFE558C208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift in Sources */,
 				7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */,
 				7B889BFC2025F48A005A961F /* LocKeyMappingComponentInvalid.swift in Sources */,
 				7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */,

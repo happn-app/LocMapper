@@ -1,8 +1,8 @@
 /*
- * LocValueTransformerGenderVariantPick.swift
+ * LocValueTransformerOrderedReplacementVariantPick.swift
  * LocMapper
  *
- * Created by François Lamboley on 2/3/18.
+ * Created by François Lamboley on 4/24/18.
  * Copyright © 2018 happn. All rights reserved.
  */
 
@@ -11,41 +11,23 @@ import XibLoc
 
 
 
-/* This is actually a specialization of LocValueTransformerOrderedReplacementVariantPick */
-class LocValueTransformerGenderVariantPick : LocValueTransformer {
+class LocValueTransformerOrderedReplacementVariantPick : LocValueTransformer {
 	
-	override class var serializedType: String {return "gender_variant_pick"}
-	
-	enum Gender {
-		case male, female
-		init?(string: String) {
-			switch string.lowercased() {
-			case "male",   "m": self = .male
-			case "female", "f": self = .female
-			default: return nil
-			}
-		}
-		func toString() -> String {
-			switch self {
-			case .male:   return "male"
-			case .female: return "female"
-			}
-		}
-	}
+	override class var serializedType: String {return "ordered_replacement_pick"}
 	
 	override var isValid: Bool {
 		return true
 	}
 	
-	let gender: Gender
+	let index: Int
 	let openDelim: String
 	let middleDelim: String
 	let closeDelim: String
 	
 	let escapeToken: String?
 	
-	init(gender g: Gender, openDelim od: String, middleDelim md: String, closeDelim cd: String, escapeToken e: String? = "~") {
-		gender = g
+	init(index i: Int, openDelim od: String, middleDelim md: String, closeDelim cd: String, escapeToken e: String? = "~") {
+		index = i
 		openDelim = od
 		middleDelim = md
 		closeDelim = cd
@@ -54,11 +36,11 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	}
 	
 	init(serialization: [String: Any?]) throws {
-		guard let gs = serialization["gender"] as? String, let g = Gender(string: gs) else {
-			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid gender."])
+		guard let i = serialization["index"] as? Int else {
+			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid index."])
 		}
 		
-		gender = g
+		index = i
 		
 		if let d = serialization["open_delimiter"] as? String {
 			guard !d.isEmpty else {throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "Got empty open delimiter, which is invalid."])}
@@ -83,7 +65,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	
 	override func serializePrivateData() -> [String: Any?] {
 		return [
-			"gender": gender.toString(),
+			"index": index,
 			"open_delimiter": openDelim,
 			"middle_delimiter": middleDelim,
 			"close_delimiter": closeDelim,
@@ -95,7 +77,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		return value.applying(xibLocInfo:
 			XibLocResolvingInfo(
 				defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken, simpleSourceTypeReplacements: [:],
-				orderedReplacements: [MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim): (gender == .male ? 0 : 1)],
+				orderedReplacements: [MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim): index],
 				pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
 				identityReplacement: { $0 }
 			)

@@ -37,16 +37,18 @@ struct Std2Xib {
 		var plurals = [LocValueTransformerPluralVariantPick]()
 		var genders = [LocValueTransformerGenderVariantPick]()
 		var regexes = [LocValueTransformerRegexReplacements]()
+		var orders = [LocValueTransformerOrderedReplacementVariantPick]()
 		var replacements = [LocValueTransformerRegionDelimitersReplacement]()
 		
 		var i = 0
 		for tag in firstValue.tags {
 			let t = try transformer(from: tag, index: &i)
 			switch t {
-			case let plural      as LocValueTransformerPluralVariantPick:           plurals.append(plural)
-			case let gender      as LocValueTransformerGenderVariantPick:           genders.append(gender)
-			case let regex       as LocValueTransformerRegexReplacements:           regexes.append(regex)
-			case let replacement as LocValueTransformerRegionDelimitersReplacement: replacements.append(replacement)
+			case let plural      as LocValueTransformerPluralVariantPick:             plurals.append(plural)
+			case let gender      as LocValueTransformerGenderVariantPick:             genders.append(gender)
+			case let regex       as LocValueTransformerRegexReplacements:             regexes.append(regex)
+			case let replacement as LocValueTransformerRegionDelimitersReplacement:   replacements.append(replacement)
+			case let order       as LocValueTransformerOrderedReplacementVariantPick: orders.append(order)
 			default: fatalError("Internal Logic Error")
 			}
 		}
@@ -98,7 +100,7 @@ struct Std2Xib {
 		}
 		
 		/* Finally, let's merge the strings in one. */
-		return try applyReverseNonReplacements(from: standardizedTagsNoReplacementsStdLocValues, with: language, plurals: plurals, genders: genders)
+		return try applyReverseNonReplacements(from: standardizedTagsNoReplacementsStdLocValues, with: language, plurals: plurals, genders: genders, orders: orders)
 	}
 	
 	/* The returned transformer, when there is a replacement, will contain the
@@ -129,6 +131,10 @@ struct Std2Xib {
 			case 5: return LocValueTransformerGenderVariantPick(gender: gender, openDelim: String(tag[tag.index(tag.startIndex, offsetBy: 1)]), middleDelim: String(tag[tag.index(tag.startIndex, offsetBy: 2)]), closeDelim: String(tag[tag.index(tag.startIndex, offsetBy: 3)]))
 			default: throw Std2XibError.invalidTag
 			}
+			
+		case "o"?:
+			guard tag.count == 5 else {throw Std2XibError.invalidTag}
+			return LocValueTransformerOrderedReplacementVariantPick(index: 0, openDelim: String(tag[tag.index(tag.startIndex, offsetBy: 1)]), middleDelim: String(tag[tag.index(tag.startIndex, offsetBy: 2)]), closeDelim: String(tag[tag.index(tag.startIndex, offsetBy: 3)]))
 			
 		case "r"?:
 			i += 1
@@ -172,7 +178,7 @@ struct Std2Xib {
 		}
 	}
 	
-	private static func applyReverseNonReplacements(from taggedStrings: [TaggedString], with language: String, plurals: [LocValueTransformerPluralVariantPick], genders: [LocValueTransformerGenderVariantPick]) throws -> String {
+	private static func applyReverseNonReplacements(from taggedStrings: [TaggedString], with language: String, plurals: [LocValueTransformerPluralVariantPick], genders: [LocValueTransformerGenderVariantPick], orders: [LocValueTransformerOrderedReplacementVariantPick]) throws -> String {
 		assert(taggedStrings.count > 0)
 		
 		let openDelim: String
@@ -180,6 +186,7 @@ struct Std2Xib {
 		let closeDelim: String
 		let newPlurals: [LocValueTransformerPluralVariantPick]
 		let newGenders: [LocValueTransformerGenderVariantPick]
+		let newOrders: [LocValueTransformerOrderedReplacementVariantPick]
 		
 		let tagsToMatch: [String]
 		
@@ -190,6 +197,7 @@ struct Std2Xib {
 			
 			newPlurals = Array(plurals.dropFirst())
 			newGenders = genders
+			newOrders = orders
 			
 			/* The list of language is in LocValueTransformerPluralVariantPick */
 			let pluralValues: [LocValueTransformerPluralVariantPick.UnicodePluralValue]
@@ -213,15 +221,39 @@ struct Std2Xib {
 			
 			newPlurals = plurals
 			newGenders = Array(genders.dropFirst())
+			newOrders = orders
 			
 			tagsToMatch = HappnXib2Std.tags(from: [
 				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
 				LocValueTransformerGenderVariantPick(gender: .female, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim)
 			])
+		} else if let order = orders.first {
+			openDelim = order.openDelim
+			middleDelim = order.middleDelim
+			closeDelim = order.closeDelim
+			
+			newPlurals = plurals
+			newGenders = genders
+			newOrders = Array(orders.dropFirst())
+			
+			/* We assume there will never be more than 10 components inside an
+			 * ordered replacement. */
+			tagsToMatch = HappnXib2Std.tags(from: [
+				LocValueTransformerOrderedReplacementVariantPick(index: 0, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 1, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 2, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 3, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 4, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 5, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 6, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 7, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 8, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim),
+				LocValueTransformerOrderedReplacementVariantPick(index: 9, openDelim: openDelim, middleDelim: middleDelim, closeDelim: closeDelim)
+			])
 		} else {
 			if taggedStrings.count != 1 {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got more than one tagged string but no plural or gender tags...", log: $0, type: .info) }}
-				else                        {NSLog("Got more than one tagged string but no plural or gender tags...")}
+				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags...", log: $0, type: .info) }}
+				else                        {NSLog("Got more than one tagged string but no plural, gender or order tags...")}
 			}
 			return taggedStrings.first!.value
 		}
@@ -229,7 +261,8 @@ struct Std2Xib {
 		var values = [String]()
 		for t in tagsToMatch {
 			let matchingTaggedStrings = taggedStrings.filter{ $0.tags.contains(t) }
-			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders))
+			guard matchingTaggedStrings.count > 0 else {continue}
+			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders, orders: newOrders))
 		}
 		
 		/* Before implementing http://www.xmailserver.org/diff2.pdf let's do a

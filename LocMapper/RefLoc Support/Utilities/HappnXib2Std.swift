@@ -208,6 +208,11 @@ struct HappnXib2Std {
 				}
 				res.append(tag)
 				
+			case let order as LocValueTransformerOrderedReplacementVariantPick:
+				assert(![order.openDelim, order.middleDelim, order.closeDelim].contains{ $0.count != 1 }, "Unsupported ordered replacement transformer: contains a delimiter whose count is not 1: \(t)")
+				assert(order.index < 10, "Unsupported ordered replacement transformer: index is > 10 (== \(order.index))")
+				res.append("o" + order.openDelim + order.middleDelim + order.closeDelim + String(order.index))
+				
 			case let replacement as LocValueTransformerRegionDelimitersReplacement:
 				assert(![replacement.openDelim, replacement.closeDelim].contains{ $0.count != 1 && $0 != "%%" }, "Unsupported replacement transformer: contains a delimiter whose count is not 1: \(t)")
 				var tag = "r"
