@@ -31,9 +31,12 @@ struct Std2Xib {
 		guard let firstValue = stdLocValues.first else {return ""}
 		guard firstValue.tags.count > 0 else {return firstValue.value}
 		
-		/* First let's get the transforms and sort them from the first value. */
+		/* First let's get the transforms and sort them from the first value. All
+		 * the transforms will be inverted except for the regexes which are
+		 * applied forward. */
 		var plurals = [LocValueTransformerPluralVariantPick]()
 		var genders = [LocValueTransformerGenderVariantPick]()
+		var regexes = [LocValueTransformerRegexReplacements]()
 		var replacements = [LocValueTransformerRegionDelimitersReplacement]()
 		
 		var i = 0
@@ -42,15 +45,22 @@ struct Std2Xib {
 			switch t {
 			case let plural      as LocValueTransformerPluralVariantPick:           plurals.append(plural)
 			case let gender      as LocValueTransformerGenderVariantPick:           genders.append(gender)
+			case let regex       as LocValueTransformerRegexReplacements:           regexes.append(regex)
 			case let replacement as LocValueTransformerRegionDelimitersReplacement: replacements.append(replacement)
 			default: fatalError("Internal Logic Error")
 			}
 		}
 		
 		/* Next we'll apply all the replacements transforms (replacement part of
-		 * the plurals and replacements). */
-		var standardizedStdLocValuesNoReplacements = stdLocValues.map{ taggedString in
-			TaggedString(value: taggedString.value, tags: taggedString.tags.map{
+		 * the plurals and replacements) and standardize the tags (needed because
+		 * of the way “applyReverseNonReplacements” works).
+		 * Note: We do not escape the escape tokens, they are assumed to already
+		 *       be escaped if needed in the source document. It would be good
+		 *       (TODO) to have a tag that could toggle this behavior. */
+		var standardizedTagsNoReplacementsStdLocValues = stdLocValues
+		/* First standardizing the tags and escape the escape tokens. */
+		standardizedTagsNoReplacementsStdLocValues = standardizedTagsNoReplacementsStdLocValues.map{ taggedString in
+			TaggedString(value: taggedString.value/*.replacingOccurrences(of: "~", with: "~~")*/, tags: taggedString.tags.map{
 				switch $0 {
 				case "p##<:>0": return "p0"
 				case "p##<:>1": return "p1"
@@ -64,28 +74,40 @@ struct Std2Xib {
 				}
 			})
 		}
+		/* Applying regexes. */
+		for regex in regexes {
+			try standardizedTagsNoReplacementsStdLocValues = standardizedTagsNoReplacementsStdLocValues.map{
+				TaggedString(value: try regex.apply(toValue: $0.value, withLanguage: language), tags: $0.tags)
+			}
+		}
+		/* Reversing replacements from replacement transformers. */
 		for replacement in replacements {
-			standardizedStdLocValuesNoReplacements = applyReverseReplacement(
-				in: standardizedStdLocValuesNoReplacements,
+			standardizedTagsNoReplacementsStdLocValues = applyReverseReplacement(
+				in: standardizedTagsNoReplacementsStdLocValues,
 				replacedFormatPrefix: replacement.replacement,
 				openDelim: replacement.openDelim, closeDelim: replacement.closeDelim
 			)
 		}
+		/* Reversing replacements from plural transformers. */
 		for plural in plurals {
-			standardizedStdLocValuesNoReplacements = applyReverseReplacement(
-				in: standardizedStdLocValuesNoReplacements,
+			standardizedTagsNoReplacementsStdLocValues = applyReverseReplacement(
+				in: standardizedTagsNoReplacementsStdLocValues,
 				replacedFormatPrefix: plural.numberReplacement,
 				openDelim: plural.numberOpenDelim, closeDelim: plural.numberCloseDelim
 			)
 		}
 		
 		/* Finally, let's merge the strings in one. */
-		return try applyReverseNonReplacements(from: standardizedStdLocValuesNoReplacements, with: language, plurals: plurals, genders: genders)
+		return try applyReverseNonReplacements(from: standardizedTagsNoReplacementsStdLocValues, with: language, plurals: plurals, genders: genders)
 	}
 	
 	/* The returned transformer, when there is a replacement, will contain the
 	 * **prefix** of the replacement only. */
 	private static func transformer(from tag: String, index i: inout Int) throws -> LocValueTransformer {
+		guard tag != "printf" else {
+			return LocValueTransformerRegexReplacements(replacements: [(try! NSRegularExpression(pattern: "%([0-9]*)\\$s", options: []), "%$1\\$@")])
+		}
+		
 		switch tag.first {
 		case "p"?:
 			i += 1
@@ -123,6 +145,7 @@ struct Std2Xib {
 	
 	private static func applyReverseReplacement(in taggedStrings: [TaggedString], replacedFormatPrefix: String, openDelim: String, closeDelim: String) -> [TaggedString] {
 		let allFormats = [
+			"@": "!¡! PROBABLE BUG (got an @ but this should not happen) !¡!",
 			"d": "n",
 			"i": "n (i)",
 			"o": "octal number var (o)",
@@ -209,7 +232,7 @@ struct Std2Xib {
 			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders))
 		}
 		
-		/* Before implementing http://www.xmailserver.org/diff2.pdf, let's do a
+		/* Before implementing http://www.xmailserver.org/diff2.pdf let's do a
 		 * stupid hack: if all the values are the same, we can simply return this
 		 * value! */
 		let refVal = values.first! /* Must contain at least one value since tagsToMatch always contains at least one value */

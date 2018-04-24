@@ -38,6 +38,7 @@ public class LocValueTransformer {
 			
 			switch type {
 			case LocValueTransformerSimpleStringReplacements.serializedType:    c = try LocValueTransformerSimpleStringReplacements(serialization: serialization)
+			case LocValueTransformerRegexReplacements.serializedType:           c = try LocValueTransformerRegexReplacements(serialization: serialization)
 			case LocValueTransformerToUpper.serializedType:                     c = try LocValueTransformerToUpper(serialization: serialization)
 			case LocValueTransformerGenderVariantPick.serializedType:           c = try LocValueTransformerGenderVariantPick(serialization: serialization)
 			case LocValueTransformerPluralVariantPick.serializedType:           c = try LocValueTransformerPluralVariantPick(serialization: serialization)

@@ -53,25 +53,24 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 	}
 	
 	override func serializePrivateData() -> [String: Any?] {
-		var serializedTaggedKeys = [[String: Any?]]()
-		for taggedKey in taggedKeys {
-			serializedTaggedKeys.append([
+		let serializedTaggedKeys = taggedKeys.map{ taggedKey in
+			return [
 				"env":      taggedKey.value.env,
 				"filename": taggedKey.value.filename,
 				"loc_key":  taggedKey.value.locKey,
 				"tags":     taggedKey.tags
-			])
+			]
 		}
 		return ["tagged_keys": serializedTaggedKeys]
 	}
 	
 	override func apply(forLanguage language: String, entries: [LocFile.LineKey: LocFile.LineValue]) throws -> String {
-		let taggedValues = try taggedKeys.map{ taggedKey -> TaggedObject<String> in
+		let taggedValues = try taggedKeys.map{ taggedKey -> TaggedString in
 			let key = taggedKey.value
 			switch entries[key] {
 			case nil:                   throw MappingResolvingError.keyNotFound
 			case .mapping?:             throw MappingResolvingError.mappedToMappedKey
-			case .entries(let values)?: return TaggedObject(value: values[language] ?? "", tags: taggedKey.tags)
+			case .entries(let values)?: return TaggedString(value: values[language] ?? "", tags: taggedKey.tags)
 			}
 		}
 		

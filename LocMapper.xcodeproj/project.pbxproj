@@ -94,6 +94,7 @@
 		7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF725B02027607C004C33B6 /* LocFile+Serialization.swift */; };
 		7BFE27542045F30900B2EC34 /* AppendedTagsStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */; };
 		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
+		7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -284,6 +285,7 @@
 		7BFA536A19D56DD100CF2A2E /* LocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFile.swift; sourceTree = "<group>"; };
 		7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendedTagsStrings.swift; sourceTree = "<group>"; };
 		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerRegexReplacements.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -562,6 +564,7 @@
 				7B889C022025F50F005A961F /* LocValueTransformer.swift */,
 				7B889C042025F535005A961F /* LocValueTransformerInvalid.swift */,
 				7B889C062025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift */,
+				7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */,
 				7B889C082025F578005A961F /* LocValueTransformerToUpper.swift */,
 				7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */,
 				7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */,
@@ -880,6 +883,7 @@
 				7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */,
 				7B889BFC2025F48A005A961F /* LocKeyMappingComponentInvalid.swift in Sources */,
 				7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */,
+				7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */,
 				7B4CC6DE2025BE680055CB74 /* XibRefLocFile.swift in Sources */,
 				7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */,
 				7B439E1E2078C48300E744CF /* HappnXib2Lokalise.swift in Sources */,
