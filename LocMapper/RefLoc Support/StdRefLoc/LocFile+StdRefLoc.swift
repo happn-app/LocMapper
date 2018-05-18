@@ -17,16 +17,21 @@ extension LocFile {
 	static let stdReferenceTranslationsGroupComment = "••••••••••••••••••••••••••••••••••••• START OF STD REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••"
 	static let stdReferenceTranslationsUserReadableComment = "STD REF TRAD. DO NOT MODIFY."
 	
-	public func mergeRefLocsWithStdRefLocFile(_ stdRefLocFile: StdRefLocFile) {
-		let newUntaggedKeys = stdRefLocFile.entries.map{ $0.key }
-		
-		/* Remove all previous StdRefLoc entries whose untagged keys match any
-		 * untagged keys in the new entries */
-		for key in entries.keys {
-			guard key.env == "StdRefLoc" else {continue}
-			let (untaggedKey, _) = key.locKey.splitAppendedTags()
-			guard newUntaggedKeys.contains(untaggedKey) else {continue}
-			entries.removeValue(forKey: key)
+	public func mergeRefLocsWithStdRefLocFile(_ stdRefLocFile: StdRefLocFile, mergeStyle: MergeStyle) {
+		/* Switching instead of just checking for equality with .replace because
+		 * we **want** to err when new merge styles are added later (if ever). */
+		switch mergeStyle {
+		case .add: (/*nop*/)
+		case .replace:
+			/* Remove all previous StdRefLoc entries whose untagged keys match any
+			 * untagged keys in the new entries */
+			let newUntaggedKeys = stdRefLocFile.entries.map{ $0.key }
+			for key in entries.keys {
+				guard key.env == "StdRefLoc" else {continue}
+				let (untaggedKey, _) = key.locKey.splitAppendedTags()
+				guard newUntaggedKeys.contains(untaggedKey) else {continue}
+				entries.removeValue(forKey: key)
+			}
 		}
 		
 		/* Adding languages in reference translations. But not removing languages

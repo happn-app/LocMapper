@@ -12,6 +12,13 @@ import Foundation
 
 extension LocFile {
 	
+	public enum MergeStyle {
+		
+		case replace
+		case add
+		
+	}
+	
 	/** Converts the given value for the given key to a hard-coded value. The
 	previous mapping for the given key is then dropped (obviously).
 	

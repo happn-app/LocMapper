@@ -17,31 +17,19 @@ extension LocFile {
 	static let xibReferenceTranslationsGroupComment = "••••••••••••••••••••••••••••••••••••• START OF XIB REF TRADS — DO NOT MODIFY •••••••••••••••••••••••••••••••••••••"
 	static let xibReferenceTranslationsUserReadableComment = "XIB REF TRAD. DO NOT MODIFY."
 	
-	func replaceRefLocsWithXibRefLocFile(_ xibRefLocFile: XibRefLocFile) {
-		/* Remove all previous XibRefLoc entries */
-		for key in entries.keys {
-			guard key.env == "RefLoc" else {continue}
-			entries.removeValue(forKey: key)
-		}
-		
-		/* Adding languages in reference translations. But not removing languages
-		 * not in reference translations! */
-		for l in xibRefLocFile.languages {
-			if !languages.contains(l) {
-				languages.append(l)
+	public func mergeRefLocsWithXibRefLocFile(_ xibRefLocFile: XibRefLocFile, mergeStyle: MergeStyle) {
+		/* Switching instead of just checking for equality with .replace because
+		 * we **want** to err when new merge styles are added later (if ever). */
+		switch mergeStyle {
+		case .add: (/*nop*/)
+		case .replace:
+			/* Remove all previous XibRefLoc entries */
+			for key in entries.keys {
+				guard key.env == "RefLoc" else {continue}
+				entries.removeValue(forKey: key)
 			}
 		}
 		
-		/* Import new XibRefLoc entries */
-		var isFirst = true
-		for (refKey, refVals) in xibRefLocFile.entries {
-			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
-			entries[key] = .entries(refVals)
-			isFirst = false
-		}
-	}
-	
-	public func mergeRefLocsWithXibRefLocFile(_ xibRefLocFile: XibRefLocFile) {
 		/* Adding languages in reference translations. But not removing languages
 		 * not in reference translations! */
 		for l in xibRefLocFile.languages {

@@ -207,7 +207,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 				
 				do {
 					let referenceTranslations = try XibRefLocFile(fromURL: url, languages: languages, csvSeparator: ",")
-					csvLocFile.mergeRefLocsWithXibRefLocFile(referenceTranslations)
+					csvLocFile.mergeRefLocsWithXibRefLocFile(referenceTranslations, mergeStyle: .add)
 				} catch let error {
 					DispatchQueue.main.async {
 						NSAlert(error: error as NSError).beginSheetModal(for: self.windowForSheet!, completionHandler: nil)

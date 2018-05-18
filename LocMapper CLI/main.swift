@@ -39,9 +39,11 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	
 	   merge_lokalise_trads_as_stdrefloc [--csv_separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the StdRefLoc format.
+	      Default merge style is “add”.
 	
 	   merge_lokalise_trads_as_xibrefloc [--csv_separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the XibRefLoc format.
+	      Default merge style is “add”.
 	
 	   standardize_refloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
@@ -262,9 +264,19 @@ case "export_to_android":
 	exit(0)
 	
 case "merge_lokalise_trads_as_stdrefloc":
+	var mergeStyle = LocFile.MergeStyle.add
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv_separator": {(value: String) in csvSeparator = value},
-		"merge-style": {(value: String) in csvSeparator = value}
+		"merge-style": { (value: String) in
+			switch value {
+			case "add":     mergeStyle = .add
+			case "replace": mergeStyle = .replace
+			default:
+				print("Invalid merge style \(value)", to: &stderrStream)
+				usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
+				exit(1)
+			}
+		}
 	])
 	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
@@ -277,7 +289,7 @@ case "merge_lokalise_trads_as_stdrefloc":
 		
 		print("   Parsing source and merging StdRefLoc...")
 		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
-		locFile.mergeRefLocsWithStdRefLocFile(stdRefLoc)
+		locFile.mergeRefLocsWithStdRefLocFile(stdRefLoc, mergeStyle: mergeStyle)
 		
 		print("   Writing merged file...")
 		var stream = try FileHandleOutputStream(forPath: merged_path)
@@ -289,9 +301,19 @@ case "merge_lokalise_trads_as_stdrefloc":
 	}
 	
 case "merge_lokalise_trads_as_xibrefloc":
+	var mergeStyle = LocFile.MergeStyle.add
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv_separator": {(value: String) in csvSeparator = value},
-		"merge-style": {(value: String) in csvSeparator = value}
+		"merge-style": { (value: String) in
+			switch value {
+			case "add":     mergeStyle = .add
+			case "replace": mergeStyle = .replace
+			default:
+				print("Invalid merge style \(value)", to: &stderrStream)
+				usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
+				exit(1)
+			}
+		}
 	])
 	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
@@ -307,7 +329,7 @@ case "merge_lokalise_trads_as_xibrefloc":
 		
 		print("   Parsing source and merging XibRefLoc...")
 		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
-		locFile.mergeRefLocsWithXibRefLocFile(xibRefLoc)
+		locFile.mergeRefLocsWithXibRefLocFile(xibRefLoc, mergeStyle: mergeStyle)
 		
 		print("   Writing merged file...")
 		var stream = try FileHandleOutputStream(forPath: merged_path)
@@ -338,7 +360,7 @@ case "standardize_refloc":
 		
 		print("   Merging in Loc File...")
 		let locFile = LocFile()
-		locFile.mergeRefLocsWithXibRefLocFile(f)
+		locFile.mergeRefLocsWithXibRefLocFile(f, mergeStyle: .add)
 		
 		print("   Exporting Loc File to Ref Loc...")
 		locFile.exportXibRefLoc(to: output_path, csvSeparator: csvSeparator)
@@ -374,7 +396,7 @@ case "convert_xibrefloc_to_stdrefloc":
 		
 		print("   Merging in Loc File...")
 		let locFile = LocFile()
-		locFile.mergeRefLocsWithStdRefLocFile(s)
+		locFile.mergeRefLocsWithStdRefLocFile(s, mergeStyle: .add)
 		
 		print("   Exporting Loc File to Std Ref Loc...")
 		locFile.exportStdRefLoc(to: output_path, csvSeparator: csvSeparator)
@@ -409,7 +431,7 @@ case "convert_stdrefloc_to_xibrefloc":
 		
 		print("   Merging in Loc File...")
 		let locFile = LocFile()
-		locFile.mergeRefLocsWithXibRefLocFile(s)
+		locFile.mergeRefLocsWithXibRefLocFile(s, mergeStyle: .add)
 		
 		print("   Exporting Loc File to Xib Ref Loc...")
 		locFile.exportXibRefLoc(to: output_path, csvSeparator: csvSeparator)
