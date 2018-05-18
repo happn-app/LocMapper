@@ -17,6 +17,20 @@ class LocFileDocContentSplitViewController : NSSplitViewController {
 	@IBOutlet var splitItemTableView: NSSplitViewItem!
 	@IBOutlet var splitItemLocEntry: NSSplitViewItem!
 	
+	var uiState: [String: Any] {
+		return (["DocContentSplitViewController Split Left Width": splitView.subviews.first?.frame.height ?? -1] as [String: Any])
+			.merging(tableViewController.uiState,    uniquingKeysWith: { old, _ in old })
+			.merging(locEntryViewController.uiState, uniquingKeysWith: { old, _ in old })
+	}
+	
+	func restoreUIState(with uiState: [String: Any]) {
+		if let height = uiState["DocContentSplitViewController Split Left Width"] as? CGFloat, height > 0 {
+			splitView.setPosition(height, ofDividerAt: 0)
+		}
+		tableViewController.restoreUIState(with: uiState)
+		locEntryViewController.restoreUIState(with: uiState)
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		

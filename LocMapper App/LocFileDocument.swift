@@ -59,15 +59,19 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 		let windowController = storyboard.instantiateController(withIdentifier: .documentWindowController) as! NSWindowController
 		addWindowController(windowController)
 		
-		if let windowFrame = windowFrameToRestore {
-			windowController.window?.setFrameFrom(windowFrame)
-		}
-		
 		mainViewController.handlerNotifyDocumentModification = { [weak self] in
 			self?.updateChangeCount(.changeDone)
 		}
 		
 		sendRepresentedObjectToSubControllers(csvLocFile)
+		
+		if let windowFrame = windowFrameToRestore {
+			windowController.window?.setFrameFrom(windowFrame)
+			windowFrameToRestore = nil
+		}
+		if let uiState = uiStateToRestore {
+			mainViewController.restoreUIState(with: uiState)
+		}
 	}
 	
 	override func write(to url: URL, ofType typeName: String) throws {
@@ -119,7 +123,11 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 					unserializedMetadata = LocFile.unserializedMetadata(from: serializedMetadata)
 				}
 			}
+			
 			windowFrameToRestore = (unserializedMetadata as? [String: Any?])?["UIWindowFrame"] as? String
+			
+			let uiState = (unserializedMetadata as? [String: Any?])?["UIState"] as? String
+			uiStateToRestore = uiState.flatMap{ (try? JSONSerialization.jsonObject(with: Data($0.utf8), options: [])) as? [String: Any] }
 		}
 		
 		try super.read(from: url, ofType: typeName)
@@ -305,6 +313,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 	   *************** */
 	
 	private let xattrMetadataName = "fr.ftw-and-co.LocMapperApp.LocFile.doc-metadata"
+	private var uiStateToRestore: [String: Any]?
 	private var windowFrameToRestore: String?
 	private var unserializedMetadata: Any?
 	

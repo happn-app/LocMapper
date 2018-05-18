@@ -32,6 +32,14 @@ class LocFileDocFiltersViewController : NSViewController, NSTableViewDataSource,
 	
 	@IBOutlet var tableView: NSTableView!
 	
+	var uiState: [String: Any] {
+		return [:]
+	}
+	
+	func restoreUIState(with uiState: [String: Any]) {
+		/* nop */
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	}

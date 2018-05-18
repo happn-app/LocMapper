@@ -15,7 +15,11 @@ class LocFileDocTabViewController : NSTabViewController {
 	@IBOutlet var tabViewItemDocContent: NSTabViewItem!
 	
 	var uiState: [String: Any] {
-		return [:]
+		return optionsSplitViewController.uiState /* No custom UI state for us, we return the UI state of the options split view controller */
+	}
+	
+	func restoreUIState(with uiState: [String: Any]) {
+		optionsSplitViewController.restoreUIState(with: uiState)
 	}
 	
 	/* *********************************************************************

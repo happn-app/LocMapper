@@ -32,6 +32,18 @@ class LocEntryViewController: NSTabViewController {
 	@IBOutlet var tabViewItemMapping: NSTabViewItem!
 	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
 	
+	var uiState: [String: Any] {
+		/* Todo: See if we need to save UI state for sub-controllers... (Too lazy
+		 *       to add them right now.) */
+		return ["EntryViewController Selected Tab Index": tabView.selectedTabViewItem.flatMap{ tabView.indexOfTabViewItem($0) } ?? -1]
+	}
+	
+	func restoreUIState(with uiState: [String: Any]) {
+		if let idx = uiState["EntryViewController Selected Tab Index"] as? Int, idx >= 0 {
+			tabView.selectTabViewItem(at: idx)
+		}
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	}

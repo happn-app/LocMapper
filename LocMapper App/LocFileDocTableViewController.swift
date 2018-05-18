@@ -16,6 +16,15 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	
 	@IBOutlet var tableView: NSTableView!
 	
+	var uiState: [String: Any] {
+		/* Todo: Save table view info in "DocTableViewController Table View Info" */
+		return [:]
+	}
+	
+	func restoreUIState(with uiState: [String: Any]) {
+		/* nop */
+	}
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		

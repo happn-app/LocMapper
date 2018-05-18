@@ -17,6 +17,20 @@ class LocFileDocFiltersSplitViewController : NSSplitViewController {
 	@IBOutlet var splitItemFilters: NSSplitViewItem!
 	@IBOutlet var splitItemContent: NSSplitViewItem!
 	
+	var uiState: [String: Any] {
+		return (["DocFiltersSplitViewController Split Left Width": splitView.subviews.first?.frame.width ?? -1] as [String: Any])
+			.merging(filtersViewController.uiState, uniquingKeysWith: { old, _ in old })
+			.merging(contentViewController.uiState, uniquingKeysWith: { old, _ in old })
+	}
+	
+	func restoreUIState(with uiState: [String: Any]) {
+		if let width = uiState["DocFiltersSplitViewController Split Left Width"] as? CGFloat, width > 0 {
+			splitView.setPosition(width, ofDividerAt: 0)
+		}
+		filtersViewController.restoreUIState(with: uiState)
+		contentViewController.restoreUIState(with: uiState)
+	}
+	
 	/* *********************************************************************
 	   MARK: - Doc Modification Actions & Handlers
 	           Handlers notify the doc object the doc has been modified
