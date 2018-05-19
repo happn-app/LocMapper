@@ -20,32 +20,32 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	   version
 	      Shows the current version of the tool
 	
-	   merge_xcode_locs [--csv_separator=separator] [--exclude-list=excluded_path,...] [--include-list=included_path,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
+	   merge_xcode_locs [--csv-separator=separator] [--exclude-list=excluded_path,...] [--include-list=included_path,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Merges (or creates if output does not exists) all the .strings files in the
 	      project in output_file.lcm.
 	      Excludes strings whose path match any item in the any exclude list.
 	      If an include list is given, also filter paths not matching any item in the
 	      include list.
 	
-		export_to_xcode [--encoding=encoding] [--csv_separator=separator] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
+		export_to_xcode [--encoding=encoding] [--csv-separator=separator] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Xcode project at the root_folder path.
 	      Strings files are written as UTF-16 by default. Supported encoding for the --encoding option are utf8 and utf16.
 	
-	   merge_android_locs [--csv_separator=separator] [--res-folder=res_folder] [--strings-filenames=name,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
+	   merge_android_locs [--csv-separator=separator] [--res-folder=res_folder] [--strings-filenames=name,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Merges (or creates if output does not exists) the given strings files in output_file.lcm.
 	
-	   export_to_android [--csv_separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
+	   export_to_android [--csv-separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
-	   merge_lokalise_trads_as_stdrefloc [--csv_separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
+	   merge_lokalise_trads_as_stdrefloc [--csv-separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the StdRefLoc format.
 	      Default merge style is “add”.
 	
-	   merge_lokalise_trads_as_xibrefloc [--csv_separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
+	   merge_lokalise_trads_as_xibrefloc [--csv-separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the XibRefLoc format.
 	      Default merge style is “add”.
 	
-	   standardize_refloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
+	   standardize_refloc [--csv-separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
 	      Only the data is kept; all the metadata is gotten rid of. The keys are sorted alphabetically.
 	
@@ -132,20 +132,21 @@ case "version":
 	defer {if let hdl = hdl {dlclose(hdl)}}
 	if let versionNumber = hdl.flatMap({ dlsym($0, "locmapperVersionNumber") })?.assumingMemoryBound(to: Double.self).pointee {
 		print("locmapper version \(Int(versionNumber))")
-		exit(0)
 	} else {
 		print("Cannot get version number", to: &stderrStream)
 		exit(2)
 	}
+	
+	exit(0)
 	
 /* Merge Xcode Locs */
 case "merge_xcode_locs":
 	var included_paths: [String]?
 	var excluded_paths = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
-		"exclude-list":  {(value: String) in excluded_paths = value.components(separatedBy: ",")},
-		"include-list":  {(value: String) in included_paths = value.components(separatedBy: ",")},
-		"csv_separator": {(value: String) in csvSeparator = value}
+		"exclude-list":  { (value: String) in excluded_paths = value.components(separatedBy: ",") },
+		"include-list":  { (value: String) in included_paths = value.components(separatedBy: ",") },
+		"csv-separator": { (value: String) in csvSeparator = value }
 	])
 	
 	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
@@ -168,14 +169,15 @@ case "merge_xcode_locs":
 		print("Got error while merging: \(error)", to: &stderrStream)
 		exit(Int32(error.code))
 	}
+	
 	exit(0)
 	
 /* Export to Xcode */
 case "export_to_xcode":
 	var encodingStr = "utf16"
 	i = getLongArgs(argIdx: i, longArgs: [
-		"encoding": {(value: String) in encodingStr = value},
-		"csv_separator": {(value: String) in csvSeparator = value}
+		"encoding":      { (value: String) in encodingStr = value },
+		"csv-separator": { (value: String) in csvSeparator = value }
 	])
 	
 	let encoding: String.Encoding
@@ -202,6 +204,7 @@ case "export_to_xcode":
 		print("Got error while exporting: \(error)", to: &stderrStream)
 		exit(Int32(error.code))
 	}
+	
 	exit(0)
 	
 /* Export from Android */
@@ -209,9 +212,9 @@ case "merge_android_locs":
 	var res_folder = "res"
 	var strings_filenames = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
-		"res-folder":        {(value: String) in res_folder = value},
-		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
-		"csv_separator":     {(value: String) in csvSeparator = value}
+		"res-folder":        { (value: String) in res_folder = value },
+		"strings-filenames": { (value: String) in strings_filenames = value.components(separatedBy: ",") },
+		"csv-separator":     { (value: String) in csvSeparator = value }
 	])
 	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 	
@@ -235,14 +238,15 @@ case "merge_android_locs":
 		print("Got error while exporting: \(error)", to: &stderrStream)
 		exit(Int32(error.code))
 	}
+	
 	exit(0)
 	
 /* Import to Android */
 case "export_to_android":
 	var strings_filenames = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
-		"strings-filenames": {(value: String) in strings_filenames = value.components(separatedBy: ",")},
-		"csv_separator":     {(value: String) in csvSeparator = value}
+		"strings-filenames": { (value: String) in strings_filenames = value.components(separatedBy: ",") },
+		"csv-separator":     { (value: String) in csvSeparator = value }
 	])
 	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
 	
@@ -261,12 +265,13 @@ case "export_to_android":
 		print("Got error while exporting: \(error)", to: &stderrStream)
 		exit(Int32(error.code))
 	}
+	
 	exit(0)
 	
 case "merge_lokalise_trads_as_stdrefloc":
 	var mergeStyle = LocFile.MergeStyle.add
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value},
+		"csv-separator": { (value: String) in csvSeparator = value },
 		"merge-style": { (value: String) in
 			switch value {
 			case "add":     mergeStyle = .add
@@ -300,10 +305,12 @@ case "merge_lokalise_trads_as_stdrefloc":
 		exit(Int32((error as NSError).code))
 	}
 	
+	exit(0)
+	
 case "merge_lokalise_trads_as_xibrefloc":
 	var mergeStyle = LocFile.MergeStyle.add
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value},
+		"csv-separator": { (value: String) in csvSeparator = value },
 		"merge-style": { (value: String) in
 			switch value {
 			case "add":     mergeStyle = .add
@@ -340,9 +347,11 @@ case "merge_lokalise_trads_as_xibrefloc":
 		exit(Int32((error as NSError).code))
 	}
 	
+	exit(0)
+	
 case "standardize_refloc":
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}
+		"csv-separator": { (value: String) in csvSeparator = value }
 	])
 	var languages = [String]()
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
@@ -374,11 +383,11 @@ case "standardize_refloc":
 	
 case "convert_xibrefloc_to_stdrefloc":
 	/* Original doc (removed from help because the command should not be used...):
-	 *    convert_xibrefloc_to_stdrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
+	 *    convert_xibrefloc_to_stdrefloc [--csv-separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	 *       Take a XibLoc-styled RefLoc (with tokens for plurals, gender, etc.) and convert it to a more
 	 *       usual format (one key per plural/gender/etc. variations). */
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}
+		"csv-separator": { (value: String) in csvSeparator = value }
 	])
 	var languages = [String]()
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
@@ -410,10 +419,10 @@ case "convert_xibrefloc_to_stdrefloc":
 	
 case "convert_stdrefloc_to_xibrefloc":
 	/* Original doc (removed from help because the command should not be used...):
-	 *    convert_stdrefloc_to_xibrefloc [--csv_separator=separator] input_file.csv output_file.csv language1 [language2 ...]
+	 *    convert_stdrefloc_to_xibrefloc [--csv-separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	 *       Does the inverse of convert_xibrefloc_to_stdrefloc. */
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}
+		"csv-separator": { (value: String) in csvSeparator = value }
 	])
 	var languages = [String]()
 	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
@@ -445,11 +454,11 @@ case "convert_stdrefloc_to_xibrefloc":
 	
 case "upload_xibrefloc_to_lokalise":
 	/* Original doc (removed from help because the command should not be used...):
-	 *    upload_xibrefloc_to_lokalise [--csv_separator=separator] lokalise_rw_token lokalise_project_id input_file.csv refloc_language_name lokalise_language_name [refloc_language_name lokalise_language_name ...]
+	 *    upload_xibrefloc_to_lokalise [--csv-separator=separator] lokalise_rw_token lokalise_project_id input_file.csv refloc_language_name lokalise_language_name [refloc_language_name lokalise_language_name ...]
 	 *       Upload an Xib Ref Loc file to lokalise. DROPS EVERYTHING IN THE PROJECT (but does a snapshot first).
 	 *       The translations will be marked for platform “Other.”*/
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv_separator": {(value: String) in csvSeparator = value}
+		"csv-separator": { (value: String) in csvSeparator = value }
 	])
 	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
 	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
@@ -469,8 +478,48 @@ case "upload_xibrefloc_to_lokalise":
 		exit(Int32((error as NSError).code))
 	}
 	
+	exit(0)
+	
+case "transform_mappings":
+	/* Doc (not in help because the command should not be used...):
+	 *    transform_mappings [--csv-separator=separator] [--keys-mapping-file=key_mapping_file.csv] transformed_file.lcm */
+	var transforms = [LocFile.MappingTransformation]()
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv-separator":     { (value: String) in csvSeparator = value },
+		"keys-mapping-file": { (value: String) in transforms.append(.applyMappingOnKeys(.fromCSVFile(URL(fileURLWithPath: value, isDirectory: false)))) }
+	])
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	
+	print("Transforming mappings in LocFile...")
+	do {
+		print("   Parsing source...")
+		let locFile = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+		
+		print("   Applying transforms...")
+		try locFile.apply(mappingTransformations: transforms, csvSeparator: csvSeparator)
+		
+		print("   Writing merged file...")
+		var stream = try FileHandleOutputStream(forPath: input_path)
+		print(locFile, terminator: "", to: &stream)
+		print("Done")
+	} catch {
+		print("Got error while transforming file: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
+	
+	exit(0)
+	
+case "create_initial_android_mapping_from_std_ref_loc":
+	/* Doc (not in help because the command should not be used...):
+	 *    create_initial_android_mapping_from_std_ref_loc [--csv-separator=separator] transformed_file.lcm */
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv-separator": { (value: String) in csvSeparator = value }
+	])
+	
+	exit(0)
+	
 default:
 	print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)
 	usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
-	exit(2)
+	exit(1)
 }

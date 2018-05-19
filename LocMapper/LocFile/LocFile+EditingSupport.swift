@@ -79,4 +79,93 @@ extension LocFile {
 		return created
 	}
 	
+	/* This enum is only useful for the method below it. */
+	public enum MappingTransformation {
+		
+		public enum MappingKeySource {
+			
+			case dictionary([String: String])
+			case fromCSVFile(URL)
+			
+			func dictionaryMapping(csvSeparator: String) throws -> [String: String] {
+				switch self {
+				case .dictionary(let r): return r
+				case .fromCSVFile(let url):
+					var ret = [String: String]()
+					let csvString = try String(contentsOf: url)
+					let parser = CSVParser(source: csvString, startOffset: 0, separator: csvSeparator, hasHeader: true, fieldNames: nil)
+					guard let rows = parser.arrayOfParsedRows() else {
+						throw NSError(domain: "LocFile.MappingTransformation.MappingKeySource", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid CSV source: cannot parse CSV"])
+					}
+					print(parser.fieldNames)
+					guard parser.fieldNames.count == 2 else {
+						throw NSError(domain: "LocFile.MappingTransformation.MappingKeySource", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid CSV source: not exactly two columns"])
+					}
+					let sourceFieldName = parser.fieldNames[0]
+					let destinationFieldName = parser.fieldNames[1]
+					for row in rows {
+						guard let source = row[sourceFieldName], let destination = row[destinationFieldName] else {
+							throw NSError(domain: "LocFile.MappingTransformation.MappingKeySource", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid CSV source: no source or destination in one of the lines"])
+						}
+						ret[source] = destination
+					}
+					return ret
+				}
+			}
+			
+		}
+		
+		case applyMappingOnKeys(MappingKeySource)
+		
+	}
+	
+	public func apply(mappingTransformations: [MappingTransformation], csvSeparator: String) throws {
+		guard mappingTransformations.count > 0 else {return}
+		
+		/* We preprocess the mapping transformations array for faster access later
+		 * in the entries loop. */
+		let mappingTransformations = try mappingTransformations.map{ v -> MappingTransformation in
+			switch v {
+			case .applyMappingOnKeys(let source):
+				return .applyMappingOnKeys(.dictionary(try source.dictionaryMapping(csvSeparator: csvSeparator)))
+			}
+		}
+		
+		entries = try entries.mapValues{ v -> LineValue in
+			switch v {
+			case .entries: return v
+			case .mapping(let mapping):
+				for transform in mappingTransformations {
+					switch transform {
+					case .applyMappingOnKeys(let keyMappingSource):
+						let keyMapping = try keyMappingSource.dictionaryMapping(csvSeparator: csvSeparator)
+						mapping.components = mapping.components?.map{ component -> LocKeyMappingComponent in
+							switch component {
+							case let valueTransforms as LocKeyMappingComponentValueTransforms:
+								return LocKeyMappingComponentValueTransforms(
+									sourceKey: LineKey(copying: valueTransforms.sourceKey, newLocKey: keyMapping[valueTransforms.sourceKey.locKey] ?? valueTransforms.sourceKey.locKey),
+									transforms: valueTransforms.transforms
+								)
+								
+							case let stdToXibLoc as LocKeyMappingComponentStdToXibLoc:
+								return LocKeyMappingComponentStdToXibLoc(
+									taggedKeys: stdToXibLoc.taggedKeys.map{ k in
+										return TaggedObject<LineKey>(
+											value: LineKey(copying: k.value, newLocKey: keyMapping[k.value.locKey] ?? k.value.locKey),
+											tags: k.tags
+										)
+									}
+								)
+								
+							default:
+								return component
+							}
+						}
+					}
+				}
+				return .mapping(mapping)
+			}
+		}
+	}
+	
 }

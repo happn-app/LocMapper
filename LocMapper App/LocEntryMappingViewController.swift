@@ -143,7 +143,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 			}
 			
 			/* Creating the actual mapping entry */
-			representedMapping = .mapping(LocKeyMapping(components: [LocKeyMappingComponentValueTransforms(sourceKey: lineKey, subTransformsComponents: transforms)]))
+			representedMapping = .mapping(LocKeyMapping(components: [LocKeyMappingComponentValueTransforms(sourceKey: lineKey, transforms: transforms)]))
 			handlerNotifyLineValueModification?()
 		} catch {
 			guard let window = view.window else {NSSound.beep(); return}
@@ -238,7 +238,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 				comboBox.objectValue = component.sourceKey
 				comboBox.cell?.representedObject = component.sourceKey
 				comboBox.placeholderString = "Type to search for a key"
-				let serializedTransforms = component.subTransformComponents.map{ return $0.serialize() }
+				let serializedTransforms = component.transforms.map{ return $0.serialize() }
 				if
 					let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: [.prettyPrinted]),
 					let jsonStr = String(data: jsonData, encoding: .utf8)

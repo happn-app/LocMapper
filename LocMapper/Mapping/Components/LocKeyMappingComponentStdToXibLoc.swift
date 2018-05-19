@@ -20,6 +20,10 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 	
 	let taggedKeys: [TaggedObject<LocFile.LineKey>]
 	
+	init(taggedKeys k: [TaggedObject<LocFile.LineKey>]) {
+		taggedKeys = k
+	}
+	
 	init(serialization: [String: Any?]) throws {
 		guard let keys = serialization["tagged_keys"] as? [[String: Any?]] else {
 			throw NSError(domain: "MigratorMapping", code: 1, userInfo: [NSLocalizedDescriptionKey: "No tagged keys."])

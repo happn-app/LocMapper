@@ -43,6 +43,14 @@ extension LocFile {
 			userReadableComment = urc
 		}
 		
+		public init(copying source: LineKey, newLocKey: String) {
+			self.init(
+				locKey: newLocKey, env: source.env, filename: source.filename,
+				index: source.index, comment: source.comment, userInfo: source.userInfo,
+				userReadableGroupComment: source.userReadableGroupComment, userReadableComment: source.userReadableComment
+			)
+		}
+		
 		static func parse(attributedComment: String) -> (comment: String, userInfo: [String: String]) {
 			let (str, optionalUserInfo) = attributedComment.splitPrependedUserInfo()
 			guard let userInfo = optionalUserInfo else {

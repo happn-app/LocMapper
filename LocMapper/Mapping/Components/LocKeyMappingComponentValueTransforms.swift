@@ -15,17 +15,16 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 	override class var serializedType: String {return "value_transforms"}
 	
 	public override var isValid: Bool {
-		for transform in subTransformComponents {guard transform.isValid else {return false}}
+		for transform in transforms {guard transform.isValid else {return false}}
 		return true
 	}
 	
 	public let sourceKey: LocFile.LineKey
+	public let transforms: [LocValueTransformer]
 	
-	public let subTransformComponents: [LocValueTransformer]
-	
-	public init(sourceKey k: LocFile.LineKey, subTransformsComponents s: [LocValueTransformer]) {
+	public init(sourceKey k: LocFile.LineKey, transforms t: [LocValueTransformer]) {
 		sourceKey = k
-		subTransformComponents = s
+		transforms = t
 	}
 	
 	init(serialization: [String: Any?]) throws {
@@ -54,11 +53,11 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 			userReadableGroupComment: "",
 			userReadableComment: ""
 		)
-		subTransformComponents = dtransforms.map{ LocValueTransformer.createComponentTransformFromSerialization($0) }
+		transforms = dtransforms.map{ LocValueTransformer.createComponentTransformFromSerialization($0) }
 	}
 	
 	override func serializePrivateData() -> [String: Any?] {
-		let serializedTransforms = subTransformComponents.map{ $0.serialize() }
+		let serializedTransforms = transforms.map{ $0.serialize() }
 		
 		return [
 			"env":        sourceKey.env,
@@ -72,7 +71,7 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		switch entries[sourceKey] {
 		case nil:                   throw MappingResolvingError.keyNotFound
 		case .mapping?:             throw MappingResolvingError.mappedToMappedKey
-		case .entries(let values)?: return try subTransformComponents.reduce(values[language] ?? ""){ try $1.apply(toValue: $0, withLanguage: language) }
+		case .entries(let values)?: return try transforms.reduce(values[language] ?? ""){ try $1.apply(toValue: $0, withLanguage: language) }
 		}
 	}
 	
