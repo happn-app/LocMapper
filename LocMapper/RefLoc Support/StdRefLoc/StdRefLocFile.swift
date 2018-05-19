@@ -109,12 +109,12 @@ public class StdRefLocFile {
 						else                        {NSLog("Did not get valid JSON for plural translation value %@", lokaliseTranslationValue)}
 						continue
 					}
-					if let v = StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["zero"])  {entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: v, tags: tags + ["p0"]))}
-					if let v = StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["one"])   {entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: v, tags: tags + ["p1"]))}
-					if let v = StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["two"])   {entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: v, tags: tags + ["p2"]))}
-					if let v = StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["few"])   {entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: v, tags: tags + ["pf"]))}
-					if let v = StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["many"])  {entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: v, tags: tags + ["pm"]))}
-					if let v = StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["other"]) {entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: v, tags: tags + ["px"]))}
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["zero"])  ?? "---", tags: tags + ["p0"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["one"])   ?? "---", tags: tags + ["p1"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["two"])   ?? "---", tags: tags + ["p2"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["few"])   ?? "---", tags: tags + ["pf"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["many"])  ?? "---", tags: tags + ["pm"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["other"]) ?? "---", tags: tags + ["px"]))
 				} else {
 					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: lokaliseTranslationValue, tags: tags))
 				}
