@@ -74,7 +74,7 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 			
 		default:
 			return false
-//			super.validateUserInterfaceItem(item)
+//			return super.validateUserInterfaceItem(item)
 		}
 	}
 	
@@ -113,7 +113,7 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
 		
 		guard tableColumn.identifier.rawValue != "ENV" else {return key.env}
-		guard tableColumn.identifier.rawValue != "KEY" else {return key.locKey}
+		guard tableColumn.identifier.rawValue != "KEY" else {return (key.env != "Android" ? key.locKey : key.locKey.dropFirst())}
 		return csvLocFile.editorDisplayedValueForKey(key, withLanguage: tableColumn.identifier.rawValue)
 	}
 	
