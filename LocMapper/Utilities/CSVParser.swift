@@ -49,8 +49,8 @@ class CSVParser {
 		separatorIsSingleChar = (separator.count == 1)
 		
 		hasHeader = header
-		if names != nil {fieldNames = names!}
-		else            {fieldNames = [String]()}
+		if let names = names {fieldNames = names}
+		else                 {fieldNames = [String]()}
 	}
 	
 	func arrayOfParsedRows() -> [[String: String]]? {
@@ -62,12 +62,12 @@ class CSVParser {
 	
 	private func parseFile() -> [[String: String]]? {
 		if hasHeader {
-			if let fn = parseHeader() {
-				fieldNames = fn
-				if parseLineSeparator() == nil {
-					return nil
-				}
-			} else {
+			guard let fn = parseHeader() else {
+				return nil
+			}
+			fieldNames = fn
+			
+			guard parseLineSeparator() != nil else {
 				return nil
 			}
 		}
@@ -77,7 +77,7 @@ class CSVParser {
 		while let record = parseRecord() {
 			ok = true
 			records.append(record)
-			if parseLineSeparator() == nil {
+			guard parseLineSeparator() != nil else {
 				break
 			}
 		}
@@ -92,7 +92,7 @@ class CSVParser {
 		while let name = parseName() {
 			ok = true
 			names.append(name)
-			if parseSeparator() == nil {
+			guard parseSeparator() != nil else {
 				break
 			}
 		}
