@@ -55,7 +55,7 @@ struct HappnXib2Std {
 			let (_, v) = $0
 			return v.applying(xibLocInfo: stdGenderDetectionInfo) != v
 		}
-		/* Let's detect {⟷} gender */
+		/* Let's detect {₋} gender */
 		let braceGenderDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "{", rightToken: "}", value: "", escapeToken: "~")
 		let hasBraceGender = xibLocValues.contains{
 			let (_, v) = $0
@@ -96,8 +96,8 @@ struct HappnXib2Std {
 		}
 		if hasBraceGender {
 			results.append([
-				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "{", middleDelim: "⟷", closeDelim: "}"),
-				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "{", middleDelim: "⟷", closeDelim: "}")
+				LocValueTransformerGenderVariantPick(gender: .male,   openDelim: "{", middleDelim: "₋", closeDelim: "}"),
+				LocValueTransformerGenderVariantPick(gender: .female, openDelim: "{", middleDelim: "₋", closeDelim: "}")
 			])
 		}
 		if hasDollarReplacement {

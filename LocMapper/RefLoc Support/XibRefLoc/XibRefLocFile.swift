@@ -85,8 +85,8 @@ public class XibRefLocFile {
 		let tagMapping = [
 			"gm": ["lcm:male_other", "gender"],
 			"gf": ["lcm:female_other", "gender"],
-			"g{⟷}m": ["lcm:male_me", "gender"],
-			"g{⟷}f": ["lcm:female_me", "gender"],
+			"g{₋}m": ["lcm:male_me", "gender"],
+			"g{₋}f": ["lcm:female_me", "gender"],
 			"r": ["lcm:variable_string"],
 			"r##": ["lcm:variable_number"]
 		]

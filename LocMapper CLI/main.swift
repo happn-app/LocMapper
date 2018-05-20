@@ -515,6 +515,24 @@ case "create_initial_android_mapping_from_std_ref_loc":
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv-separator": { (value: String) in csvSeparator = value }
 	])
+	let input_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	
+	print("Creating initial Android mappings in LocFile...")
+	do {
+		print("   Parsing source...")
+		let locFile = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
+		
+		print("   Creating mappings...")
+		locFile.createInitialHappnAndroidMappingForStdRefLoc()
+		
+		print("   Writing merged file...")
+		var stream = try FileHandleOutputStream(forPath: input_path)
+		print(locFile, terminator: "", to: &stream)
+		print("Done")
+	} catch {
+		print("Got error while creating mappings: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
 	
 	exit(0)
 	
