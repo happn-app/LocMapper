@@ -78,7 +78,7 @@ public class LocFile {
 	
 	/** Search the given key in the keys already in the LocFile.
 	
-	If the key is not already present in the file, simple add it to the keys in
+	If the key is not already present in the file, simply add it to the keys in
 	the file and return it.
 	
 	If the key is already in the file, try and merge the comments and user info
