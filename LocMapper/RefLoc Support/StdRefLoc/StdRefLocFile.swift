@@ -63,7 +63,7 @@ public class StdRefLocFile {
 		if let p = logPrefix {print(p + "Downloading translations from Lokalise...")}
 		let queryItems = baseQueryItems + [URLQueryItem(name: "plural_format", value: "json_string"), URLQueryItem(name: "placeholder_format", value: "printf")]
 		let request = URLRequest(baseURL: baseURL, relativePath: "string/list", httpMethod: "POST", queryItems: queryItems, queryInBody: true)!
-		guard let json = URLSession.shared.fetchJSONAndCheckResponse(request: request)?["strings"] as? [String: Any?] else {throw NSError(domain: "StdRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot upload some translations; stopping now"])}
+		guard let json = URLSession.shared.fetchJSONAndCheckResponse(request: request)?["strings"] as? [String: Any?] else {throw NSError(domain: "StdRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot download translations; stopping now"])}
 		
 		var languagesBuilding = [String]()
 		var entriesBuilding = [Key: [Language: Value]]()
