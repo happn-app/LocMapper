@@ -110,7 +110,10 @@ extension LocFile {
 				locKey: stdKeyName, env: "StdRefLoc", filename: "StandardReferencesTranslations.csv",
 				index: 0, comment: "", userInfo: [:], userReadableGroupComment: "", userReadableComment: ""
 			)
-			entries[k] = .mapping(LocKeyMapping(components: [LocKeyMappingComponentValueTransforms(sourceKey: destinationKey, transforms: [])]))
+			entries[k] = .mapping(LocKeyMapping(components: [LocKeyMappingComponentValueTransforms(sourceKey: destinationKey, transforms: [
+				LocValueTransformerRegionDelimitersReplacement(replacement: "<b>__DELIMITED_VALUE__</b>", openDelim: "*", closeDelim: "*", escapeToken: "~"),
+				LocValueTransformerRegionDelimitersReplacement(replacement: "<i>__DELIMITED_VALUE__</i>", openDelim: "_", closeDelim: "_", escapeToken: "~")
+			])]))
 		}
 	}
 	
