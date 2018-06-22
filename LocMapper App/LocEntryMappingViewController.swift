@@ -239,8 +239,11 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 				comboBox.cell?.representedObject = component.sourceKey
 				comboBox.placeholderString = "Type to search for a key"
 				let serializedTransforms = component.transforms.map{ return $0.serialize() }
+				let jsonOptions: JSONSerialization.WritingOptions
+				if #available(OSX 10.13, *) {jsonOptions = [.prettyPrinted, .sortedKeys]}
+				else                        {jsonOptions = [.prettyPrinted]}
 				if
-					let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: [.prettyPrinted]),
+					let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: jsonOptions),
 					let jsonStr = String(data: jsonData, encoding: .utf8)
 				{
 					textViewMappingTransform.string = jsonStr

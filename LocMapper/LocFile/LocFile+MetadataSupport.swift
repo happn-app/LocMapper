@@ -48,7 +48,10 @@ extension LocFile {
 	}
 	
 	public func setMetadataValue(_ value: Any, forKey key: String) throws {
-		guard let str = String(data: try JSONSerialization.data(withJSONObject: value, options: []), encoding: .utf8) else {
+		let jsonOptions: JSONSerialization.WritingOptions
+		if #available(OSX 10.13, *) {jsonOptions = [.sortedKeys]}
+		else                        {jsonOptions = []}
+		guard let str = String(data: try JSONSerialization.data(withJSONObject: value, options: jsonOptions), encoding: .utf8) else {
 			throw NSError(domain: "LocFile set filters metadata value", code: 1, userInfo: nil)
 		}
 		metadata[key] = str

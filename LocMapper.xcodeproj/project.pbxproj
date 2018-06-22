@@ -1209,7 +1209,6 @@
 				CURRENT_PROJECT_VERSION = 18;
 				INFOPLIST_FILE = "LocMapper App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperApp";
 				PRODUCT_MODULE_NAME = LocMapperApp;
 				PRODUCT_NAME = LocMapper;
@@ -1227,7 +1226,6 @@
 				CURRENT_PROJECT_VERSION = 18;
 				INFOPLIST_FILE = "LocMapper App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperApp";
 				PRODUCT_MODULE_NAME = LocMapperApp;
 				PRODUCT_NAME = LocMapper;
