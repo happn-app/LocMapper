@@ -81,10 +81,10 @@ extension String {
 	the user info.
 	
 	- returns: The new string with the serialized user info. */
-	func byAppending(tags: [String]) -> String {
+	func byAppending(tags: [String], sortTags: Bool) -> String {
 		var res = self
 		res += "\""
-		for tag in tags {
+		for tag in (sortTags ? tags.sorted() : tags) {
 			res += tag.replacingOccurrences(of: "/", with: "//").replacingOccurrences(of: ",", with: ",/").replacingOccurrences(of: "\"", with: "\"/")
 			res += ","
 		}

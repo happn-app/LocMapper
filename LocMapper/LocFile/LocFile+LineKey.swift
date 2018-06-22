@@ -60,7 +60,7 @@ extension LocFile {
 		}
 		
 		public var fullComment: String {
-			return comment.byPrepending(userInfo: userInfo)
+			return comment.byPrepending(userInfo: userInfo, sortKeys: true)
 		}
 		
 		public var hashValue: Int {

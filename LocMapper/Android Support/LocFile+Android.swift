@@ -104,7 +104,7 @@ extension LocFile {
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)
 					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue("---".byPrepending(userInfo: pluralGroup.attributes), forKey: key, withLanguage: languageName) {index += 1}
+					if setValue("---".byPrepending(userInfo: pluralGroup.attributes, sortKeys: true), forKey: key, withLanguage: languageName) {index += 1}
 					currentComment = ""
 					currentUserReadableComment = ""
 					currentUserReadableGroupComment = ""

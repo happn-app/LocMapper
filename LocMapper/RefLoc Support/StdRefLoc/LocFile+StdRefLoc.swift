@@ -47,7 +47,7 @@ extension LocFile {
 		for (refKey, refVals) in stdRefLocFile.entries {
 			for (language, taggedValues) in refVals {
 				for taggedValue in taggedValues {
-					let key = LineKey(locKey: refKey.byAppending(tags: taggedValue.tags), env: "StdRefLoc", filename: LocFile.stdReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.stdReferenceTranslationsGroupComment : "", userReadableComment: LocFile.stdReferenceTranslationsUserReadableComment)
+					let key = LineKey(locKey: refKey.byAppending(tags: taggedValue.tags, sortTags: true), env: "StdRefLoc", filename: LocFile.stdReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.stdReferenceTranslationsGroupComment : "", userReadableComment: LocFile.stdReferenceTranslationsUserReadableComment)
 					var values = entries[key]?.entries ?? [:]
 					values[language] = taggedValue.value
 					entries[key] = .entries(values)

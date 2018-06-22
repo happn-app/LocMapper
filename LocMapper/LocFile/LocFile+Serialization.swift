@@ -254,7 +254,7 @@ extension LocFile : TextOutputStreamable {
 			return "".byPrepending(userInfo: [
 				"cui": compressedUserInfo ? "1" : "0",
 				"ols": oneLineStrings ? "1" : "0"
-			])
+			], sortKeys: true)
 		}
 		
 		static func ==(lhs: EncodingInfo, rhs: EncodingInfo) -> Bool {

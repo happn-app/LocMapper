@@ -95,13 +95,23 @@ extension String {
 	de-serialize the user info.
 	
 	- returns: The new string with the serialized user info. */
-	func byPrepending(userInfo: [String: String]) -> String {
+	func byPrepending(userInfo: [String: String], sortKeys: Bool) -> String {
 		var res = ""
-		for (key, val) in userInfo {
-			res += ","
-			res += key.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: ":", with: "\\:")
-			res += ":"
-			res += val.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: ",", with: "\\,").replacingOccurrences(of: ";", with: "\\;")
+		if !sortKeys {
+			for (key, val) in userInfo {
+				res += ","
+				res += key.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: ":", with: "\\:")
+				res += ":"
+				res += val.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: ",", with: "\\,").replacingOccurrences(of: ";", with: "\\;")
+			}
+		} else {
+			for key in userInfo.keys.sorted() {
+				let val = userInfo[key]!
+				res += ","
+				res += key.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: ":", with: "\\:")
+				res += ":"
+				res += val.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: ",", with: "\\,").replacingOccurrences(of: ";", with: "\\;")
+			}
 		}
 		res += ";"
 		res += self

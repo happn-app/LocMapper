@@ -62,7 +62,7 @@ extension LocFile {
 	}
 	
 	public func serializedMetadata() -> Data {
-		return Data("".byPrepending(userInfo: metadata).utf8)
+		return Data("".byPrepending(userInfo: metadata, sortKeys: true).utf8)
 	}
 	
 	/** Unserialize the given metadata. Should be used when initing an instance
