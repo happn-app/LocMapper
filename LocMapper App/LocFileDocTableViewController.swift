@@ -358,8 +358,8 @@ class HighlightColorTextFieldCell : NSTextFieldCell {
 	
 	private func updateTextColor() {
 		switch backgroundStyle {
-		case .dark, .raised:   textColor = hightlightColor
-		case .light, .lowered: textColor = nonHighlightedTextColor
+		case .raised, .emphasized: textColor = hightlightColor
+		case .lowered, .normal:    textColor = nonHighlightedTextColor
 		}
 	}
 	
