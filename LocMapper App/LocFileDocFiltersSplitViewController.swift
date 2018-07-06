@@ -68,7 +68,7 @@ class LocFileDocFiltersSplitViewController : NSSplitViewController {
 	
 	@IBAction func showFilters(_ sender: AnyObject!) {
 		let dividerIndex = 0
-		self.splitView.setPosition(150, ofDividerAt: dividerIndex)
+		splitView.setPosition(150, ofDividerAt: dividerIndex)
 	}
 	
 	@IBAction func showEntryDetails(_ sender: AnyObject!) {
