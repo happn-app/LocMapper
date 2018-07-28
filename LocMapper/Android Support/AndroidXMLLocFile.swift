@@ -21,18 +21,15 @@ private extension String {
 	
 	var xmlTextValue: String {
 		var v = self
-//		v = v.replacingOccurrences(of: "\\", with: "\\\\",  options: .literal)
-		v = v.replacingOccurrences(of: "'",  with: "\\'",   options: .literal)
-		v = v.replacingOccurrences(of: "&",  with: "&amp;", options: .literal)
-		v = v.replacingOccurrences(of: "<",  with: "&lt;",  options: .literal)
-		v = v.replacingOccurrences(of: ">",  with: "&gt;",  options: .literal) /* Shouldn't be needed... */
+		v = v.replacingOccurrences(of: "&",  with: "&amp;",  options: .literal)
+//		v = v.replacingOccurrences(of: "'",  with: "&apos;", options: .literal)
+		v = v.replacingOccurrences(of: "<",  with: "&lt;",   options: .literal)
+		v = v.replacingOccurrences(of: ">",  with: "&gt;",   options: .literal) /* Shouldn't be needed... */
+//		v = v.replacingOccurrences(of: "\"", with: "&quot;", options: .literal)
 		return v
 	}
 	var valueFromXMLText: String {
-		var v = self
-		v = v.replacingOccurrences(of: "\\'",  with: "'",  options: .literal)
-		v = v.replacingOccurrences(of: "\\\\", with: "\\", options: .literal)
-		return v
+		return self
 	}
 	
 }
