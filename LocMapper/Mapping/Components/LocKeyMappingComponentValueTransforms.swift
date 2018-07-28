@@ -71,7 +71,9 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		switch entries[sourceKey] {
 		case nil:                   throw MappingResolvingError.keyNotFound
 		case .mapping?:             throw MappingResolvingError.mappedToMappedKey
-		case .entries(let values)?: return try transforms.reduce(values[language] ?? ""){ try $1.apply(toValue: $0, withLanguage: language) }
+		case .entries(let values)?:
+			guard let v = values[language] else {throw MappingResolvingError.noValueForLanguage}
+			return try transforms.reduce(v, { try $1.apply(toValue: $0, withLanguage: language) })
 		}
 	}
 	

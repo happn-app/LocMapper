@@ -154,6 +154,7 @@ extension LocFile {
 			case .invalidMapping, .mappedToMappedKey: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
 			case .unknownLanguage:                    return "!¡!TODOLOC_UNKNOWNLANGUAGE!¡!"
 			case .keyNotFound:                        return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
+			case .noValueForLanguage:                 return LocFile.todolocToken
 			}
 		} catch {
 			return LocFile.internalLocMapperErrorToken

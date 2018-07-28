@@ -11,9 +11,20 @@ import Foundation
 
 
 enum MappingResolvingError : Error {
-	case invalidMapping
-	case mappedToMappedKey /* When mapping points to a mapped key. This is invalid to avoid infinite recursions... */
 	
+	case invalidMapping
+	
+	/** Mapping to a non-existing key. */
 	case keyNotFound
+	/** Mapping to an existing key which has no value for the given language. */
+	case noValueForLanguage
+	/** When mapping points to a mapped key we throw this error. We do this to
+	avoid infinite recursions. */
+	case mappedToMappedKey
+	
+	/** One of the mapping component/transformer needs to know the language to
+	apply its transformation (e.g. plural pick transformer), but the given
+	language is unknown. */
 	case unknownLanguage
+	
 }
