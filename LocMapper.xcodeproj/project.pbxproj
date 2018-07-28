@@ -26,6 +26,9 @@
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
 		7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0869A21DCB7F8700EB9486 /* Utils.swift */; };
+		7B147119210D12B700B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
+		7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
+		7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */; };
 		7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B164294202751EB000AE458 /* LocFile+LineKey.swift */; };
 		7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1F24DE20750E900025FC49 /* URLSession+Utils.swift */; };
@@ -33,7 +36,6 @@
 		7B27768D1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift */; };
 		7B439E1E2078C48300E744CF /* HappnXib2Lokalise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B439E162078C48300E744CF /* HappnXib2Lokalise.swift */; };
 		7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B46BFC21D4EA47100EE224B /* LocEntryContextViewController.swift */; };
-		7B4CC6B820252FB60055CB74 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF69785202322D000088A52 /* XibLoc.framework */; };
 		7B4CC6C12025BB390055CB74 /* XcodeStringsParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */; };
 		7B4CC6D92025BE4E0055CB74 /* IOUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BABB9561C11C92C00DACD85 /* IOUtils.swift */; };
 		7B4CC6DA2025BE4E0055CB74 /* PrependedUserInfoStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B26DA681DC23BA3003471DA /* PrependedUserInfoStrings.swift */; };
@@ -55,7 +57,6 @@
 		7B73887E20306C0100E56088 /* stdstreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B73887620306C0100E56088 /* stdstreams.swift */; };
 		7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
-		7B76AAE22025FCF60071B896 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF69785202322D000088A52 /* XibLoc.framework */; };
 		7B76AAE52025FD070071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D811C0EF3DB0020E86B /* AppDelegate.swift */; };
 		7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */; };
@@ -121,13 +122,6 @@
 			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
 			remoteInfo = Localizer;
 		};
-		7B76AADD2025FCE30071B896 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B8BD01920026E8C009BE667;
-			remoteInfo = "XibLoc-macOS";
-		};
 		7B76AADF2025FCE90071B896 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
@@ -149,55 +143,6 @@
 			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
 			remoteInfo = Localizer;
 		};
-		7BF69784202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7B8BD01A20026E8C009BE667;
-			remoteInfo = "XibLoc-macOS";
-		};
-		7BF69786202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7B7A34BF20027B4600348DF4;
-			remoteInfo = "XibLoc-tvOS";
-		};
-		7BF69788202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7BC696D52002775C007BC3E9;
-			remoteInfo = "XibLoc-iOS";
-		};
-		7BF6978A202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7BB52E43200279EA007CAD7B;
-			remoteInfo = "XibLoc-watchOS";
-		};
-		7BF6978C202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7B8BD02220026E8C009BE667;
-			remoteInfo = "XibLoc-macOSTests";
-		};
-		7BF6978E202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7BC696DD2002775C007BC3E9;
-			remoteInfo = "XibLoc-iOSTests";
-		};
-		7BF69790202322D000088A52 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7B7A34C720027B4700348DF4;
-			remoteInfo = "XibLoc-tvOSTests";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -216,6 +161,7 @@
 		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		7B147117210D124400B1621C /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+MetadataSupport.swift"; sourceTree = "<group>"; };
 		7B164294202751EB000AE458 /* LocFile+LineKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LineKey.swift"; sourceTree = "<group>"; };
 		7B1F24DE20750E900025FC49 /* URLSession+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLSession+Utils.swift"; sourceTree = "<group>"; };
@@ -283,7 +229,6 @@
 		7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LocFile+StdRefLoc.swift"; sourceTree = "<group>"; };
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
 		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
-		7BF69779202322D000088A52 /* XibLoc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XibLoc.xcodeproj; path = XibLoc/XibLoc.xcodeproj; sourceTree = "<group>"; };
 		7BF725B02027607C004C33B6 /* LocFile+Serialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+Serialization.swift"; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* LocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFile.swift; sourceTree = "<group>"; };
 		7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendedTagsStrings.swift; sourceTree = "<group>"; };
@@ -298,6 +243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */,
+				7B147119210D12B700B1621C /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +251,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,7 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */,
-				7B76AAE22025FCF60071B896 /* XibLoc.framework in Frameworks */,
+				7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,7 +269,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B76AAE52025FD070071B896 /* libLocMapper.a in Frameworks */,
-				7B4CC6B820252FB60055CB74 /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +280,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7B147116210D122700B1621C /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				7B147117210D124400B1621C /* XibLoc.framework */,
+			);
+			name = macOS;
+			path = Mac;
 			sourceTree = "<group>";
 		};
 		7B16428B2027511B000AE458 /* LocFile */ = {
@@ -610,24 +565,10 @@
 		7BF69778202322AD00088A52 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				7BF69779202322D000088A52 /* XibLoc.xcodeproj */,
+				7B147116210D122700B1621C /* macOS */,
 			);
 			name = Dependencies;
-			path = Carthage/Checkouts;
-			sourceTree = "<group>";
-		};
-		7BF6977A202322D000088A52 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				7BF69785202322D000088A52 /* XibLoc.framework */,
-				7BF69787202322D000088A52 /* XibLoc.framework */,
-				7BF69789202322D000088A52 /* XibLoc.framework */,
-				7BF6978B202322D000088A52 /* XibLoc.framework */,
-				7BF6978D202322D000088A52 /* XibLoc-macOSTests.xctest */,
-				7BF6978F202322D000088A52 /* XibLoc-iOSTests.xctest */,
-				7BF69791202322D000088A52 /* XibLoc-tvOSTests.xctest */,
-			);
-			name = Products;
+			path = Carthage/Build;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -672,7 +613,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				7B76AADE2025FCE30071B896 /* PBXTargetDependency */,
 			);
 			name = LocMapper;
 			productName = Localizer;
@@ -759,12 +699,6 @@
 			mainGroup = 7B6E259619D4157A001934ED;
 			productRefGroup = 7B6E25A019D4157A001934ED /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 7BF6977A202322D000088A52 /* Products */;
-					ProjectRef = 7BF69779202322D000088A52 /* XibLoc.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				7B21A38F1DE4BCDF00F81E68 /* All */,
@@ -775,58 +709,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		7BF69785202322D000088A52 /* XibLoc.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = XibLoc.framework;
-			remoteRef = 7BF69784202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7BF69787202322D000088A52 /* XibLoc.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = XibLoc.framework;
-			remoteRef = 7BF69786202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7BF69789202322D000088A52 /* XibLoc.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = XibLoc.framework;
-			remoteRef = 7BF69788202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7BF6978B202322D000088A52 /* XibLoc.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = XibLoc.framework;
-			remoteRef = 7BF6978A202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7BF6978D202322D000088A52 /* XibLoc-macOSTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "XibLoc-macOSTests.xctest";
-			remoteRef = 7BF6978C202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7BF6978F202322D000088A52 /* XibLoc-iOSTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "XibLoc-iOSTests.xctest";
-			remoteRef = 7BF6978E202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7BF69791202322D000088A52 /* XibLoc-tvOSTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "XibLoc-tvOSTests.xctest";
-			remoteRef = 7BF69790202322D000088A52 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		7B4CC6BC2025BB390055CB74 /* Resources */ = {
@@ -961,11 +843,6 @@
 			target = 7B4CC6CB2025BCEF0055CB74 /* LocMapper */;
 			targetProxy = 7B4CC6F62025EDA80055CB74 /* PBXContainerItemProxy */;
 		};
-		7B76AADE2025FCE30071B896 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "XibLoc-macOS";
-			targetProxy = 7B76AADD2025FCE30071B896 /* PBXContainerItemProxy */;
-		};
 		7B76AAE02025FCE90071B896 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7B4CC6CB2025BCEF0055CB74 /* LocMapper */;
@@ -1016,6 +893,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 19;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = LocMapperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1035,6 +916,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 19;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = LocMapperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -1053,6 +938,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 19;
 				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1069,6 +958,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 19;
 				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1181,6 +1074,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 19;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
 				SDKROOT = macosx;
@@ -1193,6 +1090,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 19;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
 				SDKROOT = macosx;
