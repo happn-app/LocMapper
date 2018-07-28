@@ -66,7 +66,7 @@ extension LocFile {
 					
 				case let groupClosing as AndroidXMLLocFile.GenericGroupClosing:
 					let refKey = LineKey(
-						locKey: "c"+groupClosing.groupName+(groupClosing.nameAttr != nil ? " "+groupClosing.nameAttr! : ""),
+						locKey: "c"+groupClosing.groupName+(groupClosing.nameAttr.map{ " " + $0 } ?? ""),
 						env: env, filename: filenameNoLanguage, index: index, comment: currentComment, userInfo: [:],
 						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
 					)

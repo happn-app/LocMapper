@@ -44,7 +44,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 	
 	class GenericGroupOpening: AndroidLocComponent {
 		let fullString: String
-		let groupNameAndAttr: (String, [String: String])?
+		let groupNameAndAttr: (String, [(String, String)])?
 		
 		var stringValue: String {
 			return fullString
@@ -56,11 +56,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		init(groupName: String, attributes: [String: String]) {
-			groupNameAndAttr = (groupName, attributes)
+			groupNameAndAttr = (groupName, attributes.sorted(by: { $0.key < $1.key }))
 			
 			var ret = "<\(groupName)"
-			for attr in attributes {
-				ret += " \(attr.0)=\"\(attr.1)\""
+			for (key, val) in attributes {
+				ret += " \(key)=\"\(val)\""
 			}
 			ret += ">"
 			fullString = ret
@@ -182,11 +182,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		
 		var stringValue: String {
 			var ret = "<plurals name=\"\(name)\""
-			for (key, val) in attributes {
+			for (key, val) in attributes.sorted(by: { $0.key < $1.key }) {
 				ret += " \(key)=\"\(val.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\""))\""
 			}
 			ret += ">"
-			for (quantity, value) in values where value != nil {
+			for (quantity, value) in values.sorted(by: pluralKeySort) where value != nil {
 				let (spaces, pluralItem) = value!
 				assert(pluralItem.quantity == quantity)
 				
@@ -200,6 +200,18 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 			name = n
 			attributes = attr
 			values = v
+		}
+		
+		private func pluralKeySort(_ v1: (key: String /* Quantity */, value: (comments: [AndroidLocComponent], value: PluralItem)?), _ v2: (key: String /* Quantity */, value: (comments: [AndroidLocComponent], value: PluralItem)?)) -> Bool {
+			let knownQuantities = ["zero", "one", "two", "few", "many", "other"]
+			let (k1, k2) = (v1.key, v2.key)
+			let (i1, i2) = (knownQuantities.firstIndex(of: k1), knownQuantities.firstIndex(of: k2))
+			switch (i1, i2) {
+			case (.some(let i1), .some(let i2)): return i1 < i2
+			case (.some, nil): return true
+			case (nil, .some): return false
+			case (nil, nil): return k1 < k2
+			}
 		}
 	}
 	
