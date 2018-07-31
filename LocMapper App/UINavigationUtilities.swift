@@ -12,7 +12,7 @@ import AppKit
 
 private extension NSNib.Name {
 	
-	static let loadingWindow = NSNib.Name(rawValue: "LoadingWindow")
+	static let loadingWindow = "LoadingWindow"
 	
 }
 

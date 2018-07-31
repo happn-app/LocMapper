@@ -15,20 +15,20 @@ import LocMapper
 
 private extension NSStoryboard.Name {
 	
-	static let main = NSStoryboard.Name(rawValue: "Main")
+	static let main = "Main"
 	
 }
 
 private extension NSStoryboard.SceneIdentifier {
 	
-	static let documentWindowController = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
+	static let documentWindowController = "Document Window Controller"
 	
 }
 
 private extension NSNib.Name {
 	
-	static let accessoryViewForImportReferenceTranslations = NSNib.Name(rawValue: "AccessoryViewForImportReferenceTranslations")
-	static let accessoryViewForImportKeyStructure = NSNib.Name(rawValue: "AccessoryViewForImportKeyStructure")
+	static let accessoryViewForImportReferenceTranslations = "AccessoryViewForImportReferenceTranslations"
+	static let accessoryViewForImportKeyStructure = "AccessoryViewForImportKeyStructure"
 	
 }
 
@@ -66,7 +66,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 		sendRepresentedObjectToSubControllers(csvLocFile)
 		
 		if let windowFrame = windowFrameToRestore {
-			windowController.window?.setFrameFrom(windowFrame)
+			windowController.window?.setFrame(from: windowFrame)
 			windowFrameToRestore = nil
 		}
 		if let uiState = uiStateToRestore {
@@ -76,8 +76,8 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 	
 	override func write(to url: URL, ofType typeName: String) throws {
 		/* Let's save the UI state */
-		if let frameStr = mainWindowController?.window?.stringWithSavedFrame {csvLocFile?.setMetadataValue(frameStr, forKey: "UIWindowFrame")}
-		else                                                                 {csvLocFile?.removeMetadata(forKey: "UIWindowFrame")}
+		if let frameStr = mainWindowController?.window?.frameDescriptor {csvLocFile?.setMetadataValue(frameStr, forKey: "UIWindowFrame")}
+		else                                                            {csvLocFile?.removeMetadata(forKey: "UIWindowFrame")}
 		do {try csvLocFile?.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
 		catch {
 			if #available(OSX 10.12, *) {os_log("Cannot save UIState metadata", type: .info)}
