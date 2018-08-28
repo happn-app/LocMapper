@@ -164,8 +164,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	   MARK: - Combo Box Data Source & Delegate
 	   **************************************** */
 	
-	override func controlTextDidChange(_ obj: Notification) {
-		/* Do NOT call super... */
+	func controlTextDidChange(_ obj: Notification) {
 		comboBox.cell?.representedObject = nil
 		updateAutoCompletion()
 		updateEnabledStates()
