@@ -45,7 +45,7 @@ public class StdRefLocFile {
 		entries = entriesBuilding
 	}
 	
-	public init(token: String, projectId: String, lokaliseToReflocLanguageName: [String: String], logPrefix: String?) throws {
+	public init(token: String, projectId: String, lokaliseToReflocLanguageName: [String: String], excludedTags: Set<String> = Set(), logPrefix: String?) throws {
 		let baseURL = URL(string: "https://api.lokalise.co/api/")!
 		let baseQueryItems = [
 			URLQueryItem(name: "api_token", value: token),
@@ -84,6 +84,11 @@ public class StdRefLocFile {
 				else {
 					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Did not get translation value, key or tags from Lokalise for language %{public}@. Translation: %@", log: $0, type: .info, lokaliseLanguage, lokaliseTranslation) }}
 					else                        {NSLog("Did not get translation value, key or tags from Lokalise for language %@. Translation: %@", lokaliseLanguage, lokaliseTranslation)}
+					continue
+				}
+				
+				guard lokaliseTranslationTags.first(where: { excludedTags.contains($0) }) == nil else {
+					/* We found a translation that is excluded because of its tag. */
 					continue
 				}
 				

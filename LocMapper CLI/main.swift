@@ -37,11 +37,11 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	   export_to_android [--csv-separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
-	   merge_lokalise_trads_as_stdrefloc [--csv-separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
+	   merge_lokalise_trads_as_stdrefloc [--csv-separator=separator] [--merge-style=add|replace] [--excluded-tags=tag1,tag2,...] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the StdRefLoc format.
 	      Default merge style is “add”.
 	
-	   merge_lokalise_trads_as_xibrefloc [--csv-separator=separator] [--merge-style=add|replace] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
+	   merge_lokalise_trads_as_xibrefloc [--csv-separator=separator] [--merge-style=add|replace] [--excluded-tags=tag1,tag2,...] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the XibRefLoc format.
 	      Default merge style is “add”.
 	
@@ -269,9 +269,11 @@ case "export_to_android":
 	exit(0)
 	
 case "merge_lokalise_trads_as_stdrefloc":
+	var excludedTags = Set<String>()
 	var mergeStyle = LocFile.MergeStyle.add
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv-separator": { (value: String) in csvSeparator = value },
+		"excluded-tags": { (value: String) in excludedTags.formUnion(value.split(separator: ",").map(String.init)) },
 		"merge-style": { (value: String) in
 			switch value {
 			case "add":     mergeStyle = .add
@@ -290,7 +292,7 @@ case "merge_lokalise_trads_as_stdrefloc":
 	print("Merging Lokalise Trads as StdRefLoc in LocFile...")
 	do {
 		print("   Creating StdRefLoc from Lokalise...")
-		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, logPrefix: "      ")
+		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, excludedTags: excludedTags, logPrefix: "      ")
 		
 		print("   Parsing source and merging StdRefLoc...")
 		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
@@ -308,9 +310,11 @@ case "merge_lokalise_trads_as_stdrefloc":
 	exit(0)
 	
 case "merge_lokalise_trads_as_xibrefloc":
+	var excludedTags = Set<String>()
 	var mergeStyle = LocFile.MergeStyle.add
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv-separator": { (value: String) in csvSeparator = value },
+		"excluded-tags": { (value: String) in excludedTags.formUnion(value.split(separator: ",").map(String.init)) },
 		"merge-style": { (value: String) in
 			switch value {
 			case "add":     mergeStyle = .add
@@ -329,7 +333,7 @@ case "merge_lokalise_trads_as_xibrefloc":
 	print("Merging Lokalise Trads as StdRefLoc in LocFile...")
 	do {
 		print("   Creating StdRefLoc from Lokalise...")
-		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, logPrefix: "      ")
+		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, excludedTags: excludedTags, logPrefix: "      ")
 		
 		print("   Converting StdRefLoc to XibRefLoc...")
 		let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
