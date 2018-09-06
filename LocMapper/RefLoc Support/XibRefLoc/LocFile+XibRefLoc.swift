@@ -42,7 +42,14 @@ extension LocFile {
 		var isFirst = entryKeys.contains{ $0.env == "RefLoc" }
 		for (refKey, refVals) in xibRefLocFile.entries {
 			let key = LineKey(locKey: refKey, env: "RefLoc", filename: LocFile.xibReferenceTranslationsFilename, index: isFirst ? 0 : 1, comment: "", userInfo: [:], userReadableGroupComment: isFirst ? LocFile.xibReferenceTranslationsGroupComment : "", userReadableComment: LocFile.xibReferenceTranslationsUserReadableComment)
-			entries[key] = .entries(refVals)
+			for (l, v) in refVals {
+				let curValue = entries[key]
+				switch curValue {
+				case .entries(var curEntries)?: curEntries[l] = v; entries[key] = .entries(curEntries)
+				case .mapping?:                 entries[key] = .entries(refVals); /* Or manage an error, depending on the error management we want… */
+				case nil:                       entries[key] = .entries(refVals)
+				}
+			}
 			isFirst = false
 		}
 	}
