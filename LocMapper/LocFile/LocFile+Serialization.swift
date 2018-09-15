@@ -7,8 +7,14 @@
  */
 
 import Foundation
-import os.log
+#if canImport(os)
+	import os.log
+#endif
 import zlib
+
+#if !canImport(os) && canImport(DummyLinuxOSLog)
+	import DummyLinuxOSLog
+#endif
 
 
 
