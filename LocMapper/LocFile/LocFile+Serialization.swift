@@ -10,7 +10,11 @@ import Foundation
 #if canImport(os)
 	import os.log
 #endif
-import zlib
+#if canImport(zlib)
+	import zlib
+#else
+	import CZlib
+#endif
 
 #if !canImport(os) && canImport(DummyLinuxOSLog)
 	import DummyLinuxOSLog

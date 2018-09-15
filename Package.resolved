@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "CZlib",
+        "repositoryURL": "git@github.com:happn-app/Swift-zlib.git",
+        "state": {
+          "branch": null,
+          "revision": "a7683403458b71a562cdd21c17935555ea15fe9e",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "XibLoc",
         "repositoryURL": "git@github.com:happn-app/XibLoc.git",
         "state": {
