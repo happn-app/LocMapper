@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "DummyLinuxOSLog",
+        "repositoryURL": "git@github.com:happn-app/DummyLinuxOSLog.git",
+        "state": {
+          "branch": null,
+          "revision": "47333c87665e0f9e957246148965418c9a4ad823",
+          "version": "1.0.0"
+        }
+      },
+      {
+        "package": "XibLoc",
+        "repositoryURL": "git@github.com:happn-app/XibLoc.git",
+        "state": {
+          "branch": null,
+          "revision": "7d3192b5904f7a615b5f24ef63aed4e9d22ce830",
+          "version": "0.9.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
