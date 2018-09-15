@@ -33,18 +33,18 @@ class CSVParser {
 	init(source str: String, startOffset offset: Int, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
 		assert(offset < str.count)
 		assert(
-			!sep.isEmpty && sep.range(of: "\"") == nil && sep.rangeOfCharacter(from: CharacterSet.newlines) == nil,
-			"CSV separator string must not be empty and must not contain the double quote character or newline characters."
+			!sep.isEmpty && sep.range(of: "\"") == nil && sep.rangeOfCharacter(from: CSVParser.newLinesCharacterSet) == nil && sep.unicodeScalars.count == 1,
+			"CSV separator string must not be empty, must contain a single unicode scalar and must not contain the double quote character or newline characters."
 		)
-
+		
 		csvString = str
 		separator = sep
 		startOffset = offset
 		
-		var cs = CharacterSet.newlines
+		var cs = CSVParser.newLinesCharacterSet
 		cs.insert(charactersIn: "\"")
 		cs.insert(separator.unicodeScalars.first!)
-		endTextCharacterSet = cs as CharacterSet
+		endTextCharacterSet = cs
 		
 		separatorIsSingleChar = (separator.count == 1)
 		
@@ -59,6 +59,8 @@ class CSVParser {
 		scanner.scanLocation = startOffset
 		return parseFile()
 	}
+	
+	private static var newLinesCharacterSet = CharacterSet(charactersIn: "\n\r")
 	
 	private func parseFile() -> [[String: String]]? {
 		if hasHeader {
@@ -209,7 +211,7 @@ class CSVParser {
 	private func parseLineSeparator() -> String? {
 		var matchedNewlines: NSString?
 		let scanLocation = scanner.scanLocation
-		guard scanner.scanCharacters(from: CharacterSet.newlines, into: &matchedNewlines) else {
+		guard scanner.scanCharacters(from: CSVParser.newLinesCharacterSet, into: &matchedNewlines) else {
 			return nil
 		}
 		
