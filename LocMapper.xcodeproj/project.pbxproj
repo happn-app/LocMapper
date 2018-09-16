@@ -31,6 +31,7 @@
 		7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */; };
 		7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B164294202751EB000AE458 /* LocFile+LineKey.swift */; };
+		7B16A3E5214E9FAF00825F89 /* Scanner+LinuxCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */; };
 		7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1F24DE20750E900025FC49 /* URLSession+Utils.swift */; };
 		7B1F24E8207652460025FC49 /* URLRequest+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1F24E7207652460025FC49 /* URLRequest+Utils.swift */; };
 		7B27768D1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B27768C1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift */; };
@@ -164,6 +165,7 @@
 		7B147117210D124400B1621C /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+MetadataSupport.swift"; sourceTree = "<group>"; };
 		7B164294202751EB000AE458 /* LocFile+LineKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LineKey.swift"; sourceTree = "<group>"; };
+		7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Scanner+LinuxCompat.swift"; sourceTree = "<group>"; };
 		7B1F24DE20750E900025FC49 /* URLSession+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLSession+Utils.swift"; sourceTree = "<group>"; };
 		7B1F24E7207652460025FC49 /* URLRequest+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLRequest+Utils.swift"; sourceTree = "<group>"; };
 		7B26DA681DC23BA3003471DA /* PrependedUserInfoStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrependedUserInfoStrings.swift; sourceTree = "<group>"; };
@@ -340,6 +342,7 @@
 				7BAB6E03207283C100DAB11C /* TaggedObject.swift */,
 				7B1F24DE20750E900025FC49 /* URLSession+Utils.swift */,
 				7B1F24E7207652460025FC49 /* URLRequest+Utils.swift */,
+				7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -780,6 +783,7 @@
 				7B889BF92025F44D005A961F /* LocKeyMappingComponent.swift in Sources */,
 				7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */,
 				7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */,
+				7B16A3E5214E9FAF00825F89 /* Scanner+LinuxCompat.swift in Sources */,
 				7B889BEA2025F04E005A961F /* LocFile+Android.swift in Sources */,
 				7B889C072025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift in Sources */,
 				7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */,

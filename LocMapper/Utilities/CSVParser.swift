@@ -215,15 +215,14 @@ class CSVParser {
 	}
 	
 	private func parseLineSeparator() -> String? {
-		var matchedNewlines: NSString?
 		let scanLocation = scanner.scanLocation
-		guard scanner.scanCharacters(from: CSVParser.newLinesCharacterSet, into: &matchedNewlines) else {
+		guard let matchedNewlines = scanner.scanCharactersFromSet(CSVParser.newLinesCharacterSet) else {
 			return nil
 		}
 		
 		/* newlines will contains all new lines from scanLocation. We only want
 		 * one new line. */
-		let newlines = matchedNewlines! as String
+		let newlines = matchedNewlines as String
 		if newlines.hasPrefix("\r\n") {scanner.scanLocation = scanLocation + 2; return "\r\n"}
 		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
 		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
@@ -247,9 +246,8 @@ class CSVParser {
 		var accumulatedData = String()
 		
 		while true {
-			var fragment: NSString?
-			if scanner.scanUpToCharacters(from: endTextCharacterSet, into: &fragment) {
-				accumulatedData += fragment! as String
+			if let fragment = scanner.scanUpToCharactersFromSet(endTextCharacterSet) {
+				accumulatedData += fragment
 			}
 			
 			/* If the separator is just a single character (common case) then
@@ -261,8 +259,7 @@ class CSVParser {
 			/* Otherwise, we need to consider the case where the first character
 			 * of the separator is matched but we don't have the full separator. */
 			let location = scanner.scanLocation
-			var firstCharOfSeparator: NSString?
-			if scanner.scanString(String(separator.first!), into: &firstCharOfSeparator) {
+			if let firstCharOfSeparator = scanner.scanString(String(separator.first!)) {
 				if scanner.scanString(String(separator.dropFirst()), into: nil) {
 					scanner.scanLocation = location
 					break
@@ -270,7 +267,7 @@ class CSVParser {
 				
 				/* We have the first char of the separator but not the whole
 				 * separator, so just append the char and continue */
-				accumulatedData += firstCharOfSeparator! as String
+				accumulatedData += firstCharOfSeparator
 				continue
 			} else {
 				break

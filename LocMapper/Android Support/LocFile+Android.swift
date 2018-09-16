@@ -167,19 +167,17 @@ extension LocFile {
 			guard entry_key.env == "Android" else {continue}
 			
 			if !entry_key.comment.isEmpty {
-				var white: NSString?
 				let scanner = Scanner(string: entry_key.comment)
 				scanner.charactersToBeSkipped = CharacterSet()
-				if scanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-					spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
+				if let white = scanner.scanCharactersFromSet(CharacterSet.whitespacesAndNewlines) {
+					spaces.append(AndroidXMLLocFile.WhiteSpace(white as String))
 				}
 				if scanner.scanString("<!--", into: nil) {
-					var comment: NSString?
-					if scanner.scanUpTo("-->", into: &comment) && !scanner.isAtEnd {
-						spaces.append(AndroidXMLLocFile.Comment(comment! as String))
+					if let comment = scanner.scanUpToString("-->"), !scanner.isAtEnd {
+						spaces.append(AndroidXMLLocFile.Comment(comment as String))
 						scanner.scanString("-->", into: nil)
-						if scanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-							spaces.append(AndroidXMLLocFile.WhiteSpace(white! as String))
+						if let white = scanner.scanCharactersFromSet(CharacterSet.whitespacesAndNewlines) {
+							spaces.append(AndroidXMLLocFile.WhiteSpace(white as String))
 						}
 					}
 				}

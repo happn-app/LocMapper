@@ -97,30 +97,26 @@ extension LocFile {
 			let commentScanner = Scanner(string: entry_key.comment)
 			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
 			while !commentScanner.isAtEnd {
-				var white: NSString?
-				if commentScanner.scanCharacters(from: CharacterSet.whitespacesAndNewlines, into: &white) {
-					commentComponents.append(XcodeStringsFile.WhiteSpace(white! as String))
+				if let white = commentScanner.scanCharactersFromSet(CharacterSet.whitespacesAndNewlines) {
+					commentComponents.append(XcodeStringsFile.WhiteSpace(white as String))
 				}
 				if commentScanner.scanString("/*", into: nil) {
-					var comment: NSString?
-					if commentScanner.scanUpTo("*/", into: &comment) && !commentScanner.isAtEnd {
-						commentComponents.append(XcodeStringsFile.Comment(comment! as String, doubleSlashed: false))
+					if let comment = commentScanner.scanUpToString("*/"), !commentScanner.isAtEnd {
+						commentComponents.append(XcodeStringsFile.Comment(comment as String, doubleSlashed: false))
 						commentScanner.scanString("*/", into: nil)
 					}
 				}
 				if commentScanner.scanString("//", into: nil) {
-					var comment: NSString?
-					if commentScanner.scanUpTo("\n", into: &comment) && !commentScanner.isAtEnd {
-						commentComponents.append(XcodeStringsFile.Comment(comment! as String, doubleSlashed: true))
+					if let comment = commentScanner.scanUpToString("\n"), !commentScanner.isAtEnd {
+						commentComponents.append(XcodeStringsFile.Comment(comment as String, doubleSlashed: true))
 						commentScanner.scanString("\n", into: nil)
 					}
 				}
-				var invalid: NSString?
-				if commentScanner.scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/")), into: &invalid) {
+				if let invalid = commentScanner.scanUpToCharactersFromSet(CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/"))) {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid!) }
+						di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid) }
 					#else
-						NSLogString("Found invalid string in comment; ignoring: “\(invalid!)”", log: di.log)
+						NSLogString("Found invalid string in comment; ignoring: “\(invalid)”", log: di.log)
 					#endif
 				}
 			}
