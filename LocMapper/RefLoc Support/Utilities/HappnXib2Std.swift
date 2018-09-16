@@ -173,7 +173,11 @@ struct HappnXib2Std {
 		for stdLocEntryAction in stdLocEntryActions {
 			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
 				if addPrintfReplacementTag && !stdLocEntryAction.isEmpty {
-					di.log.flatMap{ os_log("Got a printf-style replacement AND a std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Got a printf-style replacement AND a std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
+					#else
+						NSLogString("Got a printf-style replacement AND a std loc entry action (\(stdLocEntryAction))", log: di.log)
+					#endif
 				}
 				let newValue = (try? stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
 				values[l, default: []].append(TaggedString(value: newValue, tags: HappnXib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
@@ -250,7 +254,11 @@ struct HappnXib2Std {
 			)
 			return "[\(printfReplacement):\(r)]"
 		} else {
-			di.log.flatMap{ os_log("Cannot get name of replacement (tokens %{public}@ and %{public}@) with values %@", log: $0, type: .info, leftToken, rightToken, xibLocValues) }
+			#if canImport(os)
+				di.log.flatMap{ os_log("Cannot get name of replacement (tokens %{public}@ and %{public}@) with values %@", log: $0, type: .info, leftToken, rightToken, xibLocValues) }
+			#else
+				NSLogString("Cannot get name of replacement (tokens \(leftToken) and \(rightToken)) with values \(xibLocValues)", log: di.log)
+			#endif
 			return printfReplacement
 		}
 	}

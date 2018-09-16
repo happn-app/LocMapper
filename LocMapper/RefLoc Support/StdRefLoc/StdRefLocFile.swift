@@ -75,7 +75,11 @@ public class StdRefLocFile {
 		var entriesBuilding = [Key: [Language: Value]]()
 		for (lokaliseLanguage, refLocLanguage) in lokaliseToReflocLanguageName {
 			guard let lokaliseTranslations = json[lokaliseLanguage] as? [[String: Any?]] else {
-				di.log.flatMap{ os_log("Did not get translations from Lokalise for language %{public}@", log: $0, type: .info, lokaliseLanguage) }
+				#if canImport(os)
+					di.log.flatMap{ os_log("Did not get translations from Lokalise for language %{public}@", log: $0, type: .info, lokaliseLanguage) }
+				#else
+					NSLogString("Did not get translations from Lokalise for language \(lokaliseLanguage)", log: di.log)
+				#endif
 				continue
 			}
 			
@@ -87,7 +91,11 @@ public class StdRefLocFile {
 					let lokaliseTranslationTags = lokaliseTranslation["tags"] as? [String],
 					let lokaliseTranslationValue = lokaliseTranslation["translation"] as? String
 				else {
-					di.log.flatMap{ os_log("Did not get translation value, key or tags from Lokalise for language %{public}@. Translation: %@", log: $0, type: .info, lokaliseLanguage, lokaliseTranslation) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Did not get translation value, key or tags from Lokalise for language %{public}@. Translation: %@", log: $0, type: .info, lokaliseLanguage, lokaliseTranslation) }
+					#else
+						NSLogString("Did not get translation value, key or tags from Lokalise for language \(lokaliseLanguage). Translation: \(lokaliseTranslation)", log: di.log)
+					#endif
 					continue
 				}
 				
@@ -99,7 +107,11 @@ public class StdRefLocFile {
 				/* Processing key from Lokalise */
 				let keyComponents = lokaliseTranslationKey.components(separatedBy: " - ")
 				if keyComponents.count > 2 {
-					di.log.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
+					#else
+						NSLogString("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)", log: di.log)
+					#endif
 				}
 				let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
 				
@@ -113,7 +125,11 @@ public class StdRefLocFile {
 				/* Processing value from Lokalise */
 				if lokaliseTranslation["plural_key"] as? String == "1" {
 					guard let pluralTranslation = (try? JSONSerialization.jsonObject(with: Data(lokaliseTranslationValue.utf8), options: [])) as? [String: String] else {
-						di.log.flatMap{ os_log("Did not get valid JSON for plural translation value %@", log: $0, type: .info, lokaliseTranslationValue) }
+						#if canImport(os)
+							di.log.flatMap{ os_log("Did not get valid JSON for plural translation value %@", log: $0, type: .info, lokaliseTranslationValue) }
+						#else
+							NSLogString("Did not get valid JSON for plural translation value \(lokaliseTranslationValue)", log: di.log)
+						#endif
 						continue
 					}
 					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["zero"])  ?? "---", tags: tags + ["p0"]))

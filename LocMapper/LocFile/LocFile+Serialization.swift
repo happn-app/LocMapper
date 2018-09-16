@@ -94,7 +94,11 @@ extension LocFile : TextOutputStreamable {
 				let encodedRawComment          = row[LocFile.PRIVATE_USERINFO_HEADER_NAME],
 				let encodedUserReadableComment = row[LocFile.COMMENTS_HEADER_NAME]
 			else {
-				di.log.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }
+				#if canImport(os)
+					di.log.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }
+				#else
+					NSLogString("Invalid row \(row) found in csv file. Ignoring this row.", log: di.log)
+				#endif
 				continue
 			}
 			
@@ -128,7 +132,11 @@ extension LocFile : TextOutputStreamable {
 						.replacingOccurrences(of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards])
 					(comment, userInfo) = LineKey.parse(attributedComment: prefixAndSuffixLess)
 				} else {
-					di.log.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }
+					#else
+						NSLogString("Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: di.log)
+					#endif
 					(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
 				}
 			}

@@ -135,7 +135,11 @@ public class XcodeStringsFile: TextOutputStreamable {
 				let xcodeStringsFile = try XcodeStringsFile(fromPath: cur_file, relativeToProjectPath: root_folder)
 				parsed_strings_files.append(xcodeStringsFile)
 			} catch let error as NSError {
-				di.log.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, cur_file, String(describing: error)) }
+				#if canImport(os)
+					di.log.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, cur_file, String(describing: error)) }
+				#else
+					NSLogString("Got error while parsing strings file (skipping) \(cur_file): \(String(describing: error))", log: di.log)
+				#endif
 			}
 		}
 		return parsed_strings_files

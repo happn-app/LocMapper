@@ -55,7 +55,11 @@ public class LocValueTransformer {
 			
 			return c
 		} catch {
-			di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }
+			#if canImport(os)
+				di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }
+			#else
+				NSLogString("Got error: \(String(describing: error))", log: di.log)
+			#endif
 			return LocValueTransformerInvalid(serialization: serialization)
 		}
 	}

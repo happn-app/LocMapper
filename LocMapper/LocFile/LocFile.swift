@@ -110,7 +110,11 @@ public class LocFile {
 						keys[idx] = newKey
 					}
 				} else {
-					di.log.flatMap{ os_log("Got different comment for same loc key \"%@\" (file %@): \"%@\" and \"%@\"", log: $0, type: .info, refKey.locKey, refKey.filename, keys[idx].comment, refKey.comment) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Got different comment for same loc key \"%@\" (file %@): \"%@\" and \"%@\"", log: $0, type: .info, refKey.locKey, refKey.filename, keys[idx].comment, refKey.comment) }
+					#else
+						NSLogString("Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"", log: di.log)
+					#endif
 				}
 			}
 			return keys[idx]

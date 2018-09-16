@@ -381,7 +381,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 					switch previousStatus {
 					case .inPlurals(let pluralsName):
 						if currentPluralValues![quantity] != nil {
-							di.log.flatMap{ os_log("Got more than one value for quantity %{public}@ of plurals named %{public}@... Choosing the latest one found.", log: $0, type: .info, quantity, pluralsName) }
+							#if canImport(os)
+								di.log.flatMap{ os_log("Got more than one value for quantity %{public}@ of plurals named %{public}@... Choosing the latest one found.", log: $0, type: .info, quantity, pluralsName) }
+							#else
+								NSLogString("Got more than one value for quantity \(quantity) of plurals named \(pluralsName)... Choosing the latest one found.", log: di.log)
+							#endif
 						}
 						currentPluralValues![quantity] = (
 							currentPluralSpaces,
@@ -424,7 +428,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundIgnorableWhitespace whitespaceString: String) {
-			di.log.flatMap{ os_log("foundIgnorableWhitespace %@", log: $0, type: .info, whitespaceString) }
+			#if canImport(os)
+				di.log.flatMap{ os_log("foundIgnorableWhitespace %@", log: $0, type: .info, whitespaceString) }
+			#else
+				NSLogString("foundIgnorableWhitespace \(whitespaceString)", log: di.log)
+			#endif
 		}
 		
 		func parser(_ parser: XMLParser, foundComment comment: String) {
@@ -458,7 +466,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-			di.log.flatMap{ os_log("parseErrorOccurred: %@", log: $0, type: .info, String(describing: parseError)) }
+			#if canImport(os)
+				di.log.flatMap{ os_log("parseErrorOccurred: %@", log: $0, type: .info, String(describing: parseError)) }
+			#else
+				NSLogString("parseErrorOccurred \(String(describing: parseError))", log: di.log)
+			#endif
 		}
 	}
 	
@@ -473,7 +485,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 					parsed_loc_files.append(locFile)
 				} catch let error as NSError {
 					err = error
-					di.log.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
+					#else
+						NSLogString("Got error while parsing strings file \(cur_file): \(String(describing: err))", log: di.log)
+					#endif
 				}
 			}
 		}

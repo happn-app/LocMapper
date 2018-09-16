@@ -43,7 +43,11 @@ public class LocKeyMapping {
 			let data = stringRepresentation.data(using: .utf8),
 			let serializedComponent_s = try? JSONSerialization.jsonObject(with: data, options: []) else
 		{
-			di.log.flatMap{ os_log("Invalid mapping; cannot serialize JSON string: \"%@\"", log: $0, type: .info, stringRepresentation) }
+			#if canImport(os)
+				di.log.flatMap{ os_log("Invalid mapping; cannot serialize JSON string: \"%@\"", log: $0, type: .info, stringRepresentation) }
+			#else
+				NSLogString("Invalid mapping; cannot serialize JSON string: \"\(stringRepresentation)\"", log: di.log)
+			#endif
 			self.init(components: nil, stringRepresentation: stringRepresentation)
 			return
 		}
@@ -51,7 +55,11 @@ public class LocKeyMapping {
 		if      let array = serializedComponent_s as? [[String: Any?]] {serializedComponents = array}
 		else if let simple = serializedComponent_s as? [String: Any?]  {serializedComponents = [simple]}
 		else {
-			di.log.flatMap{ os_log("Invalid mapping; cannot convert string to array of dictionary: \"%@\"", log: $0, type: .info, stringRepresentation) }
+			#if canImport(os)
+				di.log.flatMap{ os_log("Invalid mapping; cannot convert string to array of dictionary: \"%@\"", log: $0, type: .info, stringRepresentation) }
+			#else
+				NSLogString("Invalid mapping; cannot convert string to array of dictionary: \"\(stringRepresentation)\"", log: di.log)
+			#endif
 			self.init(components: nil, stringRepresentation: stringRepresentation)
 			return
 		}

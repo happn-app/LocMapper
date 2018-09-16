@@ -63,7 +63,11 @@ extension LocFile {
 					currentUserReadableGroupComment = ""
 					
 				default:
-					di.log.flatMap{ os_log("Got unknown XcodeStringsFile component %@", log: $0, type: .info, String(describing: component)) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Got unknown XcodeStringsFile component %@", log: $0, type: .info, String(describing: component)) }
+					#else
+						NSLogString("Got unknown XcodeStringsFile component \(String(describing: component))", log: di.log)
+					#endif
 				}
 			}
 		}
@@ -113,7 +117,11 @@ extension LocFile {
 				}
 				var invalid: NSString?
 				if commentScanner.scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/")), into: &invalid) {
-					di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid!) }
+					#if canImport(os)
+						di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid!) }
+					#else
+						NSLogString("Found invalid string in comment; ignoring: “\(invalid!)”", log: di.log)
+					#endif
 				}
 			}
 			
@@ -149,7 +157,11 @@ extension LocFile {
 				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: encoding)
 			} catch let error as NSError {
 				err = error
-				di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
+				#if canImport(os)
+					di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
+				#else
+					NSLogString("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))", log: di.log)
+				#endif
 			}
 		}
 	}
