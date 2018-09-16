@@ -48,8 +48,7 @@ public class LocKeyMappingComponent {
 			
 			return c
 		} catch {
-			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }}
-			else                        {NSLog("Got error: %@", String(describing: error))}
+			di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }
 			return LocKeyMappingComponentInvalid(serialization: serialization)
 		}
 	}

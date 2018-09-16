@@ -140,8 +140,7 @@ extension LocFile {
 					}
 					
 				default:
-					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got unknown AndroidXMLLocFile component %@", log: $0, type: .info, String(describing: component)) }}
-					else                        {NSLog("Got unknown AndroidXMLLocFile component %@", String(describing: component))}
+					di.log.flatMap{ os_log("Got unknown AndroidXMLLocFile component %@", log: $0, type: .info, String(describing: component)) }
 				}
 			}
 		}
@@ -181,8 +180,7 @@ extension LocFile {
 					}
 				}
 				if !scanner.isAtEnd {
-					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got invalid comment \"%@\"", log: $0, type: .info, entry_key.comment) }}
-					else                        {NSLog("Got invalid comment \"%@\"", entry_key.comment)}
+					di.log.flatMap{ os_log("Got invalid comment \"%@\"", log: $0, type: .info, entry_key.comment) }
 				}
 			}
 			
@@ -217,8 +215,7 @@ extension LocFile {
 						if sepBySpace.count == 2 && sepBySpace[0] == "plurals" {
 							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralGroup(name: sepBySpace[1], attributes: currentPluralsUserInfoByFilename[filename] ?? [:], values: plurals))
 						} else {
-							if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got invalid plural closing key %@. Dropping whole plurals group.", log: $0, type: .info, k) }}
-							else                        {NSLog("Got invalid plural closing key %@. Dropping whole plurals group.", k)}
+							di.log.flatMap{ os_log("Got invalid plural closing key %@. Dropping whole plurals group.", log: $0, type: .info, k) }
 						}
 						currentPluralsValueByFilename.removeValue(forKey: filename)
 					}
@@ -226,8 +223,7 @@ extension LocFile {
 					if sepBySpace.count > 0 && sepBySpace.count <= 2 {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
-						if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got invalid closing key %@", log: $0, type: .info, k) }}
-						else                        {NSLog("Got invalid closing key %@", k)}
+						di.log.flatMap{ os_log("Got invalid closing key %@", log: $0, type: .info, k) }
 					}
 					
 				case let k where k.hasPrefix("k"):
@@ -250,12 +246,10 @@ extension LocFile {
 							if let idx = Int(sepByQuote[1]) {
 								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
 							} else {
-								if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Invalid key '%@': cannot find idx", log: $0, type: .info, k) }}
-								else                        {NSLog("Invalid key '%@': cannot find idx", k)}
+								di.log.flatMap{ os_log("Invalid key '%@': cannot find idx", log: $0, type: .info, k) }
 							}
 						} else {
-							if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got invalid array item key '%@'", log: $0, type: .info, k) }}
-							else                        {NSLog("Got invalid array item key '%@'", k)}
+							di.log.flatMap{ os_log("Got invalid array item key '%@'", log: $0, type: .info, k) }
 						}
 					}
 					
@@ -272,19 +266,16 @@ extension LocFile {
 								AndroidXMLLocFile.PluralGroup.PluralItem(quantity: quantity, value: v)
 							
 							if currentPluralsValueByFilename[filename]![quantity] != nil {
-								if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got multiple plurals value for quantity '%@' (key: '%@')", log: $0, type: .info, quantity, k) }}
-								else                        {NSLog("Got multiple plurals value for quantity '%@' (key: '%@')", quantity, k)}
+								di.log.flatMap{ os_log("Got multiple plurals value for quantity '%@' (key: '%@')", log: $0, type: .info, quantity, k) }
 							}
 							currentPluralsValueByFilename[filename]![quantity] = (spaces, p)
 						} else {
-							if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got invalid plural key '%@' (either malformed or misplaced)", log: $0, type: .info, k) }}
-							else                        {NSLog("Got invalid plural key '%@' (either malformed or misplaced)", k)}
+							di.log.flatMap{ os_log("Got invalid plural key '%@' (either malformed or misplaced)", log: $0, type: .info, k) }
 						}
 					}
 					
 				default:
-					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got invalid key %@", log: $0, type: .info, entry_key.locKey) }}
-					else                        {NSLog("Got invalid key %@", entry_key.locKey)}
+					di.log.flatMap{ os_log("Got invalid key %@", log: $0, type: .info, entry_key.locKey) }
 				}
 			}
 			
@@ -301,8 +292,7 @@ extension LocFile {
 				try writeText(xmlText, toFile: fullOutputPath, usingEncoding: .utf8)
 			} catch let error as NSError {
 				err = error
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }}
-				else                        {NSLog("Cannot write file to path %@, got error %@", fullOutputPath, String(describing: err))}
+				di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
 			}
 		}
 	}

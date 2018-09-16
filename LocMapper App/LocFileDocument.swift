@@ -80,8 +80,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 		else                                                            {csvLocFile?.removeMetadata(forKey: "UIWindowFrame")}
 		do {try csvLocFile?.setMetadataValue(mainViewController.uiState, forKey: "UIState")}
 		catch {
-			if #available(OSX 10.12, *) {os_log("Cannot save UIState metadata", type: .info)}
-			else                        {NSLog("Cannot save UIState metadata")}
+			os_log("Cannot save UIState metadata", type: .info)
 		}
 		
 		/* We ask super to write the file. In effect this will call the method

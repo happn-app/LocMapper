@@ -77,8 +77,7 @@ extension LocFile {
 				print("", to: &stream)
 			}
 		} catch {
-			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, path, String(describing: error)) }}
-			else                        {NSLog("Cannot write file to path %@, got error %@", path, String(describing: error))}
+			di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, path, String(describing: error)) }
 		}
 	}
 	

@@ -280,8 +280,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
-//			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("didStartElement %@ namespaceURI %@ qualifiedName %@ attributes %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName), attributeDict) }}
-//			else                        {NSLog("didStartElement %@ namespaceURI %@ qualifiedName %@ attributes %@", elementName, String(describing: namespaceURI), String(describing: qName), attributeDict)}
+//			di.log.flatMap{ os_log("didStartElement %@ namespaceURI %@ qualifiedName %@ attributes %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName), attributeDict) }
 			let attrs = attributeDict
 			
 			switch (status, elementName) {
@@ -335,8 +334,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-//			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("didEndElement %@ namespaceURI %@ qualifiedName %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName)) }}
-//			else                        {NSLog("didEndElement %@ namespaceURI %@ qualifiedName %@", elementName, String(describing: namespaceURI), String(describing: qName))}
+//			di.log.flatMap{ os_log("didEndElement %@ namespaceURI %@ qualifiedName %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName)) }
 			switch (status, elementName) {
 				case (.inResources, "resources"):
 					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
@@ -383,8 +381,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 					switch previousStatus {
 					case .inPlurals(let pluralsName):
 						if currentPluralValues![quantity] != nil {
-							if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got more than one value for quantity %{public}@ of plurals named %{public}@... Choosing the latest one found.", log: $0, type: .info, quantity, pluralsName) }}
-							else                        {NSLog("Got more than one value for quantity %@ of plurals named %@... Choosing the latest one found.", quantity, pluralsName)}
+							di.log.flatMap{ os_log("Got more than one value for quantity %{public}@ of plurals named %{public}@... Choosing the latest one found.", log: $0, type: .info, quantity, pluralsName) }
 						}
 						currentPluralValues![quantity] = (
 							currentPluralSpaces,
@@ -415,11 +412,9 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundCharacters string: String) {
-//			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("foundCharacters %@", log: $0, type: .debug, string) }}
-//			else                        {NSLog("foundCharacters %@", string)}
+//			di.log.flatMap{ os_log("foundCharacters %@", log: $0, type: .debug, string) }
 			if isCurrentCharsCDATA && !currentChars.isEmpty {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.", log: $0) }}
-				else                        {NSLog("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.")}
+				di.log.flatMap{ os_log("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.", log: $0) }
 				/* We used to fail parsing here. Now if a CDATA block is mixed with
 				 * non-CDATA value, we consider the whole value to be a CDATA block
 				 * and we continue. */
@@ -429,13 +424,11 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundIgnorableWhitespace whitespaceString: String) {
-			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("foundIgnorableWhitespace %@", log: $0, type: .info, whitespaceString) }}
-			else                        {NSLog("foundIgnorableWhitespace %@", whitespaceString)}
+			di.log.flatMap{ os_log("foundIgnorableWhitespace %@", log: $0, type: .info, whitespaceString) }
 		}
 		
 		func parser(_ parser: XMLParser, foundComment comment: String) {
-//			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("foundComment %@", log: $0, type: .debug, comment) }}
-//			else                        {NSLog("foundComment %@", comment)}
+//			di.log.flatMap{ os_log("foundComment %@", log: $0, type: .debug, comment) }
 			
 			switch status {
 				case .inResources: fallthrough
@@ -454,8 +447,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		
 		func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
 			if !isCurrentCharsCDATA && !currentChars.isEmpty {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.", log: $0) }}
-				else                        {NSLog("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.")}
+				di.log.flatMap{ os_log("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.", log: $0) }
 				/* We used to fail parsing here. Now if a CDATA block is mixed with
 				 * non-CDATA value, we consider the whole value to be a CDATA block
 				 * and we continue. */
@@ -466,8 +458,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-			if #available(OSX 10.12, *) {di.log.flatMap{ os_log("parseErrorOccurred: %@", log: $0, type: .info, String(describing: parseError)) }}
-			else                        {NSLog("parseErrorOccurred: %@", String(describing: parseError))}
+			di.log.flatMap{ os_log("parseErrorOccurred: %@", log: $0, type: .info, String(describing: parseError)) }
 		}
 	}
 	
@@ -482,8 +473,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 					parsed_loc_files.append(locFile)
 				} catch let error as NSError {
 					err = error
-					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }}
-					else                        {NSLog("Got error while parsing strings file %@: %@", cur_file, String(describing: err))}
+					di.log.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
 				}
 			}
 		}

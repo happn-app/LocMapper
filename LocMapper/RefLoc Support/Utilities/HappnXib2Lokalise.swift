@@ -115,8 +115,7 @@ struct HappnXib2Lokalise {
 		for stdLocEntryAction in stdLocEntryActions {
 			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
 				if addPrintfReplacementTag && (!stdLocEntryAction.filter({ !($0 is LocValueTransformerGenderVariantPick) }).isEmpty || pluralTransformerBase != nil) {
-					if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got a printf-style replacement AND a non-gender std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }}
-					else                        {NSLog("Got a printf-style replacement AND a non-gender std loc entry action (%@)", stdLocEntryAction)}
+					di.log.flatMap{ os_log("Got a printf-style replacement AND a non-gender std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
 				}
 				/* About .replacingOccurrences(of: "~", with: "~~"):
 				 *    - All the Xib replacements have an escape token;

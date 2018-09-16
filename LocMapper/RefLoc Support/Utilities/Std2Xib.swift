@@ -258,8 +258,7 @@ struct Std2Xib {
 			])
 		} else {
 			if taggedStrings.count != 1 {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags...", log: $0, type: .info) }}
-				else                        {NSLog("Got more than one tagged string but no plural, gender or order tags...")}
+				di.log.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags...", log: $0, type: .info) }
 			}
 			return taggedStrings.first!.value
 		}

@@ -43,8 +43,7 @@ public class XibRefLocFile {
 		for row in parsedRows {
 			guard let key = row["KEY"], !key.isEmpty else {continue}
 			if entriesBuilding[key] != nil {
-				if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, key) }}
-				else                        {NSLog("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", key)}
+				di.log.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, key) }
 			}
 			
 			var values = [Language: Value]()

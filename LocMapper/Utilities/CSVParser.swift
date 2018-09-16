@@ -227,8 +227,7 @@ class CSVParser {
 		if newlines.hasPrefix("\r\n") {scanner.scanLocation = scanLocation + 2; return "\r\n"}
 		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
 		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
-		if #available(OSX 10.12, *) {di.log.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .info, newlines) }}
-		else                        {NSLog("Unknown new line! oO (%@)", newlines)}
+		di.log.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .info, newlines) }
 		return newlines
 	}
 	
