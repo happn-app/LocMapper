@@ -32,10 +32,10 @@ extension LocFile : TextOutputStreamable {
 	`unserializedMetadata(from:)` method. They are not read from the given path,
 	it is the caller responsability to retrieve them by its own means. *** */
 	public convenience init(fromPath path: String, withCSVSeparator csvSep: String, metadata: Any? = nil) throws {
-		var encoding: UInt = 0
 		var filecontent: String?
+		var encoding = String.Encoding.utf8
 		if FileManager.default.fileExists(atPath: path) {
-			filecontent = try NSString(contentsOfFile: path, usedEncoding: &encoding) as String
+			filecontent = try String(contentsOfFile: path, usedEncoding: &encoding)
 		}
 		try self.init(filecontent: filecontent ?? "", csvSeparator: csvSep, metadata: metadata)
 	}
