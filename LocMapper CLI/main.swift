@@ -45,11 +45,13 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the XibRefLoc format.
 	      Default merge style is “add”.
 	
+	   lint [--csv-separator=separator] file.lcm
+	
 	   standardize_refloc [--csv-separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
 	      Only the data is kept; all the metadata is gotten rid of. The keys are sorted alphabetically.
 	
-	For all the actions, the default CSV separator is a comma (\",\"). The CSV separator must be a one-char-only string.
+	For all the actions, the default CSV separator is a comma (","). The CSV separator must be a one-char-only string.
 	""", to: &stream)
 }
 
@@ -348,6 +350,22 @@ case "merge_lokalise_trads_as_xibrefloc":
 		print("Done")
 	} catch {
 		print("Got error while converting: \(error)", to: &stderrStream)
+		exit(Int32((error as NSError).code))
+	}
+	
+	exit(0)
+	
+case "lint":
+	i = getLongArgs(argIdx: i, longArgs: [
+		"csv-separator": { (value: String) in csvSeparator = value }
+	])
+	let file_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
+	do {
+		guard FileManager.default.fileExists(atPath: file_path) else {throw NSError(domain: "LocMapper.cli", code: 1, userInfo: [NSLocalizedDescriptionKey: "No file found at path \(file_path)"])}
+		let locFile = try LocFile(fromPath: file_path, withCSVSeparator: csvSeparator)
+		
+	} catch {
+		print("Got error while linting: \(error)", to: &stderrStream)
 		exit(Int32((error as NSError).code))
 	}
 	
