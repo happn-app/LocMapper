@@ -361,24 +361,32 @@ case "lint":
 	])
 	let file_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	do {
-		func keyToStr(_ k: LocFile.LineKey) -> String {
-			return "<" + k.env + " / " + k.filename + " / " + k.locKey + ">"
+		func keyToStr(_ k: LocFile.LineKey, withFilename: Bool = true) -> String {
+			return "<" + k.env + (withFilename ? " / " + k.filename : "") + " / " + k.locKey + ">"
 		}
 		
 		guard FileManager.default.fileExists(atPath: file_path) else {throw NSError(domain: "LocMapper.cli", code: 1, userInfo: [NSLocalizedDescriptionKey: "No file found at path \(file_path)"])}
 		let locFile = try LocFile(fromPath: file_path, withCSVSeparator: csvSeparator)
-		let environments = Set(locFile.entryKeys.map{ $0.env }).map{ LocFile.Filter.env($0) }
+		let allStrEnvs = Set(locFile.entryKeys.map{ $0.env })
+		let allEnvironments = allStrEnvs.map{ LocFile.Filter.env($0) }
+		let allNonRefLocEnvironments = allStrEnvs.filter{ !$0.contains("RefLoc") }.map{ LocFile.Filter.env($0) }
+		/* *** Detect keys whose filename is not localized *** */
+		for f in Set(locFile.entryKeys(matchingFilters: allNonRefLocEnvironments + [.uiPresentable, .uiHidden, .stateTodoloc, .stateHardCodedValues, .stateMappedValid, .stateMappedInvalid]).map{ $0.filename }) {
+			if !f.contains("//LANGUAGE//") {
+				print("warning: found key(s) whose filename \"\(f)\" is not localized", to: &stderrStream)
+			}
+		}
 		/* *** Detect invalid mappings *** */
-		for k in locFile.entryKeys(matchingFilters: environments + [.uiPresentable, .stateMappedInvalid]) {
+		for k in locFile.entryKeys(matchingFilters: allEnvironments + [.uiPresentable, .stateMappedInvalid]) {
 			print("warning: found invalid mapping for key \(keyToStr(k))", to: &stderrStream)
 		}
 		/* *** Detect unused RefLoc keys *** */
 		let refLocKeys = Set(locFile.entryKeys(matchingFilters: [.env("RefLoc"), .uiPresentable, .stateTodoloc, .stateHardCodedValues]))
-		let usedKeys = Set(locFile.entryKeys(matchingFilters: environments + [.uiPresentable, .stateMappedValid]).flatMap{
+		let usedKeys = Set(locFile.entryKeys(matchingFilters: allEnvironments + [.uiPresentable, .stateMappedValid]).flatMap{
 			locFile.lineValueForKey($0)!.mapping!.linkedKeys
 		})
 		for k in refLocKeys.subtracting(usedKeys) {
-			print("warning: found unused RefLoc key \(keyToStr(k))", to: &stderrStream)
+			print("warning: found unused RefLoc key \(keyToStr(k, withFilename: false))", to: &stderrStream)
 		}
 		
 	} catch {
