@@ -32,7 +32,7 @@ extension LocFile {
 		public let userReadableGroupComment: String
 		public let userReadableComment: String
 		
-		public init(locKey k: String, env e: String, filename f: String, index i: Int, comment c: String, userInfo ui: [String: String], userReadableGroupComment urgc: String, userReadableComment urc: String) {
+		public init(locKey k: String, env e: String, filename f: String, index i: Int = 0, comment c: String = "", userInfo ui: [String: String] = [:], userReadableGroupComment urgc: String = "", userReadableComment urc: String = "") {
 			locKey = k
 			env = e
 			filename = f

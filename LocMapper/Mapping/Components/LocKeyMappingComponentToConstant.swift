@@ -18,6 +18,10 @@ class LocKeyMappingComponentToConstant : LocKeyMappingComponent {
 		return true
 	}
 	
+	override var linkedKeys: [LocFile.LineKey] {
+		return []
+	}
+	
 	let constant: String
 	
 	init(serialization: [String: Any?]) throws {

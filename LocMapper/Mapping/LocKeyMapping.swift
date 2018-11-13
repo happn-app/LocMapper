@@ -17,7 +17,7 @@ import Foundation
 
 
 
-public class LocKeyMapping {
+public final class LocKeyMapping {
 	
 	public let originalStringRepresentation: String
 	public var components: [LocKeyMappingComponent]?
@@ -28,6 +28,10 @@ public class LocKeyMapping {
 		guard let components = components else {return false}
 		for c in components {guard c.isValid else {return false}}
 		return true
+	}
+	
+	public var linkedKeys: [LocFile.LineKey] {
+		return components?.flatMap{ $0.linkedKeys } ?? []
 	}
 	
 	/** Inits a LocFile Key Mapping from a string representation (JSON).

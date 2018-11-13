@@ -19,6 +19,10 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 		return true
 	}
 	
+	public override var linkedKeys: [LocFile.LineKey] {
+		return [sourceKey]
+	}
+	
 	public let sourceKey: LocFile.LineKey
 	public let transforms: [LocValueTransformer]
 	

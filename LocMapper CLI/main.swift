@@ -361,8 +361,25 @@ case "lint":
 	])
 	let file_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	do {
+		func keyToStr(_ k: LocFile.LineKey) -> String {
+			return "<" + k.env + " / " + k.filename + " / " + k.locKey + ">"
+		}
+		
 		guard FileManager.default.fileExists(atPath: file_path) else {throw NSError(domain: "LocMapper.cli", code: 1, userInfo: [NSLocalizedDescriptionKey: "No file found at path \(file_path)"])}
 		let locFile = try LocFile(fromPath: file_path, withCSVSeparator: csvSeparator)
+		let environments = Set(locFile.entryKeys.map{ $0.env }).map{ LocFile.Filter.env($0) }
+		/* *** Detect invalid mappings *** */
+		for k in locFile.entryKeys(matchingFilters: environments + [.uiPresentable, .stateMappedInvalid]) {
+			print("warning: found invalid mapping for key \(keyToStr(k))", to: &stderrStream)
+		}
+		/* *** Detect unused RefLoc keys *** */
+		let refLocKeys = Set(locFile.entryKeys(matchingFilters: [.env("RefLoc"), .uiPresentable, .stateTodoloc, .stateHardCodedValues]))
+		let usedKeys = Set(locFile.entryKeys(matchingFilters: environments + [.uiPresentable, .stateMappedValid]).flatMap{
+			locFile.lineValueForKey($0)!.mapping!.linkedKeys
+		})
+		for k in refLocKeys.subtracting(usedKeys) {
+			print("warning: found unused RefLoc key \(keyToStr(k))", to: &stderrStream)
+		}
 		
 	} catch {
 		print("Got error while linting: \(error)", to: &stderrStream)

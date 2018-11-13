@@ -63,6 +63,10 @@ public class LocKeyMappingComponent {
 		fatalError("This computed property is abstract.")
 	}
 	
+	public var linkedKeys: [LocFile.LineKey] {
+		fatalError("This function is abstract.")
+	}
+	
 	final func serialize() -> [String: Any?] {
 		var serializedData = self.serializePrivateData()
 		if !(self is LocKeyMappingComponentInvalid) {serializedData["__type"] = type(of: self).serializedType}

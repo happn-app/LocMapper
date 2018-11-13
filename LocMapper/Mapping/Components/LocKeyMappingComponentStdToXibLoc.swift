@@ -18,6 +18,10 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 		return true
 	}
 	
+	override var linkedKeys: [LocFile.LineKey] {
+		return taggedKeys.map{ $0.value }
+	}
+	
 	let taggedKeys: [TaggedObject<LocFile.LineKey>]
 	
 	init(taggedKeys k: [TaggedObject<LocFile.LineKey>]) {

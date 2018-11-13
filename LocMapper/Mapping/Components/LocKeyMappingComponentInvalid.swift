@@ -18,6 +18,10 @@ class LocKeyMappingComponentInvalid : LocKeyMappingComponent {
 		return false
 	}
 	
+	override var linkedKeys: [LocFile.LineKey] {
+		return []
+	}
+	
 	let invalidSerialization: [String: Any?]
 	
 	init(serialization: [String: Any?]) {
