@@ -45,7 +45,8 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the XibRefLoc format.
 	      Default merge style is “add”.
 	
-	   lint [--csv-separator=separator] file.lcm
+	   lint [--csv-separator=separator] [--detect-unused-refloc=true|false] file.lcm
+	      Does not detect unused refloc by default.
 	
 	   standardize_refloc [--csv-separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
@@ -356,8 +357,10 @@ case "merge_lokalise_trads_as_xibrefloc":
 	exit(0)
 	
 case "lint":
+	var detect_unused_refloc = false
 	i = getLongArgs(argIdx: i, longArgs: [
-		"csv-separator": { (value: String) in csvSeparator = value }
+		"csv-separator": { (value: String) in csvSeparator = value },
+		"detect-unused-refloc": { (value: String) in detect_unused_refloc = (value.lowercased() != "false" && value.lowercased() != "no" && value != "0") }
 	])
 	let file_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
 	do {
@@ -367,26 +370,13 @@ case "lint":
 		
 		guard FileManager.default.fileExists(atPath: file_path) else {throw NSError(domain: "LocMapper.cli", code: 1, userInfo: [NSLocalizedDescriptionKey: "No file found at path \(file_path)"])}
 		let locFile = try LocFile(fromPath: file_path, withCSVSeparator: csvSeparator)
-		let allStrEnvs = Set(locFile.entryKeys.map{ $0.env })
-		let allEnvironments = allStrEnvs.map{ LocFile.Filter.env($0) }
-		let allNonRefLocEnvironments = allStrEnvs.filter{ !$0.contains("RefLoc") }.map{ LocFile.Filter.env($0) }
-		/* *** Detect keys whose filename is not localized *** */
-		for f in Set(locFile.entryKeys(matchingFilters: allNonRefLocEnvironments + [.uiPresentable, .uiHidden, .stateTodoloc, .stateHardCodedValues, .stateMappedValid, .stateMappedInvalid]).map{ $0.filename }) {
-			if !f.contains("//LANGUAGE//") {
-				print("warning: found key(s) whose filename \"\(f)\" is not localized", to: &stderrStream)
+		for report in locFile.lint(detectUnusedRefLoc: detect_unused_refloc) {
+			switch report {
+			case .unlocalizedFilename(let filename):  print("warning: found key(s) whose filename \"\(filename)\" is not localized", to: &stderrStream)
+			case .invalidMapping(let key):            print("warning: found invalid mapping for key \(keyToStr(key))", to: &stderrStream)
+			case .unusedRefLoc(let key):              print("warning: found unused RefLoc key \(keyToStr(key, withFilename: false))", to: &stderrStream)
+			case .unmappedVariant(let base, let key): print("warning: found unmapped key \(keyToStr(key, withFilename: false)) (variant of mapped base key \(base.locKey))", to: &stderrStream)
 			}
-		}
-		/* *** Detect invalid mappings *** */
-		for k in locFile.entryKeys(matchingFilters: allEnvironments + [.uiPresentable, .stateMappedInvalid]) {
-			print("warning: found invalid mapping for key \(keyToStr(k))", to: &stderrStream)
-		}
-		/* *** Detect unused RefLoc keys *** */
-		let refLocKeys = Set(locFile.entryKeys(matchingFilters: [.env("RefLoc"), .uiPresentable, .stateTodoloc, .stateHardCodedValues]))
-		let usedKeys = Set(locFile.entryKeys(matchingFilters: allEnvironments + [.uiPresentable, .stateMappedValid]).flatMap{
-			locFile.lineValueForKey($0)!.mapping!.linkedKeys
-		})
-		for k in refLocKeys.subtracting(usedKeys) {
-			print("warning: found unused RefLoc key \(keyToStr(k, withFilename: false))", to: &stderrStream)
 		}
 		
 	} catch {
