@@ -29,13 +29,9 @@ extension LocFile {
 		switch mergeStyle {
 		case .add: (/*nop*/)
 		case .replace:
-			/* Remove all previous StdRefLoc entries whose untagged keys match any
-			 * untagged keys in the new entries */
-			let newUntaggedKeys = stdRefLocFile.entries.map{ $0.key }
+			/* Remove all previous StdRefLoc entries */
 			for key in entries.keys {
 				guard key.env == "StdRefLoc" else {continue}
-				let (untaggedKey, _) = key.locKey.splitAppendedTags()
-				guard newUntaggedKeys.contains(untaggedKey) else {continue}
 				entries.removeValue(forKey: key)
 			}
 		}
@@ -49,7 +45,7 @@ extension LocFile {
 		}
 		
 		/* Import new RefLoc entries */
-		var isFirst = entryKeys.contains{ $0.env == "StdRefLoc" }
+		var isFirst = entries.keys.contains{ $0.env == "StdRefLoc" }
 		for (refKey, refVals) in stdRefLocFile.entries {
 			for (language, taggedValues) in refVals {
 				for taggedValue in taggedValues {
