@@ -9,6 +9,6 @@ cd "$(dirname "$0")"/../ || exit 42
 ##########################################
 
 rm -fr "Carthage/Build"
-XCODE_XCCONFIG_FILE="$(pwd)/Xcode Supporting Files/StaticCarthageBuild.xcconfig" carthage bootstrap --use-sshi --platform macOS "$@"
+XCODE_XCCONFIG_FILE="$(pwd)/Xcode Supporting Files/StaticCarthageBuild.xcconfig" carthage bootstrap --use-ssh --platform macOS "$@"
 
 "$scpt_dir"/carthage_workaround_static_folder.sh "Static"
