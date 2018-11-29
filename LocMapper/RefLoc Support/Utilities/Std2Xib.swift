@@ -201,9 +201,9 @@ struct Std2Xib {
 			
 			/* The list of language is in LocValueTransformerPluralVariantPick */
 			let pluralValues: [LocValueTransformerPluralVariantPick.UnicodePluralValue]
-			if Set(["thai", "chinese", "japanese"]).contains(where: { language.range(of: $0) != nil }) {
+			if Set(["chinese", "japanese", "thai"]).contains(where: { language.range(of: $0) != nil }) {
 				pluralValues = [.other]
-			} else if Set(["english", "german", "spanish", "italian", "hungarian", "turkish", "greek", "french", "portuguese"]).contains(where: { language.range(of: $0) != nil }) {
+			} else if Set(["danish", "dutch", "english", "french", "german", "greek", "hungarian", "italian", "norwegian", "portuguese", "spanish", "swedish", "telugu", "turkish"]).contains(where: { language.range(of: $0) != nil }) {
 				pluralValues = [.one, .other]
 			} else if Set(["polish", "russian"]).contains(where: { language.range(of: $0) != nil }) {
 				pluralValues = [.one, .few, .other]
