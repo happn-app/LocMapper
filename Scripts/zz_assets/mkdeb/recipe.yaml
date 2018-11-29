@@ -1,0 +1,27 @@
+---
+version: 1
+
+name: locmapper
+description: A tool to map translations from a single source of truth to iOS and Android localization files.
+homepage: https://github.com/happn-app/LocMapper/
+
+maintainer: François Lamboley <francois.lamboley@happn.com>
+
+source:
+  url: NONE
+  arch-mapping:
+    amd64: amd64
+
+control:
+  depends:
+  - swiftlang-libs (=4.2.1-RELEASE-1~mkdeb1)
+  description: |
+    Not much to say here…
+  section: devel
+
+install:
+  upstream:
+    /usr/bin:
+    - pattern: locmapper
+
+# vim: ts=2 sw=2 et

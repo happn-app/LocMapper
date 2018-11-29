@@ -5,11 +5,12 @@
 #    in the “Static” folder to the root Carthage folder
 # Usage: carthage_workaround_static_folder.sh static_folder_name
 
-### FL Script Header V1 ##################
+### FL Script Header V2 ##################
 set -e
 [ "${0:0:1}" != "/" ] && _prefix="$(pwd)/"
 scpt_dir="$_prefix$(dirname "$0")"
 lib_dir="$scpt_dir/zz_lib"
+ast_dir="$scpt_dir/zz_assets"
 source "$lib_dir/common.sh" || exit 255
 cd "$(dirname "$0")"/../ || exit 42
 ##########################################
