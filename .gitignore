@@ -6,3 +6,6 @@ xcuserdata/
 /Carthage/
 /.build
 /Packages
+
+# Other
+/linux_build/
