@@ -147,12 +147,17 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 	 * Italian:               one:i=1&v=0
 	 * Hungarian:             one:n=1
 	 * Portuguese (Portugal): one:i=1&v=0
+	 * Dutch:                 one:i=1&v=0
+	 * Swedish:               one:i=1&v=0
 	 * Turkish:               one:n=1
+	 * Norwegian Bokmål:      one:n=1
+	 * Telugu:                one:n=1
 	 * Thai:                  N/A
 	 * Chinese:               N/A
 	 * Japanese:              N/A
 	 * Greek:                 one:n=1
 	 * French:                one:i=0,1
+	 * Danish:                one:n=1|(t!=0&i=0,1)
 	 * Portuguese (Brazil):   one:i=0..1
 	 * Polish:                one:i=1&v=0;              few:v=0&i%10=2..4&i%100!=12..14; many:v=0&((i!=1&i%10=0..1)|(i%10=5..9)|(i%100=12..14))
 	 * Russian:               one:v=0&i%10=1&i%100!=11; few:v=0&i%10=2..4&i%100!=12..14; many:v=0&((i%10=0)|(i%10=5..9)|(i%100=11..14)) */
@@ -162,10 +167,10 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		
 		let n: Int?
 		let pluralityDefinition: PluralityDefinition
-		if Set(["thai", "chinese", "japanese"]).contains(where: { language.range(of: $0) != nil }) {
+		if Set(["chinese", "japanese", "thai"]).contains(where: { language.range(of: $0) != nil }) {
 			pluralityDefinition = PluralityDefinition(string: "(*)")
 			n = (pluralUnicodeValue == .other ? 1 : nil)
-		} else if Set(["english", "german", "spanish", "italian", "hungarian", "turkish", "greek", "french", "portuguese"]).contains(where: { language.range(of: $0) != nil }) {
+		} else if Set(["danish", "dutch", "english", "french", "german", "greek", "hungarian", "italian", "norwegian", "portuguese", "spanish", "swedish", "telugu", "turkish"]).contains(where: { language.range(of: $0) != nil }) {
 			/* Technically, for French and Brazilian Portuguese, the plurality
 			 * definition is "(0:1)(*)", but as we use 1 and 2 for the values of n,
 			 * we don't care about the difference in the 0 case for these two
