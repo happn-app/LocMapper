@@ -152,7 +152,7 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 	 * Japanese:              N/A
 	 * Greek:                 one:n=1
 	 * French:                one:i=0,1
-	 * Danish:                one:i=0,1
+	 * Danish:                one:n=1|(t!=0&i=0,1)
 	 * Portuguese (Brazil):   one:i=0..1
 	 * Polish:                one:i=1&v=0;              few:v=0&i%10=2..4&i%100!=12..14; many:v=0&((i!=1&i%10=0..1)|(i%10=5..9)|(i%100=12..14))
 	 * Russian:               one:v=0&i%10=1&i%100!=11; few:v=0&i%10=2..4&i%100!=12..14; many:v=0&((i%10=0)|(i%10=5..9)|(i%100=11..14)) */
