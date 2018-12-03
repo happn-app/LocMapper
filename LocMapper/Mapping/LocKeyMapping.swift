@@ -101,18 +101,29 @@ public final class LocKeyMapping {
 		return res
 	}
 	
+	#if os(Linux)
+		private static let regex = try! NSRegularExpression(pattern: "^ +$", options: [.anchorsMatchLines])
+	#endif
+	
 	private static func stringRepresentationFromComponentsList(_ components: [LocKeyMappingComponent]) -> String {
 		let jsonOptions: JSONSerialization.WritingOptions
 		if #available(OSX 10.13, *) {jsonOptions = [.prettyPrinted, .sortedKeys]}
 		else                        {jsonOptions = [.prettyPrinted]}
 		let allSerialized = components.map{ $0.serialize() }
-		return try! String(
+		let str = try! String(
 			data: JSONSerialization.data(
 				withJSONObject: (allSerialized.count == 1 ? allSerialized[0] : allSerialized),
 				options: jsonOptions
 			),
 			encoding: .utf8
 		)!
+		#if !os(Linux)
+			return str
+		#else
+			/* On Linux, the pretty printer prints spaces in whitelines. To be ISO
+			 * with macOS, we remove the spaces-only lines. */
+			return regex.stringByReplacingMatches(in: str, options: [], range: NSRange(str.startIndex..<str.endIndex, in: str), withTemplate: "")
+		#endif
 	}
 	
 }
