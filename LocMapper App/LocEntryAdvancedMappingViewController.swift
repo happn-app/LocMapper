@@ -149,7 +149,7 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 			textViewMapping.string = ""
 			
 		case .mapping(let mapping)?:
-			textViewMapping.string = mapping.stringRepresentation()
+			textViewMapping.string = mapping.stringRepresentation(prettyPrint: true)
 		}
 	}
 	

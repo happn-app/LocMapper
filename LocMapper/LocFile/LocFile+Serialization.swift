@@ -330,7 +330,10 @@ extension LocFile : TextOutputStreamable {
 			
 		case .mapping(let mapping):
 			target.write([String](repeating: csvSeparator, count: languages.count + 1).joined())
-			write(multilineText: mapping.stringRepresentation(), encodingInfo: encodingInfo, to: &target) /* PRIVATE_MAPPING_HEADER_NAME */
+			/* Note: I’d have wanted to have a pretty print here, but because Linux
+			 *       does not pretty print exactly as macOS does, we have to not
+			 *       pretty print. */
+			write(multilineText: mapping.stringRepresentation(prettyPrint: false), encodingInfo: encodingInfo, to: &target) /* PRIVATE_MAPPING_HEADER_NAME */
 		}
 		
 		target.write(

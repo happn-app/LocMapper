@@ -72,7 +72,7 @@ public final class LocKeyMapping {
 	}
 	
 	public convenience init(components: [LocKeyMappingComponent]) {
-		self.init(components: components, stringRepresentation: LocKeyMapping.stringRepresentationFromComponentsList(components))
+		self.init(components: components, stringRepresentation: LocKeyMapping.stringRepresentationFromComponentsList(components, prettyPrint: false))
 	}
 	
 	init(components c: [LocKeyMappingComponent]?, stringRepresentation: String) {
@@ -80,9 +80,9 @@ public final class LocKeyMapping {
 		originalStringRepresentation = stringRepresentation
 	}
 	
-	public func stringRepresentation() -> String {
+	public func stringRepresentation(prettyPrint: Bool) -> String {
 		if let components = components {
-			return LocKeyMapping.stringRepresentationFromComponentsList(components)
+			return LocKeyMapping.stringRepresentationFromComponentsList(components, prettyPrint: prettyPrint)
 		} else {
 			return originalStringRepresentation
 		}
@@ -101,14 +101,11 @@ public final class LocKeyMapping {
 		return res
 	}
 	
-	#if os(Linux)
-		private static let regex = try! NSRegularExpression(pattern: "^ +$", options: [.anchorsMatchLines])
-	#endif
-	
-	private static func stringRepresentationFromComponentsList(_ components: [LocKeyMappingComponent]) -> String {
+	private static func stringRepresentationFromComponentsList(_ components: [LocKeyMappingComponent], prettyPrint: Bool) -> String {
 		let jsonOptions: JSONSerialization.WritingOptions
-		if #available(OSX 10.13, *) {jsonOptions = [.prettyPrinted, .sortedKeys]}
-		else                        {jsonOptions = [.prettyPrinted]}
+		let baseJSONOptions: JSONSerialization.WritingOptions = (prettyPrint ? [.prettyPrinted] : [])
+		if #available(OSX 10.13, *) {jsonOptions = baseJSONOptions.union(.sortedKeys)}
+		else                        {jsonOptions = baseJSONOptions}
 		let allSerialized = components.map{ $0.serialize() }
 		let str = try! String(
 			data: JSONSerialization.data(
@@ -117,13 +114,7 @@ public final class LocKeyMapping {
 			),
 			encoding: .utf8
 		)!
-		#if !os(Linux)
-			return str
-		#else
-			/* On Linux, the pretty printer prints spaces in whitelines. To be ISO
-			 * with macOS, we remove the spaces-only lines. */
-			return regex.stringByReplacingMatches(in: str, options: [], range: NSRange(str.startIndex..<str.endIndex, in: str), withTemplate: "")
-		#endif
+		return str
 	}
 	
 }
