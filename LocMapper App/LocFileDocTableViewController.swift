@@ -141,7 +141,7 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 		switch csvLocFile.lineValueForKey(key) {
 		case .none: color = NSColor.red
 		case .mapping?: color = NSColor.gray
-		case .entries?: color = NSColor.black
+		case .entries?: color = NSColor.textColor
 		}
 		(cell as? HighlightColorTextFieldCell)?.nonHighlightedTextColor = color
 	}
@@ -365,8 +365,8 @@ class HighlightColorTextFieldCell : NSTextFieldCell {
 	
 	override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
 		let newTextObj = super.setUpFieldEditorAttributes(textObj)
-		newTextObj.textColor = NSColor.black
-		textColor = NSColor.black /* Not sure why the line above is not enough (and actually seems to do nothing...) */
+		newTextObj.textColor = NSColor.textColor
+		textColor = NSColor.textColor /* Not sure why the line above is not enough (and actually seems to do nothing...) */
 		return newTextObj
 	}
 	
