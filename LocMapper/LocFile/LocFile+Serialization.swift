@@ -181,23 +181,30 @@ extension LocFile : TextOutputStreamable {
 	   ********************* */
 	
 	public func write<Target : TextOutputStream>(to target: inout Target) {
-		writeHeaders(to: &target)
+		let languagesBeforeStructuralColumns: Bool
+		switch serializationStyle {
+		case .gitFriendly: languagesBeforeStructuralColumns = false
+		case .csvFriendly: languagesBeforeStructuralColumns = true
+		}
+		
+		writeHeaders(languagesBeforeStructuralColumns: languagesBeforeStructuralColumns, to: &target)
 		
 		/* Compute and write the decoding Info */
-		let encodingInfo: EncodingInfo
+		var encodingInfo: EncodingInfo
 		switch serializationStyle {
 		case .csvFriendly:
+			assert(languagesBeforeStructuralColumns)
 			encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: false)
 			target.write([String](repeating: csvSeparator, count: 3 + languages.count + 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
 			
 		case .gitFriendly:
+			assert(!languagesBeforeStructuralColumns)
 			encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: true)
 			target.write([String](repeating: csvSeparator, count: 3).joined() + "⚠️ This file has been saved with the “git friendly” option. Please do not edit manually unless you know what you’re doing.".csvCellValueWithSeparator(csvSeparator))
-			target.write([String](repeating: csvSeparator, count: languages.count + 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
+			target.write([String](repeating: csvSeparator, count: 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
 		}
 		
 		var previousBasename: String?
-		var previousEncodingInfo = encodingInfo
 		for entry_key in entries.keys.sorted() {
 			/* Computing user readable file name and writing file change separator if needed */
 			var basename = entry_key.filename
@@ -219,12 +226,7 @@ extension LocFile : TextOutputStreamable {
 			}
 			
 			let value = entries[entry_key]!
-			let actualEncodingInfo = write(key: entry_key, value: value, userReadableFilename: basename, encodingInfo: encodingInfo, to: &target)
-			target.write(csvSeparator)
-			if actualEncodingInfo != previousEncodingInfo {
-				target.write(actualEncodingInfo.serialized().csvCellValueWithSeparator(csvSeparator)) /* PRIVATE_ENCODING_INFO_HEADER_NAME */
-				previousEncodingInfo = actualEncodingInfo
-			}
+			encodingInfo = write(key: entry_key, value: value, userReadableFilename: basename, encodingInfo: encodingInfo, languagesBeforeStructuralColumns: languagesBeforeStructuralColumns, to: &target)
 			target.write("\n")
 		}
 	}
@@ -279,7 +281,13 @@ extension LocFile : TextOutputStreamable {
 		
 	}
 	
-	private func writeHeaders<Target : TextOutputStream>(to target: inout Target) {
+	private func writeHeaders<Target : TextOutputStream>(languagesBeforeStructuralColumns: Bool, to target: inout Target) {
+		func printLanguages() {
+			for language in languages {
+				target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))
+			}
+		}
+		
 		/* These columns are useful to a casual reader */
 		target.write(
 			LocFile.KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
@@ -287,10 +295,8 @@ extension LocFile : TextOutputStreamable {
 			csvSeparator + LocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
 			csvSeparator + LocFile.COMMENTS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
-		/* The languages */
-		for language in languages {
-			target.write(csvSeparator + language.csvCellValueWithSeparator(csvSeparator))
-		}
+		/* The languages (if applicable) */
+		if languagesBeforeStructuralColumns {printLanguages()}
 		/* Private stuff we use for mapping and some structural information */
 		target.write(
 			csvSeparator + LocFile.PRIVATE_MAPPING_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
@@ -298,12 +304,27 @@ extension LocFile : TextOutputStreamable {
 			csvSeparator + LocFile.PRIVATE_USERINFO_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
 			csvSeparator + LocFile.PRIVATE_ENCODING_INFO_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
+		if !languagesBeforeStructuralColumns {printLanguages()}
 		target.write("\n")
 	}
 	
-	/* - Returns: The actual EncodingInfo that were used when writing the data */
-	private func write<Target : TextOutputStream>(key: LineKey, value: LineValue, userReadableFilename basename: String, encodingInfo: EncodingInfo, to target: inout Target) -> EncodingInfo {
+	/** - Returns: The actual EncodingInfo that were used when writing the data. */
+	private func write<Target : TextOutputStream>(key: LineKey, value: LineValue, userReadableFilename basename: String, encodingInfo: EncodingInfo, languagesBeforeStructuralColumns: Bool, to target: inout Target) -> EncodingInfo {
+		func printLanguages() {
+			switch value {
+			case .entries(let entries):
+				for language in languages {
+					target.write(csvSeparator)
+					write(multilineText: entries[language] ?? LocFile.todolocToken, encodingInfo: encodingInfo, to: &target)
+				}
+				
+			case .mapping:
+				target.write([String](repeating: csvSeparator, count: languages.count).joined())
+			}
+		}
+		
 		var encodingInfo = encodingInfo
+		let originalEncodingInfo = encodingInfo
 		
 		/* Writing group comment */
 		if !key.userReadableGroupComment.isEmpty {
@@ -320,16 +341,13 @@ extension LocFile : TextOutputStreamable {
 			csvSeparator
 		)
 		write(multilineText: key.userReadableComment, encodingInfo: encodingInfo, to: &target) /* COMMENTS_HEADER_NAME */
+		
+		/* Print translation values (if applicable) and mapping. */
+		if languagesBeforeStructuralColumns {printLanguages()}
+		target.write(csvSeparator) /* PRIVATE_MAPPING_HEADER_NAME */
 		switch value {
-		case .entries(let entries):
-			for language in languages {
-				target.write(csvSeparator)
-				write(multilineText: entries[language] ?? LocFile.todolocToken, encodingInfo: encodingInfo, to: &target)
-			}
-			target.write(csvSeparator) /* PRIVATE_MAPPING_HEADER_NAME (empty) */
-			
+		case .entries: (/*nop*/)
 		case .mapping(let mapping):
-			target.write([String](repeating: csvSeparator, count: languages.count + 1).joined())
 			/* Note: I’d have wanted to have a pretty print here, but because Linux
 			 *       does not pretty print exactly as macOS does, we have to not
 			 *       pretty print. */
@@ -343,6 +361,16 @@ extension LocFile : TextOutputStreamable {
 		
 		let compressionError = write(userInfo: key.fullComment, encodingInfo: encodingInfo, to: &target) /* PRIVATE_USERINFO_HEADER_NAME */
 		if compressionError {encodingInfo.compressedUserInfo = false}
+		
+		/* Write encoding info */
+		target.write(csvSeparator)
+		if encodingInfo != originalEncodingInfo {
+			target.write(encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator)) /* PRIVATE_ENCODING_INFO_HEADER_NAME */
+		}
+		
+		/* Print translation values (if applicable). */
+		if !languagesBeforeStructuralColumns {printLanguages()}
+		
 		return encodingInfo
 	}
 	
