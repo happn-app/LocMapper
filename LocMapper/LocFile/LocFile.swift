@@ -23,9 +23,15 @@ public class LocFile {
 	internal var metadata: [String: String]
 	
 	public internal(set) var languages: [String]
-	internal var entries: [LineKey: LineValue]
-	public var entryKeys: [LineKey] {
-		return Array(entries.keys)
+	internal var entries: [LineKey: LineValue] {
+		didSet {
+			/* We could probably be more precise on cache invalidation and
+			 * invalidate only what’s needed, but it would have to be done when
+			 * setting the new values in the entries directly and we might miss
+			 * some places. We do not really need to care about the cache much, so
+			 * we invalidate it any time the entries are modified. */
+			invalidateCache()
+		}
 	}
 	
 	/* Serialization options */
@@ -121,6 +127,55 @@ public class LocFile {
 		}
 		keys.append(refKey)
 		return refKey
+	}
+	
+	/* *********************************
+      MARK: - Private (for LintSupport)
+	   ********************************* */
+	
+	internal var cachedEntryKeys: [LineKey]?
+	
+	internal var cachedAllStrEnvs: Set<String>?
+	internal var cachedAllEnvironments: [Filter]?
+	internal var cachedAllNonRefLocEnvironments: [Filter]?
+	internal var cachedAllRefLocKeys: Set<LineKey>?
+	internal var cachedAllNonRefLocKeys: Set<LineKey>?
+	
+	internal var cachedKeysReferencedInMappings: Set<LineKey>?
+	internal var cachedUntaggedKeysReferencedInMappings: Set<LineKey>?
+	
+	/* Groupped RefLoc keys that have the same root, but different variants. For
+	 * instance:
+	 *    ‘hello"gf' and 'hello"gm' have the same 'hello' root, and the 'gf'
+	 *    and 'gm' variants. They’ll be grouped as
+	 *       ['hello': [‘hello"gf', 'hello"gm']] */
+	internal var cachedGroupedTaggedRefLocKeys: [LineKey: Set<LineKey>]?
+	internal var cachedAllUntaggedRefLocKeys: Set<LineKey>?
+	
+	/* Groupped **untagged** RefLoc keys by versions. For instance:
+	 *    'hello#2' and 'hello' are two different versions of the 'hello' key.
+	 *    They’ll be grouped as (in this order)
+	 *       ['hello': ['hello', 'hello#2']]
+	 *    'hello' and 'hello#1a' are two different keys altogether (1a is not
+	 *    a valid number). */
+	internal var cachedGroupedOctothorpedUntaggedRefLocKeys: [LineKey: [LineKey]]?
+	
+	internal func invalidateCache() {
+		cachedEntryKeys = nil
+		
+		cachedAllStrEnvs = nil
+		cachedAllEnvironments = nil
+		cachedAllNonRefLocEnvironments = nil
+		cachedAllRefLocKeys = nil
+		cachedAllNonRefLocKeys = nil
+		
+		cachedKeysReferencedInMappings = nil
+		cachedUntaggedKeysReferencedInMappings = nil
+		
+		cachedGroupedTaggedRefLocKeys = nil
+		cachedAllUntaggedRefLocKeys = nil
+		
+		cachedGroupedOctothorpedUntaggedRefLocKeys = nil
 	}
 	
 }
