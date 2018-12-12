@@ -134,7 +134,7 @@ class LocFileDocContentSplitViewController : NSSplitViewController {
 	
 	@IBAction func showEntryDetails(_ sender: AnyObject!) {
 		let dividerIndex = 0
-		splitView.setPosition(view.bounds.size.height - 150, ofDividerAt: dividerIndex)
+		splitView.setPosition(splitView.bounds.size.height - 210, ofDividerAt: dividerIndex)
 	}
 	
 	/* ***************
