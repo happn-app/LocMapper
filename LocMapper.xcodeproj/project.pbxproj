@@ -29,6 +29,10 @@
 		7B147119210D12B700B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
+		7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE1E21C120310016D109 /* AppDelegate.swift */; };
+		7B15CE2121C120310016D109 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE2021C120310016D109 /* ViewController.swift */; };
+		7B15CE2321C120330016D109 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2221C120330016D109 /* Assets.xcassets */; };
+		7B15CE2621C120330016D109 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2421C120330016D109 /* Main.storyboard */; };
 		7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */; };
 		7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B164294202751EB000AE458 /* LocFile+LineKey.swift */; };
 		7B16A3E5214E9FAF00825F89 /* Scanner+LinuxCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */; };
@@ -164,6 +168,13 @@
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		7B147117210D124400B1621C /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
+		7B15CE1C21C120310016D109 /* LocMapper Linter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LocMapper Linter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B15CE1E21C120310016D109 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7B15CE2021C120310016D109 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7B15CE2221C120330016D109 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7B15CE2521C120330016D109 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7B15CE2721C120330016D109 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LocMapper_Linter.entitlements; sourceTree = "<group>"; };
 		7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+MetadataSupport.swift"; sourceTree = "<group>"; };
 		7B164294202751EB000AE458 /* LocFile+LineKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LineKey.swift"; sourceTree = "<group>"; };
 		7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Scanner+LinuxCompat.swift"; sourceTree = "<group>"; };
@@ -242,6 +253,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7B15CE1921C120310016D109 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7B4CC6BB2025BB390055CB74 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -293,6 +311,19 @@
 			);
 			name = macOS;
 			path = Mac;
+			sourceTree = "<group>";
+		};
+		7B15CE1D21C120310016D109 /* LocMapper Linter */ = {
+			isa = PBXGroup;
+			children = (
+				7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */,
+				7B15CE1E21C120310016D109 /* AppDelegate.swift */,
+				7B15CE2021C120310016D109 /* ViewController.swift */,
+				7B15CE2221C120330016D109 /* Assets.xcassets */,
+				7B15CE2421C120330016D109 /* Main.storyboard */,
+				7B15CE2721C120330016D109 /* Info.plist */,
+			);
+			path = "LocMapper Linter";
 			sourceTree = "<group>";
 		};
 		7B16428B2027511B000AE458 /* LocFile */ = {
@@ -396,6 +427,7 @@
 				7B4CC6CD2025BCEF0055CB74 /* LocMapper */,
 				7B6E25A119D4157A001934ED /* LocMapper CLI */,
 				7B837D801C0EF3DB0020E86B /* LocMapper App */,
+				7B15CE1D21C120310016D109 /* LocMapper Linter */,
 				7B4CC6BF2025BB390055CB74 /* LocMapperTests */,
 				7BF69778202322AD00088A52 /* Dependencies */,
 				7B6E25A019D4157A001934ED /* Products */,
@@ -413,6 +445,7 @@
 				7B837D7F1C0EF3DB0020E86B /* LocMapper.app */,
 				7B4CC6BE2025BB390055CB74 /* LocMapperTests.xctest */,
 				7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */,
+				7B15CE1C21C120310016D109 /* LocMapper Linter.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -590,6 +623,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		7B15CE1B21C120310016D109 /* LocMapper Linter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B15CE2B21C120330016D109 /* Build configuration list for PBXNativeTarget "LocMapper Linter" */;
+			buildPhases = (
+				7B15CE1821C120310016D109 /* Sources */,
+				7B15CE1921C120310016D109 /* Frameworks */,
+				7B15CE1A21C120310016D109 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "LocMapper Linter";
+			productName = "LocMapper Linter";
+			productReference = 7B15CE1C21C120310016D109 /* LocMapper Linter.app */;
+			productType = "com.apple.product-type.application";
+		};
 		7B4CC6BD2025BB390055CB74 /* LocMapperTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7B4CC6C32025BB390055CB74 /* Build configuration list for PBXNativeTarget "LocMapperTests" */;
@@ -668,10 +718,20 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 0710;
-				LastSwiftUpdateCheck = 0920;
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = happn;
 				TargetAttributes = {
+					7B15CE1B21C120310016D109 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = M8JS42FSNG;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
 					7B21A38F1DE4BCDF00F81E68 = {
 						CreatedOnToolsVersion = 8.1;
 						ProvisioningStyle = Automatic;
@@ -713,11 +773,21 @@
 				7B4CC6BD2025BB390055CB74 /* LocMapperTests */,
 				7B6E259E19D4157A001934ED /* LocMapper CLI */,
 				7B837D7E1C0EF3DB0020E86B /* LocMapper App */,
+				7B15CE1B21C120310016D109 /* LocMapper Linter */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7B15CE1A21C120310016D109 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B15CE2321C120330016D109 /* Assets.xcassets in Resources */,
+				7B15CE2621C120330016D109 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7B4CC6BC2025BB390055CB74 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -741,6 +811,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7B15CE1821C120310016D109 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B15CE2121C120310016D109 /* ViewController.swift in Sources */,
+				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7B4CC6BA2025BB390055CB74 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -870,6 +949,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		7B15CE2421C120330016D109 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7B15CE2521C120330016D109 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		7B837D891C0EF3DB0020E86B /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -881,6 +968,40 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		7B15CE2921C120330016D109 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = M8JS42FSNG;
+				INFOPLIST_FILE = "LocMapper Linter/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.happn.LocMapper-Linter";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		7B15CE2A21C120330016D109 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = M8JS42FSNG;
+				INFOPLIST_FILE = "LocMapper Linter/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.happn.LocMapper-Linter";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
 		7B21A3911DE4BCDF00F81E68 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1029,6 +1150,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1156,6 +1278,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7B15CE2B21C120330016D109 /* Build configuration list for PBXNativeTarget "LocMapper Linter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B15CE2921C120330016D109 /* Debug */,
+				7B15CE2A21C120330016D109 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "All" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
