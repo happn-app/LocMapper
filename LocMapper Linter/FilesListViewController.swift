@@ -10,17 +10,14 @@ import Cocoa
 
 
 
-class FilesListViewController : NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+class FilesListViewController : NSViewController, NSTableViewDataSource, NSTableViewDelegate, BecameFirstResponderTextFieldDelegate {
+	
+	@IBOutlet var tableView: NSTableView!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		// Do any additional setup after loading the view.
-	}
-	
-	override var representedObject: Any? {
-		didSet {
-		}
 	}
 	
 	/* *****************************************
@@ -34,6 +31,35 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
 		guard let tableColumn = tableColumn else {return nil}
 		return tableView.makeView(withIdentifier: tableColumn.identifier, owner: self)
+	}
+	
+	/* ***************************
+      MARK: - Text Field Delegate
+	   *************************** */
+	
+	func didBecomeFirstResponder(_ textField: NSTextField) {
+		(view as? KeyEquivalentDisablingView)?.disableKeyEquivalent = true
+	}
+	
+	func controlTextDidEndEditing(_ obj: Notification) {
+		DispatchQueue.main.async{
+			(self.view as? KeyEquivalentDisablingView)?.disableKeyEquivalent = false
+		}
+	}
+	
+	/* ***************
+      MARK: - Actions
+	   *************** */
+	
+	@IBAction func nicknameEdited(_ sender: AnyObject) {
+		guard let textView = sender as? NSTextField else {return}
+		let row = tableView.row(for: textView) /* Note: O(n)… */
+		guard row >= 0 else {return}
+		print("nicknameEdited")
+	}
+	
+	@IBAction func startKeyVersionsCheck(_ sender: AnyObject) {
+		print("startKeyVersionsCheck")
 	}
 	
 }

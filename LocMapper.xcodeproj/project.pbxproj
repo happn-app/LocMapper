@@ -33,6 +33,8 @@
 		7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE2021C120310016D109 /* FilesListViewController.swift */; };
 		7B15CE2321C120330016D109 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2221C120330016D109 /* Assets.xcassets */; };
 		7B15CE2621C120330016D109 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2421C120330016D109 /* Main.storyboard */; };
+		7B15CE3121C1840C0016D109 /* KeyEquivalentDisablingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE3021C1840B0016D109 /* KeyEquivalentDisablingView.swift */; };
+		7B15CE3321C18E830016D109 /* BecameFirstResponderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE3221C18E830016D109 /* BecameFirstResponderTextField.swift */; };
 		7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */; };
 		7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B164294202751EB000AE458 /* LocFile+LineKey.swift */; };
 		7B16A3E5214E9FAF00825F89 /* Scanner+LinuxCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */; };
@@ -175,6 +177,8 @@
 		7B15CE2521C120330016D109 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7B15CE2721C120330016D109 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LocMapper_Linter.entitlements; sourceTree = "<group>"; };
+		7B15CE3021C1840B0016D109 /* KeyEquivalentDisablingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyEquivalentDisablingView.swift; sourceTree = "<group>"; };
+		7B15CE3221C18E830016D109 /* BecameFirstResponderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BecameFirstResponderTextField.swift; sourceTree = "<group>"; };
 		7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+MetadataSupport.swift"; sourceTree = "<group>"; };
 		7B164294202751EB000AE458 /* LocFile+LineKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LineKey.swift"; sourceTree = "<group>"; };
 		7B16A3E4214E9FAF00825F89 /* Scanner+LinuxCompat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Scanner+LinuxCompat.swift"; sourceTree = "<group>"; };
@@ -319,6 +323,8 @@
 				7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */,
 				7B15CE1E21C120310016D109 /* AppDelegate.swift */,
 				7B15CE2021C120310016D109 /* FilesListViewController.swift */,
+				7B15CE3021C1840B0016D109 /* KeyEquivalentDisablingView.swift */,
+				7B15CE3221C18E830016D109 /* BecameFirstResponderTextField.swift */,
 				7B15CE2221C120330016D109 /* Assets.xcassets */,
 				7B15CE2421C120330016D109 /* Main.storyboard */,
 				7B15CE2721C120330016D109 /* Info.plist */,
@@ -817,6 +823,8 @@
 			files = (
 				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
 				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
+				7B15CE3321C18E830016D109 /* BecameFirstResponderTextField.swift in Sources */,
+				7B15CE3121C1840C0016D109 /* KeyEquivalentDisablingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
