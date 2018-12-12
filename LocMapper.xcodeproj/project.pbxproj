@@ -30,7 +30,7 @@
 		7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE1E21C120310016D109 /* AppDelegate.swift */; };
-		7B15CE2121C120310016D109 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE2021C120310016D109 /* ViewController.swift */; };
+		7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE2021C120310016D109 /* FilesListViewController.swift */; };
 		7B15CE2321C120330016D109 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2221C120330016D109 /* Assets.xcassets */; };
 		7B15CE2621C120330016D109 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2421C120330016D109 /* Main.storyboard */; };
 		7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1642822027504C000AE458 /* LocFile+MetadataSupport.swift */; };
@@ -170,7 +170,7 @@
 		7B147117210D124400B1621C /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7B15CE1C21C120310016D109 /* LocMapper Linter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LocMapper Linter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B15CE1E21C120310016D109 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7B15CE2021C120310016D109 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7B15CE2021C120310016D109 /* FilesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesListViewController.swift; sourceTree = "<group>"; };
 		7B15CE2221C120330016D109 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7B15CE2521C120330016D109 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7B15CE2721C120330016D109 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -318,7 +318,7 @@
 			children = (
 				7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */,
 				7B15CE1E21C120310016D109 /* AppDelegate.swift */,
-				7B15CE2021C120310016D109 /* ViewController.swift */,
+				7B15CE2021C120310016D109 /* FilesListViewController.swift */,
 				7B15CE2221C120330016D109 /* Assets.xcassets */,
 				7B15CE2421C120330016D109 /* Main.storyboard */,
 				7B15CE2721C120330016D109 /* Info.plist */,
@@ -815,7 +815,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B15CE2121C120310016D109 /* ViewController.swift in Sources */,
+				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
 				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
