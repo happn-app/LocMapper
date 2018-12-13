@@ -10,7 +10,9 @@ import AppKit
 
 
 
-/* An extender would be great here to replace this class! */
+/* An extender would be great here to replace this class!
+ * Note: An interesting thread with another solution to the same problem:
+ *       https://forums.developer.apple.com/thread/78806 */
 class KeyEquivalentDisablingView : NSView {
 	
 	var disableKeyEquivalent = false

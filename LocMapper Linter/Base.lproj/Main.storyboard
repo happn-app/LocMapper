@@ -716,7 +716,7 @@
                                     <rect key="frame" x="1" y="0.0" width="736" height="217"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="wsT-ko-N0p" viewBased="YES" id="1ad-d9-rOb">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="wsT-ko-N0p" viewBased="YES" id="1ad-d9-rOb" customClass="NoEditOnEnterTableView" customModule="LocMapper_Linter" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="736" height="192"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -891,6 +891,7 @@
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
+                                                <action selector="nicknameEdited:" target="XfG-lQ-9wD" id="YZh-p7-ct7"/>
                                                 <outlet property="dataSource" destination="XfG-lQ-9wD" id="aJx-Aw-AKq"/>
                                                 <outlet property="delegate" destination="XfG-lQ-9wD" id="0Ui-Vd-Gcb"/>
                                             </connections>

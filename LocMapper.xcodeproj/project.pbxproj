@@ -97,6 +97,7 @@
 		7BAB6E04207283C100DAB11C /* TaggedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAB6E03207283C100DAB11C /* TaggedObject.swift */; };
 		7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC4590120B0BDBA003972E1 /* LocFile+MigrationsSupport.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
+		7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */; };
 		7BEC5D5820444E7F0056AEB9 /* StdRefLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */; };
 		7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */; };
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
@@ -244,6 +245,7 @@
 		7BCB27A91D2D4020005CFEB9 /* Readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibRefLocFile.swift; sourceTree = "<group>"; };
 		7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AccessoryViewForImportReferenceTranslations.xib; sourceTree = "<group>"; };
+		7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoEditOnEnterTableView.swift; sourceTree = "<group>"; };
 		7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StdRefLocFile.swift; sourceTree = "<group>"; };
 		7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LocFile+StdRefLoc.swift"; sourceTree = "<group>"; };
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 				7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */,
 				7B15CE1E21C120310016D109 /* AppDelegate.swift */,
 				7B15CE2021C120310016D109 /* FilesListViewController.swift */,
+				7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */,
 				7B15CE3021C1840B0016D109 /* KeyEquivalentDisablingView.swift */,
 				7B15CE3221C18E830016D109 /* BecameFirstResponderTextField.swift */,
 				7B15CE2221C120330016D109 /* Assets.xcassets */,
@@ -821,6 +824,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */,
 				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
 				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
 				7B15CE3321C18E830016D109 /* BecameFirstResponderTextField.swift in Sources */,
