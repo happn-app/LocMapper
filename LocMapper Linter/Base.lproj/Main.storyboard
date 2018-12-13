@@ -992,7 +992,7 @@ DQ
         <!--Window Controller-->
         <scene sceneID="uFt-43-yZG">
             <objects>
-                <windowController id="7OV-Ia-aky" sceneMemberID="viewController">
+                <windowController storyboardIdentifier="KeyVersionCheckResultsWindowController" id="7OV-Ia-aky" sceneMemberID="viewController">
                     <window key="window" title="Key Versions Check Results" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="VersionCheckResults" animationBehavior="default" id="hvg-Wd-b9j">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -1010,10 +1010,10 @@ DQ
             </objects>
             <point key="canvasLocation" x="794" y="767"/>
         </scene>
-        <!--View Controller-->
+        <!--Key Versions Check View Controller-->
         <scene sceneID="uaO-Pv-DL7">
             <objects>
-                <viewController id="edT-kQ-76O" sceneMemberID="viewController">
+                <viewController id="edT-kQ-76O" customClass="KeyVersionsCheckViewController" customModule="LocMapper_Linter" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="3QK-UH-731">
                         <rect key="frame" x="0.0" y="0.0" width="657" height="325"/>
                         <autoresizingMask key="autoresizingMask"/>

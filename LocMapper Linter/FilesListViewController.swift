@@ -19,7 +19,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	@IBOutlet var buttonLintSelectedFile: NSButton!
 	@IBOutlet var buttonKeyVersionsCheck: NSButton!
 	
-	var filesDescription = [InputFileDescription]() {
+	var filesDescriptions = [InputFileDescription]() {
 		didSet {
 			saveFileList()
 		}
@@ -28,14 +28,14 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		if let v = UserDefaults.standard.value(forKey: "FilesDescription") as? [Data] {
+		if let v = UserDefaults.standard.value(forKey: "FilesDescriptions") as? [Data] {
 			let u = v.map{ NSKeyedUnarchiver.unarchiveObject(with: $0) as? InputFileDescription }
 			let f = u.compactMap{ $0 }
 			if u.count == f.count {
-				filesDescription = f
-				refreshUI(reloadTableViewData: true)
+				filesDescriptions = f
 			}
 		}
+		refreshUI(reloadTableViewData: true)
 	}
 	
 	/* *****************************************
@@ -43,7 +43,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	   ***************************************** */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
-		return filesDescription.count
+		return filesDescriptions.count
 	}
 	
 	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -53,19 +53,19 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		switch tableColumn.identifier.rawValue {
 		case "nickname":
 			if let textField = r.viewWithTag(1) as? NSTextField {
-				textField.stringValue = filesDescription[row].nickname ?? "<Unnamed>"
+				textField.stringValue = filesDescriptions[row].nickname ?? "<Unnamed>"
 			}
 			
 		case "path":
 			if let textField = r.viewWithTag(1) as? NSTextField {
-				textField.stringValue = filesDescription[row].url.path
+				textField.stringValue = filesDescriptions[row].url.path
 			}
 			
 		case "git": (/*TODO*/)
 			
 		case "reflocType":
 			if let menuButton = r.viewWithTag(1) as? NSPopUpButton {
-				menuButton.selectItem(withTag: filesDescription[row].refLocType.rawValue)
+				menuButton.selectItem(withTag: filesDescriptions[row].refLocType.rawValue)
 			}
 			
 		default: NSLog("Weird…")
@@ -106,7 +106,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 			guard response == .OK, let url = openPanel.url else {return}
 			
 			DispatchQueue.main.async{
-				self.filesDescription.append(InputFileDescription(url: url))
+				self.filesDescriptions.append(InputFileDescription(url: url))
 				self.refreshUI(reloadTableViewData: true)
 			}
 		})
@@ -116,7 +116,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		let idx = tableView.selectedRow
 		guard idx >= 0 else {return}
 		
-		filesDescription.remove(at: idx)
+		filesDescriptions.remove(at: idx)
 		self.refreshUI(reloadTableViewData: true)
 	}
 	
@@ -124,12 +124,15 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		let idx = tableView.selectedRow
 		guard idx >= 0 else {return}
 		
-		let fileDescription = filesDescription[idx]
+		let fileDescription = filesDescriptions[idx]
 		print("lint file at path \(fileDescription.url.path)")
 	}
 	
 	@IBAction func startKeyVersionsCheck(_ sender: AnyObject) {
-		print("startKeyVersionsCheck")
+		let windowController = NSStoryboard(name: "Main", bundle: nil).instantiateController(withIdentifier: "KeyVersionCheckResultsWindowController") as! NSWindowController
+		let viewController = windowController.contentViewController as! KeyVersionsCheckViewController
+		viewController.filesDescriptions = filesDescriptions
+		windowController.showWindow(nil)
 	}
 	
 	@IBAction func nicknameEdited(_ sender: AnyObject) {
@@ -137,7 +140,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		let row = tableView.row(for: textField) /* Note: O(n)… */
 		guard row >= 0 else {return}
 		
-		filesDescription[row].nickname = textField.stringValue
+		filesDescriptions[row].nickname = textField.stringValue
 		saveFileList()
 	}
 	
@@ -146,7 +149,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		let row = tableView.row(for: menuButton) /* Note: O(n)… */
 		guard row >= 0 else {return}
 		
-		filesDescription[row].refLocType = InputFileDescription.RefLocType(rawValue: menuButton.selectedTag()) ?? .xibRefLoc
+		filesDescriptions[row].refLocType = InputFileDescription.RefLocType(rawValue: menuButton.selectedTag()) ?? .xibRefLoc
 		saveFileList()
 	}
 	
@@ -155,10 +158,10 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	   *************** */
 	
 	private func saveFileList() {
-		let archived = filesDescription.map{
+		let archived = filesDescriptions.map{
 			return NSKeyedArchiver.archivedData(withRootObject: $0)
 		}
-		UserDefaults.standard.set(archived, forKey: "FilesDescription")
+		UserDefaults.standard.set(archived, forKey: "FilesDescriptions")
 	}
 	
 	private func refreshUI(reloadTableViewData: Bool) {
@@ -167,7 +170,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		let hasSelection = tableView.selectedRow >= 0
 		buttonRemoveFile.isEnabled = hasSelection
 		buttonLintSelectedFile.isEnabled = hasSelection && false /* Disabled for the time being (not implemented) */
-		buttonKeyVersionsCheck.isEnabled = !filesDescription.isEmpty
+		buttonKeyVersionsCheck.isEnabled = !filesDescriptions.isEmpty
 	}
 	
 }
