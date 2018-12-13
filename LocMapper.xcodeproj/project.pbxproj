@@ -26,6 +26,10 @@
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
 		7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0869A21DCB7F8700EB9486 /* Utils.swift */; };
+		7B0ACEFD21C30C6A003705A8 /* AsyncOperationResult.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B0ACEFC21C30C6A003705A8 /* AsyncOperationResult.framework */; };
+		7B0ACEFE21C30CD6003705A8 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
+		7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0ACEFF21C3116B003705A8 /* PreferencesViewController.swift */; };
+		7B0ACF0221C3118D003705A8 /* KeychainUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0ACF0121C3118D003705A8 /* KeychainUtils.swift */; };
 		7B147119210D12B700B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
@@ -172,6 +176,9 @@
 		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		7B0ACEFC21C30C6A003705A8 /* AsyncOperationResult.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AsyncOperationResult.framework; sourceTree = "<group>"; };
+		7B0ACEFF21C3116B003705A8 /* PreferencesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesViewController.swift; sourceTree = "<group>"; };
+		7B0ACF0121C3118D003705A8 /* KeychainUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainUtils.swift; sourceTree = "<group>"; };
 		7B147117210D124400B1621C /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7B15CE1C21C120310016D109 /* LocMapper Linter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LocMapper Linter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B15CE1E21C120310016D109 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -267,6 +274,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B0ACEFD21C30C6A003705A8 /* AsyncOperationResult.framework in Frameworks */,
+				7B0ACEFE21C30CD6003705A8 /* libLocMapper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +326,7 @@
 		7B147116210D122700B1621C /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				7B0ACEFC21C30C6A003705A8 /* AsyncOperationResult.framework */,
 				7B147117210D124400B1621C /* XibLoc.framework */,
 			);
 			name = macOS;
@@ -327,8 +337,10 @@
 			isa = PBXGroup;
 			children = (
 				7B15CE2821C120330016D109 /* LocMapper_Linter.entitlements */,
+				7B0ACF0121C3118D003705A8 /* KeychainUtils.swift */,
 				7B15CE1E21C120310016D109 /* AppDelegate.swift */,
 				7BD9C51421C26E440044D49F /* InputFileDescription.swift */,
+				7B0ACEFF21C3116B003705A8 /* PreferencesViewController.swift */,
 				7B15CE2021C120310016D109 /* FilesListViewController.swift */,
 				7BD9C51621C2E0600044D49F /* KeyVersionsCheckViewController.swift */,
 				7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */,
@@ -833,9 +845,11 @@
 				7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */,
 				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
 				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
+				7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */,
 				7BD9C51721C2E0600044D49F /* KeyVersionsCheckViewController.swift in Sources */,
 				7BD9C51521C26E440044D49F /* InputFileDescription.swift in Sources */,
 				7B15CE3321C18E830016D109 /* BecameFirstResponderTextField.swift in Sources */,
+				7B0ACF0221C3118D003705A8 /* KeychainUtils.swift in Sources */,
 				7B15CE3121C1840C0016D109 /* KeyEquivalentDisablingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -996,6 +1010,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = M8JS42FSNG;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = "LocMapper Linter/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.happn.LocMapper-Linter";
@@ -1013,6 +1031,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = M8JS42FSNG;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = "LocMapper Linter/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.happn.LocMapper-Linter";
