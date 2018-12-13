@@ -141,6 +141,15 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		saveFileList()
 	}
 	
+	@IBAction func refLocTypeEdited(_ sender: AnyObject) {
+		guard let menuButton = sender as? NSPopUpButton else {return}
+		let row = tableView.row(for: menuButton) /* Note: O(n)… */
+		guard row >= 0 else {return}
+		
+		filesDescription[row].refLocType = InputFileDescription.RefLocType(rawValue: menuButton.selectedTag()) ?? .xibRefLoc
+		saveFileList()
+	}
+	
 	/* ***************
       MARK: - Private
 	   *************** */

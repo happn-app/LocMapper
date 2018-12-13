@@ -879,6 +879,9 @@
                                                                             </items>
                                                                         </menu>
                                                                     </popUpButtonCell>
+                                                                    <connections>
+                                                                        <action selector="refLocTypeEdited:" target="XfG-lQ-9wD" id="eWG-fq-lHp"/>
+                                                                    </connections>
                                                                 </popUpButton>
                                                             </subviews>
                                                             <constraints>
