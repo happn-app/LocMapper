@@ -17,6 +17,14 @@ class PreferencesViewController : NSViewController, NSTableViewDataSource, NSTab
 		return (try? Keychain.getStoredData(withIdentifier: "Lokalise Access Token").flatMap{ String(data: $0, encoding: .utf8) } ?? "") ?? ""
 	}
 	
+	static var projectId: String {
+		return UserDefaults.standard.string(forKey: "LokaliseProjectId") ?? ""
+	}
+	
+	static var excludedTags: Set<String> {
+		return Set(UserDefaults.standard.array(forKey: "ExcludedTags") as? [String] ?? [])
+	}
+	
 	/* Lokalise to LocMapper language name mapping */
 	static var languagesNameMappings: [String: String] {
 		var ret = [String: String]()
