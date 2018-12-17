@@ -1028,7 +1028,7 @@ DQ
                                     <rect key="frame" x="1" y="0.0" width="655" height="324"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="7RT-qO-VcN" viewBased="YES" id="qee-X9-cVz">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="7RT-qO-VcN" viewBased="YES" id="qee-X9-cVz">
                                             <rect key="frame" x="0.0" y="0.0" width="655" height="299"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -1052,7 +1052,7 @@ DQ
                                                             <rect key="frame" x="1" y="1" width="652" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YkO-D3-sdu">
+                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="YkO-D3-sdu">
                                                                     <rect key="frame" x="0.0" y="0.0" width="652" height="17"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="12J-c4-UYq">
@@ -1069,9 +1069,17 @@ DQ
                                                     </prototypeCellViews>
                                                 </tableColumn>
                                             </tableColumns>
+                                            <connections>
+                                                <outlet property="dataSource" destination="edT-kQ-76O" id="2Rp-go-Sji"/>
+                                                <outlet property="delegate" destination="edT-kQ-76O" id="vww-6V-axZ"/>
+                                            </connections>
                                         </tableView>
                                     </subviews>
                                 </clipView>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="150" id="E63-xp-INT"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="500" id="b36-IY-8mx"/>
+                                </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="Kbb-nA-YBa">
                                     <rect key="frame" x="1" y="308" width="655" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>

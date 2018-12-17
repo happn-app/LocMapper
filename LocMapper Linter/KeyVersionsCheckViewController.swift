@@ -15,7 +15,7 @@ import LocMapper
 
 private struct NotFinishedError : Error {}
 
-class KeyVersionsCheckViewController : NSViewController {
+class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, NSTableViewDelegate {
 	
 	@IBOutlet var tableView: NSTableView!
 	
@@ -24,24 +24,106 @@ class KeyVersionsCheckViewController : NSViewController {
 	override func viewDidAppear() {
 		super.viewDidAppear()
 		
-		guard locFiles == nil else {return}
-		locFiles = [:]
+		guard reports == nil else {return}
+		reports = []
+		
+		assert(simplifiedUntaggedKeysReferencedInMappingsByFile == nil)
+		simplifiedUntaggedKeysReferencedInMappingsByFile = [:]
+		
+		/* Let's setup the table view columns */
+		for column in tableView.tableColumns {
+			tableView.removeTableColumn(column)
+		}
+		let nib = tableView.registeredNibsByIdentifier!.values.first!
+		let w = (tableView.bounds.width) / CGFloat(filesDescriptions.count + 1) - 3
+		let c = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("__REF"))
+		c.title = "Latest Version in RefLoc"
+		c.width = w
+		tableView.addTableColumn(c)
+		tableView.register(nib, forIdentifier: c.identifier)
+		for file in filesDescriptions {
+			let c = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(file.stringHash))
+			c.title = file.nickname ?? file.url.lastPathComponent
+			c.width = w
+			tableView.addTableColumn(c)
+			tableView.register(nib, forIdentifier: c.identifier)
+		}
 		
 		getStdRefLoc()
 	}
 	
-	private let queue = OperationQueue()
-	private var stdRefLoc: StdRefLocFile!
-	private var xibRefLoc: XibRefLocFile!
+	/* *******************************************
+      MARK: - Table View Data Source and Delegate
+	   ******************************************* */
 	
-	private var locFiles: [InputFileDescription: LocFile]!
+	func numberOfRows(in tableView: NSTableView) -> Int {
+		return reports?.count ?? 0
+	}
+	
+	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+		guard let tableColumn = tableColumn else {return nil}
+		guard let r = tableView.makeView(withIdentifier: tableColumn.identifier, owner: self) else {return nil}
+		
+		if let textField = r.viewWithTag(1) as? NSTextField {
+			switch tableColumn.identifier.rawValue {
+			case "__REF":
+				switch reports[row] {
+				case .versionReport(latestRefLocKey: let l, mappedKeys: _): textField.stringValue = l
+				}
+				
+			default:
+				switch reports[row] {
+				case .versionReport(latestRefLocKey: _, mappedKeys: let mapped):
+					textField.stringValue = mapped[tableColumn.identifier.rawValue] ?? "<UNMAPPED>"
+				}
+			}
+		}
+		return r
+	}
+	
+	/* ***************
+      MARK: - Private
+	   *************** */
+	
+	private enum Report {
+		
+		case versionReport(latestRefLocKey: String, mappedKeys: [String /* stringHash of a InputFileDescription */: String])
+		
+	}
+	
+	private var reports: [Report]!
+	
+	private let queue = OperationQueue()
+	private var simplifiedGroupedOctothorpedUntaggedRefLocKeys: [String: [String]]!
+	
+	private var simplifiedUntaggedKeysReferencedInMappingsByFile: [InputFileDescription: Set<String>]!
 	
 	private func getStdRefLoc() {
 		queue.addOperation{
-			assert(self.stdRefLoc == nil && self.xibRefLoc == nil)
+			assert(self.simplifiedGroupedOctothorpedUntaggedRefLocKeys == nil)
 			do {
-				self.stdRefLoc = try StdRefLocFile(token: PreferencesViewController.accessToken, projectId: PreferencesViewController.projectId, lokaliseToReflocLanguageName: PreferencesViewController.languagesNameMappings, excludedTags: PreferencesViewController.excludedTags, logPrefix: nil)
-				self.xibRefLoc = try XibRefLocFile(stdRefLoc: self.stdRefLoc)
+				let stdRefLoc = try StdRefLocFile(token: PreferencesViewController.accessToken, projectId: PreferencesViewController.projectId, lokaliseToReflocLanguageName: PreferencesViewController.languagesNameMappings, excludedTags: PreferencesViewController.excludedTags, logPrefix: nil)
+				let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
+				let stdRefLocFile = LocFile(csvSeparator: ","); stdRefLocFile.mergeRefLocsWithStdRefLocFile(stdRefLoc, mergeStyle: .replace)
+				let xibRefLocFile = LocFile(csvSeparator: ","); xibRefLocFile.mergeRefLocsWithXibRefLocFile(xibRefLoc, mergeStyle: .replace)
+				
+				var simplifiedStdGroupedOctothorpedUntaggedRefLocKeys = [String: [String]]()
+				for (k, v) in stdRefLocFile.groupedOctothorpedUntaggedRefLocKeys {
+					simplifiedStdGroupedOctothorpedUntaggedRefLocKeys[k.locKey] = v.map{ $0.locKey }
+				}
+				var simplifiedXibGroupedOctothorpedUntaggedRefLocKeys = [String: [String]]()
+				for (k, v) in xibRefLocFile.groupedOctothorpedUntaggedRefLocKeys {
+					simplifiedXibGroupedOctothorpedUntaggedRefLocKeys[k.locKey] = v.map{ $0.locKey }
+				}
+				
+				guard simplifiedStdGroupedOctothorpedUntaggedRefLocKeys == simplifiedXibGroupedOctothorpedUntaggedRefLocKeys else {
+					DispatchQueue.main.async{
+						self.showErrorAndBail(NSError(domain: "com.happn.LocMapper-Linter", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unexpected diff between simplified std and xib grouped octothorped untagged RefLoc keys. This should not happen; I can’t go on. Please see someone who knows what this means for help."]))
+					}
+					return
+				}
+				
+				self.simplifiedGroupedOctothorpedUntaggedRefLocKeys = simplifiedXibGroupedOctothorpedUntaggedRefLocKeys
 				self.prepareFiles()
 			} catch {
 				DispatchQueue.main.async{
@@ -57,17 +139,12 @@ class KeyVersionsCheckViewController : NSViewController {
 			return BlockOperation{
 				do {
 					let locFile = try LocFile(fromPath: fileDescription.url.path, withCSVSeparator: ",")
+					let simplifiedReferencedKeys = Set(locFile.untaggedKeysReferencedInMappings.map{
+						$0.locKey
+					})
 					
-					switch fileDescription.refLocType {
-					case .stdRefLoc: locFile.mergeRefLocsWithStdRefLocFile(self.stdRefLoc, mergeStyle: .replace)
-					case .xibRefLoc: locFile.mergeRefLocsWithXibRefLocFile(self.xibRefLoc, mergeStyle: .replace)
-					}
-					
-					/* This fills the cache for future use. */
-					_ = locFile.groupedOctothorpedUntaggedRefLocKeys
-					_ = locFile.untaggedKeysReferencedInMappings
-					
-					DispatchQueue.main.sync{ self.locFiles[fileDescription] = locFile }
+					/* We change locFiles on the main thread to avoid concurrency problems. */
+					DispatchQueue.main.sync{ self.simplifiedUntaggedKeysReferencedInMappingsByFile[fileDescription] = simplifiedReferencedKeys }
 				} catch {
 					latestError = error
 				}
@@ -83,8 +160,36 @@ class KeyVersionsCheckViewController : NSViewController {
 	}
 	
 	private func computeResults() {
-		let groupedOctothorpedUntaggedRefLocKeysWithMoreThanOneVersion = locFiles.mapValues{
-			$0.groupedOctothorpedUntaggedRefLocKeys.filter{ $0.value.count > 1 }
+		queue.addOperation{
+			var reports = [Report]()
+			let simplifiedGroupedOctothorpedUntaggedRefLocKeysWithMoreThanOneVersion = self.simplifiedGroupedOctothorpedUntaggedRefLocKeys.filter{
+				return $0.value.count > 1
+			}
+			for (_, versions) in simplifiedGroupedOctothorpedUntaggedRefLocKeysWithMoreThanOneVersion {
+				let latestVersion = versions.last!
+				var mapped = [String: String]()
+				/* Let's find which key is mapped (if any) for each input files */
+				for file in self.filesDescriptions {
+					let referencedKeys = self.simplifiedUntaggedKeysReferencedInMappingsByFile[file]!
+					for version in versions.reversed() {
+						if referencedKeys.contains(version) {
+							mapped[file.stringHash] = version
+						}
+					}
+				}
+				reports.append(.versionReport(latestRefLocKey: latestVersion, mappedKeys: mapped))
+			}
+			reports.sort{
+				switch ($0, $1) {
+				case (.versionReport(latestRefLocKey: let k1, mappedKeys: _), .versionReport(latestRefLocKey: let k2, mappedKeys: _)):
+					return k1 < k2
+				}
+			}
+			
+			DispatchQueue.main.async{
+				self.reports = reports
+				self.tableView.reloadData()
+			}
 		}
 	}
 	

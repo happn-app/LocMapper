@@ -45,6 +45,10 @@ class InputFileDescription : NSObject, NSCoding {
 		aCoder.encode(refLocType.rawValue, forKey: "refLocType")
 	}
 	
+	var stringHash: String {
+		return url.path + ":" + String(refLocType.rawValue)
+	}
+	
 	static func == (lhs: InputFileDescription, rhs: InputFileDescription) -> Bool {
 		return (
 			lhs.url        == rhs.url &&
