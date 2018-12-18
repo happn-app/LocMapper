@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "container:"
+      name = "Root">
+      <Group
+         location = "container:"
+         name = "Untracked">
+         <FileRef
+            location = "group:ask_pass.sh">
+         </FileRef>
+      </Group>
+      <Group
+         location = "container:"
+         name = "Carthage">
+         <FileRef
+            location = "group:carthage_bootstrap_static.sh">
+         </FileRef>
+         <FileRef
+            location = "group:carthage_update_static.sh">
+         </FileRef>
+         <FileRef
+            location = "group:carthage_workaround_static_folder.sh">
+         </FileRef>
+      </Group>
+      <Group
+         location = "container:"
+         name = "Prod Stuff">
+         <FileRef
+            location = "group:build_for_linux_on_macos.sh">
+         </FileRef>
+         <FileRef
+            location = "group:/Users/frizlab/Documents/Projects/happnApple/LocMapper/Scripts/bump_build_number.sh">
+         </FileRef>
+         <FileRef
+            location = "group:create_linux_deb.sh">
+         </FileRef>
+         <FileRef
+            location = "group:set_marketing_version.sh">
+         </FileRef>
+         <FileRef
+            location = "group:tag_project.sh">
+         </FileRef>
+      </Group>
+   </Group>
+   <Group
+      location = "container:zz_lib"
+      name = "Libs">
+      <FileRef
+         location = "group:common.sh">
+      </FileRef>
+      <FileRef
+         location = "group:is_repo_clean.sh">
+      </FileRef>
+      <FileRef
+         location = "group:tag_project.sh">
+      </FileRef>
+      <FileRef
+         location = "group:set_project_version.sh">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:zz_assets"
+      name = "Assets">
+      <FileRef
+         location = "group:Dockerfile">
+      </FileRef>
+      <Group
+         location = "group:mkdeb"
+         name = "mkdeb">
+         <FileRef
+            location = "group:recipe.yaml">
+         </FileRef>
+      </Group>
+   </Group>
+</Workspace>

@@ -50,3 +50,13 @@ print_warning_message_read_response() {
 	read -p "$* $COLOR_ACTION" $var_name
 	printf "$COLOR_CLEAR"
 }
+
+
+# hagvtool utility: Parses the output expecting exactly ONE version from a
+# porcelain output
+parse_hagvtool_output() {
+	last_line="$(echo "$1" | tail -n 1)"
+	first_char=${last_line:0:1}
+	if [ "$first_char" != ":" ]; then exit 1; fi
+	echo ${last_line:1}
+}
