@@ -9,13 +9,12 @@ cd "$(dirname "$0")"/../ || exit 42
 ##########################################
 
 
-if [ -n "$1" -o "$1" = "--help" ]; then
-	echo "syntax: $0" >/dev/stderr
+version="$1"
+if [ -z "$version" -o "$version" = "--help" ]; then
+	echo "syntax: $0 build_number" >/dev/stderr
 	echo "   the repo must be clean when running this script" >/dev/stderr
 	echo "   note: --help makes program exit with status 1" >/dev/stderr
 	exit 1
 fi
 
-"$lib_dir/set_project_version.sh" --targets "LocMapper Linter" --bump-build-version --no-commit
-"$lib_dir/set_project_version.sh" --targets "LocMapper,LocMapperTests,LocMapper CLI,LocMapper App" --bump-build-version --no-commit --force
-git commit -am "Bumped build version"
+"$lib_dir/set_project_version.sh" --targets "LocMapper Linter" --set-marketing-version "$version" --commit

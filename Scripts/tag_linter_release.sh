@@ -10,14 +10,12 @@ cd "$(dirname "$0")"/../ || exit 42
 
 
 marketing_version="$1"
-linter_build_number="$3"
-locmapper_build_number="$2"
-if [ "$1" = "--help" -o -z "$marketing_version" -o -z "$locmapper_build_number" -o -z "$linter_build_number" ]; then
-	echo "syntax: $0 marketing_version locmapper_build_number linter_build_number" >/dev/stderr
+linter_build_number="$2"
+if [ "$1" = "--help" -o -z "$marketing_version" -o -z "$linter_build_number" ]; then
+	echo "syntax: $0 marketing_version linter_build_number" >/dev/stderr
 	echo "   the repo must be clean when running this script" >/dev/stderr
 	echo "   note: --help makes program exit with status 1" >/dev/stderr
 	exit 1
 fi
 
-"$lib_dir/tag_project.sh" --project-name "LocMapper"        --style "release" "LocMapper-$locmapper_build_number"     "$marketing_version" "LocMapper-$locmapper_build_number"
 "$lib_dir/tag_project.sh" --project-name "LocMapper Linter" --style "release" "LocMapper_Linter-$linter_build_number" "$marketing_version" "LocMapper_Linter-$linter_build_number"
