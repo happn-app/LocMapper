@@ -40,7 +40,10 @@
             location = "group:set_marketing_version.sh">
          </FileRef>
          <FileRef
-            location = "group:tag_project.sh">
+            location = "group:/Users/frizlab/Documents/Projects/happnApple/LocMapper/Scripts/tag_rc.sh">
+         </FileRef>
+         <FileRef
+            location = "group:tag_release.sh">
          </FileRef>
       </Group>
    </Group>
