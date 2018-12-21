@@ -11,7 +11,7 @@ cd "$(dirname "$0")"/../ || exit 42
 
 version="$1"
 if [ -z "$version" -o "$version" = "--help" ]; then
-	echo "syntax: $0 build_number" >/dev/stderr
+	echo "syntax: $0 marketing_version" >/dev/stderr
 	echo "   the repo must be clean when running this script" >/dev/stderr
 	echo "   note: --help makes program exit with status 1" >/dev/stderr
 	exit 1
