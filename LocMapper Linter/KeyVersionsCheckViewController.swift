@@ -17,6 +17,7 @@ private struct NotFinishedError : Error {}
 
 class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, NSTableViewDelegate {
 	
+	@IBOutlet var progressIndicator: NSProgressIndicator!
 	@IBOutlet var tableView: NSTableView!
 	
 	var filesDescriptions: [InputFileDescription]!
@@ -49,6 +50,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 			tableView.register(nib, forIdentifier: c.identifier)
 		}
 		
+		progressIndicator.startAnimation(nil)
 		getStdRefLoc()
 	}
 	
@@ -64,17 +66,29 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		guard let tableColumn = tableColumn else {return nil}
 		guard let r = tableView.makeView(withIdentifier: tableColumn.identifier, owner: self) else {return nil}
 		
+//		let red = NSColor.red.blended(withFraction: 0.13, of: .black)
+		let green = NSColor.green.blended(withFraction: 0.50, of: .black)
+		let orange = NSColor.orange.blended(withFraction: 0.09, of: .black)
+		
 		if let textField = r.viewWithTag(1) as? NSTextField {
 			switch tableColumn.identifier.rawValue {
 			case "__REF":
 				switch reports[row] {
-				case .versionReport(latestRefLocKey: let l, mappedKeys: _): textField.stringValue = l
+				case .versionReport(latestRefLocKey: let l, mappedKeys: _):
+					(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = .textColor
+					textField.stringValue = l
 				}
 				
 			default:
 				switch reports[row] {
-				case .versionReport(latestRefLocKey: _, mappedKeys: let mapped):
-					textField.stringValue = mapped[tableColumn.identifier.rawValue] ?? "<UNMAPPED>"
+				case .versionReport(latestRefLocKey: let l, mappedKeys: let mapped):
+					if let key = mapped[tableColumn.identifier.rawValue] {
+						(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = (key == l ? green : orange)
+						textField.stringValue = key
+					} else {
+						(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = .gray
+						textField.stringValue = "<UNMAPPED>"
+					}
 				}
 			}
 		}
@@ -189,12 +203,14 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 			DispatchQueue.main.async{
 				self.reports = reports
 				self.tableView.reloadData()
+				self.progressIndicator.stopAnimation(nil)
 			}
 		}
 	}
 	
 	private func showErrorAndBail(_ error: Error) {
 		assert(Thread.isMainThread)
+		self.progressIndicator.stopAnimation(nil)
 		guard let w = view.window else {return}
 		
 		let alert = NSAlert(error: error)

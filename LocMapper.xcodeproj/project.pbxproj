@@ -64,6 +64,7 @@
 		7B560D681C172B54001DD2B0 /* LocFileDocFiltersSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D671C172B54001DD2B0 /* LocFileDocFiltersSplitViewController.swift */; };
 		7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7B56D2AE1DA0F25E00662EFD /* Localizable.strings */; };
 		7B637D241C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */; };
+		7B6DBEDA21CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
 		7B73887E20306C0100E56088 /* stdstreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B73887620306C0100E56088 /* stdstreams.swift */; };
 		7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
@@ -210,6 +211,7 @@
 		7B560D671C172B54001DD2B0 /* LocFileDocFiltersSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocFiltersSplitViewController.swift; sourceTree = "<group>"; };
 		7B56D2AE1DA0F25E00662EFD /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocContentSplitViewController.swift; sourceTree = "<group>"; };
+		7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorFixedTextFieldCell.swift; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* locmapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = locmapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeStringsFile.swift; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 				7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */,
 				7B15CE3021C1840B0016D109 /* KeyEquivalentDisablingView.swift */,
 				7B15CE3221C18E830016D109 /* BecameFirstResponderTextField.swift */,
+				7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */,
 				7B15CE2221C120330016D109 /* Assets.xcassets */,
 				7B15CE2421C120330016D109 /* Main.storyboard */,
 				7B15CE2721C120330016D109 /* Info.plist */,
@@ -844,6 +847,7 @@
 				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
 				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
 				7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */,
+				7B6DBEDA21CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift in Sources */,
 				7BD9C51721C2E0600044D49F /* KeyVersionsCheckViewController.swift in Sources */,
 				7BD9C51521C26E440044D49F /* InputFileDescription.swift in Sources */,
 				7B15CE3321C18E830016D109 /* BecameFirstResponderTextField.swift in Sources */,

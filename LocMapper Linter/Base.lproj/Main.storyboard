@@ -1055,7 +1055,7 @@ DQ
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="YkO-D3-sdu">
                                                                     <rect key="frame" x="0.0" y="0.0" width="652" height="17"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="12J-c4-UYq">
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="12J-c4-UYq" customClass="ColorFixedTextFieldCell" customModule="LocMapper_Linter" customModuleProvider="target">
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1093,15 +1093,21 @@ DQ
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableHeaderView>
                             </scrollView>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="7m7-10-zx3">
+                                <rect key="frame" x="313" y="147" width="32" height="32"/>
+                            </progressIndicator>
                         </subviews>
                         <constraints>
                             <constraint firstItem="qH3-kh-Cgw" firstAttribute="leading" secondItem="3QK-UH-731" secondAttribute="leading" id="Rth-A6-egh"/>
+                            <constraint firstItem="7m7-10-zx3" firstAttribute="centerX" secondItem="3QK-UH-731" secondAttribute="centerX" id="jVh-BK-wPf"/>
                             <constraint firstAttribute="bottom" secondItem="qH3-kh-Cgw" secondAttribute="bottom" id="nW3-6o-ax1"/>
+                            <constraint firstItem="7m7-10-zx3" firstAttribute="centerY" secondItem="3QK-UH-731" secondAttribute="centerY" id="s7C-04-6fu"/>
                             <constraint firstAttribute="trailing" secondItem="qH3-kh-Cgw" secondAttribute="trailing" id="wNt-sn-eTk"/>
                             <constraint firstItem="qH3-kh-Cgw" firstAttribute="top" secondItem="3QK-UH-731" secondAttribute="top" id="x6H-GF-1zP"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="progressIndicator" destination="7m7-10-zx3" id="to3-Ty-31c"/>
                         <outlet property="tableView" destination="qee-X9-cVz" id="fsq-0B-KjW"/>
                     </connections>
                 </viewController>
