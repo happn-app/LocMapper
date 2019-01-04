@@ -127,12 +127,12 @@ extension LocFile {
 	}
 	
 	public var keysReferencedInMappings: Set<LineKey> {
-		if let v = cachedAllNonRefLocKeys {return v}
+		if let v = cachedKeysReferencedInMappings {return v}
 		
 		let v = Set(entryKeys(matchingFilters: allEnvironments + [.uiPresentable, .stateMappedValid, .stateMappedInvalid]).flatMap{
 			lineValueForKey($0)!.mapping!.linkedKeys
 		})
-		cachedAllNonRefLocKeys = v
+		cachedKeysReferencedInMappings = v
 		return v
 	}
 	
