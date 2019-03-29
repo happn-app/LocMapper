@@ -80,7 +80,7 @@ public class LocFile {
 			}
 		}
 		
-		if languages.index(of: languageName) == nil {
+		if languages.firstIndex(of: languageName) == nil {
 			languages.append(languageName)
 			languages.sort()
 		}
@@ -100,7 +100,7 @@ public class LocFile {
 	- Returns: Either the original key, or a merge of the corresponding existing
 	key in the already known keys with the one given in argument. */
 	func getKeyFrom(_ refKey: LineKey, useNonEmptyCommentIfOneEmptyTheOtherNot: Bool, withListOfKeys keys: inout [LineKey]) -> LineKey {
-		if let idx = keys.index(of: refKey) {
+		if let idx = keys.firstIndex(of: refKey) {
 			if keys[idx].comment != refKey.comment {
 				if useNonEmptyCommentIfOneEmptyTheOtherNot && (keys[idx].comment.isEmpty || refKey.comment.isEmpty) {
 					/* We use the non-empty comment because one of the two comments

@@ -227,7 +227,7 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 					switch response {
 					case .alertFirstButtonReturn:
 						updateEntryToManualValues()
-						if let tableColumnIndex = self.tableView.tableColumns.index(of: tableColumn) {
+						if let tableColumnIndex = self.tableView.tableColumns.firstIndex(of: tableColumn) {
 							self.tableView.editColumn(tableColumnIndex, row: row, with: nil, select: true)
 						}
 						
@@ -360,6 +360,7 @@ class HighlightColorTextFieldCell : NSTextFieldCell {
 		switch backgroundStyle {
 		case .raised, .emphasized: textColor = hightlightColor
 		case .lowered, .normal:    textColor = nonHighlightedTextColor
+		@unknown default:          textColor = nonHighlightedTextColor
 		}
 	}
 	

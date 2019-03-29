@@ -403,8 +403,10 @@ extension LocFile : TextOutputStreamable {
 				outputData[0..<MemoryLayout<Int32>.size] = Data(buffer: UnsafeBufferPointer<Int32>(start: &s, count: 1))
 				
 				var destLen = uLongf(outputData.count - MemoryLayout<Int32>.size)
-				try outputData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutablePointer<Bytef>) in
-					try inputData.withUnsafeBytes{ (inputBytes: UnsafePointer<Bytef>) in
+				try outputData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutableRawBufferPointer) in
+					let outputBytes = outputBytes.bindMemory(to: Bytef.self).baseAddress!
+					try inputData.withUnsafeBytes{ (inputBytes: UnsafeRawBufferPointer) in
+						let inputBytes = inputBytes.bindMemory(to: Bytef.self).baseAddress!
 						guard compress2(outputBytes + MemoryLayout<Int32>.size, &destLen, inputBytes, uLong(inputData.count), 9) == Z_OK else {
 							throw NSError(domain: "__internal__", code: 1, userInfo: nil)
 						}
@@ -459,14 +461,16 @@ extension LocFile : TextOutputStreamable {
 		guard var compressedData = Data(base64Encoded: string), compressedData.count >= MemoryLayout<Int32>.size else {return nil}
 		
 		/* let retrieve the size of the uncompressed data */
-		let s: Int32 = compressedData.withUnsafeBytes{ ptr in ptr.pointee }
+		let s: Int32 = compressedData.withUnsafeBytes{ ptr in ptr.bindMemory(to: Int32.self).first! }
 		compressedData = compressedData.dropFirst(MemoryLayout<Int32>.size)
 		var uncompressedData = Data(count: Int(s))
 		
 		do {
 			var outputLength = uLongf(s)
-			try compressedData.withUnsafeBytes{ (inputBytes: UnsafePointer<Bytef>) in
-				try uncompressedData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutablePointer<Bytef>) in
+			try compressedData.withUnsafeBytes{ (inputBytes: UnsafeRawBufferPointer) in
+				let inputBytes = inputBytes.bindMemory(to: Bytef.self).baseAddress!
+				try uncompressedData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutableRawBufferPointer) in
+					let outputBytes = outputBytes.bindMemory(to: Bytef.self).baseAddress!
 					guard uncompress(outputBytes, &outputLength, inputBytes, uLong(compressedData.count)) == Z_OK else {
 						throw NSError(domain: "__internal__", code: 1, userInfo: nil)
 					}

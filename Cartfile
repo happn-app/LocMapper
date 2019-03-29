@@ -1,2 +1,1 @@
-github "happn-app/XibLoc" "master"
-github "happn-app/AsyncOperationResult" ~> 1.0
+github "happn-app/XibLoc" ~> 0.9.7

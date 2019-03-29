@@ -63,8 +63,10 @@ extension LocFile {
 			return comment.byPrepending(userInfo: userInfo, sortKeys: true)
 		}
 		
-		public var hashValue: Int {
-			return locKey.hashValue &+ env.hashValue &+ filename.hashValue
+		public func hash(into hasher: inout Hasher) {
+			hasher.combine(locKey)
+			hasher.combine(env)
+			hasher.combine(filename)
 		}
 		
 		public static func ==(k1: LocFile.LineKey, k2: LocFile.LineKey) -> Bool {

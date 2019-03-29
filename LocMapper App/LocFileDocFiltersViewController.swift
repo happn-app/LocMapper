@@ -202,7 +202,7 @@ class LocFileDocFiltersViewController : NSViewController, NSTableViewDataSource,
 		case (section1SepIndex + 1)..<section2SepIndex: return .envFilter
 		case section2SepIndex:                          return .separator2
 		case (section2SepIndex + 1)..<section3SepIndex: return .stateFilter
-		default: fatalError("Invalid index to convert to section: \(index)")
+		default: fatalError("Invalid index to convert to section: \(row)")
 		}
 	}
 	

@@ -30,20 +30,10 @@ struct TaggedObject<O> : CustomDebugStringConvertible {
 
 
 extension TaggedObject : Equatable where O : Equatable {
-	
-	static func ==(lhs: TaggedObject<O>, rhs: TaggedObject<O>) -> Bool {
-		return lhs.value == rhs.value && lhs.tags == rhs.tags
-	}
-	
 }
 
 
 extension TaggedObject : Hashable where O : Hashable {
-	
-	var hashValue: Int {
-		return value.hashValue &+ tags.reduce(0, { $0 &+ $1.hashValue })
-	}
-	
 }
 
 

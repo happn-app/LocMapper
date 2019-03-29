@@ -26,13 +26,9 @@
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
 		7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0869A21DCB7F8700EB9486 /* Utils.swift */; };
-		7B0ACEFD21C30C6A003705A8 /* AsyncOperationResult.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B0ACEFC21C30C6A003705A8 /* AsyncOperationResult.framework */; };
 		7B0ACEFE21C30CD6003705A8 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0ACEFF21C3116B003705A8 /* PreferencesViewController.swift */; };
 		7B0ACF0221C3118D003705A8 /* KeychainUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0ACF0121C3118D003705A8 /* KeychainUtils.swift */; };
-		7B147119210D12B700B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
-		7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
-		7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B147117210D124400B1621C /* XibLoc.framework */; };
 		7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE1E21C120310016D109 /* AppDelegate.swift */; };
 		7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE2021C120310016D109 /* FilesListViewController.swift */; };
 		7B15CE2321C120330016D109 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2221C120330016D109 /* Assets.xcassets */; };
@@ -58,6 +54,7 @@
 		7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* LocKeyMapping.swift */; };
 		7B4CC6ED2025E08A0055CB74 /* DependencyInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */; };
 		7B4CC6F92025EE970055CB74 /* LocFile+Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6F82025EE970055CB74 /* LocFile+Xcode.swift */; };
+		7B4D3878224E5D7A0070ECA0 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BFA0382224E312B002B48A0 /* XibLoc.framework */; };
 		7B560D5E1C16ED49001DD2B0 /* LocFileDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* LocFileDocTableViewController.swift */; };
 		7B560D601C16FF11001DD2B0 /* LocFileDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* LocFileDocTabViewController.swift */; };
 		7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D611C170192001DD2B0 /* LoadingDocViewController.swift */; };
@@ -110,6 +107,8 @@
 		7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BF4B1961D34305A0062A605 /* LoadingWindow.xib */; };
 		7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */; };
 		7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF725B02027607C004C33B6 /* LocFile+Serialization.swift */; };
+		7BFA0383224E312B002B48A0 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BFA0382224E312B002B48A0 /* XibLoc.framework */; };
+		7BFA0384224E315B002B48A0 /* XibLoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BFA0382224E312B002B48A0 /* XibLoc.framework */; };
 		7BFE27542045F30900B2EC34 /* AppendedTagsStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */; };
 		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
 		7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */; };
@@ -177,10 +176,8 @@
 		7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryAdvancedMappingViewController.swift; sourceTree = "<group>"; };
 		7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocEntryMappingViewController.swift; sourceTree = "<group>"; };
 		7B0869A21DCB7F8700EB9486 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		7B0ACEFC21C30C6A003705A8 /* AsyncOperationResult.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AsyncOperationResult.framework; sourceTree = "<group>"; };
 		7B0ACEFF21C3116B003705A8 /* PreferencesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesViewController.swift; sourceTree = "<group>"; };
 		7B0ACF0121C3118D003705A8 /* KeychainUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainUtils.swift; sourceTree = "<group>"; };
-		7B147117210D124400B1621C /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7B15CE1C21C120310016D109 /* LocMapper Linter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LocMapper Linter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B15CE1E21C120310016D109 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B15CE2021C120310016D109 /* FilesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesListViewController.swift; sourceTree = "<group>"; };
@@ -264,6 +261,7 @@
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
 		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
 		7BF725B02027607C004C33B6 /* LocFile+Serialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+Serialization.swift"; sourceTree = "<group>"; };
+		7BFA0382224E312B002B48A0 /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* LocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFile.swift; sourceTree = "<group>"; };
 		7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendedTagsStrings.swift; sourceTree = "<group>"; };
 		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -276,8 +274,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B0ACEFD21C30C6A003705A8 /* AsyncOperationResult.framework in Frameworks */,
 				7B0ACEFE21C30CD6003705A8 /* libLocMapper.a in Frameworks */,
+				7B4D3878224E5D7A0070ECA0 /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,7 +284,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */,
-				7B147119210D12B700B1621C /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,7 +291,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B14711B210D12CA00B1621C /* XibLoc.framework in Frameworks */,
+				7BFA0383224E312B002B48A0 /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,7 +300,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */,
-				7B14711A210D12BC00B1621C /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B76AAE52025FD070071B896 /* libLocMapper.a in Frameworks */,
+				7BFA0384224E315B002B48A0 /* XibLoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,11 +325,10 @@
 		7B147116210D122700B1621C /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				7B0ACEFC21C30C6A003705A8 /* AsyncOperationResult.framework */,
-				7B147117210D124400B1621C /* XibLoc.framework */,
+				7BFA0382224E312B002B48A0 /* XibLoc.framework */,
 			);
 			name = macOS;
-			path = Mac;
+			path = Mac/Static;
 			sourceTree = "<group>";
 		};
 		7B15CE1D21C120310016D109 /* LocMapper Linter */ = {
@@ -770,22 +766,22 @@
 					};
 					7B4CC6CB2025BCEF0055CB74 = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					7B6E259E19D4157A001934ED = {
 						CreatedOnToolsVersion = 6.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1020;
 					};
 					7B837D7E1C0EF3DB0020E86B = {
 						CreatedOnToolsVersion = 7.1.1;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
 			buildConfigurationList = 7B6E259A19D4157A001934ED /* Build configuration list for PBXProject "LocMapper" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -1012,14 +1008,13 @@
 				CURRENT_PROJECT_VERSION = 3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				INFOPLIST_FILE = "LocMapper Linter/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.happn.LocMapper-Linter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1032,14 +1027,13 @@
 				CURRENT_PROJECT_VERSION = 3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				INFOPLIST_FILE = "LocMapper Linter/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.happn.LocMapper-Linter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1065,10 +1059,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 28;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				INFOPLIST_FILE = LocMapperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1076,7 +1066,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1088,17 +1077,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 28;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				INFOPLIST_FILE = LocMapperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1112,13 +1096,12 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1132,13 +1115,12 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1194,6 +1176,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1240,6 +1223,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1249,12 +1233,11 @@
 				CURRENT_PROJECT_VERSION = 28;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1265,12 +1248,11 @@
 				CURRENT_PROJECT_VERSION = 28;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1283,7 +1265,7 @@
 				CURRENT_PROJECT_VERSION = 28;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				INFOPLIST_FILE = "LocMapper App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -1291,7 +1273,6 @@
 				PRODUCT_MODULE_NAME = LocMapperApp;
 				PRODUCT_NAME = LocMapper;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1304,7 +1285,7 @@
 				CURRENT_PROJECT_VERSION = 28;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/Carthage/Build/Mac/Static",
 				);
 				INFOPLIST_FILE = "LocMapper App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -1312,7 +1293,6 @@
 				PRODUCT_MODULE_NAME = LocMapperApp;
 				PRODUCT_NAME = LocMapper;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

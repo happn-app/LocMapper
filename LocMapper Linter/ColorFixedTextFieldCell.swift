@@ -36,6 +36,7 @@ class ColorFixedTextFieldCell : NSTextFieldCell {
 		switch backgroundStyle {
 		case .lowered, .normal:    textColor = expectedTextColor
 		case .raised, .emphasized: textColor = .white
+		@unknown default:          textColor = expectedTextColor
 		}
 		internalSet = false
 	}

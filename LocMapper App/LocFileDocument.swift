@@ -90,8 +90,8 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 		/* We still need to save the metadata which are not saved in the data
 		 * (anymore; we used to save them along the data). */
 		guard let metadata = csvLocFile?.serializedMetadata() else {return}
-		metadata.withUnsafeBytes{ (ptr: UnsafePointer<Int8>) -> Void in
-			setxattr(url.absoluteURL.path, xattrMetadataName, UnsafeRawPointer(ptr), metadata.count, 0 /* Reserved, should be 0 */, 0 /* No options */)
+		metadata.withUnsafeBytes{ (ptr: UnsafeRawBufferPointer) -> Void in
+			setxattr(url.absoluteURL.path, xattrMetadataName, ptr.baseAddress!, metadata.count, 0 /* Reserved, should be 0 */, 0 /* No options */)
 		}
 	}
 	
@@ -114,8 +114,8 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 			if s >= 0 {
 				/* We have the size of the xattr we want to read. Let's read it. */
 				var serializedMetadata = Data(count: s)
-				let s2 = serializedMetadata.withUnsafeMutableBytes{ (ptr: UnsafeMutablePointer<Int8>) -> Int in
-					return getxattr(url.absoluteURL.path, xattrMetadataName, UnsafeMutableRawPointer(ptr), s, 0 /* Reserved, should be 0 */, 0 /* No options */)
+				let s2 = serializedMetadata.withUnsafeMutableBytes{ (ptr: UnsafeMutableRawBufferPointer) -> Int in
+					return getxattr(url.absoluteURL.path, xattrMetadataName, ptr.baseAddress!, s, 0 /* Reserved, should be 0 */, 0 /* No options */)
 				}
 				if s2 >= 0 {
 					/* We have read the xattr. Let's unserialize them! */
