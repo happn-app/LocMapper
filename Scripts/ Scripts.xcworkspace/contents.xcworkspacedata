@@ -13,19 +13,6 @@
       </Group>
       <Group
          location = "container:"
-         name = "Carthage">
-         <FileRef
-            location = "group:carthage_bootstrap_static.sh">
-         </FileRef>
-         <FileRef
-            location = "group:carthage_update_static.sh">
-         </FileRef>
-         <FileRef
-            location = "group:carthage_workaround_static_folder.sh">
-         </FileRef>
-      </Group>
-      <Group
-         location = "container:"
          name = "Prod Stuff">
          <FileRef
             location = "group:build_for_linux_on_macos.sh">
