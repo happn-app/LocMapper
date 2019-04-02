@@ -1,16 +1,21 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.0
 import PackageDescription
 
 
 let package = Package(
 	name: "LocMapper",
+	platforms: [
+		.macOS(.v10_12)
+	],
 	dependencies: [
 		.package(url: "git@github.com:happn-app/Swift-zlib.git", from: "1.0.0"),
-		.package(url: "git@github.com:happn-app/DummyLinuxOSLog.git", from: "1.0.0"),
-		.package(url: "git@github.com:happn-app/XibLoc.git", from: "0.9.2")
+		.package(url: "git@github.com:happn-app/DummyLinuxOSLog.git", from: "1.0.1"),
+		.package(url: "git@github.com:happn-app/XibLoc.git", from: "0.9.7")
 	],
 	targets: [
 		.target(name: "LocMapper", dependencies: ["DummyLinuxOSLog", "XibLoc"], path: "LocMapper"), /* A better name would be LocMapperKit. I’m lazy enough not to refactor. */
+		.testTarget(name: "LocMapperTests", dependencies: ["LocMapper"]),
+		
 		.target(name: "locmapper", dependencies: ["LocMapper"], path: "LocMapper CLI")
 		/* As an alternative to the two targets above, we can have only one
 		 * “locmapper” target that compile both folders directly. I prefer the

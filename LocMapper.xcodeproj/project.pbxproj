@@ -208,6 +208,10 @@
 		7B560D671C172B54001DD2B0 /* LocFileDocFiltersSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocFiltersSplitViewController.swift; sourceTree = "<group>"; };
 		7B56D2AE1DA0F25E00662EFD /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocContentSplitViewController.swift; sourceTree = "<group>"; };
+		7B6AB6CE22540A0900EA34A8 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		7B6AB6CF22540A0900EA34A8 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		7B6AB6D0225411B000EA34A8 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
+		7B6AB6D22254128B00EA34A8 /* LinuxMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LinuxMain.swift; path = Tests/LinuxMain.swift; sourceTree = SOURCE_ROOT; };
 		7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorFixedTextFieldCell.swift; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* locmapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = locmapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -372,9 +376,10 @@
 			isa = PBXGroup;
 			children = (
 				7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */,
-				7B4CC6C22025BB390055CB74 /* Info.plist */,
+				7B6AB6D1225411BE00EA34A8 /* Supporting Files */,
 			);
-			path = LocMapperTests;
+			name = LocMapperTests;
+			path = Tests/LocMapperTests;
 			sourceTree = "<group>";
 		};
 		7B4CC6CD2025BCEF0055CB74 /* LocMapper */ = {
@@ -446,10 +451,22 @@
 			name = "Bottom-Right Pane (Details)";
 			sourceTree = "<group>";
 		};
+		7B6AB6D1225411BE00EA34A8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7B4CC6C22025BB390055CB74 /* Info.plist */,
+				7B6AB6D22254128B00EA34A8 /* LinuxMain.swift */,
+				7B6AB6D0225411B000EA34A8 /* XCTestManifests.swift */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		7B6E259619D4157A001934ED = {
 			isa = PBXGroup;
 			children = (
 				7BCB27A91D2D4020005CFEB9 /* Readme.txt */,
+				7B6AB6CE22540A0900EA34A8 /* Cartfile */,
+				7B6AB6CF22540A0900EA34A8 /* Package.swift */,
 				7B4CC6CD2025BCEF0055CB74 /* LocMapper */,
 				7B6E25A119D4157A001934ED /* LocMapper CLI */,
 				7B837D801C0EF3DB0020E86B /* LocMapper App */,
@@ -1059,7 +1076,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 28;
-				INFOPLIST_FILE = LocMapperTests/Info.plist;
+				INFOPLIST_FILE = Tests/LocMapperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperTests";
@@ -1077,7 +1094,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 28;
-				INFOPLIST_FILE = LocMapperTests/Info.plist;
+				INFOPLIST_FILE = Tests/LocMapperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperTests";
