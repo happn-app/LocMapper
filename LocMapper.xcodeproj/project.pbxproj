@@ -264,7 +264,6 @@
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
 		7BF4B1981D3430F50062A605 /* UINavigationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationUtilities.swift; sourceTree = "<group>"; };
 		7BF725B02027607C004C33B6 /* LocFile+Serialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+Serialization.swift"; sourceTree = "<group>"; };
-		7BFA0382224E312B002B48A0 /* XibLoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XibLoc.framework; sourceTree = "<group>"; };
 		7BFA536A19D56DD100CF2A2E /* LocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFile.swift; sourceTree = "<group>"; };
 		7BFE27532045F30900B2EC34 /* AppendedTagsStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendedTagsStrings.swift; sourceTree = "<group>"; };
 		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -323,15 +322,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		7B147116210D122700B1621C /* macOS */ = {
-			isa = PBXGroup;
-			children = (
-				7BFA0382224E312B002B48A0 /* XibLoc.framework */,
-			);
-			name = macOS;
-			path = Mac/Static;
 			sourceTree = "<group>";
 		};
 		7B15CE1D21C120310016D109 /* LocMapper Linter */ = {
@@ -470,7 +460,6 @@
 				7B837D801C0EF3DB0020E86B /* LocMapper App */,
 				7B15CE1D21C120310016D109 /* LocMapper Linter */,
 				7B4CC6BF2025BB390055CB74 /* LocMapperTests */,
-				7BF69778202322AD00088A52 /* Dependencies */,
 				7B6E25A019D4157A001934ED /* Products */,
 				7B11A5721F51AE7B0064549D /* Frameworks */,
 			);
@@ -640,15 +629,6 @@
 				7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */,
 			);
 			path = StdRefLoc;
-			sourceTree = "<group>";
-		};
-		7BF69778202322AD00088A52 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				7B147116210D122700B1621C /* macOS */,
-			);
-			name = Dependencies;
-			path = Carthage/Build;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
