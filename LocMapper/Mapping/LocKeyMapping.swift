@@ -104,8 +104,8 @@ public final class LocKeyMapping {
 	private static func stringRepresentationFromComponentsList(_ components: [LocKeyMappingComponent], prettyPrint: Bool) -> String {
 		let jsonOptions: JSONSerialization.WritingOptions
 		let baseJSONOptions: JSONSerialization.WritingOptions = (prettyPrint ? [.prettyPrinted] : [])
-		if #available(OSX 10.13, *) {jsonOptions = baseJSONOptions.union(.sortedKeys)}
-		else                        {jsonOptions = baseJSONOptions}
+		if #available(OSX 10.13, iOS 11.0, *) {jsonOptions = baseJSONOptions.union(.sortedKeys)}
+		else                                  {jsonOptions = baseJSONOptions}
 		let allSerialized = components.map{ $0.serialize() }
 		let str = try! String(
 			data: JSONSerialization.data(
