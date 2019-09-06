@@ -25,9 +25,9 @@ enum Std2XibError : Error {
 }
 
 
-struct Std2Xib {
+public struct Std2Xib {
 	
-	static func untaggedValue(from stdLocValues: [TaggedString], with language: String) throws -> String {
+	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String) throws -> String {
 		let language = language.lowercased()
 		
 		/* Tags of first value determine how we'll merge the values. We do not try

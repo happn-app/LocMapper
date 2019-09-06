@@ -10,19 +10,19 @@ import Foundation
 
 
 
-typealias TaggedString = TaggedObject<String>
+public typealias TaggedString = TaggedObject<String>
 
-struct TaggedObject<O> : CustomDebugStringConvertible {
+public struct TaggedObject<O> : CustomDebugStringConvertible {
 	
 	var value: O
 	var tags: [String]
 	
-	init(value v: O, tags t: [String]) {
+	public init(value v: O, tags t: [String]) {
 		value = v
 		tags = t
 	}
 	
-	var debugDescription: String {
+	public var debugDescription: String {
 		return "\"\(value)\"<" + tags.joined(separator: ",") + ">"
 	}
 	
@@ -37,7 +37,7 @@ extension TaggedObject : Hashable where O : Hashable {
 }
 
 
-extension TaggedObject where O == String {
+public extension TaggedObject where O == String {
 	
 	init(string: String) {
 		let (v, t) = string.splitAppendedTags()
