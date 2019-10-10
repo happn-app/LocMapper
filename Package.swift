@@ -8,12 +8,13 @@ let package = Package(
 		.macOS(.v10_12)
 	],
 	dependencies: [
-		.package(url: "git@github.com:happn-app/Swift-zlib.git", from: "1.0.0"),
-		.package(url: "git@github.com:happn-app/DummyLinuxOSLog.git", from: "1.0.1"),
-		.package(url: "git@github.com:happn-app/XibLoc.git", from: "0.9.7")
+		.package(url: "https://github.com/happn-tech/DummyLinuxOSLog.git", from: "1.0.1"),
+		.package(url: "https://github.com/happn-tech/XibLoc.git", from: "0.9.7")
 	],
 	targets: [
-		.target(name: "LocMapper", dependencies: ["DummyLinuxOSLog", "XibLoc"], path: "LocMapper"), /* A better name would be LocMapperKit. I’m lazy enough not to refactor. */
+		.systemLibrary(name: "CZlib", path: "CZlib", providers: [.apt(["zlib1g-dev"])]),
+		
+		.target(name: "LocMapper", dependencies: ["DummyLinuxOSLog", "XibLoc", "CZlib"], path: "LocMapper"), /* A better name would be LocMapperKit. I’m lazy enough not to refactor. */
 		.testTarget(name: "LocMapperTests", dependencies: ["LocMapper"]),
 		
 		.target(name: "locmapper", dependencies: ["LocMapper"], path: "LocMapper CLI")

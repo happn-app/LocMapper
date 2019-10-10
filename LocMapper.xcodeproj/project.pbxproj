@@ -207,6 +207,8 @@
 		7B560D671C172B54001DD2B0 /* LocFileDocFiltersSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocFiltersSplitViewController.swift; sourceTree = "<group>"; };
 		7B56D2AE1DA0F25E00662EFD /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		7B588824234F87E10038466E /* License.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = License.txt; sourceTree = "<group>"; };
+		7B58882E234F8DC40038466E /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		7B58882F234F8DCF0038466E /* zlib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocContentSplitViewController.swift; sourceTree = "<group>"; };
 		7B6AB6CF22540A0900EA34A8 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		7B6AB6D0225411B000EA34A8 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
@@ -439,6 +441,23 @@
 			name = "Bottom-Right Pane (Details)";
 			sourceTree = "<group>";
 		};
+		7B58882C234F8CE60038466E /* Linux Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7B58882D234F8D000038466E /* CZlib */,
+			);
+			name = "Linux Supporting Files";
+			sourceTree = "<group>";
+		};
+		7B58882D234F8D000038466E /* CZlib */ = {
+			isa = PBXGroup;
+			children = (
+				7B58882E234F8DC40038466E /* module.modulemap */,
+				7B58882F234F8DCF0038466E /* zlib.h */,
+			);
+			path = CZlib;
+			sourceTree = "<group>";
+		};
 		7B6AB6D1225411BE00EA34A8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -460,6 +479,7 @@
 				7B837D801C0EF3DB0020E86B /* LocMapper App */,
 				7B15CE1D21C120310016D109 /* LocMapper Linter */,
 				7B4CC6BF2025BB390055CB74 /* LocMapperTests */,
+				7B58882C234F8CE60038466E /* Linux Supporting Files */,
 				7B6E25A019D4157A001934ED /* Products */,
 				7B11A5721F51AE7B0064549D /* Frameworks */,
 			);
