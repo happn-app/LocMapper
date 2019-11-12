@@ -7,6 +7,9 @@ let package = Package(
 	platforms: [
 		.macOS(.v10_12)
 	],
+	products: [
+		.library(name: "LocMapper", targets: ["LocMapper"]),
+	],
 	dependencies: [
 		.package(url: "https://github.com/happn-tech/DummyLinuxOSLog.git", from: "1.0.1"),
 		.package(url: "https://github.com/happn-tech/XibLoc.git", from: "0.9.7")
