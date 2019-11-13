@@ -5,7 +5,11 @@ import PackageDescription
 let package = Package(
 	name: "LocMapper",
 	platforms: [
-		.macOS(.v10_12)
+		.macOS(.v10_12),
+		.iOS(.v10)
+	],
+	products: [
+		.library(name: "LocMapper", targets: ["LocMapper"]),
 	],
 	dependencies: [
 		.package(url: "https://github.com/happn-tech/DummyLinuxOSLog.git", from: "1.0.1"),
