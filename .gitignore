@@ -5,6 +5,7 @@ xcuserdata/
 # Other ignored files
 /Carthage/
 /.build
+/.swiftpm/
 /Packages
 
 # Other
