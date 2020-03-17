@@ -400,7 +400,9 @@ extension LocFile : TextOutputStreamable {
 				
 				/* Let's write the size of the uncompressed data */
 				var s = Int32(inputData.count) /* Will crash if input is more that 4 (or maybe 2) GiB. Also, we don't care. */
-				outputData[0..<MemoryLayout<Int32>.size] = Data(buffer: UnsafeBufferPointer<Int32>(start: &s, count: 1))
+				withUnsafePointer(to: &s, { ptr in
+					outputData[0..<MemoryLayout<Int32>.size] = Data(buffer: UnsafeBufferPointer<Int32>(start: ptr, count: 1))
+				})
 				
 				var destLen = uLongf(outputData.count - MemoryLayout<Int32>.size)
 				try outputData.withUnsafeMutableBytes{ (outputBytes: UnsafeMutableRawBufferPointer) in
