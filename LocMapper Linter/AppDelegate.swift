@@ -13,6 +13,26 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 	
+	func applicationWillFinishLaunching(_ notification: Notification) {
+		/* Registering default user defaults */
+		do {
+			let defaultValues: [String: Any] = [
+				"HPN Default Show Mapped Latest": true,
+				"HPN Default Show Unmapped": true,
+				"HPN Default Show Not Latest Version": true,
+				"HPN Default Also Show One Version Keys": false
+			]
+			
+			var defaultValuesNoNull = [String: Any]()
+			for (key, val) in defaultValues {
+				if !(val is NSNull) {
+					defaultValuesNoNull[key] = val
+				}
+			}
+			UserDefaults.standard.register(defaults: defaultValuesNoNull)
+		}
+	}
+	
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
 	}
 	

@@ -16,8 +16,43 @@ private struct NotFinishedError : Error {}
 
 class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, NSTableViewDelegate {
 	
-	@IBOutlet var progressIndicator: NSProgressIndicator!
+	@IBOutlet var progressIndicatorFirstLoad: NSProgressIndicator!
+	@IBOutlet var progressIndicatorReload: NSProgressIndicator!
 	@IBOutlet var tableView: NSTableView!
+	
+	/* The following 4 vars are not bound directly from UI to User Defaults
+	 * because we can have multiple KeyVersionsCheckViewController instantiated
+	 * and we don’t want to have the filters change for all controllers at the
+	 * same time. We do however save the value in the User Defaults to have a
+	 * default value which will be the latest filters chosen by the user. */
+	
+	@objc dynamic var showMappedLatest = UserDefaults.standard.bool(forKey: "HPN Default Show Mapped Latest") {
+		didSet {
+			UserDefaults.standard.set(showMappedLatest, forKey: "HPN Default Show Mapped Latest")
+			self.reloadOrQueueReload()
+		}
+	}
+	
+	@objc dynamic var showUnmapped = UserDefaults.standard.bool(forKey: "HPN Default Show Unmapped") {
+		didSet {
+			UserDefaults.standard.set(showUnmapped, forKey: "HPN Default Show Unmapped")
+			self.reloadOrQueueReload()
+		}
+	}
+	
+	@objc dynamic var showNotLatestVersion = UserDefaults.standard.bool(forKey: "HPN Default Show Not Latest Version") {
+		didSet {
+			UserDefaults.standard.set(showNotLatestVersion, forKey: "HPN Default Show Not Latest Version")
+			self.reloadOrQueueReload()
+		}
+	}
+	
+	@objc dynamic var alsoShowOneVersionKeys = UserDefaults.standard.bool(forKey: "HPN Default Also Show One Version Keys") {
+		didSet {
+			UserDefaults.standard.set(alsoShowOneVersionKeys, forKey: "HPN Default Also Show One Version Keys")
+			self.reloadOrQueueReload()
+		}
+	}
 	
 	var filesDescriptions: [InputFileDescription]!
 	
@@ -49,7 +84,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 			tableView.register(nib, forIdentifier: c.identifier)
 		}
 		
-		progressIndicator.startAnimation(nil)
+		progressIndicatorFirstLoad.startAnimation(nil)
 		getStdRefLoc()
 	}
 	
@@ -98,11 +133,26 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
       MARK: - Private
 	   *************** */
 	
+	private enum LoadingState {
+		
+		case firstLoad
+		case reload
+		case notLoading
+		
+		var isLoading: Bool {
+			return self != .notLoading
+		}
+		
+	}
+	
 	private enum Report {
 		
 		case versionReport(latestRefLocKey: String, mappedKeys: [String /* stringHash of a InputFileDescription */: String])
 		
 	}
+	
+	private var needsReload = false
+	private var loadingState = LoadingState.firstLoad
 	
 	private var reports: [Report]!
 	
@@ -175,10 +225,12 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 	private func computeResults() {
 		queue.addOperation{
 			var reports = [Report]()
-			let simplifiedGroupedOctothorpedUntaggedRefLocKeysWithMoreThanOneVersion = self.simplifiedGroupedOctothorpedUntaggedRefLocKeys.filter{
-				return $0.value.count > 1
-			}
-			for (_, versions) in simplifiedGroupedOctothorpedUntaggedRefLocKeysWithMoreThanOneVersion {
+			for (_, versions) in self.simplifiedGroupedOctothorpedUntaggedRefLocKeys {
+				/* First filter on version count */
+				guard self.alsoShowOneVersionKeys || versions.count > 1 else {
+					continue
+				}
+				
 				let latestVersion = versions.last!
 				var mapped = [String: String]()
 				/* Let's find which key is mapped (if any) for each input files */
@@ -190,7 +242,15 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 						}
 					}
 				}
-				reports.append(.versionReport(latestRefLocKey: latestVersion, mappedKeys: mapped))
+				/* Let’s apply the remaining filters */
+				let shouldAppend = (
+					(self.showUnmapped && mapped.count < self.filesDescriptions.count) ||
+					(self.showNotLatestVersion && Set(mapped.values).subtracting([latestVersion]).count > 0) ||
+					(self.showMappedLatest && mapped.count == self.filesDescriptions.count && Set(mapped.values) == Set(arrayLiteral: latestVersion))
+				)
+				if shouldAppend {
+					reports.append(.versionReport(latestRefLocKey: latestVersion, mappedKeys: mapped))
+				}
 			}
 			reports.sort{
 				switch ($0, $1) {
@@ -200,22 +260,43 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 			}
 			
 			DispatchQueue.main.async{
+				assert(self.loadingState.isLoading)
+				self.loadingState = .notLoading
+				
 				self.reports = reports
 				self.tableView.reloadData()
-				self.progressIndicator.stopAnimation(nil)
+				self.progressIndicatorFirstLoad.stopAnimation(nil)
+				
+				if self.needsReload {
+					self.reloadOrQueueReload()
+				} else {
+					self.progressIndicatorReload.stopAnimation(nil)
+				}
 			}
 		}
 	}
 	
 	private func showErrorAndBail(_ error: Error) {
 		assert(Thread.isMainThread)
-		self.progressIndicator.stopAnimation(nil)
+		progressIndicatorFirstLoad.stopAnimation(nil)
 		guard let w = view.window else {return}
 		
 		let alert = NSAlert(error: error)
 		alert.beginSheetModal(for: w, completionHandler: { _ in
 			w.close()
 		})
+	}
+	
+	private func reloadOrQueueReload() {
+		assert(Thread.isMainThread)
+		progressIndicatorReload.startAnimation(nil)
+		if loadingState.isLoading {
+			needsReload = true
+		} else {
+			loadingState = .reload
+			needsReload = false
+			computeResults()
+		}
 	}
 	
 }
