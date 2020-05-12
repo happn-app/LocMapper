@@ -2,21 +2,21 @@
   "object": {
     "pins": [
       {
-        "package": "DummyLinuxOSLog",
-        "repositoryURL": "https://github.com/happn-tech/DummyLinuxOSLog.git",
+        "package": "swift-log",
+        "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {
           "branch": null,
-          "revision": "ce7a3bc30d38640d2bea2a3a72a7866d8d13c538",
-          "version": "1.0.1"
+          "revision": "74d7b91ceebc85daf387ebb206003f78813f71aa",
+          "version": "1.2.0"
         }
       },
       {
         "package": "XibLoc",
         "repositoryURL": "https://github.com/happn-tech/XibLoc.git",
         "state": {
-          "branch": null,
-          "revision": "1dd4755ec0809fd5c0fcf37648a19aadb96fd1db",
-          "version": "0.9.8"
+          "branch": "dev.cache",
+          "revision": "ee2ca257f8f1f5c44880540612dccc984b9e8547",
+          "version": null
         }
       }
     ]

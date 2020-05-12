@@ -92,14 +92,15 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	}
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
-		return value.applying(xibLocInfo:
-			XibLocResolvingInfo(
-				defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken, simpleSourceTypeReplacements: [:],
-				orderedReplacements: [MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim): (gender == .male ? 0 : 1)],
-				pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
-				identityReplacement: { $0 }
-			)
-		)
+		guard let xibLocInfo = Str2StrXibLocInfo(
+			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken, simpleSourceTypeReplacements: [:],
+			orderedReplacements: [MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim): (gender == .male ? 0 : 1)],
+			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:],
+			identityReplacement: { $0 }
+		) else {
+			throw MappingResolvingError.invalidXibLocTokens
+		}
+		return value.applying(xibLocInfo: xibLocInfo)
 	}
 	
 }

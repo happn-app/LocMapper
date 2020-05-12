@@ -7,13 +7,14 @@
  */
 
 import Foundation
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
 #if canImport(os)
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -44,10 +45,9 @@ public class XibRefLocFile {
 			guard let key = row["KEY"], !key.isEmpty else {continue}
 			if entriesBuilding[key] != nil {
 				#if canImport(os)
-					di.log.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, key) }
-				#else
-					NSLogString("Found duplicated key \(key) when parsing reference translation loc file. The latest one wins.", log: di.log)
+					LocMapperConfig.oslog.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, key) }
 				#endif
+				LocMapperConfig.logger?.warning("Found duplicated key \(key) when parsing reference translation loc file. The latest one wins.")
 			}
 			
 			var values = [Language: Value]()

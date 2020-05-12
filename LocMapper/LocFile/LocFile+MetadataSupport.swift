@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -78,7 +76,10 @@ extension LocFile {
 		
 		let (string, decodedMetadata) = strSerializedMetadata.splitPrependedUserInfo()
 		if !string.isEmpty {
-			di.log.flatMap{ os_log("Got stray data in serialized metadata. Ignoring.", log: $0, type: .info) }
+			#if canImport(os)
+				LocMapperConfig.oslog.flatMap{ os_log("Got stray data in serialized metadata. Ignoring.", log: $0, type: .info) }
+			#endif
+			LocMapperConfig.logger?.warning("Got stray data in serialized metadata. Ignoring.")
 		}
 		
 		return decodedMetadata

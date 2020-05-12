@@ -16,9 +16,7 @@ import Foundation
 	import CZlib
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -95,10 +93,9 @@ extension LocFile : TextOutputStreamable {
 				let encodedUserReadableComment = row[LocFile.COMMENTS_HEADER_NAME]
 			else {
 				#if canImport(os)
-					di.log.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }
-				#else
-					NSLogString("Invalid row \(row) found in csv file. Ignoring this row.", log: di.log)
+					LocMapperConfig.oslog.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }
 				#endif
+				LocMapperConfig.logger?.warning("Invalid row \(row) found in csv file. Ignoring this row.")
 				continue
 			}
 			
@@ -133,10 +130,9 @@ extension LocFile : TextOutputStreamable {
 					(comment, userInfo) = LineKey.parse(attributedComment: prefixAndSuffixLess)
 				} else {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }
-					#else
-						NSLogString("Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }
 					#endif
+					LocMapperConfig.logger?.warning("Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
 					(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
 				}
 			}

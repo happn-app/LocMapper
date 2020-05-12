@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -78,10 +76,9 @@ extension LocFile {
 			}
 		} catch {
 			#if canImport(os)
-				di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, path, String(describing: error)) }
-			#else
-				NSLogString("Cannot write file to path \(path), got error \(String(describing: error))", log: di.log)
+				LocMapperConfig.oslog.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, path, String(describing: error)) }
 			#endif
+			LocMapperConfig.logger?.error("Cannot write file to path \(path), got error \(String(describing: error))")
 		}
 	}
 	

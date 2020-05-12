@@ -22,6 +22,9 @@ enum MappingResolvingError : Error {
 	avoid infinite recursions. */
 	case mappedToMappedKey
 	
+	/** Self-explanatory; used tokens for XibLoc that are not valid. */
+	case invalidXibLocTokens
+	
 	/** One of the mapping component/transformer needs to know the language to
 	apply its transformation (e.g. plural pick transformer), but the given
 	language is unknown. */

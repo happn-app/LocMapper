@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -258,7 +256,10 @@ public struct Std2Xib {
 			])
 		} else {
 			if taggedStrings.count != 1 {
-				di.log.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags...", log: $0, type: .info) }
+				#if canImport(os)
+					LocMapperConfig.oslog.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags...", log: $0, type: .info) }
+				#endif
+				LocMapperConfig.logger?.warning("Got more than one tagged string but no plural, gender or order tags...")
 			}
 			return taggedStrings.first!.value
 		}

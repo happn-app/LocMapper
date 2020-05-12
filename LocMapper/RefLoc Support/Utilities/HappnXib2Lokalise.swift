@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 import XibLoc
 
 
@@ -116,10 +114,9 @@ struct HappnXib2Lokalise {
 			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
 				if addPrintfReplacementTag && (!stdLocEntryAction.filter({ !($0 is LocValueTransformerGenderVariantPick) }).isEmpty || pluralTransformerBase != nil) {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got a printf-style replacement AND a non-gender std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
-					#else
-						NSLogString("Got a printf-style replacement AND a non-gender std loc entry action (\(stdLocEntryAction))", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got a printf-style replacement AND a non-gender std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
 					#endif
+					LocMapperConfig.logger?.warning("Got a printf-style replacement AND a non-gender std loc entry action (\(stdLocEntryAction))")
 				}
 				/* About .replacingOccurrences(of: "~", with: "~~"):
 				 *    - All the Xib replacements have an escape token;

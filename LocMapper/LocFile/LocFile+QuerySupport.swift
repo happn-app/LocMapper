@@ -151,10 +151,10 @@ extension LocFile {
 			return LocFile.todolocToken
 		} catch let error as MappingResolvingError {
 			switch error {
-			case .invalidMapping, .mappedToMappedKey: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
-			case .unknownLanguage:                    return "!¡!TODOLOC_UNKNOWNLANGUAGE!¡!"
-			case .keyNotFound:                        return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
-			case .noValueForLanguage:                 return LocFile.todolocToken
+			case .invalidMapping, .mappedToMappedKey, .invalidXibLocTokens: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
+			case .unknownLanguage:                                          return "!¡!TODOLOC_UNKNOWNLANGUAGE!¡!"
+			case .keyNotFound:                                              return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
+			case .noValueForLanguage:                                       return LocFile.todolocToken
 			}
 		} catch {
 			return LocFile.internalLocMapperErrorToken

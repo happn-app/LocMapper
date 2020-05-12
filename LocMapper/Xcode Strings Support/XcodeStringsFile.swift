@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 /* strings files are, in essence, old-style plist files.
@@ -136,10 +134,9 @@ public class XcodeStringsFile: TextOutputStreamable {
 				parsed_strings_files.append(xcodeStringsFile)
 			} catch let error as NSError {
 				#if canImport(os)
-					di.log.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, cur_file, String(describing: error)) }
-				#else
-					NSLogString("Got error while parsing strings file (skipping) \(cur_file): \(String(describing: error))", log: di.log)
+					LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, cur_file, String(describing: error)) }
 				#endif
+				LocMapperConfig.logger?.warning("Got error while parsing strings file (skipping) \(cur_file): \(String(describing: error))")
 			}
 		}
 		return parsed_strings_files
@@ -273,7 +270,7 @@ extension XcodeStringsFile {
 		var postString = [XcodeStringsComponent]()
 		
 		func wait_string_start(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_string_start: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_string_start: %@", log: $0, type: .debug, String(c)) }
 			if isWhiteChar(c) {
 				currentString.append(c)
 				return true
@@ -304,7 +301,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_prestring_comment_start(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("confirm_prestring_comment_start: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("confirm_prestring_comment_start: %@", log: $0, type: .debug, String(c)) }
 			if c == separatorToken {
 				string = "/"
 				currentString = ""
@@ -339,7 +336,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_prestring_star_comment(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "*" {
 				eofHandling = .earlyEOF
 				engine = confirm_end_prestring_star_comment
@@ -350,7 +347,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_end_prestring_star_comment(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("confirm_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("confirm_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "/" {
 				preString.append(Comment(currentString, doubleSlashed: false))
 				currentString = ""
@@ -369,7 +366,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_prestring_slash_comment(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_end_prestring_slash_comment: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_prestring_slash_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "\n" {
 				preString.append(Comment(currentString, doubleSlashed: true))
 				currentString = ""
@@ -382,7 +379,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_string_no_double_quotes(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_end_string_no_double_quotes: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_string_no_double_quotes: %@", log: $0, type: .debug, String(c)) }
 			if isValidUnquotedStringChar(c) {
 				currentString.append(c)
 				return true
@@ -405,7 +402,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_string(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_end_string: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_string: %@", log: $0, type: .debug, String(c)) }
 			if c == "\\" {
 				currentString.append(c)
 				eofHandling = .earlyEOF
@@ -424,7 +421,7 @@ extension XcodeStringsFile {
 		}
 		
 		func treat_string_escaped_char(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("treat_string_escaped_char: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("treat_string_escaped_char: %@", log: $0, type: .debug, String(c)) }
 			currentString.append(c)
 			eofHandling = .earlyEOF
 			engine = wait_end_string
@@ -432,7 +429,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_separator_token(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_separator_token: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_separator_token: %@", log: $0, type: .debug, String(c)) }
 			if c == separatorToken {
 				if !currentString.isEmpty {postString.append(WhiteSpace(currentString))}
 				currentString = ""
@@ -455,7 +452,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_poststring_comment_start(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("confirm_poststring_comment_start: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("confirm_poststring_comment_start: %@", log: $0, type: .debug, String(c)) }
 			if c == "*" {
 				eofHandling = .earlyEOF
 				engine = wait_end_poststring_star_comment
@@ -470,7 +467,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_poststring_star_comment(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "*" {
 				eofHandling = .earlyEOF
 				engine = confirm_end_poststring_star_comment
@@ -481,7 +478,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_end_poststring_star_comment(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("confirm_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("confirm_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "/" {
 				postString.append(Comment(currentString, doubleSlashed: false))
 				currentString = ""
@@ -500,7 +497,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_poststring_slash_comment(_ c: Character) -> Bool {
-//			di.log.flatMap{ os_log("wait_end_poststring_slash_comment: %@", log: $0, type: .debug, String(c)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_poststring_slash_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "\n" {
 				postString.append(Comment(currentString, doubleSlashed: true))
 				currentString = ""

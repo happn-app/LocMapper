@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -49,10 +47,9 @@ public class LocKeyMappingComponent {
 			return c
 		} catch {
 			#if canImport(os)
-				di.log.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }
-			#else
-				NSLogString("Got error: \(String(describing: error))", log: di.log)
+				LocMapperConfig.oslog.flatMap{ os_log("Got error: %@", log: $0, type: .info, String(describing: error)) }
 			#endif
+			LocMapperConfig.logger?.warning("Got error: \(String(describing: error))")
 			return LocKeyMappingComponentInvalid(serialization: serialization)
 		}
 	}

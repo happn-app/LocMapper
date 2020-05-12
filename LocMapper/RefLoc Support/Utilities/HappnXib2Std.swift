@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 import XibLoc
 
 
@@ -38,7 +36,7 @@ struct HappnXib2Std {
 			return v.range(of: "%%build") != nil
 		}
 		/* Let's detect || string replacements */
-		let stdReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithToken: "|", value: "")
+		let stdReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "|", rightToken: "|", value: "", escapeToken: "~")
 		let hasStdReplacement = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: stdReplacementDetectionInfo) != v
@@ -49,7 +47,7 @@ struct HappnXib2Std {
 			return v.range(of: "^workplace^") != nil || v.range(of: "^marketing version^") != nil
 		}
 		/* Let's detect 👓👓 string replacements */
-		let eyesReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithToken: "👓", value: "")
+		let eyesReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "👓", rightToken: "👓", value: "", escapeToken: "~")
 		let hasEyesReplacement = xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: eyesReplacementDetectionInfo) != v
@@ -73,7 +71,7 @@ struct HappnXib2Std {
 			return v.applying(xibLocInfo: stdPluralDetectionInfo) != v
 		}
 		/* Let's detect ## string replacements */
-		let sharpReplacementDetectionInfo = Str2StrXibLocInfo(replacements: ["#": ""])
+		let sharpReplacementDetectionInfo = Str2StrXibLocInfo(simpleReplacementWithLeftToken: "#", rightToken: "#", value: "", escapeToken: "~")
 		let hasSharpReplacement = !hasStdPlural && xibLocValues.contains{
 			let (_, v) = $0
 			return v.applying(xibLocInfo: sharpReplacementDetectionInfo) != v
@@ -174,10 +172,9 @@ struct HappnXib2Std {
 			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
 				if addPrintfReplacementTag && !stdLocEntryAction.isEmpty {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got a printf-style replacement AND a std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
-					#else
-						NSLogString("Got a printf-style replacement AND a std loc entry action (\(stdLocEntryAction))", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got a printf-style replacement AND a std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
 					#endif
+					LocMapperConfig.logger?.warning("Got a printf-style replacement AND a std loc entry action (\(stdLocEntryAction))")
 				}
 				let newValue = (try? stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0, withLanguage: l) })) ?? LocFile.internalLocMapperErrorToken
 				values[l, default: []].append(TaggedString(value: newValue, tags: HappnXib2Std.tags(from: stdLocEntryAction) + (addPrintfReplacementTag ? ["printf"] : [])))
@@ -255,10 +252,9 @@ struct HappnXib2Std {
 			return "[\(printfReplacement):\(r)]"
 		} else {
 			#if canImport(os)
-				di.log.flatMap{ os_log("Cannot get name of replacement (tokens %{public}@ and %{public}@) with values %@", log: $0, type: .info, leftToken, rightToken, xibLocValues) }
-			#else
-				NSLogString("Cannot get name of replacement (tokens \(leftToken) and \(rightToken)) with values \(xibLocValues)", log: di.log)
+				LocMapperConfig.oslog.flatMap{ os_log("Cannot get name of replacement (tokens %{public}@ and %{public}@) with values %@", log: $0, type: .info, leftToken, rightToken, xibLocValues) }
 			#endif
+			LocMapperConfig.logger?.warning("Cannot get name of replacement (tokens \(leftToken) and \(rightToken)) with values \(xibLocValues)")
 			return printfReplacement
 		}
 	}
@@ -269,8 +265,8 @@ struct HappnXib2Std {
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [], attributesModifications: [:],
 			simpleReturnTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { r = $0; return "" }],
-			dictionaryReplacements: nil, identityReplacement: { $0 }
-		)
+			identityReplacement: { $0 }
+		)! /* We assume the caller knows what it’s doing; the tokens are not user-configurable. */
 		
 		if let englishValue = xibLocValues.first(where: { $0.key.lowercased().range(of: "english") != nil })?.value {
 			_ = englishValue.applying(xibLocInfo: numberReplacementNameRetriever)
@@ -292,9 +288,9 @@ private extension XibLocResolvingInfo where SourceType == String, ReturnType == 
 		self.init(
 			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { _ in value }],
-			orderedReplacements: [:], pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:], dictionaryReplacements: nil,
+			orderedReplacements: [:], pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:],
 			identityReplacement: { $0 }
-		)
+		)! /* We assume the caller knows what it’s doing; the tokens are not user-configurable. */
 	}
 	
 }

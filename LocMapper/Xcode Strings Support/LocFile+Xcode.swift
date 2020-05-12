@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -64,10 +62,9 @@ extension LocFile {
 					
 				default:
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got unknown XcodeStringsFile component %@", log: $0, type: .info, String(describing: component)) }
-					#else
-						NSLogString("Got unknown XcodeStringsFile component \(String(describing: component))", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got unknown XcodeStringsFile component %@", log: $0, type: .info, String(describing: component)) }
 					#endif
+					LocMapperConfig.logger?.warning("Got unknown XcodeStringsFile component \(String(describing: component))")
 				}
 			}
 		}
@@ -114,10 +111,9 @@ extension LocFile {
 				}
 				if let invalid = commentScanner.scanUpToCharactersFromSet(CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/"))) {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid) }
-					#else
-						NSLogString("Found invalid string in comment; ignoring: “\(invalid)”", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid) }
 					#endif
+					LocMapperConfig.logger?.warning("Found invalid string in comment; ignoring: “\(invalid)”")
 				}
 			}
 			
@@ -154,10 +150,9 @@ extension LocFile {
 			} catch let error as NSError {
 				err = error
 				#if canImport(os)
-					di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
-				#else
-					NSLogString("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))", log: di.log)
+					LocMapperConfig.oslog.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
 				#endif
+				LocMapperConfig.logger?.error("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))")
 			}
 		}
 	}

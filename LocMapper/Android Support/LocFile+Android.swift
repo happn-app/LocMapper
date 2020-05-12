@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -141,10 +139,9 @@ extension LocFile {
 					
 				default:
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got unknown AndroidXMLLocFile component %@", log: $0, type: .info, String(describing: component)) }
-					#else
-						NSLogString("Got unknown AndroidXMLLocFile component \(String(describing: component))", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got unknown AndroidXMLLocFile component %@", log: $0, type: .info, String(describing: component)) }
 					#endif
+					LocMapperConfig.logger?.warning("Got unknown AndroidXMLLocFile component \(String(describing: component))")
 				}
 			}
 		}
@@ -183,10 +180,9 @@ extension LocFile {
 				}
 				if !scanner.isAtEnd {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got invalid comment \"%@\"", log: $0, type: .info, entry_key.comment) }
-					#else
-						NSLogString("Got invalid comment \"\(entry_key.comment)\"", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got invalid comment \"%@\"", log: $0, type: .info, entry_key.comment) }
 					#endif
+					LocMapperConfig.logger?.warning("Got invalid comment \"\(entry_key.comment)\"")
 				}
 			}
 			
@@ -222,10 +218,9 @@ extension LocFile {
 							filenameToComponents[filename]!.append(AndroidXMLLocFile.PluralGroup(name: sepBySpace[1], attributes: currentPluralsUserInfoByFilename[filename] ?? [:], values: plurals))
 						} else {
 							#if canImport(os)
-								di.log.flatMap{ os_log("Got invalid plural closing key %@. Dropping whole plurals group.", log: $0, type: .info, k) }
-							#else
-								NSLogString("Got invalid plural closing key \(k). Dropping whole plurals group.", log: di.log)
+								LocMapperConfig.oslog.flatMap{ os_log("Got invalid plural closing key %@. Dropping whole plurals group.", log: $0, type: .info, k) }
 							#endif
+							LocMapperConfig.logger?.warning("Got invalid plural closing key \(k). Dropping whole plurals group.")
 						}
 						currentPluralsValueByFilename.removeValue(forKey: filename)
 					}
@@ -234,10 +229,9 @@ extension LocFile {
 						filenameToComponents[filename]!.append(AndroidXMLLocFile.GenericGroupClosing(groupName: sepBySpace[0], nameAttributeValue: (sepBySpace.count > 1 ? sepBySpace[1] : nil)))
 					} else {
 						#if canImport(os)
-							di.log.flatMap{ os_log("Got invalid closing key %@", log: $0, type: .info, k) }
-						#else
-							NSLogString("Got invalid closing key \(k)", log: di.log)
+							LocMapperConfig.oslog.flatMap{ os_log("Got invalid closing key %@", log: $0, type: .info, k) }
 						#endif
+						LocMapperConfig.logger?.warning("Got invalid closing key \(k)")
 					}
 					
 				case let k where k.hasPrefix("k"):
@@ -261,17 +255,15 @@ extension LocFile {
 								filenameToComponents[filename]!.append(AndroidXMLLocFile.ArrayItem(value: v, index: idx, parentName: sepByQuote[0]))
 							} else {
 								#if canImport(os)
-									di.log.flatMap{ os_log("Invalid key '%@': cannot find idx", log: $0, type: .info, k) }
-								#else
-									NSLogString("Invalid key '\(k)': cannot find idx", log: di.log)
+									LocMapperConfig.oslog.flatMap{ os_log("Invalid key '%@': cannot find idx", log: $0, type: .info, k) }
 								#endif
+								LocMapperConfig.logger?.warning("Invalid key '\(k)': cannot find idx")
 							}
 						} else {
 							#if canImport(os)
-								di.log.flatMap{ os_log("Got invalid array item key '%@'", log: $0, type: .info, k) }
-							#else
-								NSLogString("Got invalid array item key '\(k)'", log: di.log)
+								LocMapperConfig.oslog.flatMap{ os_log("Got invalid array item key '%@'", log: $0, type: .info, k) }
 							#endif
+							LocMapperConfig.logger?.warning("Got invalid array item key '\(k)'")
 						}
 					}
 					
@@ -289,27 +281,24 @@ extension LocFile {
 							
 							if currentPluralsValueByFilename[filename]![quantity] != nil {
 								#if canImport(os)
-									di.log.flatMap{ os_log("Got multiple plurals value for quantity '%@' (key: '%@')", log: $0, type: .info, quantity, k) }
-								#else
-									NSLogString("Got multiple plurals value for quantity '\(quantity)' (key: '\(k)')", log: di.log)
+									LocMapperConfig.oslog.flatMap{ os_log("Got multiple plurals value for quantity '%@' (key: '%@')", log: $0, type: .info, quantity, k) }
 								#endif
+								LocMapperConfig.logger?.warning("Got multiple plurals value for quantity '\(quantity)' (key: '\(k)')")
 							}
 							currentPluralsValueByFilename[filename]![quantity] = (spaces, p)
 						} else {
 							#if canImport(os)
-								di.log.flatMap{ os_log("Got invalid plural key '%@' (either malformed or misplaced)", log: $0, type: .info, k) }
-							#else
-								NSLogString("Got invalid plural key '\(k)' (either malformed or misplaced)", log: di.log)
+								LocMapperConfig.oslog.flatMap{ os_log("Got invalid plural key '%@' (either malformed or misplaced)", log: $0, type: .info, k) }
 							#endif
+							LocMapperConfig.logger?.warning("Got invalid plural key '\(k)' (either malformed or misplaced)")
 						}
 					}
 					
 				default:
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got invalid key %@", log: $0, type: .info, entry_key.locKey) }
-					#else
-						NSLogString("Got invalid key \(entry_key.locKey)", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got invalid key %@", log: $0, type: .info, entry_key.locKey) }
 					#endif
+					LocMapperConfig.logger?.warning("Got invalid key \(entry_key.locKey)")
 				}
 			}
 			
@@ -327,10 +316,9 @@ extension LocFile {
 			} catch let error as NSError {
 				err = error
 				#if canImport(os)
-					di.log.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
-				#else
-					NSLogString("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))", log: di.log)
+					LocMapperConfig.oslog.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
 				#endif
+				LocMapperConfig.logger?.error("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))")
 			}
 		}
 	}

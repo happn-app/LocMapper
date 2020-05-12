@@ -7,13 +7,14 @@
  */
 
 import Foundation
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
 #if canImport(os)
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -76,10 +77,9 @@ public class StdRefLocFile {
 		for (lokaliseLanguage, refLocLanguage) in lokaliseToReflocLanguageName {
 			guard let lokaliseTranslations = json[lokaliseLanguage] as? [[String: Any?]] else {
 				#if canImport(os)
-					di.log.flatMap{ os_log("Did not get translations from Lokalise for language %{public}@", log: $0, type: .info, lokaliseLanguage) }
-				#else
-					NSLogString("Did not get translations from Lokalise for language \(lokaliseLanguage)", log: di.log)
+					LocMapperConfig.oslog.flatMap{ os_log("Did not get translations from Lokalise for language %{public}@", log: $0, type: .info, lokaliseLanguage) }
 				#endif
+				LocMapperConfig.logger?.notice("Did not get translations from Lokalise for language \(lokaliseLanguage)")
 				continue
 			}
 			
@@ -92,10 +92,9 @@ public class StdRefLocFile {
 					let lokaliseTranslationValue = lokaliseTranslation["translation"] as? String
 				else {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Did not get translation value, key or tags from Lokalise for language %{public}@. Translation: %@", log: $0, type: .info, lokaliseLanguage, lokaliseTranslation) }
-					#else
-						NSLogString("Did not get translation value, key or tags from Lokalise for language \(lokaliseLanguage). Translation: \(lokaliseTranslation)", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Did not get translation value, key or tags from Lokalise for language %{public}@. Translation: %@", log: $0, type: .info, lokaliseLanguage, lokaliseTranslation) }
 					#endif
+					LocMapperConfig.logger?.notice("Did not get translation value, key or tags from Lokalise for language \(lokaliseLanguage). Translation: \(lokaliseTranslation)")
 					continue
 				}
 				
@@ -108,10 +107,9 @@ public class StdRefLocFile {
 				let keyComponents = lokaliseTranslationKey.components(separatedBy: " - ")
 				if keyComponents.count > 2 {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
-					#else
-						NSLogString("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
 					#endif
+					LocMapperConfig.logger?.notice("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)")
 				}
 				let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
 				
@@ -126,10 +124,9 @@ public class StdRefLocFile {
 				if lokaliseTranslation["plural_key"] as? String == "1" {
 					guard let pluralTranslation = (try? JSONSerialization.jsonObject(with: Data(lokaliseTranslationValue.utf8), options: [])) as? [String: String] else {
 						#if canImport(os)
-							di.log.flatMap{ os_log("Did not get valid JSON for plural translation value %@", log: $0, type: .info, lokaliseTranslationValue) }
-						#else
-							NSLogString("Did not get valid JSON for plural translation value \(lokaliseTranslationValue)", log: di.log)
+							LocMapperConfig.oslog.flatMap{ os_log("Did not get valid JSON for plural translation value %@", log: $0, type: .info, lokaliseTranslationValue) }
 						#endif
+						LocMapperConfig.logger?.notice("Did not get valid JSON for plural translation value \(lokaliseTranslationValue)")
 						continue
 					}
 					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["zero"])  ?? "---", tags: tags + ["p0"]))

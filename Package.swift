@@ -10,15 +10,16 @@ let package = Package(
 	],
 	products: [
 		.library(name: "LocMapper", targets: ["LocMapper"]),
+		.executable(name: "locmapper", targets: ["locmapper"])
 	],
 	dependencies: [
-		.package(url: "https://github.com/happn-tech/DummyLinuxOSLog.git", from: "1.0.1"),
-		.package(url: "https://github.com/happn-tech/XibLoc.git", from: "0.9.7")
+		.package(url: "https://github.com/happn-tech/XibLoc.git", .branch("dev.cache")),
+		.package(url: "https://github.com/apple/swift-log.git", from: "1.2.0")
 	],
 	targets: [
 		.systemLibrary(name: "CZlib", path: "CZlib", providers: [.apt(["zlib1g-dev"])]),
 		
-		.target(name: "LocMapper", dependencies: ["DummyLinuxOSLog", "XibLoc", "CZlib"], path: "LocMapper"), /* A better name would be LocMapperKit. I’m lazy enough not to refactor. */
+		.target(name: "LocMapper", dependencies: ["Logging", "XibLoc", "CZlib"], path: "LocMapper"), /* A better name would be LocMapperKit. I’m lazy enough not to refactor. */
 		.testTarget(name: "LocMapperTests", dependencies: ["LocMapper"]),
 		
 		.target(name: "locmapper", dependencies: ["LocMapper"], path: "LocMapper CLI")

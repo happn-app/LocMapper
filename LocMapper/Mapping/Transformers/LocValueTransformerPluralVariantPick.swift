@@ -7,13 +7,7 @@
  */
 
 import Foundation
-#if canImport(os)
-	import os.log
-#endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
 import XibLoc
 
 
@@ -215,12 +209,14 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		}
 		guard let nn = n else {return "---"} /* Code for “this value should be ignored” */
 		
-		let xibLocInfo = Str2StrXibLocInfo(
+		guard let xibLocInfo = Str2StrXibLocInfo(
 			defaultPluralityDefinition: pluralityDefinition, escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [OneWordTokens(leftToken: numberOpenDelim, rightToken: numberCloseDelim): { _ in self.numberReplacement }],
-			pluralGroups: [(MultipleWordsTokens(leftToken: pluralOpenDelim, interiorToken: pluralMiddleDelim, rightToken: pluralCloseDelim), .int(nn))],
+			pluralGroups: [(MultipleWordsTokens(leftToken: pluralOpenDelim, interiorToken: pluralMiddleDelim, rightToken: pluralCloseDelim), PluralValue(int: nn))],
 			identityReplacement: { $0 }
-		)
+		) else {
+			throw MappingResolvingError.invalidXibLocTokens
+		}
 		return value.applying(xibLocInfo: xibLocInfo)
 	}
 	

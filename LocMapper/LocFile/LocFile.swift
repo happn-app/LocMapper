@@ -11,9 +11,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -117,10 +115,9 @@ public class LocFile {
 					}
 				} else {
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got different comment for same loc key \"%@\" (file %@): \"%@\" and \"%@\"", log: $0, type: .info, refKey.locKey, refKey.filename, keys[idx].comment, refKey.comment) }
-					#else
-						NSLogString("Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got different comment for same loc key \"%@\" (file %@): \"%@\" and \"%@\"", log: $0, type: .info, refKey.locKey, refKey.filename, keys[idx].comment, refKey.comment) }
 					#endif
+					LocMapperConfig.logger?.info("Got different comment for same loc key \"\(refKey.locKey)\" (file \(refKey.filename): \"\(keys[idx].comment)\" and \"\(refKey.comment)\"")
 				}
 			}
 			return keys[idx]
@@ -130,7 +127,7 @@ public class LocFile {
 	}
 	
 	/* *********************************
-      MARK: - Private (for LintSupport)
+	   MARK: - Private (for LintSupport)
 	   ********************************* */
 	
 	internal var cachedEntryKeys: [LineKey]?

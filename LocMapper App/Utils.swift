@@ -19,7 +19,13 @@ class Utils {
 	
 	static func lineKeyToStr(_ lineKey: LocFile.LineKey) -> String {
 		return lineKeyStrTemplate.applying(
-			xibLocInfo: Str2StrXibLocInfo(replacements: ["|": lineKey.env, "*": lineKey.locKey, "$": lineKey.filename])
+			xibLocInfo: Str2StrXibLocInfo(
+				simpleReturnTypeReplacements: [
+					OneWordTokens(token: "|"): { _ in lineKey.env },
+					OneWordTokens(token: "*"): { _ in lineKey.locKey },
+					OneWordTokens(token: "$"): { _ in lineKey.filename }
+				], identityReplacement: { $0 }
+			)!
 		)
 	}
 	

@@ -15,9 +15,7 @@ import Foundation
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -227,10 +225,9 @@ class CSVParser {
 		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
 		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
 		#if canImport(os)
-			di.log.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .info, newlines) }
-		#else
-			NSLogString("Unknown new line! oO (\(newlines))", log: di.log)
+			LocMapperConfig.oslog.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .error, newlines) }
 		#endif
+		LocMapperConfig.logger?.error("Unknown new line! oO (\(newlines))")
 		return newlines
 	}
 	

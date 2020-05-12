@@ -29,6 +29,7 @@
 		7B0ACEFE21C30CD6003705A8 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0ACEFF21C3116B003705A8 /* PreferencesViewController.swift */; };
 		7B0ACF0221C3118D003705A8 /* KeychainUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0ACF0121C3118D003705A8 /* KeychainUtils.swift */; };
+		7B11B55A246B179100257726 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 7B11B559246B179100257726 /* Logging */; };
 		7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE1E21C120310016D109 /* AppDelegate.swift */; };
 		7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B15CE2021C120310016D109 /* FilesListViewController.swift */; };
 		7B15CE2321C120330016D109 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B15CE2221C120330016D109 /* Assets.xcassets */; };
@@ -52,7 +53,7 @@
 		7B4CC6DE2025BE680055CB74 /* XibRefLocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */; };
 		7B4CC6DF2025BE6D0055CB74 /* LocFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFA536A19D56DD100CF2A2E /* LocFile.swift */; };
 		7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9BD4DE1C108344007A096D /* LocKeyMapping.swift */; };
-		7B4CC6ED2025E08A0055CB74 /* DependencyInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */; };
+		7B4CC6ED2025E08A0055CB74 /* LocMapperConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6EC2025E08A0055CB74 /* LocMapperConfig.swift */; };
 		7B4CC6F92025EE970055CB74 /* LocFile+Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4CC6F82025EE970055CB74 /* LocFile+Xcode.swift */; };
 		7B560D5E1C16ED49001DD2B0 /* LocFileDocTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5D1C16ED49001DD2B0 /* LocFileDocTableViewController.swift */; };
 		7B560D601C16FF11001DD2B0 /* LocFileDocTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B560D5F1C16FF11001DD2B0 /* LocFileDocTabViewController.swift */; };
@@ -199,7 +200,7 @@
 		7B4CC6C02025BB390055CB74 /* XcodeStringsParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodeStringsParserTests.swift; sourceTree = "<group>"; };
 		7B4CC6C22025BB390055CB74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLocMapper.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DependencyInjection.swift; sourceTree = "<group>"; };
+		7B4CC6EC2025E08A0055CB74 /* LocMapperConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocMapperConfig.swift; sourceTree = "<group>"; };
 		7B4CC6F82025EE970055CB74 /* LocFile+Xcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+Xcode.swift"; sourceTree = "<group>"; };
 		7B560D5D1C16ED49001DD2B0 /* LocFileDocTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocTableViewController.swift; sourceTree = "<group>"; };
 		7B560D5F1C16FF11001DD2B0 /* LocFileDocTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocTabViewController.swift; sourceTree = "<group>"; };
@@ -211,8 +212,6 @@
 		7B58882F234F8DCF0038466E /* zlib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocFileDocContentSplitViewController.swift; sourceTree = "<group>"; };
 		7B6AB6CF22540A0900EA34A8 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		7B6AB6D0225411B000EA34A8 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
-		7B6AB6D22254128B00EA34A8 /* LinuxMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LinuxMain.swift; path = Tests/LinuxMain.swift; sourceTree = SOURCE_ROOT; };
 		7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorFixedTextFieldCell.swift; sourceTree = "<group>"; };
 		7B6E259F19D4157A001934ED /* locmapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = locmapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -294,6 +293,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B11B55A246B179100257726 /* Logging in Frameworks */,
 				7B588827234F885E0038466E /* XibLoc in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,13 +375,13 @@
 		7B4CC6CD2025BCEF0055CB74 /* LocMapper */ = {
 			isa = PBXGroup;
 			children = (
+				7B4CC6EC2025E08A0055CB74 /* LocMapperConfig.swift */,
 				7B16428B2027511B000AE458 /* LocFile */,
 				7B889BF42025F1AE005A961F /* Mapping */,
 				7B4CC6D82025BDA90055CB74 /* RefLoc Support */,
 				7B4CC6D72025BD8E0055CB74 /* Xcode Strings Support */,
 				7B4CC6D62025BD760055CB74 /* Android Support */,
 				7B4CC6D52025BD630055CB74 /* Utilities */,
-				7B4CC6EC2025E08A0055CB74 /* DependencyInjection.swift */,
 			);
 			path = LocMapper;
 			sourceTree = "<group>";
@@ -462,8 +462,6 @@
 			isa = PBXGroup;
 			children = (
 				7B4CC6C22025BB390055CB74 /* Info.plist */,
-				7B6AB6D22254128B00EA34A8 /* LinuxMain.swift */,
-				7B6AB6D0225411B000EA34A8 /* XCTestManifests.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -716,6 +714,7 @@
 			name = LocMapper;
 			packageProductDependencies = (
 				7B588826234F885E0038466E /* XibLoc */,
+				7B11B559246B179100257726 /* Logging */,
 			);
 			productName = Localizer;
 			productReference = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */;
@@ -813,6 +812,7 @@
 			mainGroup = 7B6E259619D4157A001934ED;
 			packageReferences = (
 				7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */,
+				7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */,
 			);
 			productRefGroup = 7B6E25A019D4157A001934ED /* Products */;
 			projectDirPath = "";
@@ -898,7 +898,7 @@
 				7B889BF32025F117005A961F /* LocFile+XibRefLoc.swift in Sources */,
 				7B889BFE2025F4A7005A961F /* LocKeyMappingComponentToConstant.swift in Sources */,
 				7B889C092025F578005A961F /* LocValueTransformerToUpper.swift in Sources */,
-				7B4CC6ED2025E08A0055CB74 /* DependencyInjection.swift in Sources */,
+				7B4CC6ED2025E08A0055CB74 /* LocMapperConfig.swift in Sources */,
 				7B4CC6F92025EE970055CB74 /* LocFile+Xcode.swift in Sources */,
 				7BA84F2A2073A4220029D46A /* Std2Xib.swift in Sources */,
 				7B9414F9202759A000D74EFA /* LocFile+LineValue.swift in Sources */,
@@ -1389,17 +1389,30 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 		7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/happn-tech/XibLoc.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.8;
+				branch = dev.cache;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7B11B559246B179100257726 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
 		7B588826234F885E0038466E /* XibLoc */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */;

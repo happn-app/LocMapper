@@ -7,13 +7,14 @@
  */
 
 import Foundation
+#if canImport(FoundationXML)
+	import FoundationXML
+#endif
 #if canImport(os)
 	import os.log
 #endif
 
-#if !canImport(os) && canImport(DummyLinuxOSLog)
-	import DummyLinuxOSLog
-#endif
+import Logging
 
 
 
@@ -280,7 +281,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
-//			di.log.flatMap{ os_log("didStartElement %@ namespaceURI %@ qualifiedName %@ attributes %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName), attributeDict) }
+//			LocMapperConfig.oslog.flatMap{ os_log("didStartElement %@ namespaceURI %@ qualifiedName %@ attributes %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName), attributeDict) }
 			let attrs = attributeDict
 			
 			switch (status, elementName) {
@@ -334,7 +335,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-//			di.log.flatMap{ os_log("didEndElement %@ namespaceURI %@ qualifiedName %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName)) }
+//			LocMapperConfig.oslog.flatMap{ os_log("didEndElement %@ namespaceURI %@ qualifiedName %@", log: $0, type: .debug, elementName, String(describing: namespaceURI), String(describing: qName)) }
 			switch (status, elementName) {
 				case (.inResources, "resources"):
 					if !currentChars.isEmpty {addSpaceComponent(WhiteSpace(currentChars))}
@@ -382,10 +383,9 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 					case .inPlurals(let pluralsName):
 						if currentPluralValues![quantity] != nil {
 							#if canImport(os)
-								di.log.flatMap{ os_log("Got more than one value for quantity %{public}@ of plurals named %{public}@... Choosing the latest one found.", log: $0, type: .info, quantity, pluralsName) }
-							#else
-								NSLogString("Got more than one value for quantity \(quantity) of plurals named \(pluralsName)... Choosing the latest one found.", log: di.log)
+								LocMapperConfig.oslog.flatMap{ os_log("Got more than one value for quantity %{public}@ of plurals named %{public}@... Choosing the latest one found.", log: $0, type: .info, quantity, pluralsName) }
 							#endif
+							LocMapperConfig.logger?.warning("Got more than one value for quantity \(quantity) of plurals named \(pluralsName)... Choosing the latest one found.")
 						}
 						currentPluralValues![quantity] = (
 							currentPluralSpaces,
@@ -416,9 +416,12 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		}
 		
 		func parser(_ parser: XMLParser, foundCharacters string: String) {
-//			di.log.flatMap{ os_log("foundCharacters %@", log: $0, type: .debug, string) }
+//			LocMapperConfig.oslog.flatMap{ os_log("foundCharacters %@", log: $0, type: .debug, string) }
 			if isCurrentCharsCDATA && !currentChars.isEmpty {
-				di.log.flatMap{ os_log("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.", log: $0) }
+				#if canImport(os)
+					LocMapperConfig.oslog.flatMap{ os_log("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.", log: $0, type: .info) }
+				#endif
+				LocMapperConfig.logger?.info("Warning while parsing XML file: found non-CDATA character, but I also have CDATA characters.")
 				/* We used to fail parsing here. Now if a CDATA block is mixed with
 				 * non-CDATA value, we consider the whole value to be a CDATA block
 				 * and we continue. */
@@ -429,14 +432,13 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		
 		func parser(_ parser: XMLParser, foundIgnorableWhitespace whitespaceString: String) {
 			#if canImport(os)
-				di.log.flatMap{ os_log("foundIgnorableWhitespace %@", log: $0, type: .info, whitespaceString) }
-			#else
-				NSLogString("foundIgnorableWhitespace \(whitespaceString)", log: di.log)
+				LocMapperConfig.oslog.flatMap{ os_log("foundIgnorableWhitespace %@", log: $0, type: .info, whitespaceString) }
 			#endif
+			LocMapperConfig.logger?.info("foundIgnorableWhitespace \(whitespaceString)")
 		}
 		
 		func parser(_ parser: XMLParser, foundComment comment: String) {
-//			di.log.flatMap{ os_log("foundComment %@", log: $0, type: .debug, comment) }
+//			LocMapperConfig.oslog.flatMap{ os_log("foundComment %@", log: $0, type: .debug, comment) }
 			
 			switch status {
 				case .inResources: fallthrough
@@ -455,7 +457,10 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		
 		func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
 			if !isCurrentCharsCDATA && !currentChars.isEmpty {
-				di.log.flatMap{ os_log("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.", log: $0) }
+				#if canImport(os)
+					LocMapperConfig.oslog.flatMap{ os_log("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.", log: $0, type: .info) }
+				#endif
+				LocMapperConfig.logger?.info("Warning while parsing XML file: found CDATA block, but I also have non-CDATA characters.")
 				/* We used to fail parsing here. Now if a CDATA block is mixed with
 				 * non-CDATA value, we consider the whole value to be a CDATA block
 				 * and we continue. */
@@ -467,10 +472,9 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		
 		func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
 			#if canImport(os)
-				di.log.flatMap{ os_log("parseErrorOccurred: %@", log: $0, type: .info, String(describing: parseError)) }
-			#else
-				NSLogString("parseErrorOccurred \(String(describing: parseError))", log: di.log)
+				LocMapperConfig.oslog.flatMap{ os_log("parseErrorOccurred: %@", log: $0, type: .info, String(describing: parseError)) }
 			#endif
+			LocMapperConfig.logger?.warning("parseErrorOccurred \(String(describing: parseError))")
 		}
 	}
 	
@@ -486,10 +490,9 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 				} catch let error as NSError {
 					err = error
 					#if canImport(os)
-						di.log.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
-					#else
-						NSLogString("Got error while parsing strings file \(cur_file): \(String(describing: err))", log: di.log)
+						LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
 					#endif
+					LocMapperConfig.logger?.warning("Got error while parsing strings file \(cur_file): \(String(describing: err))")
 				}
 			}
 		}
