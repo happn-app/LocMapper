@@ -94,22 +94,22 @@ extension LocFile {
 			let commentScanner = Scanner(string: entry_key.comment)
 			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
 			while !commentScanner.isAtEnd {
-				if let white = commentScanner.scanCharactersFromSet(CharacterSet.whitespacesAndNewlines) {
+				if let white = commentScanner.lm_scanCharacters(from: CharacterSet.whitespacesAndNewlines) {
 					commentComponents.append(XcodeStringsFile.WhiteSpace(white as String))
 				}
-				if commentScanner.scanString("/*", into: nil) {
-					if let comment = commentScanner.scanUpToString("*/"), !commentScanner.isAtEnd {
+				if commentScanner.lm_scanString("/*") != nil {
+					if let comment = commentScanner.lm_scanUpToString("*/"), !commentScanner.isAtEnd {
 						commentComponents.append(XcodeStringsFile.Comment(comment as String, doubleSlashed: false))
-						commentScanner.scanString("*/", into: nil)
+						_ = commentScanner.lm_scanString("*/")
 					}
 				}
-				if commentScanner.scanString("//", into: nil) {
-					if let comment = commentScanner.scanUpToString("\n"), !commentScanner.isAtEnd {
+				if commentScanner.lm_scanString("//") != nil {
+					if let comment = commentScanner.lm_scanUpToString("\n"), !commentScanner.isAtEnd {
 						commentComponents.append(XcodeStringsFile.Comment(comment as String, doubleSlashed: true))
-						commentScanner.scanString("\n", into: nil)
+						_ = commentScanner.lm_scanString("\n")
 					}
 				}
-				if let invalid = commentScanner.scanUpToCharactersFromSet(CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/"))) {
+				if let invalid = commentScanner.lm_scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/"))) {
 					#if canImport(os)
 						LocMapperConfig.oslog.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid) }
 					#endif

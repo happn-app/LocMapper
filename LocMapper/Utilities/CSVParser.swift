@@ -199,14 +199,14 @@ class CSVParser {
 	
 	private func parseDoubleQuote() -> String? {
 		let dq = "\""
-		if scanner.scanString(dq, into: nil) {
+		if scanner.lm_scanString(dq) != nil {
 			return dq
 		}
 		return nil
 	}
 	
 	private func parseSeparator() -> String? {
-		if scanner.scanString(separator, into: nil) {
+		if scanner.lm_scanString(separator) != nil {
 			return separator
 		}
 		return nil
@@ -214,7 +214,7 @@ class CSVParser {
 	
 	private func parseLineSeparator() -> String? {
 		let scanLocation = scanner.scanLocation
-		guard let matchedNewlines = scanner.scanCharactersFromSet(CSVParser.newLinesCharacterSet) else {
+		guard let matchedNewlines = scanner.lm_scanCharacters(from: CSVParser.newLinesCharacterSet) else {
 			return nil
 		}
 		
@@ -233,7 +233,7 @@ class CSVParser {
 	
 	private func parseTwoDoubleQuotes() -> String? {
 		let dq = "\"\""
-		if scanner.scanString(dq, into: nil) {
+		if scanner.lm_scanString(dq) != nil {
 			return dq
 		}
 		return nil
@@ -243,7 +243,7 @@ class CSVParser {
 		var accumulatedData = String()
 		
 		while true {
-			if let fragment = scanner.scanUpToCharactersFromSet(endTextCharacterSet) {
+			if let fragment = scanner.lm_scanUpToCharacters(from: endTextCharacterSet) {
 				accumulatedData += fragment
 			}
 			
@@ -256,8 +256,8 @@ class CSVParser {
 			/* Otherwise, we need to consider the case where the first character
 			 * of the separator is matched but we don't have the full separator. */
 			let location = scanner.scanLocation
-			if let firstCharOfSeparator = scanner.scanString(String(separator.first!)) {
-				if scanner.scanString(String(separator.dropFirst()), into: nil) {
+			if let firstCharOfSeparator = scanner.lm_scanString(String(separator.first!)) {
+				if scanner.lm_scanString(String(separator.dropFirst())) != nil {
 					scanner.scanLocation = location
 					break
 				}
