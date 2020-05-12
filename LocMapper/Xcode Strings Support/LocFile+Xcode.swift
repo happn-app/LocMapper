@@ -95,17 +95,17 @@ extension LocFile {
 			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
 			while !commentScanner.isAtEnd {
 				if let white = commentScanner.lm_scanCharacters(from: CharacterSet.whitespacesAndNewlines) {
-					commentComponents.append(XcodeStringsFile.WhiteSpace(white as String))
+					commentComponents.append(XcodeStringsFile.WhiteSpace(white))
 				}
 				if commentScanner.lm_scanString("/*") != nil {
 					if let comment = commentScanner.lm_scanUpToString("*/"), !commentScanner.isAtEnd {
-						commentComponents.append(XcodeStringsFile.Comment(comment as String, doubleSlashed: false))
+						commentComponents.append(XcodeStringsFile.Comment(comment, doubleSlashed: false))
 						_ = commentScanner.lm_scanString("*/")
 					}
 				}
 				if commentScanner.lm_scanString("//") != nil {
 					if let comment = commentScanner.lm_scanUpToString("\n"), !commentScanner.isAtEnd {
-						commentComponents.append(XcodeStringsFile.Comment(comment as String, doubleSlashed: true))
+						commentComponents.append(XcodeStringsFile.Comment(comment, doubleSlashed: true))
 						_ = commentScanner.lm_scanString("\n")
 					}
 				}

@@ -167,14 +167,14 @@ extension LocFile {
 				let scanner = Scanner(string: entry_key.comment)
 				scanner.charactersToBeSkipped = CharacterSet()
 				if let white = scanner.lm_scanCharacters(from: CharacterSet.whitespacesAndNewlines) {
-					spaces.append(AndroidXMLLocFile.WhiteSpace(white as String))
+					spaces.append(AndroidXMLLocFile.WhiteSpace(white))
 				}
 				if scanner.lm_scanString("<!--") != nil {
 					if let comment = scanner.lm_scanUpToString("-->"), !scanner.isAtEnd {
-						spaces.append(AndroidXMLLocFile.Comment(comment as String))
+						spaces.append(AndroidXMLLocFile.Comment(comment))
 						_ = scanner.lm_scanString("-->")
 						if let white = scanner.lm_scanCharacters(from: CharacterSet.whitespacesAndNewlines) {
-							spaces.append(AndroidXMLLocFile.WhiteSpace(white as String))
+							spaces.append(AndroidXMLLocFile.WhiteSpace(white))
 						}
 					}
 				}

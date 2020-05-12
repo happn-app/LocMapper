@@ -133,7 +133,7 @@ class CSVParser {
 				fieldName = fieldNames[fieldCount]
 			} else {
 				fieldNamesCount += 1
-				fieldName = NSString(format: "FIELD_%d", fieldNamesCount) as String
+				fieldName = String(format: "FIELD_%d", fieldNamesCount)
 				fieldNames.append(fieldName)
 			}
 			record[fieldName] = field
@@ -220,7 +220,7 @@ class CSVParser {
 		
 		/* newlines will contains all new lines from scanLocation. We only want
 		 * one new line. */
-		let newlines = matchedNewlines as String
+		let newlines = matchedNewlines
 		if newlines.hasPrefix("\r\n") {scanner.scanLocation = scanLocation + 2; return "\r\n"}
 		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
 		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
