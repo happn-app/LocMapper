@@ -1,5 +1,5 @@
 /*
- * DependencyInjection.swift
+ * LocMapperConfig.swift
  * LocMapper
  *
  * Created by François Lamboley on 1/22/18.
