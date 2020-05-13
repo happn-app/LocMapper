@@ -28,4 +28,7 @@ public struct LocMapperConfig {
 		#endif
 	}()
 	
+	/** This struct is simply a container for static configuration properties. */
+	private init() {}
+	
 }
