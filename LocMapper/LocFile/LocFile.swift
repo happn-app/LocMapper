@@ -58,8 +58,9 @@ public class LocFile {
 		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep, serializationStyle: .csvFriendly)
 	}
 	
-	/** Remove the references to a language from the given path and add the
-	language found in the list of known languages in the LocFile.
+	/**
+	Remove the references to a language from the given path and add the language
+	found in the list of known languages in the LocFile.
 	
 	- Returns: A tuple of the language agnostic filename and the found language
 	name*/
@@ -86,7 +87,8 @@ public class LocFile {
 		return (filenameNoLproj, languageName)
 	}
 	
-	/** Search the given key in the keys already in the LocFile.
+	/**
+	Search the given key in the keys already in the LocFile.
 	
 	If the key is not already present in the file, simply add it to the keys in
 	the file and return it.
