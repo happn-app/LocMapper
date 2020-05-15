@@ -1401,8 +1401,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/happn-tech/XibLoc.git";
 			requirement = {
-				branch = dev.cache;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = "1.0.0-rc";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
