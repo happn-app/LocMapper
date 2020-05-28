@@ -516,7 +516,7 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		
 		let parserDelegate = ParserDelegate()
 		xmlParser.delegate = parserDelegate
-		xmlParser.parse()
+		_ = xmlParser.parse()
 		if parserDelegate.status != .outEnd {
 			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
 			throw error
