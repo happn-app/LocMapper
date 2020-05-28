@@ -99,22 +99,22 @@ public class XcodeStringsFile: TextOutputStreamable {
 		}
 	}
 	
-	/* If included_paths is nil (default), no inclusion check will be done. */
-	public static func stringsFilesInProject(_ root_folder: String, excluded_paths: [String], included_paths: [String]? = nil) throws -> [XcodeStringsFile] {
-		guard let e = FileManager.default.enumerator(atPath: root_folder) else {
-			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(root_folder)."])
+	/* If includedPaths is nil (default), no inclusion check will be done. */
+	public static func stringsFilesInProject(_ rootFolder: String, excludedPaths: [String], includedPaths: [String]? = nil) throws -> [XcodeStringsFile] {
+		guard let e = FileManager.default.enumerator(atPath: rootFolder) else {
+			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(rootFolder)."])
 		}
 		
-		var parsed_strings_files = [XcodeStringsFile]()
-		fileLoop: while let cur_file = e.nextObject() as? String {
-			guard cur_file.hasSuffix(".strings") else {
+		var parsedStringsFiles = [XcodeStringsFile]()
+		fileLoop: while let curFile = e.nextObject() as? String {
+			guard curFile.hasSuffix(".strings") else {
 				continue
 			}
 			
-			if let included_paths = included_paths {
+			if let includedPaths = includedPaths {
 				var found = false
-				for included in included_paths {
-					if cur_file.range(of: included) != nil {
+				for included in includedPaths {
+					if curFile.range(of: included) != nil {
 						found = true
 						break
 					}
@@ -122,24 +122,24 @@ public class XcodeStringsFile: TextOutputStreamable {
 				if !found {continue fileLoop}
 			}
 			
-			for excluded in excluded_paths {
-				guard cur_file.range(of: excluded) == nil else {
+			for excluded in excludedPaths {
+				guard curFile.range(of: excluded) == nil else {
 					continue fileLoop
 				}
 			}
 			
 			/* We have a non-excluded strings file. Let's parse it. */
 			do {
-				let xcodeStringsFile = try XcodeStringsFile(fromPath: cur_file, relativeToProjectPath: root_folder)
-				parsed_strings_files.append(xcodeStringsFile)
+				let xcodeStringsFile = try XcodeStringsFile(fromPath: curFile, relativeToProjectPath: rootFolder)
+				parsedStringsFiles.append(xcodeStringsFile)
 			} catch let error as NSError {
 				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, cur_file, String(describing: error)) }
+					LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, curFile, String(describing: error)) }
 				#endif
-				LocMapperConfig.logger?.warning("Got error while parsing strings file (skipping) \(cur_file): \(String(describing: error))")
+				LocMapperConfig.logger?.warning("Got error while parsing strings file (skipping) \(curFile): \(String(describing: error))")
 			}
 		}
-		return parsed_strings_files
+		return parsedStringsFiles
 	}
 	
 	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {

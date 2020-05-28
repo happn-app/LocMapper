@@ -509,16 +509,13 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 		let error: NSError! = NSError(domain: "Migrator", code: 4, userInfo: nil)
 		let xmlParser: XMLParser! = XMLParser(contentsOf: url)
 		if xmlParser == nil {
-			/* Must init before failing */
-			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
 			throw error
 		}
 		
 		let parserDelegate = ParserDelegate()
 		xmlParser.delegate = parserDelegate
-		xmlParser.parse()
+		_ = xmlParser.parse()
 		if parserDelegate.status != .outEnd {
-			self.init(pathRelativeToProject: pathRelativeToProject, components: [])
 			throw error
 		}
 		

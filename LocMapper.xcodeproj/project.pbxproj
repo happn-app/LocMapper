@@ -65,7 +65,7 @@
 		7B637D241C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */; };
 		7B6DBEDA21CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
-		7B73887E20306C0100E56088 /* stdstreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B73887620306C0100E56088 /* stdstreams.swift */; };
+		7B73887E20306C0100E56088 /* FileHandleOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B73887620306C0100E56088 /* FileHandleOutputStream.swift */; };
 		7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE52025FD070071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
@@ -90,6 +90,10 @@
 		7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */; };
 		7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */; };
 		7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */; };
+		7B88B9D5247FD65300D48975 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 7B88B9D4247FD65300D48975 /* ArgumentParser */; };
+		7B88B9D8247FDC2F00D48975 /* ObsoleteVerbs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B88B9D7247FDC2F00D48975 /* ObsoleteVerbs.swift */; };
+		7B88B9DA247FE0DC00D48975 /* MergeXcodeLocs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B88B9D9247FE0DC00D48975 /* MergeXcodeLocs.swift */; };
+		7B88B9DC247FE3FC00D48975 /* ParseUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B88B9DB247FE3FC00D48975 /* ParseUtils.swift */; };
 		7B9414F9202759A000D74EFA /* LocFile+LineValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414F8202759A000D74EFA /* LocFile+LineValue.swift */; };
 		7B9414FB20275A1C00D74EFA /* LocFile+EditingSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FA20275A1C00D74EFA /* LocFile+EditingSupport.swift */; };
 		7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FC20275A9D00D74EFA /* LocFile+QuerySupport.swift */; };
@@ -99,6 +103,20 @@
 		7BA84F2A2073A4220029D46A /* Std2Xib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA84F292073A4220029D46A /* Std2Xib.swift */; };
 		7BAAAC50219CA35D002D1861 /* LocFile+LintSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAAAC4F219CA35D002D1861 /* LocFile+LintSupport.swift */; };
 		7BAB6E04207283C100DAB11C /* TaggedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAB6E03207283C100DAB11C /* TaggedObject.swift */; };
+		7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9050F247FF70900E3F5F5 /* CommonOptions.swift */; };
+		7BB9051224800C1C00E3F5F5 /* ExportToXcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051124800C1C00E3F5F5 /* ExportToXcode.swift */; };
+		7BB90516248010C500E3F5F5 /* MergeAndroidLocs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB90515248010C500E3F5F5 /* MergeAndroidLocs.swift */; };
+		7BB90518248013D500E3F5F5 /* ExportToAndroid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB90517248013D500E3F5F5 /* ExportToAndroid.swift */; };
+		7BB9051A248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB90519248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift */; };
+		7BB9051C24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051B24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift */; };
+		7BB9051E2480203A00E3F5F5 /* Lint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051D2480203A00E3F5F5 /* Lint.swift */; };
+		7BB90520248021B400E3F5F5 /* StandardizeRefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051F248021B400E3F5F5 /* StandardizeRefloc.swift */; };
+		7BB905232480266100E3F5F5 /* Experimental.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB905222480266100E3F5F5 /* Experimental.swift */; };
+		7BB90525248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB90524248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift */; };
+		7BB90527248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB90526248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift */; };
+		7BB905292480274000E3F5F5 /* UploadXibreflocToLokalise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB905282480274000E3F5F5 /* UploadXibreflocToLokalise.swift */; };
+		7BB9052B2480276800E3F5F5 /* TransformMappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9052A2480276800E3F5F5 /* TransformMappings.swift */; };
+		7BB9052D248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9052C248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift */; };
 		7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC4590120B0BDBA003972E1 /* LocFile+MigrationsSupport.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
 		7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */; };
@@ -216,7 +234,7 @@
 		7B6E259F19D4157A001934ED /* locmapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = locmapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeStringsFile.swift; sourceTree = "<group>"; };
-		7B73887620306C0100E56088 /* stdstreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stdstreams.swift; sourceTree = "<group>"; };
+		7B73887620306C0100E56088 /* FileHandleOutputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileHandleOutputStream.swift; sourceTree = "<group>"; };
 		7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidXMLLocFile.swift; sourceTree = "<group>"; };
 		7B837D7F1C0EF3DB0020E86B /* LocMapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocMapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B837D811C0EF3DB0020E86B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -242,6 +260,9 @@
 		7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerRegionDelimitersReplacement.swift; sourceTree = "<group>"; };
 		7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerGenderVariantPick.swift; sourceTree = "<group>"; };
 		7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerPluralVariantPick.swift; sourceTree = "<group>"; };
+		7B88B9D7247FDC2F00D48975 /* ObsoleteVerbs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsoleteVerbs.swift; sourceTree = "<group>"; };
+		7B88B9D9247FE0DC00D48975 /* MergeXcodeLocs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeXcodeLocs.swift; sourceTree = "<group>"; };
+		7B88B9DB247FE3FC00D48975 /* ParseUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParseUtils.swift; sourceTree = "<group>"; };
 		7B9414F8202759A000D74EFA /* LocFile+LineValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LineValue.swift"; sourceTree = "<group>"; };
 		7B9414FA20275A1C00D74EFA /* LocFile+EditingSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+EditingSupport.swift"; sourceTree = "<group>"; };
 		7B9414FC20275A9D00D74EFA /* LocFile+QuerySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+QuerySupport.swift"; sourceTree = "<group>"; };
@@ -253,6 +274,20 @@
 		7BAAAC4F219CA35D002D1861 /* LocFile+LintSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LintSupport.swift"; sourceTree = "<group>"; };
 		7BAB6E03207283C100DAB11C /* TaggedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaggedObject.swift; sourceTree = "<group>"; };
 		7BABB9561C11C92C00DACD85 /* IOUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOUtils.swift; sourceTree = "<group>"; };
+		7BB9050F247FF70900E3F5F5 /* CommonOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonOptions.swift; sourceTree = "<group>"; };
+		7BB9051124800C1C00E3F5F5 /* ExportToXcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportToXcode.swift; sourceTree = "<group>"; };
+		7BB90515248010C500E3F5F5 /* MergeAndroidLocs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeAndroidLocs.swift; sourceTree = "<group>"; };
+		7BB90517248013D500E3F5F5 /* ExportToAndroid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportToAndroid.swift; sourceTree = "<group>"; };
+		7BB90519248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeLokaliseTradsAsXibrefloc.swift; sourceTree = "<group>"; };
+		7BB9051B24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeLokaliseTradsAsStdrefloc.swift; sourceTree = "<group>"; };
+		7BB9051D2480203A00E3F5F5 /* Lint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lint.swift; sourceTree = "<group>"; };
+		7BB9051F248021B400E3F5F5 /* StandardizeRefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardizeRefloc.swift; sourceTree = "<group>"; };
+		7BB905222480266100E3F5F5 /* Experimental.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Experimental.swift; sourceTree = "<group>"; };
+		7BB90524248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertXibreflocToStdrefloc.swift; sourceTree = "<group>"; };
+		7BB90526248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertStdreflocToXibrefloc.swift; sourceTree = "<group>"; };
+		7BB905282480274000E3F5F5 /* UploadXibreflocToLokalise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadXibreflocToLokalise.swift; sourceTree = "<group>"; };
+		7BB9052A2480276800E3F5F5 /* TransformMappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformMappings.swift; sourceTree = "<group>"; };
+		7BB9052C248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateInitialAndroidMappingFromStdRefLoc.swift; sourceTree = "<group>"; };
 		7BC4590120B0BDBA003972E1 /* LocFile+MigrationsSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+MigrationsSupport.swift"; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibRefLocFile.swift; sourceTree = "<group>"; };
@@ -302,6 +337,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B88B9D5247FD65300D48975 /* ArgumentParser in Frameworks */,
 				7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -501,8 +537,10 @@
 		7B6E25A119D4157A001934ED /* LocMapper CLI */ = {
 			isa = PBXGroup;
 			children = (
-				7B73887620306C0100E56088 /* stdstreams.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
+				7B88B9D7247FDC2F00D48975 /* ObsoleteVerbs.swift */,
+				7BB9051424800F2F00E3F5F5 /* Commands */,
+				7BB9051324800F2300E3F5F5 /* Utils */,
 			);
 			path = "LocMapper CLI";
 			sourceTree = "<group>";
@@ -631,6 +669,45 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		7BB9051324800F2300E3F5F5 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				7B88B9DB247FE3FC00D48975 /* ParseUtils.swift */,
+				7BB9050F247FF70900E3F5F5 /* CommonOptions.swift */,
+				7B73887620306C0100E56088 /* FileHandleOutputStream.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		7BB9051424800F2F00E3F5F5 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				7B88B9D9247FE0DC00D48975 /* MergeXcodeLocs.swift */,
+				7BB9051124800C1C00E3F5F5 /* ExportToXcode.swift */,
+				7BB90515248010C500E3F5F5 /* MergeAndroidLocs.swift */,
+				7BB90517248013D500E3F5F5 /* ExportToAndroid.swift */,
+				7BB90519248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift */,
+				7BB9051B24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift */,
+				7BB9051D2480203A00E3F5F5 /* Lint.swift */,
+				7BB9051F248021B400E3F5F5 /* StandardizeRefloc.swift */,
+				7BB905222480266100E3F5F5 /* Experimental.swift */,
+				7BB905212480263A00E3F5F5 /* Experimental */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
+		7BB905212480263A00E3F5F5 /* Experimental */ = {
+			isa = PBXGroup;
+			children = (
+				7BB90524248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift */,
+				7BB90526248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift */,
+				7BB905282480274000E3F5F5 /* UploadXibreflocToLokalise.swift */,
+				7BB9052A2480276800E3F5F5 /* TransformMappings.swift */,
+				7BB9052C248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift */,
+			);
+			path = Experimental;
+			sourceTree = "<group>";
+		};
 		7BEC5D5420444E590056AEB9 /* XibRefLoc */ = {
 			isa = PBXGroup;
 			children = (
@@ -734,6 +811,9 @@
 				7B76AAE02025FCE90071B896 /* PBXTargetDependency */,
 			);
 			name = "LocMapper CLI";
+			packageProductDependencies = (
+				7B88B9D4247FD65300D48975 /* ArgumentParser */,
+			);
 			productName = Localizer;
 			productReference = 7B6E259F19D4157A001934ED /* locmapper */;
 			productType = "com.apple.product-type.tool";
@@ -813,6 +893,7 @@
 			packageReferences = (
 				7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */,
 				7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */,
+				7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = 7B6E25A019D4157A001934ED /* Products */;
 			projectDirPath = "";
@@ -943,8 +1024,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BB905292480274000E3F5F5 /* UploadXibreflocToLokalise.swift in Sources */,
+				7BB9051E2480203A00E3F5F5 /* Lint.swift in Sources */,
+				7BB905232480266100E3F5F5 /* Experimental.swift in Sources */,
+				7BB9052B2480276800E3F5F5 /* TransformMappings.swift in Sources */,
+				7BB90518248013D500E3F5F5 /* ExportToAndroid.swift in Sources */,
+				7B88B9DC247FE3FC00D48975 /* ParseUtils.swift in Sources */,
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
-				7B73887E20306C0100E56088 /* stdstreams.swift in Sources */,
+				7B73887E20306C0100E56088 /* FileHandleOutputStream.swift in Sources */,
+				7BB90516248010C500E3F5F5 /* MergeAndroidLocs.swift in Sources */,
+				7B88B9D8247FDC2F00D48975 /* ObsoleteVerbs.swift in Sources */,
+				7BB9051224800C1C00E3F5F5 /* ExportToXcode.swift in Sources */,
+				7B88B9DA247FE0DC00D48975 /* MergeXcodeLocs.swift in Sources */,
+				7BB9051C24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift in Sources */,
+				7BB9051A248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift in Sources */,
+				7BB90527248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift in Sources */,
+				7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */,
+				7BB90525248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift in Sources */,
+				7BB90520248021B400E3F5F5 /* StandardizeRefloc.swift in Sources */,
+				7BB9052D248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1405,6 +1503,14 @@
 				minimumVersion = "1.0.0-rc";
 			};
 		};
+		7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1422,6 +1528,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */;
 			productName = XibLoc;
+		};
+		7B88B9D4247FD65300D48975 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
