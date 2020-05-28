@@ -17,9 +17,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	Usage: \(program_name) command [args ...]
 	
 	Commands are:
-	   export_to_android [--csv-separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
-	      Exports locs from the given input lcm in the Android project at the root_folder path.
-	
 	   merge_lokalise_trads_as_stdrefloc [--csv-separator=separator] [--merge-style=add|replace] [--excluded-tags=tag1,tag2,...] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
 	      Fetch ref loc from lokalise and merge in given lcm file, converting into the StdRefLoc format.
 	      Default merge style is “add”.
@@ -41,33 +38,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 
 
 
-/* Export to Android */
-case "export_to_android":
-	var strings_filenames = [String]()
-	i = getLongArgs(argIdx: i, longArgs: [
-		"strings-filenames": { (value: String) in strings_filenames = value.components(separatedBy: ",") },
-		"csv-separator":     { (value: String) in csvSeparator = value }
-	])
-	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
-	
-	let input_path = argAtIndexOrExit(i, error_message: "Input file (CSV) is required"); i += 1
-	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-	let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-	
-	print("Exporting to Android project...")
-	do {
-		print("   Parsing LocMapper file...")
-		let csv = try LocFile(fromPath: input_path, withCSVSeparator: csvSeparator)
-		print("   Writing locs to Android project...")
-		csv.exportToAndroidProjectWithRoot(root_folder, folderNameToLanguageName: folder_name_to_language_name)
-		print("Done")
-	} catch let error as NSError {
-		print("Got error while exporting: \(error)", to: &stderrStream)
-		exit(Int32(error.code))
-	}
-	
-	exit(0)
-	
 case "merge_lokalise_trads_as_stdrefloc":
 	var excludedTags = Set<String>()
 	var mergeStyle = LocFile.MergeStyle.add
