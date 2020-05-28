@@ -210,7 +210,7 @@ case "export_to_xcode":
 	
 	exit(0)
 	
-/* Export from Android */
+/* Merge Android Locs */
 case "merge_android_locs":
 	var res_folder = "res"
 	var strings_filenames = [String]()
@@ -244,7 +244,7 @@ case "merge_android_locs":
 	
 	exit(0)
 	
-/* Import to Android */
+/* Export to Android */
 case "export_to_android":
 	var strings_filenames = [String]()
 	i = getLongArgs(argIdx: i, longArgs: [
@@ -494,7 +494,7 @@ case "convert_stdrefloc_to_xibrefloc":
 case "upload_xibrefloc_to_lokalise":
 	/* Original doc (removed from help because the command should not be used...):
 	 *    upload_xibrefloc_to_lokalise [--csv-separator=separator] lokalise_rw_token lokalise_project_id input_file.csv refloc_language_name lokalise_language_name [refloc_language_name lokalise_language_name ...]
-	 *       Upload an Xib Ref Loc file to lokalise. DROPS EVERYTHING IN THE PROJECT (but does a snapshot first).
+	 *       Upload a Xib Ref Loc file to lokalise. DROPS EVERYTHING IN THE PROJECT (but does a snapshot first).
 	 *       The translations will be marked for platform “Other.”*/
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv-separator": { (value: String) in csvSeparator = value }
