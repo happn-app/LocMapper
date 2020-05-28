@@ -23,8 +23,6 @@ import LocMapper
 
 struct Lint : ParsableCommand {
 	
-	static var configuration = CommandConfiguration()
-	
 	@OptionGroup()
 	var csvOptions: CSVOptions
 	

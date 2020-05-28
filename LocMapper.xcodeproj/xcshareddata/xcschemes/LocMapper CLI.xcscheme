@@ -70,7 +70,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--help"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--version"
@@ -249,7 +249,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "upload_xibrefloc_to_lokalise"
+            argument = "experimental upload_xibrefloc_to_lokalise"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -269,7 +269,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "convert_xibrefloc_to_stdrefloc"
+            argument = "experimental convert_xibrefloc_to_stdrefloc"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -285,7 +285,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "convert_stdrefloc_to_xibrefloc"
+            argument = "experimental convert_stdrefloc_to_xibrefloc"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -301,16 +301,28 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "experimental create_initial_android_mapping_from_std_ref_loc"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/frizlab/Downloads/happn-android/locmapper/android.lcm"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "standardize_refloc"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Downloads/xibrefloc.raw.csv"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Downloads/xibrefloc.csv"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
@@ -318,7 +330,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot; English&quot; &quot;Fran&#xe7;ais &#x2014; French&quot; &quot;Deutsch &#x2014; German&quot; &quot;Espa&#xf1;ol &#x2014; Spanish&quot; &quot;Italiano &#x2014; Italian&quot; &quot;Magyar &#x2014; Hungarian&quot; &quot;Polszczyzna &#x2014; Polish&quot; &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot; &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot; &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&quot; English&quot; en &quot;Fran&#xe7;ais &#x2014; French&quot; fr &quot;Deutsch &#x2014; German&quot; de &quot;Espa&#xf1;ol &#x2014; Spanish&quot; es &quot;Italiano &#x2014; Italian&quot; it &quot;Magyar &#x2014; Hungarian&quot; hu &quot;Polszczyzna &#x2014; Polish&quot; pl &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; pt_BR &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; pt_PT &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; tr &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; ru &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; th &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot; zh_Hant_TW &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot; ja &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot; el"
