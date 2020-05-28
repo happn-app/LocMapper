@@ -17,6 +17,8 @@ import Foundation
 
 import ArgumentParser
 
+import LocMapper
+
 
 
 /**
@@ -44,4 +46,17 @@ func dictionaryOptionFromArray(_ array: [String]) throws -> [String: String] {
 		throw ValidationError("The array argument must not be empty and contain an even number of elements (alternance of keys and values)")
 	}
 	return Dictionary(zip(keys, values), uniquingKeysWith: { _, new in new })
+}
+
+
+extension LocFile.MergeStyle : ExpressibleByArgument {
+	
+	public init?(argument: String) {
+		switch argument {
+		case "add":     self = .add
+		case "replace": self = .replace
+		default:        return nil
+		}
+	}
+	
 }

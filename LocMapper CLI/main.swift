@@ -35,7 +35,9 @@ struct LocMapperCLI : ParsableCommand {
 			Help.self, Version.self,
 			
 			MergeXcodeLocs.self, ExportToXcode.self,
-			MergeAndroidLocs.self, ExportToAndroid.self
+			MergeAndroidLocs.self, ExportToAndroid.self,
+			
+			MergeLokaliseTradsAsXibrefloc.self
 		]
 	)
 	
