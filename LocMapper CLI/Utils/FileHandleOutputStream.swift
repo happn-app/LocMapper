@@ -41,5 +41,5 @@ class FileHandleOutputStream : TextOutputStream {
 }
 
 
-//var stdoutStream = FileHandleOutputStream(fh: FileHandle.standardOutput)
-//var stderrStream = FileHandleOutputStream(fh: FileHandle.standardError)
+var stdoutStream = FileHandleOutputStream(fh: FileHandle.standardOutput)
+var stderrStream = FileHandleOutputStream(fh: FileHandle.standardError)

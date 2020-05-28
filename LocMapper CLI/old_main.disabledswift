@@ -17,9 +17,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	Usage: \(program_name) command [args ...]
 	
 	Commands are:
-	   lint [--csv-separator=separator] [--detect-unused-refloc=true|false] file.lcm
-	      Does not detect unused refloc by default.
-	
 	   standardize_refloc [--csv-separator=separator] input_file.csv output_file.csv language1 [language2 ...]
 	      Standardize a Xib or Std RefLoc file and “standardize” it. This removes comments, etc.
 	      Only the data is kept; all the metadata is gotten rid of. The keys are sorted alphabetically.
@@ -30,38 +27,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 
 
 
-case "lint":
-	var detect_unused_refloc = false
-	i = getLongArgs(argIdx: i, longArgs: [
-		"csv-separator": { (value: String) in csvSeparator = value },
-		"detect-unused-refloc": { (value: String) in detect_unused_refloc = (value.lowercased() != "false" && value.lowercased() != "no" && value != "0") }
-	])
-	let file_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
-	do {
-		func keyToStr(_ k: LocFile.LineKey, withFilename: Bool = true) -> String {
-			return "<" + k.env + (withFilename ? " / " + k.filename : "") + " / " + k.locKey + ">"
-		}
-		
-		guard FileManager.default.fileExists(atPath: file_path) else {throw NSError(domain: "LocMapper.cli", code: 1, userInfo: [NSLocalizedDescriptionKey: "No file found at path \(file_path)"])}
-		let locFile = try LocFile(fromPath: file_path, withCSVSeparator: csvSeparator)
-		for report in locFile.lint(detectUnusedRefLoc: detect_unused_refloc) {
-			switch report {
-			case .unlocalizedFilename(let filename):             print("warning: found key(s) whose filename \"\(filename)\" is not localized", to: &stderrStream)
-			case .invalidMapping(let key):                       print("warning: found invalid mapping for key \(keyToStr(key))", to: &stderrStream)
-			case .unusedRefLoc(let key):                         print("warning: found unused RefLoc key \(keyToStr(key, withFilename: false))", to: &stderrStream)
-			case .unmappedVariant(let base, let key):            print("warning: found unmapped key \(keyToStr(key, withFilename: false)) (variant of mapped base key \(base.locKey))", to: &stderrStream)
-			case .multipleKeyVersionsMapped(let mapped):         print("warning: found multiple versions of same key mapped: \(mapped.map{ keyToStr($0, withFilename: false) }.joined(separator: ", "))", to: &stderrStream)
-			case .notLatestKeyVersion(let actual, let expected): print("warning: found key not mapped at its latest version (got \(keyToStr(actual, withFilename: false)), expected \(keyToStr(expected, withFilename: false)))", to: &stderrStream)
-			}
-		}
-		
-	} catch {
-		print("Got error while linting: \(error)", to: &stderrStream)
-		exit(Int32((error as NSError).code))
-	}
-	
-	exit(0)
-	
 case "standardize_refloc":
 	i = getLongArgs(argIdx: i, longArgs: [
 		"csv-separator": { (value: String) in csvSeparator = value }
@@ -248,9 +213,3 @@ case "create_initial_android_mapping_from_std_ref_loc":
 	}
 	
 	exit(0)
-	
-default:
-	print("Unknown command \(CommandLine.arguments[1])", to: &stderrStream)
-	usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
-	exit(1)
-}

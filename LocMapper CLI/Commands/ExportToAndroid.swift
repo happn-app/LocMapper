@@ -48,7 +48,7 @@ struct ExportToAndroid : ParsableCommand {
 		let folderNameToLanguageName = try dictionaryOptionFromArray(folderNameToLanguageNameMapping)
 		
 		if !stringsFilenames.isEmpty {
-			print("*** WARNING: The strings-filenames option is deprecated for the export_to_android command (it has never been used)")
+			print("*** WARNING: The strings-filenames option is deprecated for the export_to_android command (it has never been used)", to: &stderrStream)
 		}
 		
 		print("Exporting to android project...")
