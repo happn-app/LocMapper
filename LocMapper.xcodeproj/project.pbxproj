@@ -110,6 +110,7 @@
 		7BB9051A248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB90519248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift */; };
 		7BB9051C24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051B24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift */; };
 		7BB9051E2480203A00E3F5F5 /* Lint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051D2480203A00E3F5F5 /* Lint.swift */; };
+		7BB90520248021B400E3F5F5 /* StandardizeRefloc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9051F248021B400E3F5F5 /* StandardizeRefloc.swift */; };
 		7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC4590120B0BDBA003972E1 /* LocFile+MigrationsSupport.swift */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
 		7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */; };
@@ -275,6 +276,7 @@
 		7BB90519248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeLokaliseTradsAsXibrefloc.swift; sourceTree = "<group>"; };
 		7BB9051B24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergeLokaliseTradsAsStdrefloc.swift; sourceTree = "<group>"; };
 		7BB9051D2480203A00E3F5F5 /* Lint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lint.swift; sourceTree = "<group>"; };
+		7BB9051F248021B400E3F5F5 /* StandardizeRefloc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardizeRefloc.swift; sourceTree = "<group>"; };
 		7BC4590120B0BDBA003972E1 /* LocFile+MigrationsSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+MigrationsSupport.swift"; sourceTree = "<group>"; };
 		7BCB27A91D2D4020005CFEB9 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		7BCB27AA1D2D53E7005CFEB9 /* XibRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibRefLocFile.swift; sourceTree = "<group>"; };
@@ -677,6 +679,7 @@
 				7BB90519248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift */,
 				7BB9051B24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift */,
 				7BB9051D2480203A00E3F5F5 /* Lint.swift */,
+				7BB9051F248021B400E3F5F5 /* StandardizeRefloc.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1009,6 +1012,7 @@
 				7BB9051C24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift in Sources */,
 				7BB9051A248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift in Sources */,
 				7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */,
+				7BB90520248021B400E3F5F5 /* StandardizeRefloc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

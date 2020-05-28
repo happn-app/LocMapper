@@ -40,7 +40,8 @@ struct LocMapperCLI : ParsableCommand {
 			MergeLokaliseTradsAsXibrefloc.self,
 			MergeLokaliseTradsAsStdrefloc.self,
 			
-			Lint.self
+			Lint.self,
+			StandardizeRefloc.self
 		]
 	)
 	
