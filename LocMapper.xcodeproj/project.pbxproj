@@ -90,6 +90,8 @@
 		7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */; };
 		7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */; };
 		7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */; };
+		7B88B9D5247FD65300D48975 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 7B88B9D4247FD65300D48975 /* ArgumentParser */; };
+		7B88B9D8247FDC2F00D48975 /* obsolete_verbs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B88B9D7247FDC2F00D48975 /* obsolete_verbs.swift */; };
 		7B9414F9202759A000D74EFA /* LocFile+LineValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414F8202759A000D74EFA /* LocFile+LineValue.swift */; };
 		7B9414FB20275A1C00D74EFA /* LocFile+EditingSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FA20275A1C00D74EFA /* LocFile+EditingSupport.swift */; };
 		7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9414FC20275A9D00D74EFA /* LocFile+QuerySupport.swift */; };
@@ -242,6 +244,8 @@
 		7B889C0A2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerRegionDelimitersReplacement.swift; sourceTree = "<group>"; };
 		7B889C0C2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerGenderVariantPick.swift; sourceTree = "<group>"; };
 		7B889C0E2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerPluralVariantPick.swift; sourceTree = "<group>"; };
+		7B88B9D6247FD92200D48975 /* old_main.disabledswift */ = {isa = PBXFileReference; lastKnownFileType = text; path = old_main.disabledswift; sourceTree = "<group>"; };
+		7B88B9D7247FDC2F00D48975 /* obsolete_verbs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = obsolete_verbs.swift; sourceTree = "<group>"; };
 		7B9414F8202759A000D74EFA /* LocFile+LineValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+LineValue.swift"; sourceTree = "<group>"; };
 		7B9414FA20275A1C00D74EFA /* LocFile+EditingSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+EditingSupport.swift"; sourceTree = "<group>"; };
 		7B9414FC20275A9D00D74EFA /* LocFile+QuerySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocFile+QuerySupport.swift"; sourceTree = "<group>"; };
@@ -302,6 +306,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B88B9D5247FD65300D48975 /* ArgumentParser in Frameworks */,
 				7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -503,6 +508,8 @@
 			children = (
 				7B73887620306C0100E56088 /* stdstreams.swift */,
 				7B6E25A219D4157A001934ED /* main.swift */,
+				7B88B9D7247FDC2F00D48975 /* obsolete_verbs.swift */,
+				7B88B9D6247FD92200D48975 /* old_main.disabledswift */,
 			);
 			path = "LocMapper CLI";
 			sourceTree = "<group>";
@@ -734,6 +741,9 @@
 				7B76AAE02025FCE90071B896 /* PBXTargetDependency */,
 			);
 			name = "LocMapper CLI";
+			packageProductDependencies = (
+				7B88B9D4247FD65300D48975 /* ArgumentParser */,
+			);
 			productName = Localizer;
 			productReference = 7B6E259F19D4157A001934ED /* locmapper */;
 			productType = "com.apple.product-type.tool";
@@ -813,6 +823,7 @@
 			packageReferences = (
 				7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */,
 				7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */,
+				7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = 7B6E25A019D4157A001934ED /* Products */;
 			projectDirPath = "";
@@ -945,6 +956,7 @@
 			files = (
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
 				7B73887E20306C0100E56088 /* stdstreams.swift in Sources */,
+				7B88B9D8247FDC2F00D48975 /* obsolete_verbs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1405,6 +1417,14 @@
 				minimumVersion = "1.0.0-rc";
 			};
 		};
+		7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1422,6 +1442,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */;
 			productName = XibLoc;
+		};
+		7B88B9D4247FD65300D48975 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
