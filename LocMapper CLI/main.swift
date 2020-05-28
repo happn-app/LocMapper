@@ -16,8 +16,11 @@ import LocMapper
 
 struct LocMapperCLI : ParsableCommand {
 	
-	static var version: String? {
-		#warning("TODO: Version on Linux!")
+	static var version = "28" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */
+	
+	/**
+	This _only_ works in a debug build on macOS. */
+	static var dynVersion: String? {
 		let hdl = dlopen(nil, 0)
 		defer {if let hdl = hdl {dlclose(hdl)}}
 		guard let versionNumber = hdl.flatMap({ dlsym($0, "locmapperVersionNumber") })?.assumingMemoryBound(to: Double.self).pointee else {
@@ -29,7 +32,7 @@ struct LocMapperCLI : ParsableCommand {
 	static var configuration = CommandConfiguration(
 		commandName: "locmapper",
 		abstract: "A utility for working w/ LocMapper (*.lcm) files.",
-		version: version ?? "",
+		version: dynVersion ?? version,
 		subcommands: [
 			/* The two subcommands below should be deleted. */
 			Help.self, Version.self,
