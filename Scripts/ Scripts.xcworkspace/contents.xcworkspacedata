@@ -18,7 +18,7 @@
             location = "group:build_for_linux_on_macos.sh">
          </FileRef>
          <FileRef
-            location = "group:/Users/frizlab/Documents/Projects/happnApple/LocMapper/Scripts/bump_linter_build_number.sh">
+            location = "group:bump_linter_build_number.sh">
          </FileRef>
          <FileRef
             location = "group:bump_locmapper_build_number.sh">
@@ -27,19 +27,19 @@
             location = "group:create_linux_deb.sh">
          </FileRef>
          <FileRef
-            location = "group:/Users/frizlab/Documents/Projects/happnApple/LocMapper/Scripts/set_linter_marketing_version.sh">
+            location = "group:set_linter_marketing_version.sh">
          </FileRef>
          <FileRef
             location = "group:set_locmapper_marketing_version.sh">
          </FileRef>
          <FileRef
-            location = "group:/Users/frizlab/Documents/Projects/happnApple/LocMapper/Scripts/tag_linter_rc.sh">
+            location = "group:tag_linter_rc.sh">
          </FileRef>
          <FileRef
             location = "group:tag_locmapper_rc.sh">
          </FileRef>
          <FileRef
-            location = "group:/Users/frizlab/Documents/Projects/happnApple/LocMapper/Scripts/tag_linter_release.sh">
+            location = "group:tag_linter_release.sh">
          </FileRef>
          <FileRef
             location = "group:tag_locmapper_release.sh">
