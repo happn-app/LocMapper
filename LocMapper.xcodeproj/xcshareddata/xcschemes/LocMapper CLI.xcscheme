@@ -82,19 +82,19 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "export_to_xcode"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--encoding=utf8"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Documents/Doing/Work.nosync/happn/happnApple/happn/&quot;Localization Map.lcm&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Documents/Doing/Work.nosync/happn/happnApple/happn"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
@@ -123,6 +123,34 @@
          <CommandLineArgument
             argument = "/Users/frizlab/Documents/Doing/Work.nosync/happn/happnApple/happn/&quot;Localization Map.lcm&quot;"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "merge_android_locs"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--res-folder=."
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--strings-filenames=strings.xml"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/frizlab/Documents/Doing/Work.nosync/happn/happnGogol/happn-android/happn/src/main/res/"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/frizlab/Documents/Doing/Work.nosync/happn/happnGogol/happn-android/locmapper/android.lcm"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "values &quot; English&quot;"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
@@ -274,7 +302,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "en.lproj &quot; English&quot; fr.lproj &quot;Fran&#xe7;ais &#x2014; French&quot; da.lproj &quot;Dansk &#x2014; Danish&quot; de.lproj &quot;Deutsch &#x2014; German&quot; es.lproj &quot;Espa&#xf1;ol &#x2014; Spanish&quot; es-AR.lproj &quot;Argentino &#x2014; Spanish (Argentina)&quot; it.lproj &quot;Italiano &#x2014; Italian&quot; hu.lproj &quot;Magyar &#x2014; Hungarian&quot; nl.lproj &quot;Nederlands &#x2014; Dutch&quot; nb.lproj &quot;Norsk Bokm&#xe5;l &#x2014; Norwegian Bokm&#xe5;l&quot; pl.lproj &quot;Polszczyzna &#x2014; Polish&quot; pt.lproj &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; pt-PT.lproj &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; sv.lproj &quot;Svenska &#x2014; Swedish&quot; tr.lproj &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; el.lproj &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot; ru.lproj &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; hi.lproj &quot;&#x928;&#x939;&#x940;&#x902; &#x2014; Hindi&quot; te-IN.lproj &quot;&#xc24;&#xc46;&#xc32;&#xc41;&#xc17;&#xc41; &#x2014; Telugu&quot; th.lproj &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; zh-Hant.lproj &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot; ja.lproj &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "en &quot; English&quot; fr &quot;Fran&#xe7;ais &#x2014; French&quot; de &quot;Deutsch &#x2014; German&quot; es &quot;Espa&#xf1;ol &#x2014; Spanish&quot; it &quot;Italiano &#x2014; Italian&quot; hu &quot;Magyar &#x2014; Hungarian&quot; pl &quot;Polszczyzna &#x2014; Polish&quot; pt_BR &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; pt_PT &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; tr &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; ru &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; th &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; zh_Hant_TW &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot; ja &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot; el &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot;"

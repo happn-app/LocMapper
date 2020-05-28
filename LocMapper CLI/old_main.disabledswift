@@ -17,9 +17,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	Usage: \(program_name) command [args ...]
 	
 	Commands are:
-	   merge_android_locs [--csv-separator=separator] [--res-folder=res_folder] [--strings-filenames=name,...] root_folder output_file.lcm folder_language_name human_language_name [folder_language_name human_language_name ...]
-	      Merges (or creates if output does not exists) the given strings files in output_file.lcm.
-	
 	   export_to_android [--csv-separator=separator] [--strings-filenames=name,...] input_file.lcm root_folder folder_language_name human_language_name [folder_language_name human_language_name ...]
 	      Exports locs from the given input lcm in the Android project at the root_folder path.
 	
@@ -44,40 +41,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 
 
 
-/* Merge Android Locs */
-case "merge_android_locs":
-	var res_folder = "res"
-	var strings_filenames = [String]()
-	i = getLongArgs(argIdx: i, longArgs: [
-		"res-folder":        { (value: String) in res_folder = value },
-		"strings-filenames": { (value: String) in strings_filenames = value.components(separatedBy: ",") },
-		"csv-separator":     { (value: String) in csvSeparator = value }
-	])
-	if strings_filenames.count == 0 {strings_filenames.append("strings.xml")}
-	
-	let root_folder = argAtIndexOrExit(i, error_message: "Root folder is required"); i += 1
-	let output = argAtIndexOrExit(i, error_message: "Output is required"); i += 1
-	let folder_name_to_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-	
-	print("Exporting from Android project...")
-	do {
-		print("   Parsing Android locs...")
-		let parsedAndroidLocFiles = try AndroidXMLLocFile.locFilesInProject(root_folder, resFolder: res_folder, stringsFilenames: strings_filenames, languageFolderNames: Array(folder_name_to_language_name.keys))
-		print("   Parsing original LocMapper file...")
-		let locFile = try LocFile(fromPath: output, withCSVSeparator: csvSeparator)
-		print("   Merging...")
-		locFile.mergeAndroidXMLLocStringsFiles(parsedAndroidLocFiles, folderNameToLanguageName: folder_name_to_language_name)
-		print("   Writing merged file...")
-		var stream = try FileHandleOutputStream(forPath: output)
-		print(locFile, terminator: "", to: &stream)
-		print("Done")
-	} catch let error as NSError {
-		print("Got error while exporting: \(error)", to: &stderrStream)
-		exit(Int32(error.code))
-	}
-	
-	exit(0)
-	
 /* Export to Android */
 case "export_to_android":
 	var strings_filenames = [String]()

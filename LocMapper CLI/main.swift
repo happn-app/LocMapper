@@ -34,7 +34,8 @@ struct LocMapperCLI : ParsableCommand {
 			/* The two subcommands below should be deleted. */
 			Help.self, Version.self,
 			
-			MergeXcodeLocs.self, ExportToXcode.self
+			MergeXcodeLocs.self, ExportToXcode.self,
+			MergeAndroidLocs.self
 		]
 	)
 	
