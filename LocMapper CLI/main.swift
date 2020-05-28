@@ -28,14 +28,20 @@ struct LocMapperCLI : ParsableCommand {
 	
 	static var configuration = CommandConfiguration(
 		commandName: "locmapper",
-		abstract: "A utility for working w/ LocMapper files.",
+		abstract: "A utility for working w/ LocMapper (*.lcm) files.",
 		version: version ?? "",
 		subcommands: [
 			/* The two subcommands below should be deleted. */
-			Help.self, Version.self
+			Help.self, Version.self,
+			
+			MergeXcodeLocs.self
 		]
 	)
 	
+	@OptionGroup()
+	var csvOptions: CSVOptions
+	
 }
+
 
 LocMapperCLI.main()

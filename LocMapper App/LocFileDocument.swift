@@ -266,7 +266,7 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 					switch selectedImportType {
 					case .Xcode:
 						guard let url = openPanel.url else {return}
-						let stringsFiles = try XcodeStringsFile.stringsFilesInProject(url.absoluteURL.path, excluded_paths: excludedPaths, included_paths: ["/"+importedFolder+"/"])
+						let stringsFiles = try XcodeStringsFile.stringsFilesInProject(url.absoluteURL.path, excludedPaths: excludedPaths, includedPaths: ["/"+importedFolder+"/"])
 						csvLocFile.mergeXcodeStringsFiles(stringsFiles, folderNameToLanguageName: [importedFolder: languageName])
 						
 					case .Android:
