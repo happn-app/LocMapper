@@ -198,7 +198,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "merge_lokalise_trads_as_xibrefloc"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--merge-style=replace"
@@ -206,15 +206,15 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "REDACTED"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "REDACTED"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Downloads/happn-apple/&quot;Localization Map.lcm&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
@@ -222,27 +222,27 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "merge_lokalise_trads_as_stdrefloc"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--merge-style=replace"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--excluded-tags=deprecated,notapplicable"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "REDACTED"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "REDACTED"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Downloads/happn-android/locmapper/android.lcm"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
@@ -330,6 +330,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "en &quot; English&quot; fr &quot;Fran&#xe7;ais &#x2014; French&quot; da &quot;Dansk &#x2014; Danish&quot; de &quot;Deutsch &#x2014; German&quot; es &quot;Espa&#xf1;ol &#x2014; Spanish&quot; es_AR &quot;Argentino &#x2014; Spanish (Argentina)&quot; it &quot;Italiano &#x2014; Italian&quot; hu &quot;Magyar &#x2014; Hungarian&quot; nl &quot;Nederlands &#x2014; Dutch&quot; nb &quot;Norsk Bokm&#xe5;l &#x2014; Norwegian Bokm&#xe5;l&quot; pl &quot;Polszczyzna &#x2014; Polish&quot; pt_BR &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; pt_PT &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; sv &quot;Svenska &#x2014; Swedish&quot; tr &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; el &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot; ru &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; hi_IN &quot;&#x928;&#x939;&#x940;&#x902; &#x2014; Hindi&quot; te_IN &quot;&#xc24;&#xc46;&#xc32;&#xc41;&#xc17;&#xc41; &#x2014; Telugu&quot; th &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; zh_Hant_TW &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot; ja &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "en &quot; English&quot; da &quot;Dansk &#x2014; Danish&quot; de &quot;Deutsch &#x2014; German&quot; el &quot;&#x395;&#x3bb;&#x3bb;&#x3b7;&#x3bd;&#x3b9;&#x3ba;&#x3ac; &#x2014; Greek&quot; es &quot;Espa&#xf1;ol &#x2014; Spanish&quot; es_AR &quot;Espa&#xf1;ol &#x2014; Argentina&quot; es_419 &quot;Espa&#xf1;ol &#x2014; Latin America&quot; fr &quot;Fran&#xe7;ais &#x2014; French&quot; hi_IN &quot;&#x939;&#x93f;&#x928;&#x94d;&#x926;&#x940; &#x2014; Hindi&quot; hu &quot;Magyar &#x2014; Hungarian&quot; it &quot;Italiano &#x2014; Italian&quot; ja &quot;&#x65e5;&#x672c;&#x8a9e; &#x2014; Japanese&quot; nb &quot;Norsk &#x2014; Norwegian&quot; nl &quot;Nederlands - Dutch&quot; pl &quot;Polszczyzna &#x2014; Polish&quot; pt_PT &quot;Portugu&#xea;s europeu &#x2014; Portuguese (Portugal)&quot; pt_BR &quot;Portugu&#xea;s brasileiro &#x2014; Portuguese (Brasil)&quot; ru &quot;&#x420;&#x443;&#x441;&#x441;&#x43a;&#x438;&#x439; &#x44f;&#x437;&#x44b;&#x43a; &#x2014; Russian&quot; sv &quot;Svenska &#x2014; Swedish&quot; te_IN &quot;&#xc24;&#xc46;&#xc32;&#xc41;&#xc17;&#xc41; &#x2014; Telugu (India)&quot; th &quot;&#xe20;&#xe32;&#xe29;&#xe32;&#xe44;&#xe17;&#xe22; &#x2014; Thai&quot; tr &quot;T&#xfc;rk&#xe7;e &#x2014; Turkish&quot; zh_Hant_TW &quot;&#x4e2d;&#x6587;(&#x9999;&#x6e2f;) &#x2014; Chinese (Traditional)&quot;"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

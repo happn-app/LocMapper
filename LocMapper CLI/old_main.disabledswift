@@ -17,10 +17,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 	Usage: \(program_name) command [args ...]
 	
 	Commands are:
-	   merge_lokalise_trads_as_stdrefloc [--csv-separator=separator] [--merge-style=add|replace] [--excluded-tags=tag1,tag2,...] lokalise_r_token lokalise_project_id merged_file.lcm lokalise_language_name refloc_language_name [lokalise_language_name refloc_language_name ...]
-	      Fetch ref loc from lokalise and merge in given lcm file, converting into the StdRefLoc format.
-	      Default merge style is “add”.
-	
 	   lint [--csv-separator=separator] [--detect-unused-refloc=true|false] file.lcm
 	      Does not detect unused refloc by default.
 	
@@ -34,47 +30,6 @@ func usage<TargetStream: TextOutputStream>(program_name: String, stream: inout T
 
 
 
-case "merge_lokalise_trads_as_stdrefloc":
-	var excludedTags = Set<String>()
-	var mergeStyle = LocFile.MergeStyle.add
-	i = getLongArgs(argIdx: i, longArgs: [
-		"csv-separator": { (value: String) in csvSeparator = value },
-		"excluded-tags": { (value: String) in excludedTags.formUnion(value.split(separator: ",").map(String.init)) },
-		"merge-style": { (value: String) in
-			switch value {
-			case "add":     mergeStyle = .add
-			case "replace": mergeStyle = .replace
-			default:
-				print("Invalid merge style \(value)", to: &stderrStream)
-				usage(program_name: CommandLine.arguments[0], stream: &stderrStream)
-				exit(1)
-			}
-		}
-	])
-	let token = argAtIndexOrExit(i, error_message: "Lokalise token is required"); i += 1
-	let project_id = argAtIndexOrExit(i, error_message: "Lokalise project id is required"); i += 1
-	let merged_path = argAtIndexOrExit(i, error_message: "Input file is required"); i += 1
-	let lokalise_to_refloc_language_name = getFolderToHumanLanguageNamesFromIndex(i)
-	print("Merging Lokalise Trads as StdRefLoc in LocFile...")
-	do {
-		print("   Creating StdRefLoc from Lokalise...")
-		let stdRefLoc = try StdRefLocFile(token: token, projectId: project_id, lokaliseToReflocLanguageName: lokalise_to_refloc_language_name, excludedTags: excludedTags, logPrefix: "      ")
-		
-		print("   Parsing source and merging StdRefLoc...")
-		let locFile = try LocFile(fromPath: merged_path, withCSVSeparator: csvSeparator)
-		locFile.mergeRefLocsWithStdRefLocFile(stdRefLoc, mergeStyle: mergeStyle)
-		
-		print("   Writing merged file...")
-		var stream = try FileHandleOutputStream(forPath: merged_path)
-		print(locFile, terminator: "", to: &stream)
-		print("Done")
-	} catch {
-		print("Got error while converting: \(error)", to: &stderrStream)
-		exit(Int32((error as NSError).code))
-	}
-	
-	exit(0)
-	
 case "lint":
 	var detect_unused_refloc = false
 	i = getLongArgs(argIdx: i, longArgs: [
