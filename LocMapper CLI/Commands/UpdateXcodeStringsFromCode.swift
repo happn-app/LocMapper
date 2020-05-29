@@ -132,8 +132,10 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 				throw UpdateError(message: "Cannot check if path is directory \(sourceURL.path)")
 			}
 			
-			if isDir {try fm.createDirectory(at: destinationURL, withIntermediateDirectories: true, attributes: nil)}
-			else     {try fm.copyItem(at: sourceURL, to: destinationURL)}
+			guard !isDir else {continue}
+			
+			try fm.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+			try fm.copyItem(at: sourceURL, to: destinationURL)
 		}
 		
 		/* *** Finding and treating storyboard and xib files *** */
