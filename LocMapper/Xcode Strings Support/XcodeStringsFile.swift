@@ -221,7 +221,12 @@ public class XcodeStringsFile: TextOutputStreamable {
 		for component in components {
 			component.stringValue.write(to: &target)
 		}
-		"\n".write(to: &target)
+		/* This is hacky, I don’t like it, but removing the newline write fully
+		 * have too much intricate implications, so instead of removing it fully,
+		 * I protect it. */
+		if !(components.last is WhiteSpace) {
+			"\n".write(to: &target)
+		}
 	}
 	
 	private static let validUnquotedStringChars = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$/:.-")

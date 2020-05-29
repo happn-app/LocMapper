@@ -94,51 +94,59 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--unlocalized-xibs-files-list=.locmapper__unlocalized_xibs"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--unused-stringsfiles-files-list=.locmapper__unused_files"
-            isEnabled = "NO">
+            argument = "--unused-stringsfiles-files-list=.locmapper__unused_stringfiles"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--localizables-path=&quot;GPS Stone/Supporting Files/Localizables&quot;"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--exclude-list=&quot;gfx building/,App Store/,.git/&quot;"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Downloads/gpsstone"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--encoding=utf8"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "--include-list=&quot;happn/&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--exclude-list=&quot;Carthage/,Dependencies/,.git/&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--unused-stringsfiles-files-list=.localizesh__unused_files"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--unlocalized-xibs-files-list=.localizesh__unlocalized_xibs"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--include-list=&quot;happn/&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--localizables-path=&quot;happn/Localizables&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/frizlab/Downloads/happn-apple"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "HC_LT_LOGIN &quot;HC Login&quot; HC_LT_TUTORIAL &quot;HC Tutorial&quot; HC_LT_HOME &quot;HC Home&quot; HC_LT_USER_PROFILES &quot;HC User Profiles&quot; HC_LT_NOTIFICATIONS &quot;HC Notifications&quot; HC_LT_CONVERSATIONS &quot;HC Conversations&quot; HC_LT_PHOTOS &quot;HC Photos&quot; HC_LT_PREFERENCES &quot;HC Preferences&quot; HC_LT_POP_UPS &quot;HC Pop-Ups&quot; HC_LT_INVITE_FRIENDS &quot;InviteFriends&quot; HC_LT_ERRORS &quot;HC Errors&quot; HC_LT_INFOS &quot;HC Info&quot; HC_LT_MAP &quot;HC Map&quot; HC_LT_COUNTRY &quot;Country&quot; HC_LT_GAME &quot;Game&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;"
