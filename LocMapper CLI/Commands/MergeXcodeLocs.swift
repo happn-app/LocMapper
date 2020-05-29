@@ -53,7 +53,7 @@ struct MergeXcodeLocs : ParsableCommand {
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator
 		
-		let excludeList = parseObsoleteOptionList(self.excludeList)
+		let excludeList = parseObsoleteOptionList(self.excludeList) ?? []
 		let includeList = parseObsoleteOptionList(self.includeList)
 		
 		let folderNameToLanguageName = try dictionaryOptionFromArray(lprojNameToLanguageNameMapping)

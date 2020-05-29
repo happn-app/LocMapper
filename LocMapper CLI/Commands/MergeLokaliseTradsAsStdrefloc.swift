@@ -51,7 +51,7 @@ struct MergeLokaliseTradsAsStdrefloc : ParsableCommand {
 	
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator
-		let excludedTags = Set(parseObsoleteOptionList(self.excludedTags))
+		let excludedTags = Set(parseObsoleteOptionList(self.excludedTags) ?? [])
 		let lokalizeToRefLocLanguageName = try dictionaryOptionFromArray(lokalizeToRefLocLanguageNameMapping)
 		
 		print("Merging Lokalise Trads as StdRefLoc in LocFile...")

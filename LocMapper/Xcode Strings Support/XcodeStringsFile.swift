@@ -101,34 +101,13 @@ public class XcodeStringsFile: TextOutputStreamable {
 	
 	/* If includedPaths is nil (default), no inclusion check will be done. */
 	public static func stringsFilesInProject(_ rootFolder: String, excludedPaths: [String], includedPaths: [String]? = nil) throws -> [XcodeStringsFile] {
-		guard let e = FileManager.default.enumerator(atPath: rootFolder) else {
+		guard let dirEnumerator = FilteredDirectoryEnumerator(path: rootFolder, includedPaths: includedPaths, excludedPaths: excludedPaths, pathSuffixes: [".swift"], fileManager: .default) else {
 			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(rootFolder)."])
 		}
 		
 		var parsedStringsFiles = [XcodeStringsFile]()
-		fileLoop: while let curFile = e.nextObject() as? String {
-			guard curFile.hasSuffix(".strings") else {
-				continue
-			}
-			
-			if let includedPaths = includedPaths {
-				var found = false
-				for included in includedPaths {
-					if curFile.range(of: included) != nil {
-						found = true
-						break
-					}
-				}
-				if !found {continue fileLoop}
-			}
-			
-			for excluded in excludedPaths {
-				guard curFile.range(of: excluded) == nil else {
-					continue fileLoop
-				}
-			}
-			
-			/* We have a non-excluded strings file. Let's parse it. */
+		for curFileURL in dirEnumerator {
+			let curFile = curFileURL.path
 			do {
 				let xcodeStringsFile = try XcodeStringsFile(fromPath: curFile, relativeToProjectPath: rootFolder)
 				parsedStringsFiles.append(xcodeStringsFile)
@@ -142,10 +121,66 @@ public class XcodeStringsFile: TextOutputStreamable {
 		return parsedStringsFiles
 	}
 	
-	convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
+	public convenience init(fromPath path: String, relativeToProjectPath projectPath: String) throws {
 		var encoding: UInt = 0
 		let filecontent = try NSString(contentsOfFile: (projectPath as NSString).appendingPathComponent(path), usedEncoding: &encoding)
 		try self.init(filepath: path, filecontent: filecontent as String)
+	}
+	
+	/**
+	Merges the new strings file in the original.
+	
+	Any new key not present in the original is added at the end of the original
+	with their comments and whitespaces.
+	
+	All keys that were present in the original are left unmodified (the value are
+	not changed either!).
+	
+	If a key is present in the original but not in the new file, behavior will
+	depend on the `obsoleteKeys` parameter. If the parameter is `nil`, the keys
+	and their comments/whitespaces will be removed from the original. If the
+	parameter is non-nil, the key will be left in the original and added to the
+	`obsoleteKeys` parameter.
+	
+	If the new file has a key not present in the original, and duplicated, it
+	will be added only once in the resulting file. Which comment will be chosen
+	is undefined.
+	
+	If the original file has duplicated keys, they won’t be de-duplicated.
+	
+	If the original file has a duplicated key that is not in the new file, only
+	one key will be removed. Which one is undefined. */
+	public convenience init(merging new: XcodeStringsFile, in original: XcodeStringsFile?, obsoleteKeys: inout [String]?, filepath: String) {
+		let newKeys = Set(new.components.compactMap{ ($0 as? LocalizedString)?.key })
+		let originalKeys = Set((original?.components ?? []).compactMap{ ($0 as? LocalizedString)?.key })
+		
+		func fullKeyRange(for key: String, in components: [XcodeStringsComponent]) -> ClosedRange<Array<XcodeStringsComponent>.Index>? {
+			guard let keyIdx = components.firstIndex(where: { ($0 as? LocalizedString)?.key == key }) else {
+				return nil
+			}
+			var commentStartIdx = keyIdx
+			while commentStartIdx != components.startIndex && !(components[components.index(before: commentStartIdx)] is LocalizedString) {
+				commentStartIdx = components.index(before: commentStartIdx)
+			}
+			return commentStartIdx...keyIdx
+		}
+		
+		var components = original?.components ?? []
+		for keyToRemove in originalKeys.subtracting(newKeys) {
+			if obsoleteKeys != nil {obsoleteKeys?.append(keyToRemove)}
+			else                   {components.removeSubrange(fullKeyRange(for: keyToRemove, in: components)!)} /* See next comment for force unwrap justification. */
+		}
+		/* Note: We search again for the key in the new file components. We
+		  *       probably could save the index info when building newKeys, but
+		  *       I wasn’t able to do it one shot when writing this code, and I
+		  *       got bored, so we search again…
+		  *       We can force unwrap because we know the key exists. */
+		let rangesToAdd = newKeys.subtracting(originalKeys).map{ keyToAdd in fullKeyRange(for: keyToAdd, in: new.components)! }
+		for rangeToAdd in rangesToAdd.sorted(by: { $0.lowerBound < $1.lowerBound }) {
+			components.append(contentsOf: new.components[rangeToAdd])
+		}
+		
+		self.init(filepath: filepath, components: components)
 	}
 	
 	convenience init(filepath path: String, filecontent: String) throws {
@@ -182,8 +217,7 @@ public class XcodeStringsFile: TextOutputStreamable {
 		self.components = components
 	}
 	
-	public
-	func write<Target : TextOutputStream>(to target: inout Target) {
+	public func write<Target : TextOutputStream>(to target: inout Target) {
 		for component in components {
 			component.stringValue.write(to: &target)
 		}

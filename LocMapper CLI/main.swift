@@ -29,6 +29,12 @@ struct LocMapperCLI : ParsableCommand {
 		return "\(Int(versionNumber))"
 	}
 	
+	#if os(macOS)
+	static var platformSpecificCommands: [ParsableCommand.Type] = [UpdateXcodeStringsFromCode.self]
+	#else
+	static var platformSpecificCommands: [ParsableCommand.Type] = []
+	#endif
+	
 	static var configuration = CommandConfiguration(
 		commandName: "locmapper",
 		abstract: "A utility for working w/ LocMapper (*.lcm) files.",
@@ -48,6 +54,7 @@ struct LocMapperCLI : ParsableCommand {
 			
 			Experimental.self
 		]
+		+ platformSpecificCommands
 	)
 	
 	@OptionGroup()

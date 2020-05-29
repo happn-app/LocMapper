@@ -49,12 +49,12 @@ struct ExportToXcode : ParsableCommand {
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator
 		
-		let encodingValue: String.Encoding
-		switch encoding.lowercased() {
-		case "utf8",  "utf-8":  encodingValue = .utf8
-		case "utf16", "utf-16": encodingValue = .utf16
+		let encoding: String.Encoding
+		switch self.encoding.lowercased() {
+		case "utf8",  "utf-8":  encoding = .utf8
+		case "utf16", "utf-16": encoding = .utf16
 		default:
-			throw ValidationError("Unsupported encoding \(encoding)")
+			throw ValidationError("Unsupported encoding \(self.encoding)")
 		}
 		
 		let folderNameToLanguageName = try dictionaryOptionFromArray(lprojNameToLanguageNameMapping)
@@ -63,7 +63,7 @@ struct ExportToXcode : ParsableCommand {
 		print("   Parsing LocMapper file...")
 		let locFile = try LocFile(fromPath: inputFile, withCSVSeparator: csvSeparator)
 		print("   Writing locs to Xcode project...")
-		locFile.exportToXcodeProjectWithRoot(rootFolder, folderNameToLanguageName: folderNameToLanguageName, encoding: encodingValue)
+		locFile.exportToXcodeProjectWithRoot(rootFolder, folderNameToLanguageName: folderNameToLanguageName, encoding: encoding)
 		print("Done")
 	}
 	

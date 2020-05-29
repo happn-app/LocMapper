@@ -39,7 +39,7 @@ class FileHandleOutputStream : TextOutputStream {
 	let closeOnDeinit: Bool
 	let fileHandle: FileHandle
 	
-	convenience init(forPath path: String, fileManager: FileManager = .default) throws {
+	convenience init(forPath path: String) throws {
 		try Data().write(to: URL(fileURLWithPath: path), options: []) /* We do not delete original file if present to keep xattrs... */
 		guard let fh = FileHandle(forWritingAtPath: path) else {
 			throw NSError(domain: "LocMapperErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(path) for writing"])

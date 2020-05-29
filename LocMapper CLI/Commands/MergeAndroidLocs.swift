@@ -48,10 +48,8 @@ struct MergeAndroidLocs : ParsableCommand {
 	
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator
-		var stringsFilenames = parseObsoleteOptionList(self.stringsFilenames)
+		let stringsFilenames = parseObsoleteOptionList(self.stringsFilenames) ?? ["strings.xml"]
 		let folderNameToLanguageName = try dictionaryOptionFromArray(folderNameToLanguageNameMapping)
-		
-		if stringsFilenames.isEmpty {stringsFilenames.append("strings.xml")}
 		
 		print("Merging from android project...")
 		print("   Parsing android locs...")

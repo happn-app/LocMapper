@@ -31,7 +31,8 @@ using the comma separator.
 It is thus impossible when using this method to get an array containing one
 element that contains a comma. We take the risk for now (the previous situation
 was worse), and might remove this function altogether later. */
-func parseObsoleteOptionList(_ array: [String]) -> [String] {
+func parseObsoleteOptionList(_ array: [String]) -> [String]? {
+	guard !array.isEmpty else {return nil}
 	guard let e = array.first, array.count == 1, e.contains(",") else {
 		return array
 	}
@@ -39,10 +40,10 @@ func parseObsoleteOptionList(_ array: [String]) -> [String] {
 }
 
 
-func dictionaryOptionFromArray(_ array: [String]) throws -> [String: String] {
+func dictionaryOptionFromArray(_ array: [String], allowEmpty: Bool = false) throws -> [String: String] {
 	let keys = stride(from: array.startIndex, to: array.endIndex, by: 2).map{ array[$0] }
 	let values = stride(from: array.index(after: array.startIndex), to: array.endIndex, by: 2).map{ array[$0] }
-	guard !keys.isEmpty, keys.count == values.count else {
+	guard (allowEmpty || !keys.isEmpty) && keys.count == values.count else {
 		throw ValidationError("The array argument must not be empty and contain an even number of elements (alternance of keys and values)")
 	}
 	return Dictionary(zip(keys, values), uniquingKeysWith: { _, new in new })
