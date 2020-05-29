@@ -101,13 +101,13 @@ public class XcodeStringsFile: TextOutputStreamable {
 	
 	/* If includedPaths is nil (default), no inclusion check will be done. */
 	public static func stringsFilesInProject(_ rootFolder: String, excludedPaths: [String], includedPaths: [String]? = nil) throws -> [XcodeStringsFile] {
-		guard let dirEnumerator = FilteredDirectoryEnumerator(path: rootFolder, includedPaths: includedPaths, excludedPaths: excludedPaths, pathSuffixes: [".swift"], fileManager: .default) else {
+		guard let dirEnumerator = FilteredDirectoryEnumerator(path: rootFolder, includedPaths: includedPaths, excludedPaths: excludedPaths, pathSuffixes: [".strings"], fileManager: .default) else {
 			throw NSError(domain: "XcodeStringsFileErrDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Cannot list files at path \(rootFolder)."])
 		}
 		
 		var parsedStringsFiles = [XcodeStringsFile]()
 		for curFileURL in dirEnumerator {
-			let curFile = curFileURL.path
+			let curFile = curFileURL.relativePath
 			do {
 				let xcodeStringsFile = try XcodeStringsFile(fromPath: curFile, relativeToProjectPath: rootFolder)
 				parsedStringsFiles.append(xcodeStringsFile)
