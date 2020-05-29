@@ -207,9 +207,10 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		}
 		var codeFilePaths = [String]()
 		for codeURL in dirEnumeratorForCode {
+			let objcMark = (Set(arrayLiteral: "m", "mm").contains(codeURL.pathExtension) ? "@" : "")
 			var code = try String(contentsOf: codeURL)
 			for (regex, value) in regexesAndValues {
-				code = regex.stringByReplacingMatches(in: code, options: [], range: NSRange(code.startIndex..<code.endIndex, in: code), withTemplate: NSRegularExpression.escapedTemplate(for: value))
+				code = regex.stringByReplacingMatches(in: code, options: [], range: NSRange(code.startIndex..<code.endIndex, in: code), withTemplate: objcMark + "\"" + NSRegularExpression.escapedTemplate(for: value) + "\"")
 			}
 			try Data(code.utf8).write(to: codeURL)
 			codeFilePaths.append(codeURL.path)
