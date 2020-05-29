@@ -50,35 +50,34 @@ public struct FilteredDirectoryEnumerator : Sequence, IteratorProtocol {
 	}
 	
 	public mutating func next() -> URL? {
-		guard let nextPath = directoryEnumerator.nextObject() as! String? else {
-			return nil
-		}
-		
-		if let includedPaths = includedPaths {
-			guard includedPaths.contains(where: { nextPath.range(of: $0) != nil }) else {
-				return next()
+		while let nextPath = directoryEnumerator.nextObject() as! String? {
+			if let includedPaths = includedPaths {
+				guard includedPaths.contains(where: { nextPath.range(of: $0) != nil }) else {
+					continue
+				}
 			}
-		}
-		
-		if let excludedPaths = excludedPaths {
-			guard !excludedPaths.contains(where: { nextPath.range(of: $0) != nil }) else {
-				return next()
+			
+			if let excludedPaths = excludedPaths {
+				guard !excludedPaths.contains(where: { nextPath.range(of: $0) != nil }) else {
+					continue
+				}
 			}
-		}
-		
-		if let pathPrefixes = pathPrefixes {
-			guard pathPrefixes.contains(where: { nextPath.hasPrefix($0) }) else {
-				return next()
+			
+			if let pathPrefixes = pathPrefixes {
+				guard pathPrefixes.contains(where: { nextPath.hasPrefix($0) }) else {
+					continue
+				}
 			}
-		}
-		
-		if let pathSuffixes = pathSuffixes {
-			guard pathSuffixes.contains(where: { nextPath.hasSuffix($0) }) else {
-				return next()
+			
+			if let pathSuffixes = pathSuffixes {
+				guard pathSuffixes.contains(where: { nextPath.hasSuffix($0) }) else {
+					continue
+				}
 			}
+			
+			return URL(fileURLWithPath: nextPath, relativeTo: rootDirectoryURL)
 		}
-		
-		return URL(fileURLWithPath: nextPath, relativeTo: rootDirectoryURL)
+		return nil
 	}
 	
 }
