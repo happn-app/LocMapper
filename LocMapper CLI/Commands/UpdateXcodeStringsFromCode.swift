@@ -267,6 +267,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 				var obsoleteKeys: [String]? = (deleteMissingKeys ? nil : [])
 				let mergedStringsfile = XcodeStringsFile(merging: newStringsfile, in: parsedStringsfile, obsoleteKeys: &obsoleteKeys, filepath: stringsfileURLRelativeToProject.relativePath)
 				try writeXcodeStringsFile(mergedStringsfile, at: URL(fileURLWithPath: stringsfileURLRelativeToProject.relativePath, relativeTo: projectRootURL), encoding: encoding, fileManager: fm)
+				for obsoleteKey in (obsoleteKeys ?? []) {
+					print("*** WARNING: Found seemingly obsolete key “\(obsoleteKey)” in file (\(stringsfileURLRelativeToProject.relativePath)).", to: &stderrStream)
+				}
 			}
 			for (stringsfileName, parsedFile) in genstringsStringsfiles.filter({ !foundStringsfile.contains($0.key) }) {
 				/* Writing new strings file (was not already in the project) */

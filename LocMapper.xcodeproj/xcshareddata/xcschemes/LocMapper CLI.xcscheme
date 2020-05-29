@@ -93,6 +93,14 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--encoding=utf8"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--delete-missing-keys=true"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--unlocalized-xibs-files-list=.locmapper__unlocalized_xibs"
             isEnabled = "YES">
          </CommandLineArgument>
