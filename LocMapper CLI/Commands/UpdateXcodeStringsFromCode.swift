@@ -65,13 +65,13 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 	@Option(help: "The languages to update (lproj folder names without the extension). Defaults to “en”.")
 	var languages: [String]
 	
-	@Option(default: false, help: "Enable this option to pass the -SwiftUI option to genstring.")
+	@Flag(help: "Enable this option to pass the -SwiftUI option to genstring.")
 	var swiftUI: Bool
 	
 	@Option(default: "utf16")
 	var encoding: String
 	
-	@Option(default: false, help: "Enable this option to automatically delete the keys that are not found in the code but are present in the strings file. For storyboards/xibs, missing keys are always removed.")
+	@Flag(help: "Enable this option to automatically delete the keys that are not found in the code but are present in the strings file. For storyboards/xibs, missing keys are always removed.")
 	var deleteMissingKeys: Bool
 	
 	@Argument()

@@ -26,7 +26,7 @@ struct Lint : ParsableCommand {
 	@OptionGroup()
 	var csvOptions: CSVOptions
 	
-	@Option(default: false)
+	@Flag()
 	var detectUnusedRefloc: Bool
 	
 	@Argument()
