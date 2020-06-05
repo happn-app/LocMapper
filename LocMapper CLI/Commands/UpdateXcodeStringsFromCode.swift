@@ -47,8 +47,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 			"""
 	)
 	
-	@Option(help: "The paths in which the lproj files are contained (for the source localizations; storyboards/xibs are localized wherever).")
-	var localizablesPath: String
+	@Option(help: "The paths in which the lproj files are contained (for the source localizations; storyboards/xibs are localized wherever). Required if the code is not skipped.")
+	var localizablesPath: String?
 	
 	@Option(help: "List of paths to exclude when reading the project.")
 	var excludeList: [String]
@@ -74,6 +74,12 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 	@Flag(help: "Enable this option to automatically delete the keys that are not found in the code but are present in the strings file. For storyboards/xibs, missing keys are always removed.")
 	var deleteMissingKeys: Bool
 	
+	@Flag()
+	var skipStoryboardsAndXibs: Bool
+	
+	@Flag()
+	var skipCode: Bool
+	
 	@Argument()
 	var rootFolder: String
 	
@@ -95,6 +101,15 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		let includeList = parseObsoleteOptionList(self.includeList)
 		
 		let tableDefinesToValues = try dictionaryOptionFromArray(tableDefinesToValuesMapping, allowEmpty: true)
+		
+		guard !skipStoryboardsAndXibs || !skipCode else {
+			/* There’s nothing to do! */
+			return
+		}
+		
+		guard skipCode || localizablesPath != nil else {
+			throw ValidationError("The localizables-path option is required when the code strings update is not skipped.")
+		}
 		
 		let fm = FileManager.default
 		let projectRootURL = URL(fileURLWithPath: rootFolder, isDirectory: true)
@@ -139,141 +154,145 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		}
 		
 		/* *** Finding and treating storyboard and xib files *** */
-		print("Treating storyboards and xibs")
-		
-		guard let dirEnumeratorForStoryboardsAndXibs = FilteredDirectoryEnumerator(url: projectCloneRootURL, pathSuffixes: [".storyboard", ".xib"], fileManager: fm) else {
-			throw UpdateError(message: "Cannot enumerate files at path \(projectCloneRootURL.path)")
-		}
-		for xibURL in dirEnumeratorForStoryboardsAndXibs {
-			let parentFolderName = xibURL.deletingLastPathComponent().lastPathComponent
-			guard parentFolderName == "Base.lproj" else {
-				if !isURL(xibURL, containedInPathsList: unlocalizedXibsPaths, rootURL: projectCloneRootURL) {
-					print("*** WARNING: File “\(xibURL.relativePath)” does not seem to be localized.", to: &stderrStream)
-				}
-				continue
-			}
+		if !skipStoryboardsAndXibs {
+			print("Treating storyboards and xibs")
 			
-			let baseDirURL = xibURL.deletingLastPathComponent()/*Remove xib name*/.deletingLastPathComponent()/*Remove Base.lproj*/
-			let xibName = xibURL.deletingPathExtension().lastPathComponent
-			for language in languages {
-				let tempDestinationStringsURL = baseDirURL.appendingPathComponent(language + ".lproj").appendingPathComponent(xibName + ".strings")
-				let destinationStringsURL = URL(fileURLWithPath: tempDestinationStringsURL.relativePath, relativeTo: projectRootURL)
-				/* First let’s read the original strings file */
-				let originalParsedStringsFile: XcodeStringsFile?
-				if fm.fileExists(atPath: tempDestinationStringsURL.path) {
-					guard let stringsFile = try? XcodeStringsFile(fromPath: tempDestinationStringsURL.relativePath, relativeToProjectPath: projectCloneRootURL.path) else {
-						print("***** ERROR: Cannot read strings file at path “\(tempDestinationStringsURL.relativePath)”. Skipping this file.", to: &stderrStream)
+			guard let dirEnumeratorForStoryboardsAndXibs = FilteredDirectoryEnumerator(url: projectCloneRootURL, pathSuffixes: [".storyboard", ".xib"], fileManager: fm) else {
+				throw UpdateError(message: "Cannot enumerate files at path \(projectCloneRootURL.path)")
+			}
+			for xibURL in dirEnumeratorForStoryboardsAndXibs {
+				let parentFolderName = xibURL.deletingLastPathComponent().lastPathComponent
+				guard parentFolderName == "Base.lproj" else {
+					if !isURL(xibURL, containedInPathsList: unlocalizedXibsPaths, rootURL: projectCloneRootURL) {
+						print("*** WARNING: File “\(xibURL.relativePath)” does not seem to be localized.", to: &stderrStream)
+					}
+					continue
+				}
+				
+				let baseDirURL = xibURL.deletingLastPathComponent()/*Remove xib name*/.deletingLastPathComponent()/*Remove Base.lproj*/
+				let xibName = xibURL.deletingPathExtension().lastPathComponent
+				for language in languages {
+					let tempDestinationStringsURL = baseDirURL.appendingPathComponent(language + ".lproj").appendingPathComponent(xibName + ".strings")
+					let destinationStringsURL = URL(fileURLWithPath: tempDestinationStringsURL.relativePath, relativeTo: projectRootURL)
+					/* First let’s read the original strings file */
+					let originalParsedStringsFile: XcodeStringsFile?
+					if fm.fileExists(atPath: tempDestinationStringsURL.path) {
+						guard let stringsFile = try? XcodeStringsFile(fromPath: tempDestinationStringsURL.relativePath, relativeToProjectPath: projectCloneRootURL.path) else {
+							print("***** ERROR: Cannot read strings file at path “\(tempDestinationStringsURL.relativePath)”. Skipping this file.", to: &stderrStream)
+							continue
+						}
+						originalParsedStringsFile = stringsFile
+					} else {
+						originalParsedStringsFile = nil
+					}
+					/* Then create a new strings file with ibtool. We do not even create
+					 * it at the same location as it is not mandatory. */
+					let temporaryStringsFileURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".strings")
+					defer {_ = try? fm.removeItem(at: temporaryStringsFileURL)} /* We don’t care if the delete fails */
+					let p = Process.launchedProcess(launchPath: "/usr/bin/ibtool", arguments: ["--export-strings-file", temporaryStringsFileURL.path, xibURL.path])
+					p.waitUntilExit()
+					guard p.terminationStatus == 0 else {
+						print("***** ERROR: ibtool failed producing strings file for “\(xibURL.relativePath)” (language was \(language)). Skipping this file.", to: &stderrStream)
 						continue
 					}
-					originalParsedStringsFile = stringsFile
-				} else {
-					originalParsedStringsFile = nil
+					/* Now reading the newly produced strings file. */
+					guard let newParsedStringsFile = try? XcodeStringsFile(fromPath: temporaryStringsFileURL.path, relativeToProjectPath: "/") else {
+						print("***** ERROR: Cannot read strings file generated by ibtool for “\(xibURL.relativePath)” (language was \(language)). Skipping this file.", to: &stderrStream)
+						continue
+					}
+					/* Now we merge the two strings files (if we have a previous one). */
+					var obsoleteKeys: [String]? = nil
+					let mergedStringsFile = XcodeStringsFile(merging: newParsedStringsFile, in: originalParsedStringsFile, obsoleteKeys: &obsoleteKeys, filepath: destinationStringsURL.path)
+					
+					/* Then we write the merged strings file at the expected destination. */
+					try writeXcodeStringsFile(mergedStringsFile, at: destinationStringsURL, encoding: encoding, fileManager: fm)
 				}
-				/* Then create a new strings file with ibtool. We do not even create
-				 * it at the same location as it is not mandatory. */
-				let temporaryStringsFileURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".strings")
-				defer {_ = try? fm.removeItem(at: temporaryStringsFileURL)} /* We don’t care if the delete fails */
-				let p = Process.launchedProcess(launchPath: "/usr/bin/ibtool", arguments: ["--export-strings-file", temporaryStringsFileURL.path, xibURL.path])
-				p.waitUntilExit()
-				guard p.terminationStatus == 0 else {
-					print("***** ERROR: ibtool failed producing strings file for “\(xibURL.relativePath)” (language was \(language)). Skipping this file.", to: &stderrStream)
-					continue
-				}
-				/* Now reading the newly produced strings file. */
-				guard let newParsedStringsFile = try? XcodeStringsFile(fromPath: temporaryStringsFileURL.path, relativeToProjectPath: "/") else {
-					print("***** ERROR: Cannot read strings file generated by ibtool for “\(xibURL.relativePath)” (language was \(language)). Skipping this file.", to: &stderrStream)
-					continue
-				}
-				/* Now we merge the two strings files (if we have a previous one). */
-				var obsoleteKeys: [String]? = nil
-				let mergedStringsFile = XcodeStringsFile(merging: newParsedStringsFile, in: originalParsedStringsFile, obsoleteKeys: &obsoleteKeys, filepath: destinationStringsURL.path)
-				
-				/* Then we write the merged strings file at the expected destination. */
-				try writeXcodeStringsFile(mergedStringsFile, at: destinationStringsURL, encoding: encoding, fileManager: fm)
 			}
 		}
 		
 		/* *** Finding and treating storyboard and xib files *** */
-		print("Treating code")
-		
-		guard let dirEnumeratorForCode = FilteredDirectoryEnumerator(url: projectCloneRootURL, pathSuffixes: [".swift", ".m", ".mm", ".c", ".cpp"], fileManager: fm) else {
-			throw UpdateError(message: "Cannot enumerate files at path \(projectCloneRootURL.path)")
-		}
-		/* First let’s patch the code (in the clone). */
-		let regexesAndValues = try tableDefinesToValues.map{ keyVal -> (NSRegularExpression, String) in
-			let (tableDefine, tableValue) = keyVal
-			let tableRegex = try NSRegularExpression(pattern: #"\b\#(NSRegularExpression.escapedPattern(for: tableDefine))\b"#, options: [])
-			return (tableRegex, tableValue)
-		}
-		var codeFilePaths = [String]()
-		for codeURL in dirEnumeratorForCode {
-			let objcMark = (Set(arrayLiteral: "m", "mm").contains(codeURL.pathExtension) ? "@" : "")
-			var code = try String(contentsOf: codeURL)
-			for (regex, value) in regexesAndValues {
-				code = regex.stringByReplacingMatches(in: code, options: [], range: NSRange(code.startIndex..<code.endIndex, in: code), withTemplate: objcMark + "\"" + NSRegularExpression.escapedTemplate(for: value) + "\"")
+		if !skipCode, let localizablesPath = localizablesPath {
+			print("Treating code")
+			
+			guard let dirEnumeratorForCode = FilteredDirectoryEnumerator(url: projectCloneRootURL, pathSuffixes: [".swift", ".m", ".mm", ".c", ".cpp"], fileManager: fm) else {
+				throw UpdateError(message: "Cannot enumerate files at path \(projectCloneRootURL.path)")
 			}
-			try Data(code.utf8).write(to: codeURL)
-			codeFilePaths.append(codeURL.path)
-		}
-		/* Then we run genstrings in a temporary folder */
-		let temporaryGenstringsDestinationFolderURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
-		try fm.createDirectory(at: temporaryGenstringsDestinationFolderURL, withIntermediateDirectories: true, attributes: nil)
-		defer {_ = try? fm.removeItem(at: temporaryGenstringsDestinationFolderURL)} /* We don’t care if the delete fails */
-		let p = Process.launchedProcess(launchPath: "/usr/bin/genstrings", arguments: (swiftUI ? ["-SwiftUI"] : []) + ["-q", "-o", temporaryGenstringsDestinationFolderURL.path] + codeFilePaths)
-		p.waitUntilExit()
-		guard p.terminationStatus == 0 else {
-			throw UpdateError(message: "genstrings failed; not treating code locs")
-		}
-		/* Let’s parse all the strings from genstrings. */
-		guard let dirEnumeratorForGenstringsStringsfiles = FilteredDirectoryEnumerator(url: temporaryGenstringsDestinationFolderURL, pathSuffixes: [".strings"], fileManager: fm) else {
-			throw UpdateError(message: "Cannot enumerate files at path \(temporaryGenstringsDestinationFolderURL.path)")
-		}
-		var genstringsStringsfiles = [String: XcodeStringsFile]()
-		for stringsfile in dirEnumeratorForGenstringsStringsfiles {
-			do {
-				genstringsStringsfiles[stringsfile.relativePath] = try XcodeStringsFile(fromPath: stringsfile.path, relativeToProjectPath: "/")
-			} catch {
-				print("*** WARNING: genstrings generated a strings file (\(stringsfile.relativePath)) whose parsing failed. Ignoring this file. Error was \(error)", to: &stderrStream)
+			/* First let’s patch the code (in the clone). */
+			let regexesAndValues = try tableDefinesToValues.map{ keyVal -> (NSRegularExpression, String) in
+				let (tableDefine, tableValue) = keyVal
+				let tableRegex = try NSRegularExpression(pattern: #"\b\#(NSRegularExpression.escapedPattern(for: tableDefine))\b"#, options: [])
+				return (tableRegex, tableValue)
 			}
-		}
-		/* Merge the strings we got from genstrings and the ones we already had. */
-		for language in languages {
-			let lprojURL = URL(fileURLWithPath: localizablesPath, relativeTo: projectCloneRootURL).appendingPathComponent(language + ".lproj", isDirectory: true)
-			try fm.createDirectory(at: lprojURL, withIntermediateDirectories: true, attributes: nil)
-			guard let dirEnumerator = FilteredDirectoryEnumerator(url: lprojURL, pathSuffixes: [".strings"], fileManager: fm) else {
-				print("*** WARNING: Cannot enumerate files at path \(lprojURL.relativePath); ignoring files in this folder.", to: &stderrStream)
-				continue
-			}
-			var foundStringsfile = Set<String>()
-			for stringsfile in dirEnumerator {
-				let stringsfileURLRelativeToProject = lprojURL.appendingPathComponent(stringsfile.relativePath)
-				foundStringsfile.insert(stringsfile.relativePath)
-				
-				guard let newStringsfile = genstringsStringsfiles[stringsfile.relativePath] else {
-					if !isURL(stringsfileURLRelativeToProject, containedInPathsList: unusedStringsfilesPaths, rootURL: projectCloneRootURL) {
-						print("*** WARNING: File “\(stringsfileURLRelativeToProject.relativePath)” does not seem to be used in the project.", to: &stderrStream)
-					}
-					continue
+			var codeFilePaths = [String]()
+			for codeURL in dirEnumeratorForCode {
+				let objcMark = (Set(arrayLiteral: "m", "mm").contains(codeURL.pathExtension) ? "@" : "")
+				var code = try String(contentsOf: codeURL)
+				for (regex, value) in regexesAndValues {
+					code = regex.stringByReplacingMatches(in: code, options: [], range: NSRange(code.startIndex..<code.endIndex, in: code), withTemplate: objcMark + "\"" + NSRegularExpression.escapedTemplate(for: value) + "\"")
 				}
-				
-				let parsedStringsfile: XcodeStringsFile
+				try Data(code.utf8).write(to: codeURL)
+				codeFilePaths.append(codeURL.path)
+			}
+			/* Then we run genstrings in a temporary folder */
+			let temporaryGenstringsDestinationFolderURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+			try fm.createDirectory(at: temporaryGenstringsDestinationFolderURL, withIntermediateDirectories: true, attributes: nil)
+			defer {_ = try? fm.removeItem(at: temporaryGenstringsDestinationFolderURL)} /* We don’t care if the delete fails */
+			let p = Process.launchedProcess(launchPath: "/usr/bin/genstrings", arguments: (swiftUI ? ["-SwiftUI"] : []) + ["-q", "-o", temporaryGenstringsDestinationFolderURL.path] + codeFilePaths)
+			p.waitUntilExit()
+			guard p.terminationStatus == 0 else {
+				throw UpdateError(message: "genstrings failed; not treating code locs")
+			}
+			/* Let’s parse all the strings from genstrings. */
+			guard let dirEnumeratorForGenstringsStringsfiles = FilteredDirectoryEnumerator(url: temporaryGenstringsDestinationFolderURL, pathSuffixes: [".strings"], fileManager: fm) else {
+				throw UpdateError(message: "Cannot enumerate files at path \(temporaryGenstringsDestinationFolderURL.path)")
+			}
+			var genstringsStringsfiles = [String: XcodeStringsFile]()
+			for stringsfile in dirEnumeratorForGenstringsStringsfiles {
 				do {
-					parsedStringsfile = try XcodeStringsFile(fromPath: stringsfile.path, relativeToProjectPath: "/")
+					genstringsStringsfiles[stringsfile.relativePath] = try XcodeStringsFile(fromPath: stringsfile.path, relativeToProjectPath: "/")
 				} catch {
-					print("*** WARNING: Found strings file (\(stringsfileURLRelativeToProject.relativePath)) in project which cannot be parsed. Error was \(error)", to: &stderrStream)
-					continue
-				}
-				
-				var obsoleteKeys: [String]? = (deleteMissingKeys ? nil : [])
-				let mergedStringsfile = XcodeStringsFile(merging: newStringsfile, in: parsedStringsfile, obsoleteKeys: &obsoleteKeys, filepath: stringsfileURLRelativeToProject.relativePath)
-				try writeXcodeStringsFile(mergedStringsfile, at: URL(fileURLWithPath: stringsfileURLRelativeToProject.relativePath, relativeTo: projectRootURL), encoding: encoding, fileManager: fm)
-				for obsoleteKey in (obsoleteKeys ?? []) {
-					print("*** WARNING: Found seemingly obsolete key “\(obsoleteKey)” in file (\(stringsfileURLRelativeToProject.relativePath)).", to: &stderrStream)
+					print("*** WARNING: genstrings generated a strings file (\(stringsfile.relativePath)) whose parsing failed. Ignoring this file. Error was \(error)", to: &stderrStream)
 				}
 			}
-			for (stringsfileName, parsedFile) in genstringsStringsfiles.filter({ !foundStringsfile.contains($0.key) }) {
-				/* Writing new strings file (was not already in the project) */
-				try writeXcodeStringsFile(parsedFile, at: URL(fileURLWithPath: lprojURL.relativePath, relativeTo: projectRootURL).appendingPathComponent(stringsfileName), encoding: encoding, fileManager: fm)
+			/* Merge the strings we got from genstrings and the ones we already had. */
+			for language in languages {
+				let lprojURL = URL(fileURLWithPath: localizablesPath, relativeTo: projectCloneRootURL).appendingPathComponent(language + ".lproj", isDirectory: true)
+				try fm.createDirectory(at: lprojURL, withIntermediateDirectories: true, attributes: nil)
+				guard let dirEnumerator = FilteredDirectoryEnumerator(url: lprojURL, pathSuffixes: [".strings"], fileManager: fm) else {
+					print("*** WARNING: Cannot enumerate files at path \(lprojURL.relativePath); ignoring files in this folder.", to: &stderrStream)
+					continue
+				}
+				var foundStringsfile = Set<String>()
+				for stringsfile in dirEnumerator {
+					let stringsfileURLRelativeToProject = lprojURL.appendingPathComponent(stringsfile.relativePath)
+					foundStringsfile.insert(stringsfile.relativePath)
+					
+					guard let newStringsfile = genstringsStringsfiles[stringsfile.relativePath] else {
+						if !isURL(stringsfileURLRelativeToProject, containedInPathsList: unusedStringsfilesPaths, rootURL: projectCloneRootURL) {
+							print("*** WARNING: File “\(stringsfileURLRelativeToProject.relativePath)” does not seem to be used in the project.", to: &stderrStream)
+						}
+						continue
+					}
+					
+					let parsedStringsfile: XcodeStringsFile
+					do {
+						parsedStringsfile = try XcodeStringsFile(fromPath: stringsfile.path, relativeToProjectPath: "/")
+					} catch {
+						print("*** WARNING: Found strings file (\(stringsfileURLRelativeToProject.relativePath)) in project which cannot be parsed. Error was \(error)", to: &stderrStream)
+						continue
+					}
+					
+					var obsoleteKeys: [String]? = (deleteMissingKeys ? nil : [])
+					let mergedStringsfile = XcodeStringsFile(merging: newStringsfile, in: parsedStringsfile, obsoleteKeys: &obsoleteKeys, filepath: stringsfileURLRelativeToProject.relativePath)
+					try writeXcodeStringsFile(mergedStringsfile, at: URL(fileURLWithPath: stringsfileURLRelativeToProject.relativePath, relativeTo: projectRootURL), encoding: encoding, fileManager: fm)
+					for obsoleteKey in (obsoleteKeys ?? []) {
+						print("*** WARNING: Found seemingly obsolete key “\(obsoleteKey)” in file (\(stringsfileURLRelativeToProject.relativePath)).", to: &stderrStream)
+					}
+				}
+				for (stringsfileName, parsedFile) in genstringsStringsfiles.filter({ !foundStringsfile.contains($0.key) }) {
+					/* Writing new strings file (was not already in the project) */
+					try writeXcodeStringsFile(parsedFile, at: URL(fileURLWithPath: lprojURL.relativePath, relativeTo: projectRootURL).appendingPathComponent(stringsfileName), encoding: encoding, fileManager: fm)
+				}
 			}
 		}
 	}
