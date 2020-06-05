@@ -237,10 +237,19 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 			let temporaryGenstringsDestinationFolderURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
 			try fm.createDirectory(at: temporaryGenstringsDestinationFolderURL, withIntermediateDirectories: true, attributes: nil)
 			defer {_ = try? fm.removeItem(at: temporaryGenstringsDestinationFolderURL)} /* We don’t care if the delete fails */
-			let p = Process.launchedProcess(launchPath: "/usr/bin/genstrings", arguments: (swiftUI ? ["-SwiftUI"] : []) + ["-q", "-o", temporaryGenstringsDestinationFolderURL.path] + codeFilePaths)
-			p.waitUntilExit()
-			guard p.terminationStatus == 0 else {
-				throw UpdateError(message: "genstrings failed; not treating code locs")
+			/* We process the code files in bulk, but limited to the arbitrary
+			 * limit 250 files (so that there are no more than 256 arguments to
+			 * genstrings). The 256 limit is arbitrary. We should be able to use
+			 * ARG_MAX, but the value for this parameter is ridiculously high and
+			 * it won’t work (we have reached the limit at a lower value). */
+			let size = 250
+			for start in stride(from: codeFilePaths.startIndex, to: codeFilePaths.endIndex, by: size) {
+				let subarray = codeFilePaths[start..<min(start + size, codeFilePaths.endIndex)]
+				let p = Process.launchedProcess(launchPath: "/usr/bin/genstrings", arguments: (swiftUI ? ["-SwiftUI"] : []) + ["-q", "-o", temporaryGenstringsDestinationFolderURL.path] + subarray)
+				p.waitUntilExit()
+				guard p.terminationStatus == 0 else {
+					throw UpdateError(message: "genstrings failed; not treating code locs")
+				}
 			}
 			/* Let’s parse all the strings from genstrings. */
 			guard let dirEnumeratorForGenstringsStringsfiles = FilteredDirectoryEnumerator(url: temporaryGenstringsDestinationFolderURL, pathSuffixes: [".strings"], fileManager: fm) else {
