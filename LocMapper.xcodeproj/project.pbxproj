@@ -1508,7 +1508,7 @@
 			repositoryURL = "https://github.com/happn-tech/XibLoc.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = "1.0.0-rc";
+				minimumVersion = 1.0.0;
 			};
 		};
 		7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
