@@ -97,7 +97,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--delete-missing-keys=true"
+            argument = "--delete-missing-keys"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -261,7 +261,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--detect-unused-refloc=true"
+            argument = "--detect-unused-refloc"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
