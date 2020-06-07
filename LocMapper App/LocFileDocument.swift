@@ -253,6 +253,9 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 			let loadingWindow = UINavigationUtilities.createLoadingWindow()
 			self.windowForSheet?.beginSheet(loadingWindow, completionHandler: nil)
 			
+			let url = openPanel.url
+			let urls = openPanel.urls
+			
 			DispatchQueue.global().async{
 				defer {
 					DispatchQueue.main.async{
@@ -265,12 +268,12 @@ class LocFileDocument: NSDocument, NSTokenFieldDelegate {
 				do {
 					switch selectedImportType {
 					case .Xcode:
-						guard let url = openPanel.url else {return}
+						guard let url = url else {return}
 						let stringsFiles = try XcodeStringsFile.stringsFilesInProject(url.absoluteURL.path, excludedPaths: excludedPaths, includedPaths: ["/"+importedFolder+"/"])
 						csvLocFile.mergeXcodeStringsFiles(stringsFiles, folderNameToLanguageName: [importedFolder: languageName])
 						
 					case .Android:
-						for url in openPanel.urls {
+						for url in urls {
 							let urlPath = url.absoluteURL.path
 							let noFilename = url.deletingLastPathComponent()
 							let folderName = noFilename.lastPathComponent
