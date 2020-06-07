@@ -263,6 +263,7 @@
 		7BD9C51621C2E0600044D49F /* KeyVersionsCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyVersionsCheckViewController.swift; sourceTree = "<group>"; };
 		7BDD10CE248CEC9F00733B4C /* LocMapper App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "LocMapper App.entitlements"; sourceTree = "<group>"; };
 		7BDD10CF248CEF7A00733B4C /* LocMapper Linter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "LocMapper Linter.entitlements"; sourceTree = "<group>"; };
+		7BDD10D0248D014200733B4C /* locmapper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = locmapper.entitlements; sourceTree = "<group>"; };
 		7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StdRefLocFile.swift; sourceTree = "<group>"; };
 		7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LocFile+StdRefLoc.swift"; sourceTree = "<group>"; };
 		7BF4B1961D34305A0062A605 /* LoadingWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingWindow.xib; sourceTree = "<group>"; };
@@ -506,6 +507,7 @@
 		7B6E25A119D4157A001934ED /* LocMapper CLI */ = {
 			isa = PBXGroup;
 			children = (
+				7BDD10D0248D014200733B4C /* locmapper.entitlements */,
 				7B6E25A219D4157A001934ED /* main.swift */,
 				7B88B9D7247FDC2F00D48975 /* ObsoleteVerbs.swift */,
 				7BB9051424800F2F00E3F5F5 /* Commands */,
@@ -1306,10 +1308,12 @@
 		7B6E25A719D4157A001934ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "LocMapper CLI/locmapper.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperCLI";
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
@@ -1322,10 +1326,12 @@
 		7B6E25A819D4157A001934ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "LocMapper CLI/locmapper.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperCLI";
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
