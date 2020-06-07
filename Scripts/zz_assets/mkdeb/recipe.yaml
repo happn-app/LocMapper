@@ -3,7 +3,7 @@ version: 1
 
 name: locmapper
 description: A tool to map translations from a single source of truth to iOS and Android localization files.
-homepage: https://github.com/happn-app/LocMapper/
+homepage: https://github.com/happn-tech/LocMapper/
 
 maintainer: François Lamboley <francois.lamboley@happn.com>
 

@@ -22,4 +22,4 @@ docker build -t "$builder_image_name" .
 
 cd "$scpt_dir/.."
 readonly BUILD_FOLDER_PATH="$(pwd)/linux_build"
-docker run --rm -v "/run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock" -e SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock" -v "$BUILD_FOLDER_PATH":"/mnt/output" "$builder_image_name" "git@github.com:happn-app/locmapper.git=$treeish"
+docker run --rm -v "/run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock" -e SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock" -v "$BUILD_FOLDER_PATH":"/mnt/output" "$builder_image_name" "git@github.com:happn-tech/locmapper.git=$treeish"
