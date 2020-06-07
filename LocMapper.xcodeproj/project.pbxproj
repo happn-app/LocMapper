@@ -6,22 +6,6 @@
 	objectVersion = 52;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		7B21A38F1DE4BCDF00F81E68 /* All */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "All" */;
-			buildPhases = (
-			);
-			dependencies = (
-				7BB7096420262F3A007222BE /* PBXTargetDependency */,
-				7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */,
-				7B21A3961DE4BCE900F81E68 /* PBXTargetDependency */,
-			);
-			name = All;
-			productName = Localizer;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DB1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift */; };
 		7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0477DD1D56927F00490F60 /* LocEntryMappingViewController.swift */; };
@@ -136,20 +120,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7B21A3931DE4BCE900F81E68 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B6E259E19D4157A001934ED;
-			remoteInfo = "Localizer CLI";
-		};
-		7B21A3951DE4BCE900F81E68 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B837D7E1C0EF3DB0020E86B;
-			remoteInfo = "Localizer App";
-		};
 		7B4CC6F62025EDA80055CB74 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
@@ -165,13 +135,6 @@
 			remoteInfo = Localizer;
 		};
 		7B76AAE32025FD010071B896 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B4CC6CB2025BCEF0055CB74;
-			remoteInfo = Localizer;
-		};
-		7BB7096320262F3A007222BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B6E259719D4157A001934ED /* Project object */;
 			proxyType = 1;
@@ -864,10 +827,6 @@
 							};
 						};
 					};
-					7B21A38F1DE4BCDF00F81E68 = {
-						CreatedOnToolsVersion = 8.1;
-						ProvisioningStyle = Automatic;
-					};
 					7B4CC6BD2025BB390055CB74 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
@@ -905,7 +864,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7B21A38F1DE4BCDF00F81E68 /* All */,
 				7B4CC6CB2025BCEF0055CB74 /* LocMapper */,
 				7B4CC6BD2025BB390055CB74 /* LocMapperTests */,
 				7B6E259E19D4157A001934ED /* LocMapper CLI */,
@@ -1080,16 +1038,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7B21A3941DE4BCE900F81E68 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7B6E259E19D4157A001934ED /* LocMapper CLI */;
-			targetProxy = 7B21A3931DE4BCE900F81E68 /* PBXContainerItemProxy */;
-		};
-		7B21A3961DE4BCE900F81E68 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7B837D7E1C0EF3DB0020E86B /* LocMapper App */;
-			targetProxy = 7B21A3951DE4BCE900F81E68 /* PBXContainerItemProxy */;
-		};
 		7B4CC6F72025EDA80055CB74 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7B4CC6CB2025BCEF0055CB74 /* LocMapper */;
@@ -1104,11 +1052,6 @@
 			isa = PBXTargetDependency;
 			target = 7B4CC6CB2025BCEF0055CB74 /* LocMapper */;
 			targetProxy = 7B76AAE32025FD010071B896 /* PBXContainerItemProxy */;
-		};
-		7BB7096420262F3A007222BE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7B4CC6CB2025BCEF0055CB74 /* LocMapper */;
-			targetProxy = 7BB7096320262F3A007222BE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1169,20 +1112,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
-		7B21A3911DE4BCDF00F81E68 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		7B21A3921DE4BCDF00F81E68 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -1434,15 +1363,6 @@
 			buildConfigurations = (
 				7B15CE2921C120330016D109 /* Debug */,
 				7B15CE2A21C120330016D109 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		7B21A3901DE4BCDF00F81E68 /* Build configuration list for PBXAggregateTarget "All" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7B21A3911DE4BCDF00F81E68 /* Debug */,
-				7B21A3921DE4BCDF00F81E68 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
