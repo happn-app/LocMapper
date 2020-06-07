@@ -14,7 +14,7 @@ source:
 
 control:
   depends:
-  - swiftlang-libs (=5.0-RELEASE-1~mkdeb1)
+  - swiftlang-libs (=5.2.4-RELEASE-1~mkdeb1)
   description: |
     Not much to say here…
   section: devel

@@ -6,13 +6,6 @@
       name = "Root">
       <Group
          location = "container:"
-         name = "Untracked">
-         <FileRef
-            location = "group:ask_pass.sh">
-         </FileRef>
-      </Group>
-      <Group
-         location = "container:"
          name = "Prod Stuff">
          <FileRef
             location = "group:build_for_linux_on_macos.sh">
