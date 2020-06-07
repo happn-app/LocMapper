@@ -106,8 +106,13 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 			guard response == .OK, let url = openPanel.url else {return}
 			
 			DispatchQueue.main.async{
-				self.filesDescriptions.append(InputFileDescription(url: url))
-				self.refreshUI(reloadTableViewData: true)
+				do {
+					self.filesDescriptions.append(try InputFileDescription(url: url))
+					self.refreshUI(reloadTableViewData: true)
+				} catch {
+					let alert = NSAlert(error: error)
+					alert.beginSheetModal(for: self.view.window!, completionHandler: nil)
+				}
 			}
 		})
 	}

@@ -21,27 +21,40 @@ class InputFileDescription : NSObject, NSCoding {
 	}
 	
 	var nickname: String?
-	var url: URL
+	
+	let url: URL
+	let urlBookmarkData: Data
 	
 	var refLocType = RefLocType.xibRefLoc
 	
-	init(url u: URL) {
+	init(url u: URL) throws {
 		url = u
+		urlBookmarkData = try u.bookmarkData()
 		
 		super.init()
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
-		url = aDecoder.decodeObject(forKey: "url") as! URL
 		nickname = aDecoder.decodeObject(forKey: "nickname") as? String
 		refLocType = RefLocType(rawValue: aDecoder.decodeInteger(forKey: "refLocType")) ?? .xibRefLoc
+		
+		guard let bData = aDecoder.decodeObject(forKey: "urlBookmark") as? Data else {
+			return nil
+		}
+		urlBookmarkData = bData
+		
+		var stale = false
+		guard let u = try? URL(resolvingBookmarkData: urlBookmarkData, bookmarkDataIsStale: &stale) else {
+			return nil
+		}
+		url = u
 		
 		super.init()
 	}
 	
 	func encode(with aCoder: NSCoder) {
-		aCoder.encode(url, forKey: "url")
 		aCoder.encode(nickname, forKey: "nickname")
+		aCoder.encode(urlBookmarkData, forKey: "urlBookmark")
 		aCoder.encode(refLocType.rawValue, forKey: "refLocType")
 	}
 	
