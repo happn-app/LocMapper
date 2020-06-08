@@ -189,9 +189,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					 * it at the same location as it is not mandatory. */
 					let temporaryStringsFileURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".strings")
 					defer {_ = try? fm.removeItem(at: temporaryStringsFileURL)} /* We don’t care if the delete fails */
-					let p = Process.launchedProcess(launchPath: "/usr/bin/ibtool", arguments: ["--export-strings-file", temporaryStringsFileURL.path, xibURL.path])
-					p.waitUntilExit()
-					guard p.terminationStatus == 0 else {
+					let exitCode = finishedProcess(launchPath: "/usr/bin/ibtool", arguments: ["--export-strings-file", temporaryStringsFileURL.path, xibURL.path])
+					guard exitCode == 0 else {
 						print("***** ERROR: ibtool failed producing strings file for “\(xibURL.relativePath)” (language was \(language)). Skipping this file.", to: &stderrStream)
 						continue
 					}
@@ -245,9 +244,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 			let size = 250
 			for start in stride(from: codeFilePaths.startIndex, to: codeFilePaths.endIndex, by: size) {
 				let subarray = codeFilePaths[start..<min(start + size, codeFilePaths.endIndex)]
-				let p = Process.launchedProcess(launchPath: "/usr/bin/genstrings", arguments: (swiftUI ? ["-SwiftUI"] : []) + ["-q", "-o", temporaryGenstringsDestinationFolderURL.path] + subarray)
-				p.waitUntilExit()
-				guard p.terminationStatus == 0 else {
+				let code = finishedProcess(launchPath: "/usr/bin/genstrings", arguments: (swiftUI ? ["-SwiftUI"] : []) + ["-q", "-o", temporaryGenstringsDestinationFolderURL.path] + subarray)
+				guard code == 0 else {
 					throw UpdateError(message: "genstrings failed; not treating code locs")
 				}
 			}
@@ -335,6 +333,32 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		}
 		
 		try data.write(to: url)
+	}
+	
+	private func finishedProcess(launchPath: String, arguments: [String]) -> Int32 {
+		let outputPipe = Pipe()
+		let errorPipe = Pipe()
+		
+		let p = Process()
+		p.launchPath = launchPath
+		p.arguments = arguments
+		p.standardInput = nil
+		p.standardOutput = outputPipe
+		p.standardError = errorPipe
+		
+		p.launch()
+		p.waitUntilExit()
+		
+		print(data2str(outputPipe.fileHandleForReading.readDataToEndOfFile()), terminator: "")
+		print(data2str(errorPipe.fileHandleForReading.readDataToEndOfFile()), terminator: "", to: &stderrStream)
+		return p.terminationStatus
+	}
+	
+	private func data2str(_ data: Data) -> String {
+		if let str = String(data: data, encoding: .utf8) {
+			return str
+		}
+		return data.reduce("", { $0 + String(format: "%02x", $1) })
 	}
 	
 }
