@@ -115,8 +115,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		let projectRootURL = URL(fileURLWithPath: rootFolder, isDirectory: true)
 		let runLockURL = projectRootURL.appendingPathComponent(".locmapper__update_xcode_strings_from_code.lock")
 		
-		let unlocalizedXibsPaths = try readFilesList(unlocalizedXibsFilesList, relativeTo: projectRootURL, fileManager: fm)
-		let unusedStringsfilesPaths = try readFilesList(unusedStringsfilesFilesList, relativeTo: projectRootURL, fileManager: fm)
+		let unlocalizedXibsPaths = try readFilesList(unlocalizedXibsFilesList)
+		let unusedStringsfilesPaths = try readFilesList(unusedStringsfilesFilesList)
 		
 		/* *** Check there is no strings update *** */
 		
@@ -304,8 +304,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		}
 	}
 	
-	private func readFilesList(_ path: String?, relativeTo rootURL: URL, fileManager fm: FileManager) throws -> [String] {
-		guard let url = path.flatMap({ URL(fileURLWithPath: $0, relativeTo: rootURL) }) else {
+	private func readFilesList(_ path: String?) throws -> [String] {
+		guard let url = path.flatMap({ URL(fileURLWithPath: $0) }) else {
 			return []
 		}
 		
