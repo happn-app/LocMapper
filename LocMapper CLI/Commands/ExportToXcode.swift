@@ -31,20 +31,20 @@ struct ExportToXcode : ParsableCommand {
 			"""
 	)
 	
-	@OptionGroup()
+	@OptionGroup
 	var csvOptions: CSVOptions
 	
-	@Option(default: "utf16")
-	var encoding: String
+	@Option
+	var encoding = "utf16"
 	
-	@Argument()
+	@Argument
 	var inputFile: String
 	
-	@Argument()
+	@Argument
 	var rootFolder: String
 	
-	@Argument()
-	var lprojNameToLanguageNameMapping: [String]
+	@Argument
+	var lprojNameToLanguageNameMapping = [String]()
 	
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator

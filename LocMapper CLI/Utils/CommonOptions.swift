@@ -44,7 +44,7 @@ import ArgumentParser
  * Submitted an issue (though we don’t need it here): https://github.com/apple/swift-argument-parser/issues/169 */
 struct CSVOptions : ParsableArguments {
 	
-	@Option(default: ",", help: "The CSV separator (lcm files are CSVs).")
-	var csvSeparator: String
+	@Option(help: "The CSV separator (lcm files are CSVs).")
+	var csvSeparator = ","
 	
 }

@@ -20,7 +20,7 @@ public struct LocMapperConfig {
 	#if canImport(os)
 	public static var oslog: OSLog? = .default
 	#endif
-	public static var logger: Logger? = {
+	public static var logger: Logging.Logger? = {
 		#if canImport(os)
 		return nil
 		#else
