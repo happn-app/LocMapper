@@ -23,13 +23,13 @@ import LocMapper
 
 struct Lint : ParsableCommand {
 	
-	@OptionGroup()
+	@OptionGroup
 	var csvOptions: CSVOptions
 	
-	@Flag()
-	var detectUnusedRefloc: Bool
+	@Flag
+	var detectUnusedRefloc = false
 	
-	@Argument()
+	@Argument
 	var inputFile: String
 	
 	func run() throws {

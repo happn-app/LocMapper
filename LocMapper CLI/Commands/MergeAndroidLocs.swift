@@ -31,20 +31,20 @@ struct MergeAndroidLocs : ParsableCommand {
 	@OptionGroup()
 	var csvOptions: CSVOptions
 	
-	@Option(default: "res")
-	var resFolder: String
+	@Option
+	var resFolder = "res"
 	
-	@Option()
-	var stringsFilenames: [String]
+	@Option
+	var stringsFilenames = [String]()
 	
-	@Argument()
+	@Argument
 	var rootFolder: String
 	
-	@Argument()
+	@Argument
 	var outputFile: String
 	
-	@Argument()
-	var folderNameToLanguageNameMapping: [String]
+	@Argument
+	var folderNameToLanguageNameMapping = [String]()
 	
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator

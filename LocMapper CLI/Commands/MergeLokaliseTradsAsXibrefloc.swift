@@ -28,26 +28,26 @@ struct MergeLokaliseTradsAsXibrefloc : ParsableCommand {
 		abstract: "Fetch ref loc from lokalise and merge them in an lcm file, converted into the XibRefLoc format."
 	)
 	
-	@OptionGroup()
+	@OptionGroup
 	var csvOptions: CSVOptions
 	
-	@Option(default: .add)
-	var mergeStyle: LocFile.MergeStyle
+	@Option
+	var mergeStyle = LocFile.MergeStyle.add
 	
-	@Option()
-	var excludedTags: [String]
+	@Option
+	var excludedTags = [String]()
 	
-	@Argument()
+	@Argument
 	var lokalizeReadToken: String
 	
-	@Argument()
+	@Argument
 	var lokalizeProjectID: String
 	
-	@Argument()
+	@Argument
 	var mergedFilePath: String
 	
-	@Argument()
-	var lokalizeToRefLocLanguageNameMapping: [String]
+	@Argument
+	var lokalizeToRefLocLanguageNameMapping = [String]()
 	
 	func run() throws {
 		let csvSeparator = csvOptions.csvSeparator

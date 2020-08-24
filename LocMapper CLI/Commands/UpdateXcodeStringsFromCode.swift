@@ -51,10 +51,10 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 	var localizablesPath: String?
 	
 	@Option(help: "List of paths to exclude when reading the project.")
-	var excludeList: [String]
+	var excludeList = [String]()
 	
 	@Option(help: "List of paths to only include when reading the project.")
-	var includeList: [String]
+	var includeList = [String]()
 	
 	@Option(help: "A file containing a list of strings files that are not used in the code but are still needed (one path per line, relative to the project’s root).")
 	var unusedStringsfilesFilesList: String?
@@ -63,31 +63,31 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 	var unlocalizedXibsFilesList: String?
 	
 	@Option(help: "The languages to update (lproj folder names without the extension). Defaults to “en”.")
-	var languages: [String]
+	var languages = [String]()
 	
 	@Flag(help: "Enable this option to pass the -SwiftUI option to genstring.")
-	var swiftUI: Bool
+	var swiftUI = false
 	
-	@Option(default: "utf16")
-	var encoding: String
+	@Option
+	var encoding = "utf16"
 	
 	@Flag(help: "Enable this option to automatically delete the keys that are not found in the code but are present in the strings file. For storyboards/xibs, missing keys are always removed.")
-	var deleteMissingKeys: Bool
+	var deleteMissingKeys = false
 	
-	@Flag()
-	var skipStoryboardsAndXibs: Bool
+	@Flag
+	var skipStoryboardsAndXibs = false
 	
-	@Flag()
-	var coloredOutput: Bool
+	@Flag
+	var coloredOutput = false
 	
-	@Flag()
-	var skipCode: Bool
+	@Flag
+	var skipCode = false
 	
-	@Argument()
+	@Argument
 	var rootFolder: String
 	
 	@Argument(help: #"Pass “MY_TABLE MyTable” (two arguments) to convert `NSLocalizedString("MyString", tableName: MY_TABLE, comment: "This comment!")` into `NSLocalizedString("MyString", tableName: "MyTable", comment: "This comment!")` for instance."#)
-	var tableDefinesToValuesMapping: [String]
+	var tableDefinesToValuesMapping = [String]()
 	
 	func run() throws {
 		let languages = parseObsoleteOptionList(self.languages) ?? ["en"]
