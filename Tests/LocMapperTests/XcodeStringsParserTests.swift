@@ -254,4 +254,31 @@ class XcodeStringsParserTests: XCTestCase {
 		)
 	}
 	
+	func testKeyButNotValues() {
+		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "this_is_weird_but_valid;")
+			else {XCTFail("Cannot parse input"); return}
+		XCTAssertEqual(
+			parsed.components.map{ $0.stringValue },
+			[XcodeStringsFile.LocalizedString(key: "this_is_weird_but_valid", keyHasQuotes: false, equalSign: "", value: "", valueHasQuotes: false, semicolon: ";")].map{ $0.stringValue }
+		)
+	}
+	
+	func testKeyButNotValues2() {
+		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "this_is_weird_but_valid  ;")
+			else {XCTFail("Cannot parse input"); return}
+		XCTAssertEqual(
+			parsed.components.map{ $0.stringValue },
+			[XcodeStringsFile.LocalizedString(key: "this_is_weird_but_valid", keyHasQuotes: false, equalSign: "", value: "", valueHasQuotes: false, semicolon: "  ;")].map{ $0.stringValue }
+		)
+	}
+	
+	func testKeyButNotValues3() {
+		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "\"this_is_weird_but_valid\"  ;")
+			else {XCTFail("Cannot parse input"); return}
+		XCTAssertEqual(
+			parsed.components.map{ $0.stringValue },
+			[XcodeStringsFile.LocalizedString(key: "this_is_weird_but_valid", keyHasQuotes: true, equalSign: "", value: "", valueHasQuotes: false, semicolon: "  ;")].map{ $0.stringValue }
+		)
+	}
+	
 }
