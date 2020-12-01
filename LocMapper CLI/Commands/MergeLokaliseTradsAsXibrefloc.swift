@@ -43,6 +43,9 @@ struct MergeLokaliseTradsAsXibrefloc : ParsableCommand {
 	@Argument
 	var lokalizeProjectID: String
 	
+	@Argument(help: "This is the type of the project as seen by Lokalise. Possible values are (at least now): ios, web, android, other")
+	var projectType: String
+	
 	@Argument
 	var mergedFilePath: String
 	
@@ -56,7 +59,7 @@ struct MergeLokaliseTradsAsXibrefloc : ParsableCommand {
 		
 		print("Merging Lokalise Trads as StdRefLoc in LocFile...")
 		print("   Creating StdRefLoc from Lokalise...")
-		let stdRefLoc = try StdRefLocFile(token: lokalizeReadToken, projectId: lokalizeProjectID, lokaliseToReflocLanguageName: lokalizeToRefLocLanguageName, excludedTags: excludedTags, logPrefix: "      ")
+		let stdRefLoc = try StdRefLocFile(token: lokalizeReadToken, projectId: lokalizeProjectID, lokaliseToReflocLanguageName: lokalizeToRefLocLanguageName, keyType: projectType, excludedTags: excludedTags, logPrefix: "      ")
 		
 		print("   Converting StdRefLoc to XibRefLoc...")
 		let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
