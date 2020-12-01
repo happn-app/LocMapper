@@ -53,6 +53,8 @@ public class StdRefLocFile {
 	}
 	
 	public init(token: String, projectId: String, lokaliseToReflocLanguageName: [String: String], keyType: String, excludedTags: Set<String> = Set(), logPrefix: String?) throws {
+		let decoder = JSONDecoder()
+		decoder.keyDecodingStrategy = .convertFromSnakeCase
 		let baseURL = URL(string: "https://api.lokalise.co/api2/")!
 		let tagMapping = [
 			"male_other": "gm",
@@ -64,21 +66,36 @@ public class StdRefLocFile {
 		]
 		
 		if let p = logPrefix {print(p + "Downloading translations from Lokalise...")}
-		#warning("TODO: Handle pagination correctly…")
-		/* We disable key references https://docs.lokalise.com/en/articles/1400528-key-referencing
-		 * hoping this does what it should (should replace the references by their
-		 * values!). It probably does (what else would it do?) */
-		let queryItems = [URLQueryItem(name: "limit", value: "5000"), URLQueryItem(name: "include_translations", value: "1"), URLQueryItem(name: "disable_references", value: "1")]
-		var request = URLRequest(baseURL: baseURL, relativePath: "projects/\(projectId)/keys", httpMethod: "GET", queryItems: queryItems)!
-		request.addValue(token, forHTTPHeaderField: "X-Api-Token")
-		guard let jsonData = URLSession.shared.fetchData(request: request) else {throw NSError(domain: "StdRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot download translations; stopping now"])}
 		
-		let decoder = JSONDecoder()
-		decoder.keyDecodingStrategy = .convertFromSnakeCase
-		let keysList = try decoder.decode(LokaliseKeysList.self, from: jsonData)
+		var keys = [LokaliseKey]()
+		
+		var page = 0
+		var currentKeysList: LokaliseKeysList
+		repeat {
+			/* It’s _not_ a bug, first page is indeed 1… */
+			page += 1
+			
+			/* We disable key references https://docs.lokalise.com/en/articles/1400528-key-referencing
+			 * hoping this does what it should (should replace the references by
+			 * their values!). It probably does (what else would it do?) */
+			let queryItems = [
+				URLQueryItem(name: "limit", value: "5000"),
+				URLQueryItem(name: "page", value: String(page)),
+				URLQueryItem(name: "disable_references", value: "1"),
+				URLQueryItem(name: "include_translations", value: "1")
+			]
+			var request = URLRequest(baseURL: baseURL, relativePath: "projects/\(projectId)/keys", httpMethod: "GET", queryItems: queryItems)!
+			request.addValue(token, forHTTPHeaderField: "X-Api-Token")
+			guard let jsonData = URLSession.shared.fetchData(request: request) else {
+				throw NSError(domain: "StdRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot download translations; stopping now"])
+			}
+			
+			currentKeysList = try decoder.decode(LokaliseKeysList.self, from: jsonData)
+			keys.append(contentsOf: currentKeysList.keys)
+		} while currentKeysList.keys.count > 0
 		
 		var entriesBuilding = [Key: [Language: Value]]()
-		for key in keysList.keys {
+		for key in keys {
 			let tags = key.tags ?? []
 			guard tags.first(where: { excludedTags.contains($0) }) == nil else {
 				/* We found a translation that is excluded because of its tag. */
