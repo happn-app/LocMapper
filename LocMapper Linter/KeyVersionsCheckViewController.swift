@@ -165,7 +165,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		queue.addOperation{
 			assert(self.simplifiedGroupedOctothorpedUntaggedRefLocKeys == nil)
 			do {
-				let stdRefLoc = try StdRefLocFile(token: PreferencesViewController.accessToken, projectId: PreferencesViewController.projectId, lokaliseToReflocLanguageName: PreferencesViewController.languagesNameMappings, excludedTags: PreferencesViewController.excludedTags, logPrefix: nil)
+				let stdRefLoc = try StdRefLocFile(token: PreferencesViewController.accessToken, projectId: PreferencesViewController.projectId, lokaliseToReflocLanguageName: PreferencesViewController.languagesNameMappings, keyType: "ios", excludedTags: PreferencesViewController.excludedTags, logPrefix: nil)
 				let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
 				let stdRefLocFile = LocFile(csvSeparator: ","); stdRefLocFile.mergeRefLocsWithStdRefLocFile(stdRefLoc, mergeStyle: .replace)
 				let xibRefLocFile = LocFile(csvSeparator: ","); xibRefLocFile.mergeRefLocsWithXibRefLocFile(xibRefLoc, mergeStyle: .replace)
