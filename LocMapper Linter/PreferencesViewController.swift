@@ -87,7 +87,7 @@ class PreferencesViewController : NSViewController, NSTableViewDataSource, NSTab
 	}
 	
 	/* *******************************************
-      MARK: - Table View Data Source and Delegate
+	   MARK: - Table View Data Source and Delegate
 	   ******************************************* */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
@@ -101,7 +101,7 @@ class PreferencesViewController : NSViewController, NSTableViewDataSource, NSTab
 	}
 	
 	/* ***************
-      MARK: - Private
+	   MARK: - Private
 	   *************** */
 	
 	private static var udLanguagesNameMappings: [[String: String]] {

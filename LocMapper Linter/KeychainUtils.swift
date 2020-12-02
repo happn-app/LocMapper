@@ -115,7 +115,7 @@ struct Keychain {
 	#endif
 	
 	/* ***************
-      MARK: - Private
+	   MARK: - Private
 	   *************** */
 	
 	private static func baseQuery(forIdentifier identifier: String, accessGroup: String?, username: String) -> [String: Any] {

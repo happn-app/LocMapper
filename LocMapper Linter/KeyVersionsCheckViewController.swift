@@ -89,7 +89,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 	}
 	
 	/* *******************************************
-      MARK: - Table View Data Source and Delegate
+	   MARK: - Table View Data Source and Delegate
 	   ******************************************* */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
@@ -130,7 +130,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 	}
 	
 	/* ***************
-      MARK: - Private
+	   MARK: - Private
 	   *************** */
 	
 	private enum LoadingState {

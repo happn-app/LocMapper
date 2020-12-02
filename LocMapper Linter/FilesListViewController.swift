@@ -39,7 +39,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* *****************************************
-      MARK: - Table View Data Source & Delegate
+	   MARK: - Table View Data Source & Delegate
 	   ***************************************** */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
@@ -78,7 +78,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* ***************************
-      MARK: - Text Field Delegate
+	   MARK: - Text Field Delegate
 	   *************************** */
 	
 	func didBecomeFirstResponder(_ textField: NSTextField) {
@@ -92,7 +92,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* ***************
-      MARK: - Actions
+	   MARK: - Actions
 	   *************** */
 	
 	@IBAction func addFile(_ sender: AnyObject) {
@@ -159,7 +159,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* ***************
-      MARK: - Private
+	   MARK: - Private
 	   *************** */
 	
 	private func saveFileList() {
