@@ -25,7 +25,7 @@ enum Std2XibError : Error {
 
 public struct Std2Xib {
 	
-	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String) throws -> String {
+	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String, allowUniversalPlaceholders: Bool = true) throws -> String {
 		let language = language.lowercased()
 		
 		/* Tags of first value determine how we'll merge the values. We do not try
@@ -43,6 +43,17 @@ public struct Std2Xib {
 		var regexes = [LocValueTransformerRegexReplacements]()
 		var orders = [LocValueTransformerOrderedReplacementVariantPick]()
 		var replacements = [LocValueTransformerRegionDelimitersReplacement]()
+		
+		if allowUniversalPlaceholders {
+			/* We add this regex for everybody */
+			regexes.append(LocValueTransformerRegexReplacements(replacements: [
+				/* Syntaxic coloration says third capture group should be with a +
+				 * instead of a *, but old export for “[%1$s:]” did replace the
+				 * placeholder to “%1$s”… */
+				(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+):([a-zA-Z0-9_.-]*)\]"#, options: []), #"%$1\$$2"#),
+				(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+)\]"#, options: []), #"%$1\$$2"#)
+			]))
+		}
 		
 		var i = 0
 		for tag in firstValue.tags {
@@ -111,7 +122,9 @@ public struct Std2Xib {
 	 * **prefix** of the replacement only. */
 	private static func transformer(from tag: String, index i: inout Int) throws -> LocValueTransformer {
 		guard tag != "printf" else {
-			return LocValueTransformerRegexReplacements(replacements: [(try! NSRegularExpression(pattern: "%([0-9]*)\\$s", options: []), "%$1\\$@")])
+			return LocValueTransformerRegexReplacements(replacements: [
+				(try! NSRegularExpression(pattern: #"%([0-9]*)\$s"#, options: []), #"%$1\$@"#)
+			])
 		}
 		
 		switch tag.first {
