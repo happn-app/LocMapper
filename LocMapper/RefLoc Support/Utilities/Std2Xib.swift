@@ -25,7 +25,7 @@ enum Std2XibError : Error {
 
 public struct Std2Xib {
 	
-	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String) throws -> String {
+	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String, allowUniversalPlaceholders: Bool = true) throws -> String {
 		let language = language.lowercased()
 		
 		/* Tags of first value determine how we'll merge the values. We do not try
@@ -111,7 +111,9 @@ public struct Std2Xib {
 	 * **prefix** of the replacement only. */
 	private static func transformer(from tag: String, index i: inout Int) throws -> LocValueTransformer {
 		guard tag != "printf" else {
-			return LocValueTransformerRegexReplacements(replacements: [(try! NSRegularExpression(pattern: "%([0-9]*)\\$s", options: []), "%$1\\$@")])
+			return LocValueTransformerRegexReplacements(replacements: [
+				(try! NSRegularExpression(pattern: #"%([0-9]*)\$s"#, options: []), #"%$1\$@"#)
+			])
 		}
 		
 		switch tag.first {

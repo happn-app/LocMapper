@@ -49,7 +49,7 @@ class LocValueTransformerRegexReplacements : LocValueTransformer {
 		}]
 	}
 	
-	override func apply(toValue value: String, withLanguage: String) throws -> String {
+	override func apply(toValue value: String, withLanguage language: String) throws -> String {
 		var ret = value
 		for (r, v) in replacements {
 			ret = r.stringByReplacingMatches(in: ret, options: [], range: NSRange(ret.startIndex..<ret.endIndex, in: ret), withTemplate: v)

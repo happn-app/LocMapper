@@ -52,12 +52,10 @@ public class StdRefLocFile {
 		entries = entriesBuilding
 	}
 	
-	public init(token: String, projectId: String, lokaliseToReflocLanguageName: [String: String], excludedTags: Set<String> = Set(), logPrefix: String?) throws {
-		let baseURL = URL(string: "https://api.lokalise.co/api/")!
-		let baseQueryItems = [
-			URLQueryItem(name: "api_token", value: token),
-			URLQueryItem(name: "id", value: projectId)
-		]
+	public init(token: String, projectId: String, lokaliseToReflocLanguageName: [String: String], keyType: String, excludedTags: Set<String> = Set(), logPrefix: String?) throws {
+		let decoder = JSONDecoder()
+		decoder.keyDecodingStrategy = .convertFromSnakeCase
+		let baseURL = URL(string: "https://api.lokalise.co/api2/")!
 		let tagMapping = [
 			"male_other": "gm",
 			"female_other": "gf",
@@ -68,80 +66,90 @@ public class StdRefLocFile {
 		]
 		
 		if let p = logPrefix {print(p + "Downloading translations from Lokalise...")}
-		let queryItems = baseQueryItems + [URLQueryItem(name: "plural_format", value: "json_string"), URLQueryItem(name: "placeholder_format", value: "printf")]
-		let request = URLRequest(baseURL: baseURL, relativePath: "string/list", httpMethod: "POST", queryItems: queryItems, queryInBody: true)!
-		guard let json = URLSession.shared.fetchJSONAndCheckResponse(request: request)?["strings"] as? [String: Any?] else {throw NSError(domain: "StdRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot download translations; stopping now"])}
 		
-		var languagesBuilding = [String]()
+		var keys = [LokaliseKey]()
+		
+		var page = 0
+		var currentKeysList: LokaliseKeysList
+		repeat {
+			/* It’s _not_ a bug, first page is indeed 1… */
+			page += 1
+			
+			/* Setting “disable_references” to 0 actually resolves the key
+			 * references…
+			 * https://docs.lokalise.com/en/articles/1400528-key-referencing */
+			let queryItems = [
+				URLQueryItem(name: "limit", value: "5000"),
+				URLQueryItem(name: "page", value: String(page)),
+				URLQueryItem(name: "disable_references", value: "0"),
+				URLQueryItem(name: "include_translations", value: "1")
+			]
+			var request = URLRequest(baseURL: baseURL, relativePath: "projects/\(projectId)/keys", httpMethod: "GET", queryItems: queryItems)!
+			request.addValue(token, forHTTPHeaderField: "X-Api-Token")
+			guard let jsonData = URLSession.shared.fetchData(request: request) else {
+				throw NSError(domain: "StdRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot download translations; stopping now"])
+			}
+			
+			currentKeysList = try decoder.decode(LokaliseKeysList.self, from: jsonData)
+			keys.append(contentsOf: currentKeysList.keys)
+		} while currentKeysList.keys.count > 0
+		
 		var entriesBuilding = [Key: [Language: Value]]()
-		for (lokaliseLanguage, refLocLanguage) in lokaliseToReflocLanguageName {
-			guard let lokaliseTranslations = json[lokaliseLanguage] as? [[String: Any?]] else {
+		for key in keys {
+			let tags = key.tags ?? []
+			guard tags.first(where: { excludedTags.contains($0) }) == nil else {
+				/* We found a translation that is excluded because of its tag. */
+				continue
+			}
+			guard let keyName = key.keyName[keyType] else {
 				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Did not get translations from Lokalise for language %{public}@", log: $0, type: .info, lokaliseLanguage) }
+					LocMapperConfig.oslog.flatMap{ os_log("Got key from Lokalise with no name for type %{public}@. Skipping...", log: $0, type: .info, keyType) }
 				#endif
-				LocMapperConfig.logger?.notice("Did not get translations from Lokalise for language \(lokaliseLanguage)")
+				LocMapperConfig.logger?.info("Got key from Lokalise with no name for type \(keyType). Skipping...")
 				continue
 			}
 			
-			languagesBuilding.append(refLocLanguage)
+			/* Processing key from Lokalise */
+			let keyComponents = keyName.components(separatedBy: " - ")
+			if keyComponents.count > 2 {
+				#if canImport(os)
+					LocMapperConfig.oslog.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
+				#endif
+				LocMapperConfig.logger?.info("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)")
+			}
+			let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
 			
-			for lokaliseTranslation in lokaliseTranslations {
-				guard
-					let lokaliseTranslationKey = lokaliseTranslation["key"] as? String,
-					let lokaliseTranslationTags = lokaliseTranslation["tags"] as? [String],
-					let lokaliseTranslationValue = lokaliseTranslation["translation"] as? String
-				else {
+			/* Processing tags from Lokalise */
+			let processedTags = tags.compactMap{ tag -> String? in
+				guard tag.hasPrefix("lcm:") else {return nil}
+				let tag = String(tag.dropFirst(4))
+				return tagMapping[tag] ?? tag
+			}
+			
+			/* Processing value from Lokalise */
+			for translation in key.translations {
+				guard let refLocLanguage = lokaliseToReflocLanguageName[translation.languageIso] else {
 					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Did not get translation value, key or tags from Lokalise for language %{public}@. Translation: %@", log: $0, type: .info, lokaliseLanguage, lokaliseTranslation) }
+						LocMapperConfig.oslog.flatMap{ os_log("Got translation from Lokalise with unknown iso language %{public}@. Skipping...", log: $0, type: .info, translation.languageIso) }
 					#endif
-					LocMapperConfig.logger?.notice("Did not get translation value, key or tags from Lokalise for language \(lokaliseLanguage). Translation: \(lokaliseTranslation)")
+					LocMapperConfig.logger?.info("Got translation from Lokalise with unknown iso language \(translation.languageIso). Skipping...")
 					continue
 				}
-				
-				guard lokaliseTranslationTags.first(where: { excludedTags.contains($0) }) == nil else {
-					/* We found a translation that is excluded because of its tag. */
-					continue
-				}
-				
-				/* Processing key from Lokalise */
-				let keyComponents = lokaliseTranslationKey.components(separatedBy: " - ")
-				if keyComponents.count > 2 {
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
-					#endif
-					LocMapperConfig.logger?.notice("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)")
-				}
-				let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
-				
-				/* Processing tags from Lokalise */
-				let tags = lokaliseTranslationTags.compactMap{ tag -> String? in
-					guard tag.hasPrefix("lcm:") else {return nil}
-					let tag = String(tag.dropFirst(4))
-					return tagMapping[tag] ?? tag
-				}
-				
-				/* Processing value from Lokalise */
-				if lokaliseTranslation["plural_key"] as? String == "1" {
-					guard let pluralTranslation = (try? JSONSerialization.jsonObject(with: Data(lokaliseTranslationValue.utf8), options: [])) as? [String: String] else {
-						#if canImport(os)
-							LocMapperConfig.oslog.flatMap{ os_log("Did not get valid JSON for plural translation value %@", log: $0, type: .info, lokaliseTranslationValue) }
-						#endif
-						LocMapperConfig.logger?.notice("Did not get valid JSON for plural translation value \(lokaliseTranslationValue)")
-						continue
-					}
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["zero"])  ?? "---", tags: tags + ["p0"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["one"])   ?? "---", tags: tags + ["p1"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["two"])   ?? "---", tags: tags + ["p2"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["few"])   ?? "---", tags: tags + ["pf"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["many"])  ?? "---", tags: tags + ["pm"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(pluralTranslation["other"]) ?? "---", tags: tags + ["px"]))
+				if key.isPlural {
+					let plural = try decoder.decode(LokalisePlural.self, from: Data(translation.translation.utf8))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.zero)  ?? "---"), tags: processedTags + ["p0"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.one)   ?? "---"), tags: processedTags + ["p1"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.two)   ?? "---"), tags: processedTags + ["p2"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.few)   ?? "---"), tags: processedTags + ["pf"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.many)  ?? "---"), tags: processedTags + ["pm"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.other) ?? "---"), tags: processedTags + ["px"]))
 				} else {
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: lokaliseTranslationValue, tags: tags))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(translation.translation), tags: processedTags))
 				}
 			}
 		}
 		
-		languages = languagesBuilding
+		languages = Array(lokaliseToReflocLanguageName.values)
 		entries = entriesBuilding
 	}
 	
@@ -155,12 +163,23 @@ public class StdRefLocFile {
 		entries = entriesBuilding
 	}
 	
-	private static func valueOrEmptyIfVoid(_ v: String?) -> String? {
-		if v == "[VOID]" {return ""}
-		return v
+	/* Syntaxic coloration says third capture group in second regex should be
+	 * with a + instead of a *, but old export for “[%1$s:]” did replace the
+	 * placeholder to “%1$s”… */
+	static let universalPlaceholderConversionReplacements = [
+		(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+)\]"#,                   options: []), #"%$1\$$2"#),
+		(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+):([a-zA-Z0-9_.-]*)\]"#, options: []), #"%$1\$$2"#)
+	]
+	
+	private static func convertUniversalPlaceholdersToPrintf(_ str: String) -> String {
+		var ret = str
+		for (r, v) in universalPlaceholderConversionReplacements {
+			ret = r.stringByReplacingMatches(in: ret, options: [], range: NSRange(ret.startIndex..<ret.endIndex, in: ret), withTemplate: v)
+		}
+		return ret
 	}
 	
-	private static func valueOrEmptyIfVoid(_ v: String) -> String {
+	private static func valueOrEmptyIfVoid(_ v: String?) -> String? {
 		if v == "[VOID]" {return ""}
 		return v
 	}

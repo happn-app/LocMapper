@@ -50,6 +50,10 @@
 		7B637D241C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B637D231C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift */; };
 		7B6DBEDA21CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6DBED921CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift */; };
 		7B6E25A319D4157A001934ED /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6E25A219D4157A001934ED /* main.swift */; };
+		7B6F19AB2576AB8700DB6F19 /* LokaliseKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6F19AA2576AB8700DB6F19 /* LokaliseKey.swift */; };
+		7B6F19B72576AB9400DB6F19 /* LokaliseTranslation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6F19B62576AB9400DB6F19 /* LokaliseTranslation.swift */; };
+		7B7328B72576B1A2003FC060 /* LokaliseKeysList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7328B62576B1A2003FC060 /* LokaliseKeysList.swift */; };
+		7B7328CD2576B9AC003FC060 /* LokalisePlural.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7328CC2576B9AC003FC060 /* LokalisePlural.swift */; };
 		7B73887E20306C0100E56088 /* FileHandleOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B73887620306C0100E56088 /* FileHandleOutputStream.swift */; };
 		7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
@@ -200,6 +204,10 @@
 		7B6E259F19D4157A001934ED /* locmapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = locmapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6E25A219D4157A001934ED /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7B6E25AB19D430C5001934ED /* XcodeStringsFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeStringsFile.swift; sourceTree = "<group>"; };
+		7B6F19AA2576AB8700DB6F19 /* LokaliseKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LokaliseKey.swift; sourceTree = "<group>"; };
+		7B6F19B62576AB9400DB6F19 /* LokaliseTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokaliseTranslation.swift; sourceTree = "<group>"; };
+		7B7328B62576B1A2003FC060 /* LokaliseKeysList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokaliseKeysList.swift; sourceTree = "<group>"; };
+		7B7328CC2576B9AC003FC060 /* LokalisePlural.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokalisePlural.swift; sourceTree = "<group>"; };
 		7B73887620306C0100E56088 /* FileHandleOutputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileHandleOutputStream.swift; sourceTree = "<group>"; };
 		7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidXMLLocFile.swift; sourceTree = "<group>"; };
 		7B837D7F1C0EF3DB0020E86B /* LocMapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocMapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -518,6 +526,17 @@
 			path = "LocMapper CLI";
 			sourceTree = "<group>";
 		};
+		7B6F19A92576AB6C00DB6F19 /* Lokalise Model */ = {
+			isa = PBXGroup;
+			children = (
+				7B6F19AA2576AB8700DB6F19 /* LokaliseKey.swift */,
+				7B6F19B62576AB9400DB6F19 /* LokaliseTranslation.swift */,
+				7B7328B62576B1A2003FC060 /* LokaliseKeysList.swift */,
+				7B7328CC2576B9AC003FC060 /* LokalisePlural.swift */,
+			);
+			path = "Lokalise Model";
+			sourceTree = "<group>";
+		};
 		7B71565C1D95EE2700A15BC5 /* Document Root & Loading UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -695,6 +714,7 @@
 		7BEC5D5520444E650056AEB9 /* StdRefLoc */ = {
 			isa = PBXGroup;
 			children = (
+				7B6F19A92576AB6C00DB6F19 /* Lokalise Model */,
 				7BEC5D5620444E7F0056AEB9 /* StdRefLocFile.swift */,
 				7BEC5D5720444E7F0056AEB9 /* LocFile+StdRefLoc.swift */,
 			);
@@ -944,6 +964,7 @@
 				7BA84F28207396B50029D46A /* HappnXib2Std.swift in Sources */,
 				7BAB6E04207283C100DAB11C /* TaggedObject.swift in Sources */,
 				7B4CC6D92025BE4E0055CB74 /* IOUtils.swift in Sources */,
+				7B6F19B72576AB9400DB6F19 /* LokaliseTranslation.swift in Sources */,
 				7B4CC6DA2025BE4E0055CB74 /* PrependedUserInfoStrings.swift in Sources */,
 				7B889C002025F4D2005A961F /* LocKeyMappingComponentValueTransforms.swift in Sources */,
 				7B889BF32025F117005A961F /* LocFile+XibRefLoc.swift in Sources */,
@@ -961,6 +982,7 @@
 				7B1F24E8207652460025FC49 /* URLRequest+Utils.swift in Sources */,
 				7B4CC6DC2025BE5D0055CB74 /* AndroidXMLLocFile.swift in Sources */,
 				7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */,
+				7B7328B72576B1A2003FC060 /* LokaliseKeysList.swift in Sources */,
 				7B889BF62025F1CF005A961F /* MappingResolvingError.swift in Sources */,
 				7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */,
 				7BFE558C208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift in Sources */,
@@ -979,9 +1001,11 @@
 				7B889BEA2025F04E005A961F /* LocFile+Android.swift in Sources */,
 				7B889C072025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift in Sources */,
 				7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */,
+				7B7328CD2576B9AC003FC060 /* LokalisePlural.swift in Sources */,
 				7B4CC6DF2025BE6D0055CB74 /* LocFile.swift in Sources */,
 				7B9414FB20275A1C00D74EFA /* LocFile+EditingSupport.swift in Sources */,
 				7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */,
+				7B6F19AB2576AB8700DB6F19 /* LokaliseKey.swift in Sources */,
 				7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */,
 				7BFE27542045F30900B2EC34 /* AppendedTagsStrings.swift in Sources */,
 				7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */,

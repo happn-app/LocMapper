@@ -42,11 +42,19 @@ extension URLSession {
 		return (data: responseData, response: theResponse)
 	}
 	
-	func fetchJSON(request: URLRequest) -> [String: Any?]? {
+	func fetchData(request: URLRequest) -> Data? {
 		guard
 			let (data, response) = try? URLSession.shared.synchronousDataTask(with: request),
-			let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode,
-			let nonOptionalData = data, let parsedJson = (try? JSONSerialization.jsonObject(with: nonOptionalData, options: [])) as? [String: Any?]
+			let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode
+		else {return nil}
+		
+		return data
+	}
+	
+	func fetchJSON(request: URLRequest) -> [String: Any?]? {
+		guard
+			let data = fetchData(request: request),
+			let parsedJson = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any?]
 		else {return nil}
 		
 		return parsedJson
