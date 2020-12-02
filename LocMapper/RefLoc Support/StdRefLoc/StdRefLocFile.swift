@@ -137,14 +137,14 @@ public class StdRefLocFile {
 				}
 				if key.isPlural {
 					let plural = try decoder.decode(LokalisePlural.self, from: Data(translation.translation.utf8))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(plural.zero)  ?? "---", tags: processedTags + ["p0"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(plural.one)   ?? "---", tags: processedTags + ["p1"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(plural.two)   ?? "---", tags: processedTags + ["p2"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(plural.few)   ?? "---", tags: processedTags + ["pf"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(plural.many)  ?? "---", tags: processedTags + ["pm"]))
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.valueOrEmptyIfVoid(plural.other) ?? "---", tags: processedTags + ["px"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.zero)  ?? "---"), tags: processedTags + ["p0"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.one)   ?? "---"), tags: processedTags + ["p1"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.two)   ?? "---"), tags: processedTags + ["p2"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.few)   ?? "---"), tags: processedTags + ["pf"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.many)  ?? "---"), tags: processedTags + ["pm"]))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(StdRefLocFile.valueOrEmptyIfVoid(plural.other) ?? "---"), tags: processedTags + ["px"]))
 				} else {
-					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: translation.translation, tags: processedTags))
+					entriesBuilding[stdRefLocKey, default: [:]][refLocLanguage, default: []].append(TaggedString(value: StdRefLocFile.convertUniversalPlaceholdersToPrintf(translation.translation), tags: processedTags))
 				}
 			}
 		}
@@ -163,12 +163,23 @@ public class StdRefLocFile {
 		entries = entriesBuilding
 	}
 	
-	private static func valueOrEmptyIfVoid(_ v: String?) -> String? {
-		if v == "[VOID]" {return ""}
-		return v
+	/* Syntaxic coloration says third capture group in second regex should be
+	 * with a + instead of a *, but old export for “[%1$s:]” did replace the
+	 * placeholder to “%1$s”… */
+	static let universalPlaceholderConversionReplacements = [
+		(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+)\]"#,                   options: []), #"%$1\$$2"#),
+		(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+):([a-zA-Z0-9_.-]*)\]"#, options: []), #"%$1\$$2"#)
+	]
+	
+	private static func convertUniversalPlaceholdersToPrintf(_ str: String) -> String {
+		var ret = str
+		for (r, v) in universalPlaceholderConversionReplacements {
+			ret = r.stringByReplacingMatches(in: ret, options: [], range: NSRange(ret.startIndex..<ret.endIndex, in: ret), withTemplate: v)
+		}
+		return ret
 	}
 	
-	private static func valueOrEmptyIfVoid(_ v: String) -> String {
+	private static func valueOrEmptyIfVoid(_ v: String?) -> String? {
 		if v == "[VOID]" {return ""}
 		return v
 	}

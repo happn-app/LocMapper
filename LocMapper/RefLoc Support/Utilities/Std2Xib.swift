@@ -44,17 +44,6 @@ public struct Std2Xib {
 		var orders = [LocValueTransformerOrderedReplacementVariantPick]()
 		var replacements = [LocValueTransformerRegionDelimitersReplacement]()
 		
-		if allowUniversalPlaceholders {
-			/* We add this regex for everybody */
-			regexes.append(LocValueTransformerRegexReplacements(replacements: [
-				/* Syntaxic coloration says third capture group should be with a +
-				 * instead of a *, but old export for “[%1$s:]” did replace the
-				 * placeholder to “%1$s”… */
-				(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+):([a-zA-Z0-9_.-]*)\]"#, options: []), #"%$1\$$2"#),
-				(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+)\]"#, options: []), #"%$1\$$2"#)
-			]))
-		}
-		
 		var i = 0
 		for tag in firstValue.tags {
 			let t = try transformer(from: tag, index: &i)
