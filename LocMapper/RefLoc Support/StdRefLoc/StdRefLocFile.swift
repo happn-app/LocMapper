@@ -75,13 +75,13 @@ public class StdRefLocFile {
 			/* It’s _not_ a bug, first page is indeed 1… */
 			page += 1
 			
-			/* We disable key references https://docs.lokalise.com/en/articles/1400528-key-referencing
-			 * hoping this does what it should (should replace the references by
-			 * their values!). It probably does (what else would it do?) */
+			/* Setting “disable_references” to 0 actually resolves the key
+			 * references…
+			 * https://docs.lokalise.com/en/articles/1400528-key-referencing */
 			let queryItems = [
 				URLQueryItem(name: "limit", value: "5000"),
 				URLQueryItem(name: "page", value: String(page)),
-				URLQueryItem(name: "disable_references", value: "1"),
+				URLQueryItem(name: "disable_references", value: "0"),
 				URLQueryItem(name: "include_translations", value: "1")
 			]
 			var request = URLRequest(baseURL: baseURL, relativePath: "projects/\(projectId)/keys", httpMethod: "GET", queryItems: queryItems)!
