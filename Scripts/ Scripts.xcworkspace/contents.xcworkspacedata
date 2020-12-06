@@ -25,18 +25,6 @@
          <FileRef
             location = "group:set_locmapper_marketing_version.sh">
          </FileRef>
-         <FileRef
-            location = "group:tag_linter_rc.sh">
-         </FileRef>
-         <FileRef
-            location = "group:tag_locmapper_rc.sh">
-         </FileRef>
-         <FileRef
-            location = "group:tag_linter_release.sh">
-         </FileRef>
-         <FileRef
-            location = "group:tag_locmapper_release.sh">
-         </FileRef>
       </Group>
    </Group>
    <Group
@@ -47,9 +35,6 @@
       </FileRef>
       <FileRef
          location = "group:is_repo_clean.sh">
-      </FileRef>
-      <FileRef
-         location = "group:tag_project.sh">
       </FileRef>
       <FileRef
          location = "group:set_project_version.sh">
