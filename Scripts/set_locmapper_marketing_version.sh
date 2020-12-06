@@ -17,4 +17,4 @@ if [ -z "$version" -o "$version" = "--help" ]; then
 	exit 1
 fi
 
-"$lib_dir/set_project_version.sh" --targets "LocMapperTests,LocMapper App" --set-marketing-version "$version" --commit
+"$lib_dir/set_project_version.sh" --targets "LocMapper" --targets "LocMapperTests" --targets "LocMapper CLI" --targets "LocMapper App" --set-marketing-version "$version" --commit
