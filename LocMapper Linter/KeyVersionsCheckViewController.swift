@@ -165,6 +165,8 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		queue.addOperation{
 			assert(self.simplifiedGroupedOctothorpedUntaggedRefLocKeys == nil)
 			do {
+				/* We use iOS key type. AFAIK iOS and android keys are the same and
+				 * this should not change. */
 				let stdRefLoc = try StdRefLocFile(token: PreferencesViewController.accessToken, projectId: PreferencesViewController.projectId, lokaliseToReflocLanguageName: PreferencesViewController.languagesNameMappings, keyType: "ios", excludedTags: PreferencesViewController.excludedTags, logPrefix: nil)
 				let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
 				let stdRefLocFile = LocFile(csvSeparator: ","); stdRefLocFile.mergeRefLocsWithStdRefLocFile(stdRefLoc, mergeStyle: .replace)
