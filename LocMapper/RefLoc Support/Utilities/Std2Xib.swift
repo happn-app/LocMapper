@@ -212,7 +212,7 @@ public struct Std2Xib {
 			} else if Set(["danish", "dutch", "english", "french", "german", "greek", "hindi", "hungarian", "italian", "norwegian", "portuguese", "spanish", "swedish", "telugu", "turkish"]).contains(where: { language.range(of: $0) != nil }) {
 				pluralValues = [.one, .other]
 			} else if Set(["polish", "russian"]).contains(where: { language.range(of: $0) != nil }) {
-				pluralValues = [.one, .few, .other]
+				pluralValues = [.one, .few, .many, .other]
 			} else {
 				throw Std2XibError.unknownLanguage
 			}
