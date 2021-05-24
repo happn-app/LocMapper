@@ -8,16 +8,10 @@
          location = "container:"
          name = "Prod Stuff">
          <FileRef
-            location = "group:build_for_linux_on_macos.sh">
-         </FileRef>
-         <FileRef
             location = "group:bump_linter_build_number.sh">
          </FileRef>
          <FileRef
             location = "group:bump_locmapper_build_number.sh">
-         </FileRef>
-         <FileRef
-            location = "group:create_linux_deb.sh">
          </FileRef>
          <FileRef
             location = "group:set_linter_marketing_version.sh">
@@ -39,19 +33,5 @@
       <FileRef
          location = "group:set_project_version.sh">
       </FileRef>
-   </Group>
-   <Group
-      location = "container:zz_assets"
-      name = "Assets">
-      <FileRef
-         location = "group:Dockerfile">
-      </FileRef>
-      <Group
-         location = "group:mkdeb"
-         name = "mkdeb">
-         <FileRef
-            location = "group:recipe.yaml">
-         </FileRef>
-      </Group>
    </Group>
 </Workspace>
