@@ -19,6 +19,6 @@ fi
 "$lib_dir/set_project_version.sh" --targets "LocMapper" --targets "LocMapperTests" --targets "LocMapper CLI" --targets "LocMapper App" --bump-build-version --commit || exit 3
 
 # Change hard-coded version in LocMapper CLI
-version="$(hagvtool --output-format json --targets "LocMapper CLI" get-versions | jq -r .reduced_build_version_for_all)" || exit 3
+version="$(xct versions --output-format json --targets "LocMapper CLI" get-versions | jq -r .reduced_build_version_for_all)" || exit 3
 sed -i '' -E 's|^.*__VERSION_LINE_TOKEN__.*$|	static var version = "'"$version"'" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */|' "./LocMapper CLI/main.swift"
 git commit -a --amend --no-edit
