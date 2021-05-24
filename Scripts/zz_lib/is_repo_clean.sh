@@ -3,7 +3,6 @@
 [ "${0:0:1}" != "/" ] && _prefix="$(pwd)/"
 scpt_dir="$_prefix$(dirname "$0")"
 lib_dir="$scpt_dir"
-bin_dir="$scpt_dir/../zz_bin"
 source "$lib_dir/common.sh" || exit 255
 ##########################################
 
