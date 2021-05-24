@@ -1,5 +1,5 @@
 # ######### Build Image
-FROM swift:5.2-focal AS builder
+FROM swift:5.4-focal AS builder
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 	&& apt-get -q update \
@@ -19,8 +19,8 @@ RUN swift package resolve
 # Copy entire repo into container
 COPY . .
 
-# Build everything, with optimizations and test discovery
-RUN swift build --enable-test-discovery --disable-automatic-resolution -c release
+# Build everything, with optimizations
+RUN swift build --disable-automatic-resolution -c release
 
 # Switch to the staging area
 WORKDIR /staging
@@ -30,7 +30,7 @@ RUN cp "$(swift build --package-path /build -c release --show-bin-path)/locmappe
 
 
 # ######### Run Image
-FROM swift:5.2-focal-slim
+FROM swift:5.4-focal-slim
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
