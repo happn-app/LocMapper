@@ -32,12 +32,14 @@ RUN cp "$(swift build --package-path /build -c release --show-bin-path)/locmappe
 # ######### Run Image
 FROM swift:5.4-focal-slim
 
+ARG LOCMAPPER_USER_ID=1000
+
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
 	apt-get -q update && apt-get -q dist-upgrade -y && rm -r /var/lib/apt/lists/*
 
 # Create a locmapper user and group with /locmapper as its home directory
-RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /locmapper locmapper
+RUN useradd --uid "$LOCMAPPER_USER_ID" --no-user-group --create-home --system --skel /dev/null --home-dir /locmapper locmapper
 
 # Switch to the new home directory
 WORKDIR /locmapper
@@ -46,7 +48,7 @@ WORKDIR /locmapper
 COPY --from=builder --chown=locmapper:locmapper /staging /locmapper
 
 # Ensure all further commands run as the vapor user
-USER locmapper:locmapper
+USER locmapper:users
 
 ENTRYPOINT ["./locmapper"]
 CMD ["--help"]
