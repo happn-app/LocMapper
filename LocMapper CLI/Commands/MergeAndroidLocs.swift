@@ -32,7 +32,7 @@ struct MergeAndroidLocs : ParsableCommand {
 	var csvOptions: CSVOptions
 	
 	@Option
-	var resFolder = "res"
+	var resFolder = [String]()
 	
 	@Option
 	var stringsFilenames = [String]()
@@ -53,7 +53,7 @@ struct MergeAndroidLocs : ParsableCommand {
 		
 		print("Merging from android project...")
 		print("   Parsing android locs...")
-		let parsedAndroidLocFiles = try AndroidXMLLocFile.locFilesInProject(rootFolder, resFolder: resFolder, stringsFilenames: stringsFilenames, languageFolderNames: Array(folderNameToLanguageName.keys))
+		let parsedAndroidLocFiles = try AndroidXMLLocFile.locFilesInProject(rootFolder, resFolders: resFolder, stringsFilenames: stringsFilenames, languageFolderNames: Array(folderNameToLanguageName.keys))
 		print("   Parsing original LocMapper file...")
 		let locFile = try LocFile(fromPath: outputFile, withCSVSeparator: csvSeparator)
 		print("   Merging...")

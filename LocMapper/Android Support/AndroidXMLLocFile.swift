@@ -477,25 +477,28 @@ public class AndroidXMLLocFile: TextOutputStreamable {
 			LocMapperConfig.logger?.warning("parseErrorOccurred \(String(describing: parseError))")
 		}
 	}
-	
-	public static func locFilesInProject(_ root_folder: String, resFolder: String, stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
+
+	public static func locFilesInProject(_ root_folder: String, resFolders: [String], stringsFilenames: [String], languageFolderNames: [String]) throws -> [AndroidXMLLocFile] {
 		var parsed_loc_files = [AndroidXMLLocFile]()
-		for languageFolder in languageFolderNames {
-			for stringsFilename in stringsFilenames {
-				var err: NSError?
-				let cur_file = ((resFolder as NSString).appendingPathComponent(languageFolder) as NSString).appendingPathComponent(stringsFilename)
-				do {
-					let locFile = try AndroidXMLLocFile(fromPath: cur_file, relativeToProjectPath: root_folder)
-					parsed_loc_files.append(locFile)
-				} catch let error as NSError {
-					err = error
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
-					#endif
-					LocMapperConfig.logger?.warning("Got error while parsing strings file \(cur_file): \(String(describing: err))")
-				}
-			}
-		}
+        for resFolder in resFolders {
+            for languageFolder in languageFolderNames {
+                for stringsFilename in stringsFilenames {
+                    var err: NSError?
+                    let cur_file = ((resFolder as NSString).appendingPathComponent(languageFolder) as NSString).appendingPathComponent(stringsFilename)
+                    do {
+                        let locFile = try AndroidXMLLocFile(fromPath: cur_file, relativeToProjectPath: root_folder)
+                        parsed_loc_files.append(locFile)
+                    } catch let error as NSError {
+                        err = error
+                        #if canImport(os)
+                            LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file %@: %@", log: $0, type: .info, cur_file, String(describing: err)) }
+                        #endif
+                        LocMapperConfig.logger?.warning("Got error while parsing strings file \(cur_file): \(String(describing: err))")
+                    }
+                }
+            }
+        }
+
 		return parsed_loc_files
 	}
 	
