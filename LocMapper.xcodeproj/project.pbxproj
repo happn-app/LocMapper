@@ -785,8 +785,8 @@
 			);
 			name = LocMapper;
 			packageProductDependencies = (
-				7B588826234F885E0038466E /* XibLoc */,
 				7B11B559246B179100257726 /* Logging */,
+				7B588826234F885E0038466E /* XibLoc */,
 			);
 			productName = Localizer;
 			productReference = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */;
@@ -882,9 +882,9 @@
 			);
 			mainGroup = 7B6E259619D4157A001934ED;
 			packageReferences = (
-				7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */,
-				7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */,
 				7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+				7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */,
+				7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */,
 			);
 			productRefGroup = 7B6E25A019D4157A001934ED /* Products */;
 			projectDirPath = "";
@@ -920,11 +920,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */,
-				7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */,
-				7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */,
-				7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */,
 				7B878D691D31B26A00D84CF8 /* AccessoryViewForImportKeyStructure.xib in Resources */,
+				7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */,
+				7B837D881C0EF3DB0020E86B /* Assets.xcassets in Resources */,
+				7BF4B1971D34305A0062A605 /* LoadingWindow.xib in Resources */,
+				7B56D2AF1DA0F25E00662EFD /* Localizable.strings in Resources */,
 				7B837D8B1C0EF3DB0020E86B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -936,16 +936,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */,
-				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
 				7B15CE1F21C120310016D109 /* AppDelegate.swift in Sources */,
-				7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */,
-				7B6DBEDA21CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift in Sources */,
-				7BD9C51721C2E0600044D49F /* KeyVersionsCheckViewController.swift in Sources */,
-				7BD9C51521C26E440044D49F /* InputFileDescription.swift in Sources */,
 				7B15CE3321C18E830016D109 /* BecameFirstResponderTextField.swift in Sources */,
+				7B6DBEDA21CC5B07007BBCE9 /* ColorFixedTextFieldCell.swift in Sources */,
+				7B15CE2121C120310016D109 /* FilesListViewController.swift in Sources */,
+				7BD9C51521C26E440044D49F /* InputFileDescription.swift in Sources */,
 				7B0ACF0221C3118D003705A8 /* KeychainUtils.swift in Sources */,
 				7B15CE3121C1840C0016D109 /* KeyEquivalentDisablingView.swift in Sources */,
+				7BD9C51721C2E0600044D49F /* KeyVersionsCheckViewController.swift in Sources */,
+				7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */,
+				7B0ACF0021C3116B003705A8 /* PreferencesViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -961,57 +961,57 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BA84F28207396B50029D46A /* HappnXib2Std.swift in Sources */,
-				7BAB6E04207283C100DAB11C /* TaggedObject.swift in Sources */,
-				7B4CC6D92025BE4E0055CB74 /* IOUtils.swift in Sources */,
-				7B6F19B72576AB9400DB6F19 /* LokaliseTranslation.swift in Sources */,
-				7B4CC6DA2025BE4E0055CB74 /* PrependedUserInfoStrings.swift in Sources */,
-				7B889C002025F4D2005A961F /* LocKeyMappingComponentValueTransforms.swift in Sources */,
-				7B889BF32025F117005A961F /* LocFile+XibRefLoc.swift in Sources */,
-				7B889BFE2025F4A7005A961F /* LocKeyMappingComponentToConstant.swift in Sources */,
-				7B889C092025F578005A961F /* LocValueTransformerToUpper.swift in Sources */,
-				7B4CC6ED2025E08A0055CB74 /* LocMapperConfig.swift in Sources */,
-				7B4CC6F92025EE970055CB74 /* LocFile+Xcode.swift in Sources */,
-				7BA84F2A2073A4220029D46A /* Std2Xib.swift in Sources */,
-				7B9414F9202759A000D74EFA /* LocFile+LineValue.swift in Sources */,
-				7B889C052025F535005A961F /* LocValueTransformerInvalid.swift in Sources */,
-				7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */,
-				7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */,
-				7BEC5D5820444E7F0056AEB9 /* StdRefLocFile.swift in Sources */,
-				7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */,
-				7B1F24E8207652460025FC49 /* URLRequest+Utils.swift in Sources */,
 				7B4CC6DC2025BE5D0055CB74 /* AndroidXMLLocFile.swift in Sources */,
-				7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */,
-				7B7328B72576B1A2003FC060 /* LokaliseKeysList.swift in Sources */,
-				7B889BF62025F1CF005A961F /* MappingResolvingError.swift in Sources */,
-				7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */,
-				7BFE558C208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift in Sources */,
-				7BAAAC50219CA35D002D1861 /* LocFile+LintSupport.swift in Sources */,
-				7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */,
-				7B889BFC2025F48A005A961F /* LocKeyMappingComponentInvalid.swift in Sources */,
-				7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */,
-				7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */,
-				7B4CC6DE2025BE680055CB74 /* XibRefLocFile.swift in Sources */,
-				7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */,
-				7B439E1E2078C48300E744CF /* HappnXib2Lokalise.swift in Sources */,
-				7B889BF92025F44D005A961F /* LocKeyMappingComponent.swift in Sources */,
-				7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */,
-				7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */,
-				7B16A3E5214E9FAF00825F89 /* Scanner+LinuxCompat.swift in Sources */,
-				7B889BEA2025F04E005A961F /* LocFile+Android.swift in Sources */,
-				7B889C072025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift in Sources */,
-				7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */,
-				7B7328CD2576B9AC003FC060 /* LokalisePlural.swift in Sources */,
-				7B4CC6DF2025BE6D0055CB74 /* LocFile.swift in Sources */,
-				7B9414FB20275A1C00D74EFA /* LocFile+EditingSupport.swift in Sources */,
-				7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */,
-				7B6F19AB2576AB8700DB6F19 /* LokaliseKey.swift in Sources */,
-				7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */,
 				7BFE27542045F30900B2EC34 /* AppendedTagsStrings.swift in Sources */,
-				7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */,
-				7B9B0DC9205163790080F1F4 /* LocKeyMappingComponentStdToXibLoc.swift in Sources */,
+				7B4CC6DB2025BE4E0055CB74 /* CSVParser.swift in Sources */,
 				7B9CD98C2480DC1600CF4E14 /* FilteredDirectoryEnumerator.swift in Sources */,
+				7B439E1E2078C48300E744CF /* HappnXib2Lokalise.swift in Sources */,
+				7BA84F28207396B50029D46A /* HappnXib2Std.swift in Sources */,
+				7B4CC6D92025BE4E0055CB74 /* IOUtils.swift in Sources */,
+				7B4CC6DF2025BE6D0055CB74 /* LocFile.swift in Sources */,
+				7B889BEA2025F04E005A961F /* LocFile+Android.swift in Sources */,
+				7B9414FB20275A1C00D74EFA /* LocFile+EditingSupport.swift in Sources */,
+				7B164295202751EB000AE458 /* LocFile+LineKey.swift in Sources */,
+				7B9414F9202759A000D74EFA /* LocFile+LineValue.swift in Sources */,
+				7BAAAC50219CA35D002D1861 /* LocFile+LintSupport.swift in Sources */,
+				7B1642832027504C000AE458 /* LocFile+MetadataSupport.swift in Sources */,
+				7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */,
+				7B9414FD20275A9D00D74EFA /* LocFile+QuerySupport.swift in Sources */,
+				7BF725B12027607C004C33B6 /* LocFile+Serialization.swift in Sources */,
+				7BEC5D5920444E7F0056AEB9 /* LocFile+StdRefLoc.swift in Sources */,
+				7B4CC6F92025EE970055CB74 /* LocFile+Xcode.swift in Sources */,
+				7B889BF32025F117005A961F /* LocFile+XibRefLoc.swift in Sources */,
+				7B4CC6E02025BE6D0055CB74 /* LocKeyMapping.swift in Sources */,
+				7B889BF92025F44D005A961F /* LocKeyMappingComponent.swift in Sources */,
+				7B889BFC2025F48A005A961F /* LocKeyMappingComponentInvalid.swift in Sources */,
+				7B9B0DC9205163790080F1F4 /* LocKeyMappingComponentStdToXibLoc.swift in Sources */,
+				7B889BFE2025F4A7005A961F /* LocKeyMappingComponentToConstant.swift in Sources */,
+				7B889C002025F4D2005A961F /* LocKeyMappingComponentValueTransforms.swift in Sources */,
+				7B4CC6ED2025E08A0055CB74 /* LocMapperConfig.swift in Sources */,
+				7B889C032025F50F005A961F /* LocValueTransformer.swift in Sources */,
+				7B889C0D2025F5AD005A961F /* LocValueTransformerGenderVariantPick.swift in Sources */,
+				7B889C052025F535005A961F /* LocValueTransformerInvalid.swift in Sources */,
+				7BFE558C208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift in Sources */,
+				7B889C0F2025F5CE005A961F /* LocValueTransformerPluralVariantPick.swift in Sources */,
+				7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */,
+				7B889C0B2025F592005A961F /* LocValueTransformerRegionDelimitersReplacement.swift in Sources */,
+				7B889C072025F55B005A961F /* LocValueTransformerSimpleStringReplacements.swift in Sources */,
+				7B889C092025F578005A961F /* LocValueTransformerToUpper.swift in Sources */,
+				7B6F19AB2576AB8700DB6F19 /* LokaliseKey.swift in Sources */,
+				7B7328B72576B1A2003FC060 /* LokaliseKeysList.swift in Sources */,
+				7B7328CD2576B9AC003FC060 /* LokalisePlural.swift in Sources */,
+				7B6F19B72576AB9400DB6F19 /* LokaliseTranslation.swift in Sources */,
+				7B889BF62025F1CF005A961F /* MappingResolvingError.swift in Sources */,
+				7B4CC6DA2025BE4E0055CB74 /* PrependedUserInfoStrings.swift in Sources */,
+				7B16A3E5214E9FAF00825F89 /* Scanner+LinuxCompat.swift in Sources */,
+				7BA84F2A2073A4220029D46A /* Std2Xib.swift in Sources */,
+				7BEC5D5820444E7F0056AEB9 /* StdRefLocFile.swift in Sources */,
 				7B9414FF20275D4300D74EFA /* String+CSVUtils.swift in Sources */,
+				7BAB6E04207283C100DAB11C /* TaggedObject.swift in Sources */,
+				7B1F24E8207652460025FC49 /* URLRequest+Utils.swift in Sources */,
+				7B1F24E620750E910025FC49 /* URLSession+Utils.swift in Sources */,
+				7B4CC6DD2025BE630055CB74 /* XcodeStringsFile.swift in Sources */,
+				7B4CC6DE2025BE680055CB74 /* XibRefLocFile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1019,26 +1019,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BB905292480274000E3F5F5 /* UploadXibreflocToLokalise.swift in Sources */,
-				7BB9051E2480203A00E3F5F5 /* Lint.swift in Sources */,
+				7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */,
+				7BB90527248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift in Sources */,
+				7BB90525248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift in Sources */,
+				7BB9052D248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift in Sources */,
 				7BB905232480266100E3F5F5 /* Experimental.swift in Sources */,
-				7BB9052B2480276800E3F5F5 /* TransformMappings.swift in Sources */,
 				7BB90518248013D500E3F5F5 /* ExportToAndroid.swift in Sources */,
-				7B88B9DC247FE3FC00D48975 /* ParseUtils.swift in Sources */,
-				7B6E25A319D4157A001934ED /* main.swift in Sources */,
-				7B73887E20306C0100E56088 /* FileHandleOutputStream.swift in Sources */,
-				7BB90516248010C500E3F5F5 /* MergeAndroidLocs.swift in Sources */,
-				7B88B9D8247FDC2F00D48975 /* ObsoleteVerbs.swift in Sources */,
 				7BB9051224800C1C00E3F5F5 /* ExportToXcode.swift in Sources */,
-				7B88B9DA247FE0DC00D48975 /* MergeXcodeLocs.swift in Sources */,
+				7B73887E20306C0100E56088 /* FileHandleOutputStream.swift in Sources */,
+				7BB9051E2480203A00E3F5F5 /* Lint.swift in Sources */,
+				7B6E25A319D4157A001934ED /* main.swift in Sources */,
+				7BB90516248010C500E3F5F5 /* MergeAndroidLocs.swift in Sources */,
 				7BB9051C24801E2600E3F5F5 /* MergeLokaliseTradsAsStdrefloc.swift in Sources */,
 				7BB9051A248017CE00E3F5F5 /* MergeLokaliseTradsAsXibrefloc.swift in Sources */,
-				7BB90527248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift in Sources */,
-				7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */,
-				7B20C7982480433600004824 /* UpdateXcodeStringsFromCode.swift in Sources */,
-				7BB90525248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift in Sources */,
+				7B88B9DA247FE0DC00D48975 /* MergeXcodeLocs.swift in Sources */,
+				7B88B9D8247FDC2F00D48975 /* ObsoleteVerbs.swift in Sources */,
+				7B88B9DC247FE3FC00D48975 /* ParseUtils.swift in Sources */,
 				7BB90520248021B400E3F5F5 /* StandardizeRefloc.swift in Sources */,
-				7BB9052D248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift in Sources */,
+				7BB9052B2480276800E3F5F5 /* TransformMappings.swift in Sources */,
+				7B20C7982480433600004824 /* UpdateXcodeStringsFromCode.swift in Sources */,
+				7BB905292480274000E3F5F5 /* UploadXibreflocToLokalise.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1046,21 +1046,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */,
-				7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */,
-				7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */,
-				7B637D241C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift in Sources */,
 				7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */,
-				7B560D601C16FF11001DD2B0 /* LocFileDocTabViewController.swift in Sources */,
+				7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */,
 				7B878D6D1D32F2AD00D84CF8 /* ImportKeyStructurePanelController.swift in Sources */,
-				7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */,
-				7B560D5E1C16ED49001DD2B0 /* LocFileDocTableViewController.swift in Sources */,
+				7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */,
+				7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */,
+				7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */,
+				7B0477DE1D56927F00490F60 /* LocEntryMappingViewController.swift in Sources */,
+				7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */,
+				7B637D241C16DFC900C4BD7C /* LocFileDocContentSplitViewController.swift in Sources */,
 				7B560D681C172B54001DD2B0 /* LocFileDocFiltersSplitViewController.swift in Sources */,
 				7B27768D1D4E8D0E0041811E /* LocFileDocFiltersViewController.swift in Sources */,
+				7B560D5E1C16ED49001DD2B0 /* LocFileDocTableViewController.swift in Sources */,
+				7B560D601C16FF11001DD2B0 /* LocFileDocTabViewController.swift in Sources */,
 				7B837D861C0EF3DB0020E86B /* LocFileDocument.swift in Sources */,
-				7B0477DC1D56923D00490F60 /* LocEntryAdvancedMappingViewController.swift in Sources */,
-				7B560D621C170192001DD2B0 /* LoadingDocViewController.swift in Sources */,
-				7B46BFC31D4EA47100EE224B /* LocEntryContextViewController.swift in Sources */,
+				7BF4B1991D3430F50062A605 /* UINavigationUtilities.swift in Sources */,
 				7B0869A31DCB7F8700EB9486 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
