@@ -1,17 +1,17 @@
 /*
- * XibRefLocFile.swift
- * LocMapper
- *
- * Created by François Lamboley on 7/6/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * XibRefLocFile.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 7/6/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(FoundationNetworking)
-	import FoundationNetworking
+import FoundationNetworking
 #endif
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
@@ -44,10 +44,10 @@ public class XibRefLocFile {
 		for row in parsedRows {
 			guard let key = row["KEY"], !key.isEmpty else {continue}
 			if entriesBuilding[key] != nil {
-				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, key) }
-				#endif
-				LocMapperConfig.logger?.warning("Found duplicated key \(key) when parsing reference translation loc file. The latest one wins.")
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Found duplicated key %@ when parsing reference translation loc file. The latest one wins.", log: $0, type: .info, key) }
+#endif
+				Conf.logger?.warning("Found duplicated key \(key) when parsing reference translation loc file. The latest one wins.")
 			}
 			
 			var values = [Language: Value]()
@@ -82,8 +82,7 @@ public class XibRefLocFile {
 			URLQueryItem(name: "id", value: projectId)
 		]
 		
-		/* Let's construct the data we send to Lokalise before doing anything on
-		 * Lokalise! (This step can fail.) */
+		/* Let's construct the data we send to Lokalise before doing anything on Lokalise! (This step can fail.) */
 		if let p = logPrefix {print(p + "Converting Xib Ref Loc to Lokalise Ref Loc...")}
 		let lokaliseEntries = try entries.mapValues{ try HappnXib2Lokalise.lokaliseValues(from: $0) }
 		
@@ -134,31 +133,31 @@ public class XibRefLocFile {
 					
 					var curV: Any
 					switch taggedValue.value {
-					case .value(let v): curV = (v.isEmpty || v == "---" ? "[VOID]" : v)
-					case .plural(let p):
-						var plural = [String: String]()
-						if let z = p.zero  {plural["zero"]  = z}
-						if let z = p.one   {plural["one"]   = z}
-						if let z = p.two   {plural["two"]   = z}
-						if let z = p.few   {plural["few"]   = z}
-						if let z = p.many  {plural["many"]  = z}
-						if let z = p.other {plural["other"] = z}
-						curT["plural"] = key
-						curV = plural
+						case .value(let v): curV = (v.isEmpty || v == "---" ? "[VOID]" : v)
+						case .plural(let p):
+							var plural = [String: String]()
+							if let z = p.zero  {plural["zero"]  = z}
+							if let z = p.one   {plural["one"]   = z}
+							if let z = p.two   {plural["two"]   = z}
+							if let z = p.few   {plural["few"]   = z}
+							if let z = p.many  {plural["many"]  = z}
+							if let z = p.other {plural["other"] = z}
+							curT["plural"] = key
+							curV = plural
 					}
 					var curTranslations = curT["translations"] as! [String: Any]? ?? [:]
 					curTranslations[lokaliseLanguage] = curV
 					curT["translations"] = curTranslations
-
+					
 					currentTranslationsBuilding[key] = curT
 				}
 			}
 			currentTranslations.append(contentsOf: currentTranslationsBuilding.values.filter{ t -> Bool in /* The filter remove all empty (contains only "[VOID]") translations */
 				return (t["translations"] as! [String: Any]).values.contains{ v in
 					switch v {
-					case let s as String: return s != "[VOID]"
-					case let d as [String: String]: return d.values.contains{ $0 != "[VOID]" }
-					default: fatalError("Invalid trad")
+						case let s as String: return s != "[VOID]"
+						case let d as [String: String]: return d.values.contains{ $0 != "[VOID]" }
+						default: fatalError("Invalid trad")
 					}
 				}
 			})
@@ -180,14 +179,14 @@ public class XibRefLocFile {
 			guard URLSession.shared.fetchJSONAndCheckResponse(request: request) != nil else {throw NSError(domain: "LocFile+XibRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot create snapshot"])}
 		}
 		
-		/* Dropping all translations */
+		/* Dropping all translations. */
 		do {
 			if let p = logPrefix {print(p + "Dropping all translations on Lokalise...")}
 			let request = URLRequest(baseURL: baseURL, relativePath: "project/empty", httpMethod: "POST", queryItems: baseQueryItems, queryInBody: true)!
 			guard URLSession.shared.fetchJSONAndCheckResponse(request: request) != nil else {throw NSError(domain: "LocFile+XibRefLoc", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot empty the project"])}
 		}
 		
-		/* Uploading new translations */
+		/* Uploading new translations. */
 		do {
 			var c = 0
 			if let p = logPrefix {print(p + "Uploading new translations to Lokalise...")}

@@ -1,10 +1,10 @@
 /*
- * LocFileDocFiltersSplitViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 12/8/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * LocFileDocFiltersSplitViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 12/8/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -32,10 +32,10 @@ class LocFileDocFiltersSplitViewController : NSSplitViewController {
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {
@@ -63,8 +63,8 @@ class LocFileDocFiltersSplitViewController : NSSplitViewController {
 	}
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	@IBAction func showFilters(_ sender: AnyObject!) {
 		let dividerIndex = 0
@@ -76,8 +76,8 @@ class LocFileDocFiltersSplitViewController : NSSplitViewController {
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private var filtersViewController: LocFileDocFiltersViewController! {
 		return splitItemFilters.viewController as? LocFileDocFiltersViewController

@@ -1,18 +1,18 @@
 /*
- * CSVParser.swift
- * LocMapper
- *
- * Created by François Lamboley on 12/12/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * CSVParser.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 12/12/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 /* Credits to Matt Gallagher from which this class comes from
- * http://projectswithlove.com/projects/CSVImporter.zip
- * http://www.cocoawithlove.com/2009/11/writing-parser-using-nsscanner-csv.html */
+ * http://projectswithlove.com/projects/CSVImporter.zip
+ * http://www.cocoawithlove.com/2009/11/writing-parser-using-nsscanner-csv.html */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
@@ -106,11 +106,11 @@ class CSVParser {
 		return (ok ? names : nil)
 	}
 	
-	/* Attempts to parse a record from the current scan location. The record
-	 * dictionary will use the _fieldNames as keys, or FIELD_X for each column
-	 * X-1 if no fieldName exists for a given column.
-	 *
-	 * Returns the parsed record as a dictionary, or nil on failure. */
+	/**
+	 Attempts to parse a record from the current scan location.
+	 The record dictionary will use the `_fieldNames` as keys, or `FIELD_X` for each column `X-1` if no fieldName exists for a given column.
+	 
+	 - Returns: The parsed record as a dictionary, or nil on failure. */
 	private func parseRecord() -> [String: String]? {
 		if scanner.isAtEnd {
 			return nil
@@ -159,8 +159,7 @@ class CSVParser {
 			return nonQuoted
 		}
 		
-		/* Special case: if the current location is immediately
-		 * followed by a separator, then the field is a valid, empty string. */
+		/* Special case: if the current location is immediately followed by a separator, then the field is a valid, empty string. */
 		let currentLocation = scanner.scanLocation
 		if parseSeparator() != nil || parseLineSeparator() != nil || scanner.isAtEnd {
 			scanner.scanLocation = currentLocation
@@ -218,16 +217,16 @@ class CSVParser {
 			return nil
 		}
 		
-		/* newlines will contains all new lines from scanLocation. We only want
-		 * one new line. */
+		/* newlines will contains all new lines from scanLocation.
+		 * We only want one new line. */
 		let newlines = matchedNewlines
 		if newlines.hasPrefix("\r\n") {scanner.scanLocation = scanLocation + 2; return "\r\n"}
 		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
 		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
-		#if canImport(os)
-			LocMapperConfig.oslog.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .error, newlines) }
-		#endif
-		LocMapperConfig.logger?.error("Unknown new line! oO (\(newlines))")
+#if canImport(os)
+		Conf.oslog.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .error, newlines) }
+#endif
+		Conf.logger?.error("Unknown new line! oO (\(newlines))")
 		return newlines
 	}
 	
@@ -247,14 +246,12 @@ class CSVParser {
 				accumulatedData += fragment
 			}
 			
-			/* If the separator is just a single character (common case) then
-			 * we know we've reached the end of parseable text */
+			/* If the separator is just a single character (common case) then we know we've reached the end of parsable text. */
 			if separatorIsSingleChar {
 				break
 			}
 			
-			/* Otherwise, we need to consider the case where the first character
-			 * of the separator is matched but we don't have the full separator. */
+			/* Otherwise, we need to consider the case where the first character of the separator is matched but we don't have the full separator. */
 			let location = scanner.scanLocation
 			if let firstCharOfSeparator = scanner.lm_scanString(String(separator.first!)) {
 				if scanner.lm_scanString(String(separator.dropFirst())) != nil {
@@ -262,8 +259,7 @@ class CSVParser {
 					break
 				}
 				
-				/* We have the first char of the separator but not the whole
-				 * separator, so just append the char and continue */
+				/* We have the first char of the separator but not the whole separator, so just append the char and continue. */
 				accumulatedData += firstCharOfSeparator
 				continue
 			} else {

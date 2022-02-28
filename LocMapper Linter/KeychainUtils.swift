@@ -1,10 +1,10 @@
 /*
- * KeychainUtils.swift
- * Lokalise Project Migration
- *
- * Created by François Lamboley on 21/08/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * KeychainUtils.swift
+ * Lokalise Project Migration
+ *
+ * Created by François Lamboley on 21/08/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 import Security
@@ -31,17 +31,17 @@ struct Keychain {
 		
 		let error = SecItemCopyMatching(query as CFDictionary, &searchResult)
 		switch error {
-		case errSecSuccess:
-			guard let result = searchResult as? Data else {
-				throw Error.internalError
-			}
-			return result
-			
-		case errSecItemNotFound:
-			return nil
-			
-		default:
-			throw secErrorFrom(statusCode: error)
+			case errSecSuccess:
+				guard let result = searchResult as? Data else {
+					throw Error.internalError
+				}
+				return result
+				
+			case errSecItemNotFound:
+				return nil
+				
+			default:
+				throw secErrorFrom(statusCode: error)
 		}
 	}
 	
@@ -65,12 +65,12 @@ struct Keychain {
 		
 		let updatedProperties = [kSecValueData as String: data]
 		
-		/* First we try and update the existing property. If the property does not
-		 * exist, we will process the error and use SecItemAdd */
+		/* First we try and update the existing property.
+		 * If the property does not exist, we will process the error and use SecItemAdd. */
 		var saveError = SecItemUpdate(query as CFDictionary, updatedProperties as CFDictionary)
 		if saveError == errSecItemNotFound {
-			/* We don't have a previous entry for the given username, keychain
-			 * identifier and access group. Let’s use SecItemAdd. */
+			/* We don't have a previous entry for the given username, keychain identifier and access group.
+			 * Let’s use SecItemAdd. */
 			var saveQuery = query
 			saveQuery[kSecValueData as String] = data
 			
@@ -89,34 +89,33 @@ struct Keychain {
 		
 		let error = SecItemDelete(query as CFDictionary)
 		switch error {
-		case errSecSuccess, errSecItemNotFound /* If the item is not found, we consider the deletion has been successful */:
-			return
-			
-		default:
-			throw secErrorFrom(statusCode: error)
+			case errSecSuccess, errSecItemNotFound /* If the item is not found, we consider the deletion has been successful. */:
+				return
+				
+			default:
+				throw secErrorFrom(statusCode: error)
 		}
 	}
 	
-	#if !os(macOS)
-		/* Clearing the keychain only makes sense on a fully sandboxed environment
-		 * (iOS, watchOS, etc.). */
-		static func clearKeychain() throws {
-			let query = [kSecClass as String: kSecClassGenericPassword]
-			
-			let error = SecItemDelete(query as CFDictionary)
-			switch error {
+#if !os(macOS)
+	/* Clearing the keychain only makes sense on a fully sandboxed environment (iOS, watchOS, etc.). */
+	static func clearKeychain() throws {
+		let query = [kSecClass as String: kSecClassGenericPassword]
+		
+		let error = SecItemDelete(query as CFDictionary)
+		switch error {
 			case errSecSuccess, errSecItemNotFound:
 				return
 				
 			default:
 				throw secErrorFrom(statusCode: error)
-			}
 		}
-	#endif
+	}
+#endif
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private static func baseQuery(forIdentifier identifier: String, accessGroup: String?, username: String) -> [String: Any] {
 		var res = [String: Any]()
@@ -124,24 +123,23 @@ struct Keychain {
 //		res[kSecAttrGeneric as String] = identifier
 		res[kSecAttrService as String] = identifier
 		res[kSecAttrAccount as String] = username
-		#if !os(iOS) || !targetEnvironment(simulator)
-			/* We ignore the access group if target is the iPhone simulator. See
-			 * the GenericKeychain Apple example in the docs for an explanation on
-			 * why we do this. */
-			if let accessGroup = accessGroup {
-				res[kSecAttrAccessGroup as String] = accessGroup
-			}
-		#endif
+#if !os(iOS) || !targetEnvironment(simulator)
+		/* We ignore the access group if target is the iPhone simulator.
+		 * See the GenericKeychain Apple example in the docs for an explanation on why we do this. */
+		if let accessGroup = accessGroup {
+			res[kSecAttrAccessGroup as String] = accessGroup
+		}
+#endif
 		
 		return res
 	}
 	
 	private static func secErrorFrom(statusCode: OSStatus) -> Error {
-		#if os(macOS)
-			return .secError(code: statusCode, message: SecCopyErrorMessageString(statusCode, nil /* reserved for future use */) as String?)
-		#else
-			return .secError(code: statusCode, message: nil)
-		#endif
+#if os(macOS)
+		return .secError(code: statusCode, message: SecCopyErrorMessageString(statusCode, nil /* reserved for future use */) as String?)
+#else
+		return .secError(code: statusCode, message: nil)
+#endif
 	}
 	
 	private init() {}

@@ -1,10 +1,10 @@
 /*
- * ColorFixedTextFieldCell.swift
- * Lokalise Project Migration
- *
- * Created by François Lamboley on 27/08/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * ColorFixedTextFieldCell.swift
+ * Lokalise Project Migration
+ *
+ * Created by François Lamboley on 27/08/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Cocoa
 import Foundation
@@ -34,9 +34,9 @@ class ColorFixedTextFieldCell : NSTextFieldCell {
 	private func updateTextColor() {
 		internalSet = true
 		switch backgroundStyle {
-		case .lowered, .normal:    textColor = expectedTextColor
-		case .raised, .emphasized: textColor = .white
-		@unknown default:          textColor = expectedTextColor
+			case .lowered, .normal:    textColor = expectedTextColor
+			case .raised, .emphasized: textColor = .white
+			@unknown default:          textColor = expectedTextColor
 		}
 		internalSet = false
 	}

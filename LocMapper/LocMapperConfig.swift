@@ -1,34 +1,33 @@
 /*
- * LocMapperConfig.swift
- * LocMapper
- *
- * Created by François Lamboley on 1/22/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocMapperConfig.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 1/22/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
 
 
 
-public struct LocMapperConfig {
-
-	#if canImport(os)
+public enum LocMapperConfig {
+	
+#if canImport(os)
 	public static var oslog: OSLog? = .default
-	#endif
+#endif
 	public static var logger: Logging.Logger? = {
-		#if canImport(os)
+#if canImport(os)
 		return nil
-		#else
+#else
 		return Logger(label: "com.happn.LocMapper")
-		#endif
+#endif
 	}()
 	
-	/** This struct is simply a container for static configuration properties. */
-	private init() {}
-	
 }
+
+typealias Conf = LocMapperConfig

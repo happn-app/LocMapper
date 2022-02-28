@@ -1,14 +1,14 @@
 /*
- * HappnXib2Lokalise.swift
- * LocMapper
- *
- * Created by François Lamboley on 03/04/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * HappnXib2Lokalise.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 03/04/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
@@ -16,54 +16,56 @@ import XibLoc
 
 
 
-/** **NOT** foolproof. Well actually, there are many cases that are not working.
-The whole thing has been done and thought for the happn case.
-
-Here are some raw notes from when I did the Xib2Std conversion process:
-```
-DONE MANUALLY
-————————————————————————————————————————————————
-|::| (App | A7O-gV-3m4.normalTitle & App | Wlf-dI-ogc.text)
-
-
-NOT DONE
-————————————————————————————————————————————————
-⑃⑂⑃ (Localizable | n days)
-remove default plurality definition
-
-
-DONE
-————————————————————————————————————————————————
-`¦´ should be other by default
-add tag “gender”
-+ converted to spaces
-remove when all is [VOID]
-%@ %s no 1$
-remove all spaces in variable names
-new tag: locmapper
-new tag: variable (for %etc)
-⎡croisés⟡croisées⎤
-#n#/$n$
-%%
-^^
-👓 <- translate to %s
-{LINK}
-à gérer chelou “Localizable | n unread<:s> conversations”
-
-
-PROBLEMS
-————————————————————————————————————————————————
-Hungarian, key “User Profiles | avm: number of songs exceeded”: no plural
-Hungarian, key “User Profiles | n common friends”: no plural
-Hungarian, key “User Profiles | n common interests”: no plural
-Hungarian, key “Notifications | reward invite non-premium”: no plural
-Polish, key “Home | crossed paths N times”: no plural
-Hungarian, key “Invite | 8Sj-sP-UWp.text”: no plural
-Hungarian, key “Notifications | reward new account non-premium”: no plural
-Russian, key “Photo Album | b6c-10-mWH.text”: no plural
-Hungarian, key “Pop-Ups | invite friends explanation non-premium line 2”: no plural
-Hungarian, key “Pop-Ups | follow twitter explanation non-premium line 2”: no plural
-``` */
+/**
+ __NOT__ foolproof.
+ Well actually, there are many cases that are not working.
+ The whole thing has been done and thought for the happn case.
+ 
+ Here are some raw notes from when I did the Xib2Std conversion process:
+ ```
+ DONE MANUALLY
+ ————————————————————————————————————————————————
+ |::| (App | A7O-gV-3m4.normalTitle & App | Wlf-dI-ogc.text)
+ 
+ 
+ NOT DONE
+ ————————————————————————————————————————————————
+ ⑃⑂⑃ (Localizable | n days)
+ remove default plurality definition
+ 
+ 
+ DONE
+ ————————————————————————————————————————————————
+ `¦´ should be other by default
+ add tag “gender”
+ + converted to spaces
+ remove when all is [VOID]
+ %@ %s no 1$
+ remove all spaces in variable names
+ new tag: locmapper
+ new tag: variable (for %etc)
+ ⎡croisés⟡croisées⎤
+ #n#/$n$
+ %%
+ ^^
+ 👓 <- translate to %s
+ {LINK}
+ à gérer chelou “Localizable | n unread<:s> conversations”
+ 
+ 
+ PROBLEMS
+ ————————————————————————————————————————————————
+ Hungarian, key “User Profiles | avm: number of songs exceeded”: no plural
+ Hungarian, key “User Profiles | n common friends”: no plural
+ Hungarian, key “User Profiles | n common interests”: no plural
+ Hungarian, key “Notifications | reward invite non-premium”: no plural
+ Polish, key “Home | crossed paths N times”: no plural
+ Hungarian, key “Invite | 8Sj-sP-UWp.text”: no plural
+ Hungarian, key “Notifications | reward new account non-premium”: no plural
+ Russian, key “Photo Album | b6c-10-mWH.text”: no plural
+ Hungarian, key “Pop-Ups | invite friends explanation non-premium line 2”: no plural
+ Hungarian, key “Pop-Ups | follow twitter explanation non-premium line 2”: no plural
+ ``` */
 struct HappnXib2Lokalise {
 	
 	typealias Language = String
@@ -113,18 +115,16 @@ struct HappnXib2Lokalise {
 		for stdLocEntryAction in stdLocEntryActions {
 			for (l, (unpercentedValue, addPrintfReplacementTag)) in preprocessedXibLocValues {
 				if addPrintfReplacementTag && (!stdLocEntryAction.filter({ !($0 is LocValueTransformerGenderVariantPick) }).isEmpty || pluralTransformerBase != nil) {
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Got a printf-style replacement AND a non-gender std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
-					#endif
-					LocMapperConfig.logger?.warning("Got a printf-style replacement AND a non-gender std loc entry action (\(stdLocEntryAction))")
+#if canImport(os)
+					Conf.oslog.flatMap{ os_log("Got a printf-style replacement AND a non-gender std loc entry action (%{public}@)", log: $0, type: .info, stdLocEntryAction) }
+#endif
+					Conf.logger?.warning("Got a printf-style replacement AND a non-gender std loc entry action (\(stdLocEntryAction))")
 				}
 				/* About .replacingOccurrences(of: "~", with: "~~"):
-				 *    - All the Xib replacements have an escape token;
-				 *    - We know only the plural actually uses this escape token;
-				 *    - So we escape the escape when not applying the plural.
-				 * The correct solution would be to merge the different transformers
-				 * somehow (but this is not a trivial task, and I don't want to do
-				 * it). */
+				 *    - All the Xib replacements have an escape token;
+				 *    - We know only the plural actually uses this escape token;
+				 *    - So we escape the escape when not applying the plural.
+				 * The correct solution would be to merge the different transformers somehow (but this is not a trivial task, and I don't want to do it). */
 				let newValue = try stdLocEntryAction.reduce(unpercentedValue, { try $1.apply(toValue: $0.replacingOccurrences(of: "~", with: "~~"), withLanguage: l) })
 				let lokaliseValue: LokaliseValue
 				if let pluralTransformerBase = pluralTransformerBase {

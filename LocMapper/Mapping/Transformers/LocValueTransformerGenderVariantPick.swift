@@ -1,10 +1,10 @@
 /*
- * LocValueTransformerGenderVariantPick.swift
- * LocMapper
- *
- * Created by François Lamboley on 2/3/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocValueTransformerGenderVariantPick.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/3/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 import XibLoc
@@ -20,15 +20,15 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		case male, female
 		init?(string: String) {
 			switch string.lowercased() {
-			case "male",   "m": self = .male
-			case "female", "f": self = .female
-			default: return nil
+				case "male",   "m": self = .male
+				case "female", "f": self = .female
+				default: return nil
 			}
 		}
 		func toString() -> String {
 			switch self {
-			case .male:   return "male"
-			case .female: return "female"
+				case .male:   return "male"
+				case .female: return "female"
 			}
 		}
 	}

@@ -46,5 +46,5 @@ struct CreateInitialAndroidMappingFromStdRefLoc : ParsableCommand {
 		print(locFile, terminator: "", to: &stream)
 		print("Done")
 	}
-
+	
 }

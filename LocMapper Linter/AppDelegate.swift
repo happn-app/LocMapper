@@ -1,10 +1,10 @@
 /*
- * AppDelegate.swift
- * LocMapper Linter
- *
- * Created by François Lamboley on 12/12/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * AppDelegate.swift
+ * LocMapper Linter
+ *
+ * Created by François Lamboley on 12/12/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -14,7 +14,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
-		/* Registering default user defaults */
+		/* Registering default user defaults. */
 		do {
 			let defaultValues: [String: Any] = [
 				"HPN Default Show Mapped Latest": true,

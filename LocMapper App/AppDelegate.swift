@@ -1,10 +1,10 @@
 /*
- * AppDelegate.swift
- * LocMapper App
- *
- * Created by François Lamboley on 12/2/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * AppDelegate.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 12/2/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 

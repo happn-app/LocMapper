@@ -1,10 +1,10 @@
 /*
- * FilesListViewController.swift
- * LocMapper Linter
- *
- * Created by François Lamboley on 12/12/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * FilesListViewController.swift
+ * LocMapper Linter
+ *
+ * Created by François Lamboley on 12/12/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -39,8 +39,8 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* *****************************************
-	   MARK: - Table View Data Source & Delegate
-	   ***************************************** */
+	   MARK: - Table View Data Source & Delegate
+	   ***************************************** */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		return filesDescriptions.count
@@ -51,24 +51,24 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		guard let r = tableView.makeView(withIdentifier: tableColumn.identifier, owner: self) else {return nil}
 		
 		switch tableColumn.identifier.rawValue {
-		case "nickname":
-			if let textField = r.viewWithTag(1) as? NSTextField {
-				textField.stringValue = filesDescriptions[row].nickname ?? "<Unnamed>"
-			}
-			
-		case "path":
-			if let textField = r.viewWithTag(1) as? NSTextField {
-				textField.stringValue = filesDescriptions[row].url.path
-			}
-			
-		case "git": (/*TODO*/)
-			
-		case "reflocType":
-			if let menuButton = r.viewWithTag(1) as? NSPopUpButton {
-				menuButton.selectItem(withTag: filesDescriptions[row].refLocType.rawValue)
-			}
-			
-		default: NSLog("Weird…")
+			case "nickname":
+				if let textField = r.viewWithTag(1) as? NSTextField {
+					textField.stringValue = filesDescriptions[row].nickname ?? "<Unnamed>"
+				}
+				
+			case "path":
+				if let textField = r.viewWithTag(1) as? NSTextField {
+					textField.stringValue = filesDescriptions[row].url.path
+				}
+				
+			case "git": (/*TODO*/)
+				
+			case "reflocType":
+				if let menuButton = r.viewWithTag(1) as? NSPopUpButton {
+					menuButton.selectItem(withTag: filesDescriptions[row].refLocType.rawValue)
+				}
+				
+			default: NSLog("Weird…")
 		}
 		return r
 	}
@@ -78,8 +78,8 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* ***************************
-	   MARK: - Text Field Delegate
-	   *************************** */
+	   MARK: - Text Field Delegate
+	   *************************** */
 	
 	func didBecomeFirstResponder(_ textField: NSTextField) {
 		(view as? KeyEquivalentDisablingView)?.disableKeyEquivalent = true
@@ -92,8 +92,8 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	@IBAction func addFile(_ sender: AnyObject) {
 		let openPanel = NSOpenPanel()
@@ -159,8 +159,8 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private func saveFileList() {
 		let archived = filesDescriptions.map{

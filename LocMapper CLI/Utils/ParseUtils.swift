@@ -22,15 +22,14 @@ import LocMapper
 
 
 /**
-Parses an option list like locmapper did before using Apple’s ArgumentParser.
-
-If the given array only have one element and contains a comma, we assume the
-user has used the obsolete list option format and we split the only argument
-using the comma separator.
-
-It is thus impossible when using this method to get an array containing one
-element that contains a comma. We take the risk for now (the previous situation
-was worse), and might remove this function altogether later. */
+ Parses an option list like locmapper did before using Apple’s ArgumentParser.
+ 
+ If the given array only have one element and contains a comma,
+ we assume the user has used the obsolete list option format
+ and we split the only argument using the comma separator.
+ 
+ It is thus impossible when using this method to get an array containing one element that contains a comma.
+ We take the risk for now (the previous situation was worse), and might remove this function altogether later. */
 func parseObsoleteOptionList(_ array: [String]) -> [String]? {
 	guard !array.isEmpty else {return nil}
 	guard let e = array.first, array.count == 1, e.contains(",") else {
@@ -54,9 +53,9 @@ extension LocFile.MergeStyle : ExpressibleByArgument {
 	
 	public init?(argument: String) {
 		switch argument {
-		case "add":     self = .add
-		case "replace": self = .replace
-		default:        return nil
+			case "add":     self = .add
+			case "replace": self = .replace
+			default:        return nil
 		}
 	}
 	

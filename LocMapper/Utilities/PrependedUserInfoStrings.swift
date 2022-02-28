@@ -1,10 +1,10 @@
 /*
- * PrependedUserInfoStrings.swift
- * LocMapper
- *
- * Created by François Lamboley on 10/27/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * PrependedUserInfoStrings.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 10/27/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -23,38 +23,38 @@ extension String {
 			
 			func process(char: Character, withCurrentKey currentKey: inout String, currentValue: inout String, currentUserInfo: inout [String: String]) -> State? {
 				switch self {
-				case .waitStartKey:
-					switch char {
-					case ";": return .remainingString
-					case ",": return .waitEndKey
-					default: return nil
-					}
-					
-				case .waitEndKey:
-					switch char {
-					case "\\": return .waitEndKeyBackslash
-					case ":": return .waitEndValue
-					default: currentKey.append(char); return .waitEndKey
-					}
-					
-				case .waitEndKeyBackslash:
-					currentKey.append(char)
-					return .waitEndKey
-					
-				case .waitEndValue:
-					switch char {
-					case "\\": return .waitEndValueBackslash
-					case ",": currentUserInfo[currentKey] = currentValue; currentKey = ""; currentValue = ""; return .waitEndKey
-					case ";": currentUserInfo[currentKey] = currentValue; currentKey = ""; currentValue = ""; return .remainingString
-					default: currentValue.append(char); return .waitEndValue
-					}
-					
-				case .waitEndValueBackslash:
-					currentValue.append(char)
-					return .waitEndValue
-					
-				case .remainingString:
-					fatalError("Invalid call to engine processor on a final state.")
+					case .waitStartKey:
+						switch char {
+							case ";": return .remainingString
+							case ",": return .waitEndKey
+							default: return nil
+						}
+						
+					case .waitEndKey:
+						switch char {
+							case "\\": return .waitEndKeyBackslash
+							case ":": return .waitEndValue
+							default: currentKey.append(char); return .waitEndKey
+						}
+						
+					case .waitEndKeyBackslash:
+						currentKey.append(char)
+						return .waitEndKey
+						
+					case .waitEndValue:
+						switch char {
+							case "\\": return .waitEndValueBackslash
+							case ",": currentUserInfo[currentKey] = currentValue; currentKey = ""; currentValue = ""; return .waitEndKey
+							case ";": currentUserInfo[currentKey] = currentValue; currentKey = ""; currentValue = ""; return .remainingString
+							default: currentValue.append(char); return .waitEndValue
+						}
+						
+					case .waitEndValueBackslash:
+						currentValue.append(char)
+						return .waitEndValue
+						
+					case .remainingString:
+						fatalError("Invalid call to engine processor on a final state.")
 				}
 			}
 		}
@@ -77,24 +77,25 @@ extension String {
 		return (stringStartOffset: idx+1, userInfo: userInfo)
 	}
 	
-	/** Parses the string (eg. the result of calling byPrepending(userInfo:))
-	into the user info and the remaining string. If parsing the string fails, the
-	userInfo will contain nil and string will be the original string. If parsing
-	the string succeed, userInfo will never be nil. It might be empty though. */
+	/**
+	 Parses the string (eg. the result of calling byPrepending(userInfo:)) into the user info and the remaining string.
+	 If parsing the string fails, the userInfo will contain `nil` and string will be the original string.
+	 If parsing the string succeeds, userInfo will never be `nil`.
+	 It might be empty though. */
 	func splitPrependedUserInfo() -> (string: String, userInfo: [String: String]?) {
 		let (offset, userInfo) = infoForSplitPrependedUserInfo()
 		return (string: String(dropFirst(offset)), userInfo: userInfo)
 	}
 	
-	/** Returns a new string containing a serialization of the user info and the
-	original string. The format guarantees that:
-	
-	    str.byPrepending(userInfo: userInfo) == "".byPrepending(userInfo: userInfo) + str
-	
-	Use `infoForSplitPrependedUserInfo` or `splitPrependedUserInfo` to
-	de-serialize the user info.
-	
-	- returns: The new string with the serialized user info. */
+	/**
+	 Returns a new string containing a serialization of the user info and the original string.
+	 The format guarantees that:
+	 ```
+	 str.byPrepending(userInfo: userInfo) == "".byPrepending(userInfo: userInfo) + str
+	 ```
+	 Use `infoForSplitPrependedUserInfo` or `splitPrependedUserInfo` to de-serialize the user info.
+	 
+	 - Returns: The new string with the serialized user info. */
 	func byPrepending(userInfo: [String: String], sortKeys: Bool) -> String {
 		var res = ""
 		if !sortKeys {

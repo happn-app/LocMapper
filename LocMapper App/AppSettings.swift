@@ -1,10 +1,10 @@
 /*
- * Constants.swift
- * LocMapper App
- *
- * Created by François Lamboley on 11/6/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * Constants.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 11/6/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -37,8 +37,8 @@ class AppSettings {
 	}
 	
 	/* **************************
-	   MARK: - Settings Accessors
-	   ************************** */
+	   MARK: - Settings Accessors
+	   ************************** */
 	
 	var showAlertForDiscardingMapping: Bool {
 		get {return ud.bool(forKey: SettingsKey.showAlertForDiscardingMapping.rawValue)}
@@ -56,8 +56,8 @@ class AppSettings {
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private let ud = UserDefaults.standard
 	

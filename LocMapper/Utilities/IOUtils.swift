@@ -1,10 +1,10 @@
 /*
- * IOUtils.swift
- * LocMapper
- *
- * Created by François Lamboley on 12/4/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * IOUtils.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 12/4/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -25,8 +25,8 @@ func writeText(_ text: String, toFile filePath: String, usingEncoding encoding: 
 	if let output_stream = FileHandle(forWritingAtPath: filePath) {
 		defer {output_stream.closeFile()}
 		
-		/* This line actually raises an exception if cannot write... We should
-		 * handle that! (In Swift? How...) */
+		/* This line actually raises an exception if cannot write…
+		 * We should handle that! (In Swift? How…) */
 		output_stream.write(data)
 	} else {
 		throw NSError(domain: "LocMapperErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(filePath) for writing"])

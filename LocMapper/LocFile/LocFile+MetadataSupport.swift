@@ -1,14 +1,14 @@
 /*
- * LocFile+Metadata.swift
- * LocMapper
- *
- * Created by François Lamboley on 2/4/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocFile+Metadata.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/4/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
@@ -69,17 +69,17 @@ extension LocFile {
 		return Data("".byPrepending(userInfo: metadata, sortKeys: true).utf8)
 	}
 	
-	/** Unserialize the given metadata. Should be used when initing an instance
-	of `LocFile`. */
+	/**
+	 Unserialize the given metadata. Should be used when initing an instance of `LocFile`. */
 	public static func unserializedMetadata(from serializedMetadata: Data) -> Any? {
 		guard let strSerializedMetadata = String(data: serializedMetadata, encoding: .utf8) else {return nil}
 		
 		let (string, decodedMetadata) = strSerializedMetadata.splitPrependedUserInfo()
 		if !string.isEmpty {
-			#if canImport(os)
-				LocMapperConfig.oslog.flatMap{ os_log("Got stray data in serialized metadata. Ignoring.", log: $0, type: .info) }
-			#endif
-			LocMapperConfig.logger?.warning("Got stray data in serialized metadata. Ignoring.")
+#if canImport(os)
+			Conf.oslog.flatMap{ os_log("Got stray data in serialized metadata. Ignoring.", log: $0, type: .info) }
+#endif
+			Conf.logger?.warning("Got stray data in serialized metadata. Ignoring.")
 		}
 		
 		return decodedMetadata

@@ -1,19 +1,19 @@
 /*
- * LocFile+Serialization.swift
- * LocMapper
- *
- * Created by François Lamboley on 2/4/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocFile+Serialization.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/4/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 #if canImport(zlib)
-	import zlib
+import zlib
 #else
-	import CZlib
+import CZlib
 #endif
 
 import Logging
@@ -23,12 +23,13 @@ import Logging
 extension LocFile : TextOutputStreamable {
 	
 	/* ***********************
-	   MARK: - Deserialization
-	   *********************** */
+	   MARK: - Deserialization
+	   *********************** */
 	
-	/* *** Init from path. The metadata should be retrieved with the
-	`unserializedMetadata(from:)` method. They are not read from the given path,
-	it is the caller responsability to retrieve them by its own means. *** */
+	/**
+	 Init from path.
+	 The metadata should be retrieved with the `unserializedMetadata(from:)` method.
+	 They are not read from the given path, it is the caller responsability to retrieve them by its own means. */
 	public convenience init(fromPath path: String, withCSVSeparator csvSep: String, metadata: Any? = nil) throws {
 		var filecontent: String?
 		var encoding = String.Encoding.utf8
@@ -38,8 +39,9 @@ extension LocFile : TextOutputStreamable {
 		try self.init(filecontent: filecontent ?? "", csvSeparator: csvSep, metadata: metadata)
 	}
 	
-	/* *** Init with data file content. The metadata should be retrieved with the
-	`unserializedMetadata(from:)` method. *** */
+	/**
+	 Init with data file content.
+	 The metadata should be retrieved with the `unserializedMetadata(from:)` method. */
 	public convenience init(filecontent: Data, csvSeparator csvSep: String, metadata: Any?) throws {
 		guard let fileContentStr = String(data: filecontent, encoding: .utf8) else {
 			throw NSError(domain: "Migrator", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot read file as UTF8."])
@@ -47,8 +49,9 @@ extension LocFile : TextOutputStreamable {
 		try self.init(filecontent: fileContentStr, csvSeparator: csvSep, metadata: metadata)
 	}
 	
-	/* *** Init with file content. The metadata should be retrieved with the
-	`unserializedMetadata(from:)` method. *** */
+	/**
+	 Init with file content.
+	 The metadata should be retrieved with the `unserializedMetadata(from:)` method. */
 	convenience init(filecontent: String, csvSeparator csvSep: String, metadata: Any?) throws {
 		let defaultError = NSError(domain: "Migrator", code: 2, userInfo: nil)
 		guard !filecontent.isEmpty else {
@@ -92,10 +95,10 @@ extension LocFile : TextOutputStreamable {
 				let encodedRawComment          = row[LocFile.PRIVATE_USERINFO_HEADER_NAME],
 				let encodedUserReadableComment = row[LocFile.COMMENTS_HEADER_NAME]
 			else {
-				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }
-				#endif
-				LocMapperConfig.logger?.warning("Invalid row \(row) found in csv file. Ignoring this row.")
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Invalid row %@ found in csv file. Ignoring this row.", log: $0, type: .info, row) }
+#endif
+				Conf.logger?.warning("Invalid row \(row) found in csv file. Ignoring this row.")
 				continue
 			}
 			
@@ -129,10 +132,10 @@ extension LocFile : TextOutputStreamable {
 						.replacingOccurrences(of: "__", with: "", options: [NSString.CompareOptions.anchored, NSString.CompareOptions.backwards])
 					(comment, userInfo) = LineKey.parse(attributedComment: prefixAndSuffixLess)
 				} else {
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }
-					#endif
-					LocMapperConfig.logger?.warning("Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
+#if canImport(os)
+					Conf.oslog.flatMap{ os_log("Got comment \"%@\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.", log: $0, type: .info, rawComment) }
+#endif
+					Conf.logger?.warning("Got comment \"\(rawComment)\" which does not have the __ prefix and suffix. Setting raw comment as comment, but expect troubles.")
 					(comment, userInfo) = LineKey.parse(attributedComment: rawComment)
 				}
 			}
@@ -154,12 +157,12 @@ extension LocFile : TextOutputStreamable {
 			if let mappingStr = row[LocFile.PRIVATE_MAPPING_HEADER_NAME].flatMap({ decodingInfo.oneLineStrings ? LocFile.decodeOneLineString($0) : $0 }),
 				let mapping = LocKeyMapping(stringRepresentation: mappingStr)
 			{
-				/* We have a non-empty mapping (may be invalid though, but we don't
-				 * check for validity here). Let's set it for the current line key. */
+				/* We have a non-empty mapping (may be invalid though, but we don't check for validity here).
+				 * Let's set it for the current line key. */
 				entries[k] = .mapping(mapping)
 			} else {
-				/* No non-empty mapping. Value for current line key is dictionary of
-				 * language/value. */
+				/* No non-empty mapping.
+				 * Value for current line key is dictionary of language/value. */
 				var values = [String: String]()
 				for l in languages {
 					if let v = row[l].flatMap({ decodingInfo.oneLineStrings ? LocFile.decodeOneLineString($0) : $0 }), v != LocFile.todolocToken {
@@ -173,36 +176,36 @@ extension LocFile : TextOutputStreamable {
 	}
 	
 	/* *********************
-	   MARK: - Serialization
-	   ********************* */
+	   MARK: - Serialization
+	   ********************* */
 	
 	public func write<Target : TextOutputStream>(to target: inout Target) {
 		let languagesBeforeStructuralColumns: Bool
 		switch serializationStyle {
-		case .gitFriendly: languagesBeforeStructuralColumns = false
-		case .csvFriendly: languagesBeforeStructuralColumns = true
+			case .gitFriendly: languagesBeforeStructuralColumns = false
+			case .csvFriendly: languagesBeforeStructuralColumns = true
 		}
 		
 		writeHeaders(languagesBeforeStructuralColumns: languagesBeforeStructuralColumns, to: &target)
 		
-		/* Compute and write the decoding Info */
+		/* Compute and write the decoding Info. */
 		var encodingInfo: EncodingInfo
 		switch serializationStyle {
-		case .csvFriendly:
-			assert(languagesBeforeStructuralColumns)
-			encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: false)
-			target.write([String](repeating: csvSeparator, count: 3 + languages.count + 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
-			
-		case .gitFriendly:
-			assert(!languagesBeforeStructuralColumns)
-			encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: true)
-			target.write([String](repeating: csvSeparator, count: 3).joined() + "⚠️ This file has been saved with the “git friendly” option. Please do not edit manually unless you know what you’re doing.".csvCellValueWithSeparator(csvSeparator))
-			target.write([String](repeating: csvSeparator, count: 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
+			case .csvFriendly:
+				assert(languagesBeforeStructuralColumns)
+				encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: false)
+				target.write([String](repeating: csvSeparator, count: 3 + languages.count + 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
+				
+			case .gitFriendly:
+				assert(!languagesBeforeStructuralColumns)
+				encodingInfo = EncodingInfo(compressedUserInfo: true, oneLineStrings: true)
+				target.write([String](repeating: csvSeparator, count: 3).joined() + "⚠️ This file has been saved with the “git friendly” option. Please do not edit manually unless you know what you’re doing.".csvCellValueWithSeparator(csvSeparator))
+				target.write([String](repeating: csvSeparator, count: 4).joined() + encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator) + "\n")
 		}
 		
 		var previousBasename: String?
 		for entry_key in entries.keys.sorted() {
-			/* Computing user readable file name and writing file change separator if needed */
+			/* Computing user readable file name and writing file change separator if needed. */
 			var basename = entry_key.filename
 			if let slashRange = basename.range(of: "/", options: .backwards) {
 				if slashRange.lowerBound != basename.endIndex {
@@ -215,7 +218,7 @@ extension LocFile : TextOutputStreamable {
 			if basename != previousBasename {
 				target.write([String](repeating: csvSeparator, count: 3 + languages.count + 4).joined() + "\n")
 				target.write(csvSeparator + csvSeparator)
-				/* We assume (quite reasonably) that basename will always be on one line (no need to use write(multilineText:to:) to write the value) */
+				/* We assume (quite reasonably) that basename will always be on one line (no need to use write(multilineText:to:) to write the value). */
 				target.write(("\\o/ \\o/ \\o/ " + basename + " \\o/ \\o/ \\o/").csvCellValueWithSeparator(csvSeparator))
 				target.write([String](repeating: csvSeparator, count: 1 + languages.count + 4).joined() + "\n")
 				previousBasename = basename
@@ -228,20 +231,20 @@ extension LocFile : TextOutputStreamable {
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	static let todolocToken = "!¡!TODOLOC!¡!"
 	static let internalLocMapperErrorToken = "!¡!TODOLOC_INTERNALLOCMAPPERERROR!¡!"
 	
-	private static let KEY_HEADER_NAME = "Key" /* Affects exports to environment’s loc file formats, but also user readable */
-	private static let ENV_HEADER_NAME = "Env" /* Affects exports to environment’s loc file formats, but also user readable */
-	private static let FILENAME_HEADER_NAME = "File"     /* Only for information to the reader */
-	private static let COMMENTS_HEADER_NAME = "Comments" /* Only for information to the reader */
-	private static let PRIVATE_FILENAME_HEADER_NAME = "__Filename" /* Private, affects exports to environment’s loc file formats */
-	private static let PRIVATE_USERINFO_HEADER_NAME = "__UserInfo" /* Private, affects exports to environment’s loc file formats */
-	private static let PRIVATE_MAPPING_HEADER_NAME = "__Mapping"   /* Private, affects exports to environment’s loc file formats */
-	private static let PRIVATE_ENCODING_INFO_HEADER_NAME = "__Fmt" /* Private, affects decoding of other columns */
+	private static let KEY_HEADER_NAME = "Key" /* Affects exports to environment’s loc file formats, but also user readable. */
+	private static let ENV_HEADER_NAME = "Env" /* Affects exports to environment’s loc file formats, but also user readable. */
+	private static let FILENAME_HEADER_NAME = "File"     /* Only for information to the reader. */
+	private static let COMMENTS_HEADER_NAME = "Comments" /* Only for information to the reader. */
+	private static let PRIVATE_FILENAME_HEADER_NAME = "__Filename" /* Private, affects exports to environment’s loc file formats. */
+	private static let PRIVATE_USERINFO_HEADER_NAME = "__UserInfo" /* Private, affects exports to environment’s loc file formats. */
+	private static let PRIVATE_MAPPING_HEADER_NAME = "__Mapping"   /* Private, affects exports to environment’s loc file formats. */
+	private static let PRIVATE_ENCODING_INFO_HEADER_NAME = "__Fmt" /* Private, affects decoding of other columns. */
 	
 	private struct EncodingInfo : Equatable {
 		
@@ -284,16 +287,16 @@ extension LocFile : TextOutputStreamable {
 			}
 		}
 		
-		/* These columns are useful to a casual reader */
+		/* These columns are useful to a casual reader. */
 		target.write(
 			LocFile.KEY_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
 			csvSeparator + LocFile.ENV_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
 			csvSeparator + LocFile.FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
 			csvSeparator + LocFile.COMMENTS_HEADER_NAME.csvCellValueWithSeparator(csvSeparator)
 		)
-		/* The languages (if applicable) */
+		/* The languages (if applicable). */
 		if languagesBeforeStructuralColumns {printLanguages()}
-		/* Private stuff we use for mapping and some structural information */
+		/* Private stuff we use for mapping and some structural information. */
 		target.write(
 			csvSeparator + LocFile.PRIVATE_MAPPING_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
 			csvSeparator + LocFile.PRIVATE_FILENAME_HEADER_NAME.csvCellValueWithSeparator(csvSeparator) +
@@ -304,25 +307,26 @@ extension LocFile : TextOutputStreamable {
 		target.write("\n")
 	}
 	
-	/** - Returns: The actual EncodingInfo that were used when writing the data. */
+	/**
+	 - Returns: The actual ``EncodingInfo`` that were used when writing the data. */
 	private func write<Target : TextOutputStream>(key: LineKey, value: LineValue, userReadableFilename basename: String, encodingInfo: EncodingInfo, languagesBeforeStructuralColumns: Bool, to target: inout Target) -> EncodingInfo {
 		func printLanguages() {
 			switch value {
-			case .entries(let entries):
-				for language in languages {
-					target.write(csvSeparator)
-					write(multilineText: entries[language] ?? LocFile.todolocToken, encodingInfo: encodingInfo, to: &target)
-				}
-				
-			case .mapping:
-				target.write([String](repeating: csvSeparator, count: languages.count).joined())
+				case .entries(let entries):
+					for language in languages {
+						target.write(csvSeparator)
+						write(multilineText: entries[language] ?? LocFile.todolocToken, encodingInfo: encodingInfo, to: &target)
+					}
+					
+				case .mapping:
+					target.write([String](repeating: csvSeparator, count: languages.count).joined())
 			}
 		}
 		
 		var encodingInfo = encodingInfo
 		let originalEncodingInfo = encodingInfo
 		
-		/* Writing group comment */
+		/* Writing group comment. */
 		if !key.userReadableGroupComment.isEmpty {
 			target.write(csvSeparator + csvSeparator + csvSeparator)
 			write(multilineText: key.userReadableGroupComment, encodingInfo: encodingInfo, to: &target)
@@ -342,23 +346,21 @@ extension LocFile : TextOutputStreamable {
 		if languagesBeforeStructuralColumns {printLanguages()}
 		target.write(csvSeparator) /* PRIVATE_MAPPING_HEADER_NAME */
 		switch value {
-		case .entries: (/*nop*/)
-		case .mapping(let mapping):
-			/* Note: I’d have wanted to have a pretty print here, but because Linux
-			 *       does not pretty print exactly as macOS does, we have to not
-			 *       pretty print. */
-			write(multilineText: mapping.stringRepresentation(prettyPrint: false), encodingInfo: encodingInfo, to: &target) /* PRIVATE_MAPPING_HEADER_NAME */
+			case .entries: (/*nop*/)
+			case .mapping(let mapping):
+				/* Note: I’d have wanted to have a pretty print here, but because Linux does not pretty print exactly as macOS does, we have to not pretty print. */
+				write(multilineText: mapping.stringRepresentation(prettyPrint: false), encodingInfo: encodingInfo, to: &target) /* PRIVATE_MAPPING_HEADER_NAME */
 		}
 		
 		target.write(
-			csvSeparator + key.filename.csvCellValueWithSeparator(csvSeparator) + /* PRIVATE_FILENAME_HEADER_NAME; we assume the filename will always be on one line... */
+			csvSeparator + key.filename.csvCellValueWithSeparator(csvSeparator) + /* PRIVATE_FILENAME_HEADER_NAME; we assume the filename will always be on one line… */
 			csvSeparator
 		)
 		
 		let compressionError = write(userInfo: key.fullComment, encodingInfo: encodingInfo, to: &target) /* PRIVATE_USERINFO_HEADER_NAME */
 		if compressionError {encodingInfo.compressedUserInfo = false}
 		
-		/* Write encoding info */
+		/* Write encoding info. */
 		target.write(csvSeparator)
 		if encodingInfo != originalEncodingInfo {
 			target.write(encodingInfo.serialized().csvCellValueWithSeparator(csvSeparator)) /* PRIVATE_ENCODING_INFO_HEADER_NAME */
@@ -372,10 +374,10 @@ extension LocFile : TextOutputStreamable {
 	
 	private func write<Target : TextOutputStream>(multilineText: String, encodingInfo: EncodingInfo, to target: inout Target) {
 		if !encodingInfo.oneLineStrings {
-			/* Simply print the string as-is */
+			/* Simply print the string as-is. */
 			target.write(multilineText.csvCellValueWithSeparator(csvSeparator))
 		} else {
-			/* Let's transform the string to have it on one line only (only treating \n and \r cases; not sure there are others anyway) */
+			/* Let's transform the string to have it on one line only (only treating \n and \r cases; not sure there are others anyway). */
 			let oneLineStr = multilineText
 				.replacingOccurrences(of: " " /* 1 hairsp */, with: "  " /* 2 hairsp */)
 				.replacingOccurrences(of: "\n", with: "     " /* 1 hairsp + 4 spaces */)
@@ -384,8 +386,8 @@ extension LocFile : TextOutputStreamable {
 		}
 	}
 	
-	/** - Returns: `false` if was supposed to compressed, but got error while
-	compressing, `true` otherwise. */
+	/**
+	 - Returns: `false` if was supposed to compressed, but got error while compressing, `true` otherwise. */
 	private func write<Target : TextOutputStream>(userInfo: String, encodingInfo: EncodingInfo, to target: inout Target) -> Bool {
 		let gotError: Bool
 		let written: String
@@ -394,7 +396,7 @@ extension LocFile : TextOutputStreamable {
 				let inputData = Data(userInfo.utf8)
 				var outputData = Data(count: Int(compressBound(uLong(inputData.count))) + MemoryLayout<Int32>.size)
 				
-				/* Let's write the size of the uncompressed data */
+				/* Let's write the size of the uncompressed data. */
 				var s = Int32(inputData.count) /* Will crash if input is more that 4 (or maybe 2) GiB. Also, we don't care. */
 				withUnsafePointer(to: &s, { ptr in
 					outputData[0..<MemoryLayout<Int32>.size] = Data(buffer: UnsafeBufferPointer<Int32>(start: ptr, count: 1))
@@ -418,8 +420,7 @@ extension LocFile : TextOutputStreamable {
 			}
 			gotError = false
 		} catch {
-			/* If we have a problem compressing the data, we fall back to
-			 * uncompressed. */
+			/* If we have a problem compressing the data, we fall back to uncompressed. */
 			written = "__" + userInfo + "__"
 			gotError = true
 		}
@@ -458,7 +459,7 @@ extension LocFile : TextOutputStreamable {
 	private static func decompressString(_ string: String) -> String? {
 		guard var compressedData = Data(base64Encoded: string), compressedData.count >= MemoryLayout<Int32>.size else {return nil}
 		
-		/* let retrieve the size of the uncompressed data */
+		/* Let’s retrieve the size of the uncompressed data. */
 		let s: Int32 = compressedData.withUnsafeBytes{ ptr in ptr.bindMemory(to: Int32.self).first! }
 		compressedData = compressedData.dropFirst(MemoryLayout<Int32>.size)
 		var uncompressedData = Data(count: Int(s))

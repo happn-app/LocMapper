@@ -1,10 +1,10 @@
 /*
- * LocValueTransformerRegexReplacements.swift
- * LocMapper
- *
- * Created by François Lamboley on 4/24/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocValueTransformerRegexReplacements.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 4/24/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 

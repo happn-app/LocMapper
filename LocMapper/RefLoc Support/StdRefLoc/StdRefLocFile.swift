@@ -1,17 +1,17 @@
 /*
- * StdRefLocFile.swift
- * LocMapper
- *
- * Created by François Lamboley on 7/6/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * StdRefLocFile.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 7/6/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(FoundationNetworking)
-	import FoundationNetworking
+import FoundationNetworking
 #endif
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
@@ -75,9 +75,8 @@ public class StdRefLocFile {
 			/* It’s _not_ a bug, first page is indeed 1… */
 			page += 1
 			
-			/* Setting “disable_references” to 0 actually resolves the key
-			 * references…
-			 * https://docs.lokalise.com/en/articles/1400528-key-referencing */
+			/* Setting “disable_references” to 0 actually resolves the key references…
+			 * https://docs.lokalise.com/en/articles/1400528-key-referencing */
 			let queryItems = [
 				URLQueryItem(name: "limit", value: "5000"),
 				URLQueryItem(name: "page", value: String(page)),
@@ -102,20 +101,20 @@ public class StdRefLocFile {
 				continue
 			}
 			guard let keyName = key.keyName[keyType] else {
-				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Got key from Lokalise with no name for type %{public}@. Skipping...", log: $0, type: .info, keyType) }
-				#endif
-				LocMapperConfig.logger?.info("Got key from Lokalise with no name for type \(keyType). Skipping...")
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Got key from Lokalise with no name for type %{public}@. Skipping...", log: $0, type: .info, keyType) }
+#endif
+				Conf.logger?.info("Got key from Lokalise with no name for type \(keyType). Skipping...")
 				continue
 			}
 			
 			/* Processing key from Lokalise */
 			let keyComponents = keyName.components(separatedBy: " - ")
 			if keyComponents.count > 2 {
-				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
-				#endif
-				LocMapperConfig.logger?.info("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)")
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
+#endif
+				Conf.logger?.info("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)")
 			}
 			let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
 			
@@ -129,10 +128,10 @@ public class StdRefLocFile {
 			/* Processing value from Lokalise */
 			for translation in key.translations {
 				guard let refLocLanguage = lokaliseToReflocLanguageName[translation.languageIso] else {
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Got translation from Lokalise with unknown iso language %{public}@. Skipping...", log: $0, type: .info, translation.languageIso) }
-					#endif
-					LocMapperConfig.logger?.info("Got translation from Lokalise with unknown iso language \(translation.languageIso). Skipping...")
+#if canImport(os)
+					Conf.oslog.flatMap{ os_log("Got translation from Lokalise with unknown iso language %{public}@. Skipping...", log: $0, type: .info, translation.languageIso) }
+#endif
+					Conf.logger?.info("Got translation from Lokalise with unknown iso language \(translation.languageIso). Skipping...")
 					continue
 				}
 				if key.isPlural {
@@ -163,9 +162,7 @@ public class StdRefLocFile {
 		entries = entriesBuilding
 	}
 	
-	/* Syntaxic coloration says third capture group in second regex should be
-	 * with a + instead of a *, but old export for “[%1$s:]” did replace the
-	 * placeholder to “%1$s”… */
+	/* Syntaxic coloration says third capture group in second regex should be with a + instead of a *, but old export for “[%1$s:]” did replace the placeholder to “%1$s”… */
 	static let universalPlaceholderConversionReplacements = [
 		(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+)\]"#,                   options: []), #"%$1\$$2"#),
 		(try! NSRegularExpression(pattern: #"\[%([0-9]*)\$([a-zA-Z0-9.#*@+' -]+):([a-zA-Z0-9_.-]*)\]"#, options: []), #"%$1\$$2"#)

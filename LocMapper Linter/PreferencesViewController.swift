@@ -1,10 +1,10 @@
 /*
- * PreferencesViewController.swift
- * Lokalise Project Migration
- *
- * Created by François Lamboley on 22/08/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * PreferencesViewController.swift
+ * Lokalise Project Migration
+ *
+ * Created by François Lamboley on 22/08/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Cocoa
 import Foundation
@@ -87,8 +87,8 @@ class PreferencesViewController : NSViewController, NSTableViewDataSource, NSTab
 	}
 	
 	/* *******************************************
-	   MARK: - Table View Data Source and Delegate
-	   ******************************************* */
+	   MARK: - Table View Data Source and Delegate
+	   ******************************************* */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		return 7
@@ -101,16 +101,16 @@ class PreferencesViewController : NSViewController, NSTableViewDataSource, NSTab
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private static var udLanguagesNameMappings: [[String: String]] {
 		get {return UserDefaults.standard.array(forKey: "LanguagesMapping") as? [[String: String]] ?? []}
 		set {
 			let sorted = newValue.sorted(by: {
 				$0["locmapperName"]! != $1["locmapperName"]! ?
-					$0["locmapperName"]! < $1["locmapperName"]! :
-					$0["lokaliseName"]! < $1["lokaliseName"]!
+				$0["locmapperName"]! < $1["locmapperName"]! :
+				$0["lokaliseName"]! < $1["lokaliseName"]!
 			})
 			UserDefaults.standard.set(sorted, forKey: "LanguagesMapping")
 		}

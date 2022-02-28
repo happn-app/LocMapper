@@ -52,8 +52,7 @@ struct StandardizeRefloc : ParsableCommand {
 		}
 		
 		print("Standardizing Ref Loc...")
-		/* We use XibRefLocFile to parse and output the file because this format
-		 * does not do any transformation on the values it reads and outputs. */
+		/* We use XibRefLocFile to parse and output the file because this format does not do any transformation on the values it reads and outputs. */
 		print("   Parsing source...")
 		let f = try XibRefLocFile(fromURL: URL(fileURLWithPath: inputFile, isDirectory: false), languages: languagesNames, csvSeparator: csvSeparator)
 		

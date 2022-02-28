@@ -1,10 +1,10 @@
 /*
- * LocEntryViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 12/2/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * LocEntryViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 12/2/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -33,8 +33,8 @@ class LocEntryViewController: NSTabViewController {
 	@IBOutlet var tabViewItemAdvancedMapping: NSTabViewItem!
 	
 	var uiState: [String: Any] {
-		/* Todo: See if we need to save UI state for sub-controllers... (Too lazy
-		 *       to add them right now.) */
+		/* Todo: See if we need to save UI state for sub-controllers…
+		 *       (Too lazy to add them right now.) */
 		return ["EntryViewController Selected Tab Index": tabView.selectedTabViewItem.flatMap{ tabView.indexOfTabViewItem($0) } ?? -1]
 	}
 	
@@ -49,10 +49,10 @@ class LocEntryViewController: NSTabViewController {
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {
@@ -95,7 +95,7 @@ class LocEntryViewController: NSTabViewController {
 	
 	/* ***************
 	   MARK: - Actions
-	   *************** */
+	   *************** */
 	
 	override func discardEditing() {
 		super.discardEditing()
@@ -105,8 +105,8 @@ class LocEntryViewController: NSTabViewController {
 	}
 	
 	/* **************************
-	   MARK: - NSTabView Delegate
-	   ************************** */
+	   MARK: - NSTabView Delegate
+	   ************************** */
 	
 	override func tabView(_ tabView: NSTabView, shouldSelect tabViewItem: NSTabViewItem?) -> Bool {
 		guard !dirty else {
@@ -120,22 +120,21 @@ class LocEntryViewController: NSTabViewController {
 					alert.showsSuppressionButton = true
 					alert.beginSheetModal(for: window) { response in
 						switch response {
-						case .alertFirstButtonReturn:
-							(/*nop (cancel)*/)
-							
-						case .alertSecondButtonReturn:
-							self.discardEditing()
-							
-							tabView.selectTabViewItem(tabViewItem)
-							
-							/* Let's check if the user asked not to be bothered by this
-							 * alert anymore. */
-							if (alert.suppressionButton?.state ?? .off) == .on {
-								AppSettings.shared.showAlertForTabChangeDiscardMappingEdition = false
-							}
-							
-						default:
-							NSLog("%@", "Unknown button response \(response)")
+							case .alertFirstButtonReturn:
+								(/*nop (cancel)*/)
+								
+							case .alertSecondButtonReturn:
+								self.discardEditing()
+								
+								tabView.selectTabViewItem(tabViewItem)
+								
+								/* Let's check if the user asked not to be bothered by this alert anymore. */
+								if (alert.suppressionButton?.state ?? .off) == .on {
+									AppSettings.shared.showAlertForTabChangeDiscardMappingEdition = false
+								}
+								
+							default:
+								NSLog("%@", "Unknown button response \(response)")
 						}
 					}
 				} else {
@@ -149,8 +148,8 @@ class LocEntryViewController: NSTabViewController {
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private var locEntryContextViewController: LocEntryContextViewController! {
 		return tabViewItemContext.viewController as? LocEntryContextViewController

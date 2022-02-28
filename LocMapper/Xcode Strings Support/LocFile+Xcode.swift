@@ -1,14 +1,14 @@
 /*
- * LocFile+Xcode.swift
- * LocMapper
- *
- * Created by François Lamboley on 2/3/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocFile+Xcode.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/3/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
@@ -33,38 +33,38 @@ extension LocFile {
 			var currentUserReadableGroupComment = ""
 			for component in stringsFile.components {
 				switch component {
-				case let whiteSpace as XcodeStringsFile.WhiteSpace:
-					if whiteSpace.stringValue.range(of: "\n\n", options: NSString.CompareOptions.literal) != nil && !currentUserReadableComment.isEmpty {
-						if !currentUserReadableGroupComment.isEmpty {
-							currentUserReadableGroupComment += "\n\n\n"
+					case let whiteSpace as XcodeStringsFile.WhiteSpace:
+						if whiteSpace.stringValue.range(of: "\n\n", options: NSString.CompareOptions.literal) != nil && !currentUserReadableComment.isEmpty {
+							if !currentUserReadableGroupComment.isEmpty {
+								currentUserReadableGroupComment += "\n\n\n"
+							}
+							currentUserReadableGroupComment += currentUserReadableComment
+							currentUserReadableComment = ""
 						}
-						currentUserReadableGroupComment += currentUserReadableComment
+						currentComment += whiteSpace.stringValue
+						
+					case let comment as XcodeStringsFile.Comment:
+						if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
+						currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
+						currentComment += comment.stringValue
+						
+					case let locString as XcodeStringsFile.LocalizedString:
+						let refKey = LineKey(
+							locKey: locString.key, env: env, filename: filenameNoLproj, index: index, comment: currentComment,
+							userInfo: ["=": locString.equal, ";": locString.semicolon, "k'¿": locString.keyHasQuotes ? "0": "1", "v'¿": locString.valueHasQuotes ? "0": "1"],
+							userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
+						)
+						let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
+						if setValue(locString.value, forKey: key, withLanguage: languageName) {index += 1}
+						currentComment = ""
 						currentUserReadableComment = ""
-					}
-					currentComment += whiteSpace.stringValue
-					
-				case let comment as XcodeStringsFile.Comment:
-					if !currentUserReadableComment.isEmpty {currentUserReadableComment += "\n"}
-					currentUserReadableComment += comment.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).replacingOccurrences(of: "\n * ", with: "\n", options: NSString.CompareOptions.literal)
-					currentComment += comment.stringValue
-					
-				case let locString as XcodeStringsFile.LocalizedString:
-					let refKey = LineKey(
-						locKey: locString.key, env: env, filename: filenameNoLproj, index: index, comment: currentComment,
-						userInfo: ["=": locString.equal, ";": locString.semicolon, "k'¿": locString.keyHasQuotes ? "0": "1", "v'¿": locString.valueHasQuotes ? "0": "1"],
-						userReadableGroupComment: currentUserReadableGroupComment, userReadableComment: currentUserReadableComment
-					)
-					let key = getKeyFrom(refKey, useNonEmptyCommentIfOneEmptyTheOtherNot: false, withListOfKeys: &keys)
-					if setValue(locString.value, forKey: key, withLanguage: languageName) {index += 1}
-					currentComment = ""
-					currentUserReadableComment = ""
-					currentUserReadableGroupComment = ""
-					
-				default:
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Got unknown XcodeStringsFile component %@", log: $0, type: .info, String(describing: component)) }
-					#endif
-					LocMapperConfig.logger?.warning("Got unknown XcodeStringsFile component \(String(describing: component))")
+						currentUserReadableGroupComment = ""
+						
+					default:
+#if canImport(os)
+						Conf.oslog.flatMap{ os_log("Got unknown XcodeStringsFile component %@", log: $0, type: .info, String(describing: component)) }
+#endif
+						Conf.logger?.warning("Got unknown XcodeStringsFile component \(String(describing: component))")
 				}
 			}
 		}
@@ -88,8 +88,7 @@ extension LocFile {
 			let valueHasNoQuotes = (entry_key.userInfo["v'¿"] == "1")
 			let semicolonString  = (entry_key.userInfo[";"] ?? ";")
 			
-			/* Now let's parse the comment to separate the WhiteSpace and the
-			 * Comment components. */
+			/* Now let's parse the comment to separate the WhiteSpace and the Comment components. */
 			var commentComponents = [XcodeStringsComponent]()
 			let commentScanner = Scanner(string: entry_key.comment)
 			commentScanner.charactersToBeSkipped = CharacterSet() /* No characters should be skipped. */
@@ -110,10 +109,10 @@ extension LocFile {
 					}
 				}
 				if let invalid = commentScanner.lm_scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "/"))) {
-					#if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid) }
-					#endif
-					LocMapperConfig.logger?.warning("Found invalid string in comment; ignoring: “\(invalid)”")
+#if canImport(os)
+					Conf.oslog.flatMap{ os_log("Found invalid string in comment; ignoring: “%@”", log: $0, type: .info, invalid) }
+#endif
+					Conf.logger?.warning("Found invalid string in comment; ignoring: “\(invalid)”")
 				}
 			}
 			
@@ -149,10 +148,10 @@ extension LocFile {
 				try writeText(stringsText, toFile: fullOutputPath, usingEncoding: encoding)
 			} catch let error as NSError {
 				err = error
-				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
-				#endif
-				LocMapperConfig.logger?.error("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))")
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Cannot write file to path %@, got error %@", log: $0, type: .error, fullOutputPath, String(describing: err)) }
+#endif
+				Conf.logger?.error("Cannot write file to path \(fullOutputPath), got error \(String(describing: err))")
 			}
 		}
 	}

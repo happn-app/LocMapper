@@ -1,10 +1,10 @@
 /*
- * LocKeyMappingComponentStdToXibLoc.swift
- * LocMapper
- *
- * Created by François Lamboley on 3/8/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocKeyMappingComponentStdToXibLoc.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 3/8/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -76,9 +76,9 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 		let taggedValues = try taggedKeys.map{ taggedKey -> TaggedString in
 			let key = taggedKey.value
 			switch entries[key] {
-			case nil:                   throw MappingResolvingError.keyNotFound
-			case .mapping?:             throw MappingResolvingError.mappedToMappedKey
-			case .entries(let values)?: return TaggedString(value: values[language] ?? "", tags: taggedKey.tags)
+				case nil:                   throw MappingResolvingError.keyNotFound
+				case .mapping?:             throw MappingResolvingError.mappedToMappedKey
+				case .entries(let values)?: return TaggedString(value: values[language] ?? "", tags: taggedKey.tags)
 			}
 		}
 		

@@ -1,10 +1,10 @@
 /*
- * LocEntryMappingViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 8/6/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * LocEntryMappingViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 8/6/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -36,8 +36,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		/* The sets the font for all of the text storage and other. Do NOT remove. */
 		textViewMappingTransform.font = textViewMappingTransform.font
 		textViewMappingTransform.string = ""
-
-		/* Apparently not read from xib... */
+		
+		/* Apparently not read from xib… */
 		textViewMappingTransform.isAutomaticSpellingCorrectionEnabled = false
 		textViewMappingTransform.isAutomaticQuoteSubstitutionEnabled = false
 		textViewMappingTransform.isAutomaticDashSubstitutionEnabled = false
@@ -52,10 +52,10 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {
@@ -74,8 +74,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	var handlerNotifyLineValueModification: (() -> Void)?
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	override func discardEditing() {
 		super.discardEditing()
@@ -106,7 +106,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	@IBAction func validateAndApplyMapping(_ sender: AnyObject) {
 		guard let lineKey = comboBox.cell?.representedObject as? LocFile.LineKey else {
-			/* This should not be possible */
+			/* This should not be possible. */
 			NSSound.beep()
 			return
 		}
@@ -116,7 +116,7 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 		do {
 			let errorDomain = "Transforms Conversion"
 			
-			/* Retrieving transforms from the text view */
+			/* Retrieving transforms from the text view. */
 			let transformString: String
 			let str = textViewMappingTransform.string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 			if !str.isEmpty {transformString = str}
@@ -126,14 +126,14 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 				throw NSError(domain: errorDomain, code: 1, userInfo: nil)
 			}
 			
-			/* Deserializing the text using JSON format */
+			/* Deserializing the text using JSON format. */
 			let jsonObject = try JSONSerialization.jsonObject(with: transformData, options: [])
 			let serializedTransforms: [[String: Any?]]
 			if      let array  = jsonObject as? [[String: Any?]] {serializedTransforms = array}
 			else if let simple = jsonObject as?  [String: Any?]  {serializedTransforms = [simple]}
 			else {throw NSError(domain: errorDomain, code: 2, userInfo: nil)}
 			
-			/* Converting deserialized representations to actual transforms */
+			/* Converting deserialized representations to actual transforms. */
 			let transforms = try serializedTransforms.map{ serialization -> LocValueTransformer in
 				let transform = LocValueTransformer.createComponentTransformFromSerialization(serialization)
 				guard transform.isValid else {
@@ -142,13 +142,13 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 				return transform
 			}
 			
-			/* Creating the actual mapping entry */
+			/* Creating the actual mapping entry. */
 			representedMapping = .mapping(LocKeyMapping(components: [LocKeyMappingComponentValueTransforms(sourceKey: lineKey, transforms: transforms)]))
 			handlerNotifyLineValueModification?()
 		} catch {
 			guard let window = view.window else {NSSound.beep(); return}
 			
-			/* If JSONSerialization sent useful error messages... */
+			/* If JSONSerialization sent useful error messages… */
 //			let alert = NSAlert(error: error)
 //			alert.beginSheetModal(for: window, completionHandler: nil)
 			
@@ -161,8 +161,8 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	}
 	
 	/* ****************************************
-	   MARK: - Combo Box Data Source & Delegate
-	   **************************************** */
+	   MARK: - Combo Box Data Source & Delegate
+	   **************************************** */
 	
 	func controlTextDidChange(_ obj: Notification) {
 		comboBox.cell?.representedObject = nil
@@ -180,16 +180,16 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	}
 	
 	/* ***********************
-	   MARK: - NSText Delegate
-	   *********************** */
+	   MARK: - NSText Delegate
+	   *********************** */
 	
 	func textDidChange(_ notification: Notification) {
 		dirty = true
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private var possibleLineKeys = Array<LocFile.LineKey>()
 	
@@ -220,41 +220,41 @@ class LocEntryMappingViewController: NSViewController, NSComboBoxDataSource, NSC
 	
 	private func updateTextUIValues() {
 		switch representedMapping {
-		case nil:
-			comboBox.stringValue = ""
-			comboBox.cell?.representedObject = nil
-			comboBox.placeholderString = "No Selection"
-			textViewMappingTransform.string = ""
-			
-		case .entries?:
-			comboBox.stringValue = ""
-			comboBox.cell?.representedObject = nil
-			comboBox.placeholderString = "Selected value is unmapped. Type text here to search for a key to map this value to."
-			textViewMappingTransform.string = ""
-			
-		case .mapping(let mapping)?:
-			if (mapping.components?.count ?? 0) == 1, let component = mapping.components?.first as? LocKeyMappingComponentValueTransforms {
-				comboBox.objectValue = component.sourceKey
-				comboBox.cell?.representedObject = component.sourceKey
-				comboBox.placeholderString = "Type to search for a key"
-				let serializedTransforms = component.transforms.map{ return $0.serialize() }
-				let jsonOptions: JSONSerialization.WritingOptions
-				if #available(OSX 10.13, *) {jsonOptions = [.prettyPrinted, .sortedKeys]}
-				else                        {jsonOptions = [.prettyPrinted]}
-				if
-					let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: jsonOptions),
-					let jsonStr = String(data: jsonData, encoding: .utf8)
-				{
-					textViewMappingTransform.string = jsonStr
-				} else {
-					textViewMappingTransform.string = "ERROR CONVERTING TRANSFORMS TO JSON! This should not happen. Please check with developer of the App."
-				}
-			} else {
+			case nil:
 				comboBox.stringValue = ""
 				comboBox.cell?.representedObject = nil
-				comboBox.placeholderString = "<Complex Mapping> Type in to search a key and convert the mapping to a simple one."
+				comboBox.placeholderString = "No Selection"
 				textViewMappingTransform.string = ""
-			}
+				
+			case .entries?:
+				comboBox.stringValue = ""
+				comboBox.cell?.representedObject = nil
+				comboBox.placeholderString = "Selected value is unmapped. Type text here to search for a key to map this value to."
+				textViewMappingTransform.string = ""
+				
+			case .mapping(let mapping)?:
+				if (mapping.components?.count ?? 0) == 1, let component = mapping.components?.first as? LocKeyMappingComponentValueTransforms {
+					comboBox.objectValue = component.sourceKey
+					comboBox.cell?.representedObject = component.sourceKey
+					comboBox.placeholderString = "Type to search for a key"
+					let serializedTransforms = component.transforms.map{ return $0.serialize() }
+					let jsonOptions: JSONSerialization.WritingOptions
+					if #available(OSX 10.13, *) {jsonOptions = [.prettyPrinted, .sortedKeys]}
+					else                        {jsonOptions = [.prettyPrinted]}
+					if
+						let jsonData = try? JSONSerialization.data(withJSONObject: serializedTransforms, options: jsonOptions),
+						let jsonStr = String(data: jsonData, encoding: .utf8)
+					{
+						textViewMappingTransform.string = jsonStr
+					} else {
+						textViewMappingTransform.string = "ERROR CONVERTING TRANSFORMS TO JSON! This should not happen. Please check with developer of the App."
+					}
+				} else {
+					comboBox.stringValue = ""
+					comboBox.cell?.representedObject = nil
+					comboBox.placeholderString = "<Complex Mapping> Type in to search a key and convert the mapping to a simple one."
+					textViewMappingTransform.string = ""
+				}
 		}
 	}
 	

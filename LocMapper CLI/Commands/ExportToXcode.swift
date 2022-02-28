@@ -51,10 +51,10 @@ struct ExportToXcode : ParsableCommand {
 		
 		let encoding: String.Encoding
 		switch self.encoding.lowercased() {
-		case "utf8",  "utf-8":  encoding = .utf8
-		case "utf16", "utf-16": encoding = .utf16
-		default:
-			throw ValidationError("Unsupported encoding \(self.encoding)")
+			case "utf8",  "utf-8":  encoding = .utf8
+			case "utf16", "utf-16": encoding = .utf16
+			default:
+				throw ValidationError("Unsupported encoding \(self.encoding)")
 		}
 		
 		let folderNameToLanguageName = try dictionaryOptionFromArray(lprojNameToLanguageNameMapping)

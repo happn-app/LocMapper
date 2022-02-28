@@ -19,8 +19,7 @@ import ArgumentParser
 
 
 
-/* For retro-compatibility with previous locmapper’s version which had help and
- * version as verbs, not options. */
+/* For retro-compatibility with previous locmapper’s version which had help and version as verbs, not options. */
 extension LocMapperCLI {
 	
 	struct Help : ParsableCommand {

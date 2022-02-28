@@ -94,10 +94,10 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		
 		let encoding: String.Encoding
 		switch self.encoding.lowercased() {
-		case "utf8",  "utf-8":  encoding = .utf8
-		case "utf16", "utf-16": encoding = .utf16
-		default:
-			throw ValidationError("Unsupported encoding \(self.encoding)")
+			case "utf8",  "utf-8":  encoding = .utf8
+			case "utf16", "utf-16": encoding = .utf16
+			default:
+				throw ValidationError("Unsupported encoding \(self.encoding)")
 		}
 		
 		let excludeList = parseObsoleteOptionList(self.excludeList)
@@ -188,8 +188,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					} else {
 						originalParsedStringsFile = nil
 					}
-					/* Then create a new strings file with ibtool. We do not even create
-					 * it at the same location as it is not mandatory. */
+					/* Then create a new strings file with ibtool.
+					 * We do not even create it at the same location as it is not mandatory. */
 					let temporaryStringsFileURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".strings")
 					defer {_ = try? fm.removeItem(at: temporaryStringsFileURL)} /* We don’t care if the delete fails */
 					let exitCode = finishedProcess(launchPath: "/usr/bin/ibtool", arguments: ["--export-strings-file", temporaryStringsFileURL.path, xibURL.path])
@@ -239,11 +239,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 			let temporaryGenstringsDestinationFolderURL = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
 			try fm.createDirectory(at: temporaryGenstringsDestinationFolderURL, withIntermediateDirectories: true, attributes: nil)
 			defer {_ = try? fm.removeItem(at: temporaryGenstringsDestinationFolderURL)} /* We don’t care if the delete fails */
-			/* We process the code files in bulk, but limited to the arbitrary
-			 * limit 250 files (so that there are no more than 256 arguments to
-			 * genstrings). The 256 limit is arbitrary. We should be able to use
-			 * ARG_MAX, but the value for this parameter is ridiculously high and
-			 * it won’t work (we have reached the limit at a lower value). */
+			/* We process the code files in bulk, but limited to the arbitrary limit 250 files (so that there are no more than 256 arguments to genstrings).
+			 * The 256 limit is arbitrary.
+			 * We should be able to use ARG_MAX, but the value for this parameter is ridiculously high and it won’t work (we have reached the limit at a lower value). */
 			let size = 250
 			for start in stride(from: codeFilePaths.startIndex, to: codeFilePaths.endIndex, by: size) {
 				let subarray = codeFilePaths[start..<min(start + size, codeFilePaths.endIndex)]

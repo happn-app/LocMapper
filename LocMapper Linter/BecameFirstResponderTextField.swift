@@ -1,10 +1,10 @@
 /*
- * BecameFirstResponderTextField.swift
- * LocMapper Linter
- *
- * Created by François Lamboley on 12/12/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * BecameFirstResponderTextField.swift
+ * LocMapper Linter
+ *
+ * Created by François Lamboley on 12/12/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import AppKit
 

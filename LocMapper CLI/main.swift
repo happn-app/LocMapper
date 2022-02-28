@@ -1,10 +1,10 @@
 /*
- * main.swift
- * LocMapper CLI
- *
- * Created by François Lamboley on 9/25/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * main.swift
+ * LocMapper CLI
+ *
+ * Created by François Lamboley on 9/25/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -19,7 +19,7 @@ struct LocMapperCLI : ParsableCommand {
 	static var version = "35" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */
 	
 	/**
-	This _only_ works in a debug build on macOS. */
+	 This _only_ works in a debug build on macOS. */
 	static var dynVersion: String? {
 		let hdl = dlopen(nil, 0)
 		defer {if let hdl = hdl {dlclose(hdl)}}
@@ -29,11 +29,11 @@ struct LocMapperCLI : ParsableCommand {
 		return "\(Int(versionNumber))"
 	}
 	
-	#if os(macOS)
+#if os(macOS)
 	static var platformSpecificCommands: [ParsableCommand.Type] = [UpdateXcodeStringsFromCode.self]
-	#else
+#else
 	static var platformSpecificCommands: [ParsableCommand.Type] = []
-	#endif
+#endif
 	
 	static var configuration = CommandConfiguration(
 		commandName: "locmapper",

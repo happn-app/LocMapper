@@ -1,14 +1,14 @@
 /*
- * URLSession+Synchronous.swift
- * ghapp
- *
- * Created by François Lamboley on 2/6/17.
- * Copyright © 2017 happn. All rights reserved.
- */
+ * URLSession+Synchronous.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/6/17.
+ * Copyright © 2017 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(FoundationNetworking)
-	import FoundationNetworking
+import FoundationNetworking
 #endif
 
 

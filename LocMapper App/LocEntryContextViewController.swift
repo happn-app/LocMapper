@@ -1,10 +1,10 @@
 /*
- * LocEntryContextViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 7/31/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * LocEntryContextViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 7/31/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -25,10 +25,10 @@ class LocEntryContextViewController: NSViewController {
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {
@@ -43,8 +43,8 @@ class LocEntryContextViewController: NSViewController {
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private func updateLabelGeneralInfoWith(env: String, file: String, key: String) {
 		labelGeneralInfo.stringValue = Utils.lineKeyToStr(LocFile.LineKey(locKey: key, env: env, filename: file, index: 0, comment: "", userInfo: [:], userReadableGroupComment: "", userReadableComment: ""))

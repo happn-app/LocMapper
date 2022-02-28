@@ -1,10 +1,10 @@
 /*
- * LocFileDocTabViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 12/8/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * LocFileDocTabViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 12/8/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -23,10 +23,10 @@ class LocFileDocTabViewController : NSTabViewController {
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {
@@ -48,8 +48,8 @@ class LocFileDocTabViewController : NSTabViewController {
 	}
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	@IBAction func showFilters(_ sender: AnyObject!) {
 		optionsSplitViewController.showFilters(sender)
@@ -64,8 +64,8 @@ class LocFileDocTabViewController : NSTabViewController {
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private var optionsSplitViewController: LocFileDocFiltersSplitViewController! {
 		return tabViewItemDocContent.viewController as? LocFileDocFiltersSplitViewController

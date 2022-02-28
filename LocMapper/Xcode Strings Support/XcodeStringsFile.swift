@@ -1,33 +1,32 @@
 /*
- * XcodeStringsFile.swift
- * LocMapper
- *
- * Created by François Lamboley on 9/25/14.
- * Copyright (c) 2014 happn. All rights reserved.
- */
+ * XcodeStringsFile.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 9/25/14.
+ * Copyright (c) 2014 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(os)
-	import os.log
+import os.log
 #endif
 
 import Logging
 
 
 /* strings files are, in essence, old-style plist files.
- * FYI: https://pewpewthespells.com/blog/dangers_of_ascii_plists.html
- *      -> Xcode reads those old-style plists as Unicode, but original parser
- *         read them as ASCII, with support for Unicode with \Uxxxx, but not
- *         more than four numbers were read after the “U”.
- *         https://opensource.apple.com/source/CF/CF-1153.18/CFOldStylePList.c
- *         PropertyListSerialization does serialize as Unicode though.
- * From the CFOldStylePList.c file, we get:
- *    #define isValidUnquotedStringCharacter(x) (((x) >= 'a' && (x) <= 'z') || ((x) >= 'A' && (x) <= 'Z') || ((x) >= '0' && (x) <= '9') || (x) == '_' || (x) == '$' || (x) == '/' || (x) == ':' || (x) == '.' || (x) == '-')
- * _ = try? PropertyListSerialization.propertyList(from: Data("{\"hello\"=/w_o$r:l.d ;}".utf8), options: [], format: nil)
- *    -> ["hello": "/w_o$r:l.d"]
- * _ = try? PropertyListSerialization.propertyList(from: Data("{\"hello\"=\"/w_o$r:l.d🙃\";}".utf8), options: [], format: nil)
- *    -> ["hello": "/w_o$r:l.d🙃"]
- */
+ * FYI: https://pewpewthespells.com/blog/dangers_of_ascii_plists.html
+ *      -> Xcode reads those old-style plists as Unicode, but original parser read them as ASCII, with support for Unicode with \Uxxxx,
+ *         but not more than four numbers were read after the “U”.
+ *         https://opensource.apple.com/source/CF/CF-1153.18/CFOldStylePList.c
+ *         PropertyListSerialization does serialize as Unicode though.
+ * From the CFOldStylePList.c file, we get:
+ *    #define isValidUnquotedStringCharacter(x) (((x) >= 'a' && (x) <= 'z') || ((x) >= 'A' && (x) <= 'Z') || ((x) >= '0' && (x) <= '9') || (x) == '_' || (x) == '$' || (x) == '/' || (x) == ':' || (x) == '.' || (x) == '-')
+ * _ = try? PropertyListSerialization.propertyList(from: Data("{\"hello\"=/w_o$r:l.d ;}".utf8), options: [], format: nil)
+ *    -> ["hello": "/w_o$r:l.d"]
+ * _ = try? PropertyListSerialization.propertyList(from: Data("{\"hello\"=\"/w_o$r:l.d🙃\";}".utf8), options: [], format: nil)
+ *    -> ["hello": "/w_o$r:l.d🙃"]
+ */
 
 
 protocol XcodeStringsComponent {
@@ -112,10 +111,10 @@ public class XcodeStringsFile: TextOutputStreamable {
 				let xcodeStringsFile = try XcodeStringsFile(fromPath: curFile, relativeToProjectPath: rootFolder)
 				parsedStringsFiles.append(xcodeStringsFile)
 			} catch let error as NSError {
-				#if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, curFile, String(describing: error)) }
-				#endif
-				LocMapperConfig.logger?.warning("Got error while parsing strings file (skipping) \(curFile): \(String(describing: error))")
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Got error while parsing strings file (skipping) %@: %@", log: $0, type: .info, curFile, String(describing: error)) }
+#endif
+				Conf.logger?.warning("Got error while parsing strings file (skipping) \(curFile): \(String(describing: error))")
 			}
 		}
 		return parsedStringsFiles
@@ -128,28 +127,22 @@ public class XcodeStringsFile: TextOutputStreamable {
 	}
 	
 	/**
-	Merges the new strings file in the original.
-	
-	Any new key not present in the original is added at the end of the original
-	with their comments and whitespaces.
-	
-	All keys that were present in the original are left unmodified (the value are
-	not changed either!).
-	
-	If a key is present in the original but not in the new file, behavior will
-	depend on the `obsoleteKeys` parameter. If the parameter is `nil`, the keys
-	and their comments/whitespaces will be removed from the original. If the
-	parameter is non-nil, the key will be left in the original and added to the
-	`obsoleteKeys` parameter.
-	
-	If the new file has a key not present in the original, and duplicated, it
-	will be added only once in the resulting file. Which comment will be chosen
-	is undefined.
-	
-	If the original file has duplicated keys, they won’t be de-duplicated.
-	
-	If the original file has a duplicated key that is not in the new file, only
-	one key will be removed. Which one is undefined. */
+	 Merges the new strings file in the original.
+	 
+	 Any new key not present in the original is added at the end of the original with their comments and whitespaces.
+	 
+	 All keys that were present in the original are left unmodified (the value are not changed either!).
+	 
+	 If a key is present in the original but not in the new file, behavior will depend on the `obsoleteKeys` parameter.
+	 If the parameter is `nil`, the keys and their comments/whitespaces will be removed from the original.
+	 If the parameter is non-nil, the key will be left in the original and added to the `obsoleteKeys` parameter.
+	 
+	 If the new file has a key not present in the original, and duplicated, it will be added only once in the resulting file.
+	 Which comment will be chosen is undefined.
+	 
+	 If the original file has duplicated keys, they won’t be de-duplicated.
+	 
+	 If the original file has a duplicated key that is not in the new file, only one key will be removed. Which one is undefined. */
 	public convenience init(merging new: XcodeStringsFile, in original: XcodeStringsFile?, obsoleteKeys: inout [String]?, filepath: String) {
 		let newKeys = Set(new.components.compactMap{ ($0 as? LocalizedString)?.key })
 		let originalKeys = Set((original?.components ?? []).compactMap{ ($0 as? LocalizedString)?.key })
@@ -170,11 +163,11 @@ public class XcodeStringsFile: TextOutputStreamable {
 			if obsoleteKeys != nil {obsoleteKeys?.append(keyToRemove)}
 			else                   {components.removeSubrange(fullKeyRange(for: keyToRemove, in: components)!)} /* See next comment for force unwrap justification. */
 		}
-		/* Note: We search again for the key in the new file components. We
-		  *       probably could save the index info when building newKeys, but
-		  *       I wasn’t able to do it one shot when writing this code, and I
-		  *       got bored, so we search again…
-		  *       We can force unwrap because we know the key exists. */
+		/* Note: We search again for the key in the new file components.
+		 *       We probably could save the index info when building newKeys,
+		 *       but I wasn’t able to do it one shot when writing this code,
+		 *       and I got bored, so we search again…
+		 *       We can force unwrap because we know the key exists. */
 		let rangesToAdd = newKeys.subtracting(originalKeys).map{ keyToAdd in fullKeyRange(for: keyToAdd, in: new.components)! }
 		for rangeToAdd in rangesToAdd.sorted(by: { $0.lowerBound < $1.lowerBound }) {
 			components.append(contentsOf: new.components[rangeToAdd])
@@ -184,7 +177,7 @@ public class XcodeStringsFile: TextOutputStreamable {
 	}
 	
 	convenience init(filepath path: String, filecontent: String) throws {
-		/* Let's parse the stream */
+		/* Let's parse the stream. */
 		var components = [XcodeStringsComponent]()
 		var startIdx = filecontent.startIndex
 		while true {
@@ -221,9 +214,7 @@ public class XcodeStringsFile: TextOutputStreamable {
 		for component in components {
 			component.stringValue.write(to: &target)
 		}
-		/* This is hacky, I don’t like it, but removing the newline write fully
-		 * have too much intricate implications, so instead of removing it fully,
-		 * I protect it. */
+		/* This is hacky, I don’t like it, but removing the newline write fully have too much intricate implications, so instead of removing it fully, I protect it. */
 		if !(components.last is WhiteSpace) {
 			"\n".write(to: &target)
 		}
@@ -241,50 +232,50 @@ public class XcodeStringsFile: TextOutputStreamable {
 	
 }
 
-/* ******************************* State Engine ******************************* */
-/*	wait_string_start -> wait_string_start [label=" \"white\" "];
-	wait_string_start -> confirm_prestring_comment_start [label=" / "];
-	wait_string_start -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
-	wait_string_start -> wait_end_string [label=" \" "];
-	wait_string_start -> ERROR;
-	confirm_prestring_comment_start -> wait_end_prestring_star_comment [label=" * "];
-	confirm_prestring_comment_start -> wait_end_prestring_slash_comment [label=" / "];
-	confirm_prestring_comment_start -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
-	confirm_prestring_comment_start -> wait_separator_token [label=" \"white\" "];
-	confirm_prestring_comment_start -> SUCCESS [label=" \"separatorToken\" "];
-	confirm_prestring_comment_start -> ERROR;
-	wait_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
-	wait_end_prestring_star_comment -> wait_end_prestring_star_comment;
-	confirm_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
-	confirm_end_prestring_star_comment -> wait_string_start [label=" / "];
-	confirm_end_prestring_star_comment -> wait_end_prestring_star_comment;
-	wait_end_prestring_slash_comment -> wait_string_start [label=" \\n "];
-	wait_end_prestring_slash_comment -> wait_end_prestring_slash_comment;
-
-	wait_end_string_no_double_quotes -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
-	wait_end_string_no_double_quotes -> SUCCESS [label=" \"separatorToken\" "];
-	wait_end_string_no_double_quotes -> wait_separator_token [label=" \"white\" "];
-	wait_end_string_no_double_quotes -> ERROR;
-	wait_end_string -> treat_string_escaped_char [label=" \\ "];
-	wait_end_string -> wait_separator_token [label=" \" "];
-	wait_end_string -> wait_end_string;
-	treat_string_escaped_char -> wait_end_string;
-
-	wait_separator_token -> confirm_poststring_comment_start [label = " / "];
-	wait_separator_token -> wait_separator_token [label = " \"white\" "];
-	wait_separator_token -> SUCCESS [label = " \"separatorToken\" "];
-	wait_separator_token -> ERROR;
-	confirm_poststring_comment_start -> wait_end_poststring_star_comment [label=" * "];
-	confirm_poststring_comment_start -> wait_end_poststring_slash_comment [label=" / "];
-	confirm_poststring_comment_start -> ERROR;
-	wait_end_poststring_star_comment -> confirm_end_poststring_star_comment [label=" * "];
-	wait_end_poststring_star_comment -> wait_end_poststring_star_comment;
-	confirm_end_poststring_star_comment -> confirm_end_poststring_star_comment [label = " * "];
-	confirm_end_poststring_star_comment -> wait_separator_token [label = " / "];
-	confirm_end_poststring_star_comment -> wait_end_poststring_star_comment;
-	wait_end_poststring_slash_comment -> wait_separator_token [label=" \\n "];
-	wait_end_poststring_slash_comment -> wait_end_poststring_slash_comment; */
-/* ******************************* State Engine ******************************* */
+/* ******************************* State Engine *******************************
+   wait_string_start -> wait_string_start [label=" \"white\" "];
+   wait_string_start -> confirm_prestring_comment_start [label=" / "];
+   wait_string_start -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+   wait_string_start -> wait_end_string [label=" \" "];
+   wait_string_start -> ERROR;
+   confirm_prestring_comment_start -> wait_end_prestring_star_comment [label=" * "];
+   confirm_prestring_comment_start -> wait_end_prestring_slash_comment [label=" / "];
+   confirm_prestring_comment_start -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+   confirm_prestring_comment_start -> wait_separator_token [label=" \"white\" "];
+   confirm_prestring_comment_start -> SUCCESS [label=" \"separatorToken\" "];
+   confirm_prestring_comment_start -> ERROR;
+   wait_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
+   wait_end_prestring_star_comment -> wait_end_prestring_star_comment;
+   confirm_end_prestring_star_comment -> confirm_end_prestring_star_comment [label=" * "];
+   confirm_end_prestring_star_comment -> wait_string_start [label=" / "];
+   confirm_end_prestring_star_comment -> wait_end_prestring_star_comment;
+   wait_end_prestring_slash_comment -> wait_string_start [label=" \\n "];
+   wait_end_prestring_slash_comment -> wait_end_prestring_slash_comment;
+   
+   wait_end_string_no_double_quotes -> wait_end_string_no_double_quotes [label=" \"alphanum\" "];
+   wait_end_string_no_double_quotes -> SUCCESS [label=" \"separatorToken\" "];
+   wait_end_string_no_double_quotes -> wait_separator_token [label=" \"white\" "];
+   wait_end_string_no_double_quotes -> ERROR;
+   wait_end_string -> treat_string_escaped_char [label=" \\ "];
+   wait_end_string -> wait_separator_token [label=" \" "];
+   wait_end_string -> wait_end_string;
+   treat_string_escaped_char -> wait_end_string;
+   
+   wait_separator_token -> confirm_poststring_comment_start [label = " / "];
+   wait_separator_token -> wait_separator_token [label = " \"white\" "];
+   wait_separator_token -> SUCCESS [label = " \"separatorToken\" "];
+   wait_separator_token -> ERROR;
+   confirm_poststring_comment_start -> wait_end_poststring_star_comment [label=" * "];
+   confirm_poststring_comment_start -> wait_end_poststring_slash_comment [label=" / "];
+   confirm_poststring_comment_start -> ERROR;
+   wait_end_poststring_star_comment -> confirm_end_poststring_star_comment [label=" * "];
+   wait_end_poststring_star_comment -> wait_end_poststring_star_comment;
+   confirm_end_poststring_star_comment -> confirm_end_poststring_star_comment [label = " * "];
+   confirm_end_poststring_star_comment -> wait_separator_token [label = " / "];
+   confirm_end_poststring_star_comment -> wait_end_poststring_star_comment;
+   wait_end_poststring_slash_comment -> wait_separator_token [label=" \\n "];
+   wait_end_poststring_slash_comment -> wait_end_poststring_slash_comment;
+   ******************************* State Engine ******************************* */
 
 extension XcodeStringsFile {
 	
@@ -309,7 +300,7 @@ extension XcodeStringsFile {
 		var postString = [XcodeStringsComponent]()
 		
 		func wait_string_start(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_string_start: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_string_start: %@", log: $0, type: .debug, String(c)) }
 			if isWhiteChar(c) {
 				currentString.append(c)
 				return true
@@ -340,7 +331,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_prestring_comment_start(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("confirm_prestring_comment_start: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("confirm_prestring_comment_start: %@", log: $0, type: .debug, String(c)) }
 			if c == separatorToken {
 				string = "/"
 				currentString = ""
@@ -375,7 +366,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_prestring_star_comment(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "*" {
 				eofHandling = .earlyEOF
 				engine = confirm_end_prestring_star_comment
@@ -386,7 +377,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_end_prestring_star_comment(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("confirm_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("confirm_end_prestring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "/" {
 				preString.append(Comment(currentString, doubleSlashed: false))
 				currentString = ""
@@ -405,7 +396,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_prestring_slash_comment(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_prestring_slash_comment: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_end_prestring_slash_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "\n" {
 				preString.append(Comment(currentString, doubleSlashed: true))
 				currentString = ""
@@ -418,7 +409,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_string_no_double_quotes(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_string_no_double_quotes: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_end_string_no_double_quotes: %@", log: $0, type: .debug, String(c)) }
 			if isValidUnquotedStringChar(c) {
 				currentString.append(c)
 				return true
@@ -441,7 +432,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_string(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_string: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_end_string: %@", log: $0, type: .debug, String(c)) }
 			if c == "\\" {
 				currentString.append(c)
 				eofHandling = .earlyEOF
@@ -460,7 +451,7 @@ extension XcodeStringsFile {
 		}
 		
 		func treat_string_escaped_char(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("treat_string_escaped_char: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("treat_string_escaped_char: %@", log: $0, type: .debug, String(c)) }
 			currentString.append(c)
 			eofHandling = .earlyEOF
 			engine = wait_end_string
@@ -468,7 +459,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_separator_token(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_separator_token: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_separator_token: %@", log: $0, type: .debug, String(c)) }
 			if c == separatorToken {
 				if !currentString.isEmpty {postString.append(WhiteSpace(currentString))}
 				currentString = ""
@@ -491,7 +482,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_poststring_comment_start(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("confirm_poststring_comment_start: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("confirm_poststring_comment_start: %@", log: $0, type: .debug, String(c)) }
 			if c == "*" {
 				eofHandling = .earlyEOF
 				engine = wait_end_poststring_star_comment
@@ -506,7 +497,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_poststring_star_comment(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "*" {
 				eofHandling = .earlyEOF
 				engine = confirm_end_poststring_star_comment
@@ -517,7 +508,7 @@ extension XcodeStringsFile {
 		}
 		
 		func confirm_end_poststring_star_comment(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("confirm_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("confirm_end_poststring_star_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "/" {
 				postString.append(Comment(currentString, doubleSlashed: false))
 				currentString = ""
@@ -536,7 +527,7 @@ extension XcodeStringsFile {
 		}
 		
 		func wait_end_poststring_slash_comment(_ c: Character) -> Bool {
-//			LocMapperConfig.oslog.flatMap{ os_log("wait_end_poststring_slash_comment: %@", log: $0, type: .debug, String(c)) }
+//			Conf.oslog.flatMap{ os_log("wait_end_poststring_slash_comment: %@", log: $0, type: .debug, String(c)) }
 			if c == "\n" {
 				postString.append(Comment(currentString, doubleSlashed: true))
 				currentString = ""
@@ -559,10 +550,10 @@ extension XcodeStringsFile {
 		
 		if isEOF {
 			switch eofHandling {
-			case .nop:                     (/*nop*/)
-			case .earlyEOF:                return nil
-			case .addWhite:                if !currentString.isEmpty {assert(string == nil); preString.append(WhiteSpace(currentString))}
-			case .addDoubleSlashedComment:                            assert(string == nil); preString.append(Comment(currentString, doubleSlashed: true))
+				case .nop:                     (/*nop*/)
+				case .earlyEOF:                return nil
+				case .addWhite:                if !currentString.isEmpty {assert(string == nil); preString.append(WhiteSpace(currentString))}
+				case .addDoubleSlashedComment:                            assert(string == nil); preString.append(Comment(currentString, doubleSlashed: true))
 			}
 		}
 		

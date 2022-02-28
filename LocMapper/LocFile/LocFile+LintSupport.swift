@@ -1,10 +1,10 @@
 /*
- * LocFile+LintSupport.swift
- * LocMapper
- *
- * Created by François Lamboley on 14/11/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocFile+LintSupport.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 14/11/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -28,19 +28,19 @@ extension LocFile {
 	public func lint(detectUnusedRefLoc: Bool) -> [LintReport] {
 		var ret = [LintReport]()
 		
-		/* *** Detect keys whose filename is not localized *** */
+		/* *** Detect keys whose filename is not localized. *** */
 		for f in Set(allNonRefLocKeys.map({ $0.filename })) {
 			if !f.contains("//LANGUAGE//") {
 				ret.append(.unlocalizedFilename(f))
 			}
 		}
 		
-		/* *** Detect invalid mappings *** */
+		/* *** Detect invalid mappings. *** */
 		for k in entryKeys(matchingFilters: allEnvironments + [.uiPresentable, .stateMappedInvalid]) {
 			ret.append(.invalidMapping(k))
 		}
 		
-		/* *** Detect unused RefLoc keys (if asked) *** */
+		/* *** Detect unused RefLoc keys (if asked). *** */
 		if detectUnusedRefLoc {
 			let refLocKeys = Set(entryKeys(matchingFilters: [.env("RefLoc"), .uiPresentable, .stateTodoloc, .stateHardCodedValues]))
 			for k in refLocKeys.subtracting(keysReferencedInMappings) {
@@ -48,7 +48,7 @@ extension LocFile {
 			}
 		}
 		
-		/* *** Detect unmapped variant for StdRefLoc mappings *** */
+		/* *** Detect unmapped variant for StdRefLoc mappings. *** */
 		for (untaggedBase, taggedVariants) in groupedTaggedRefLocKeys {
 			let i = keysReferencedInMappings.intersection(taggedVariants)
 			let c = i.count
@@ -57,21 +57,21 @@ extension LocFile {
 			}
 		}
 		
-		/* *** Detect latest mapped RefLoc version *** */
+		/* *** Detect latest mapped RefLoc version. *** */
 		for (_, octothorpedUntaggedVersions) in groupedOctothorpedUntaggedRefLocKeys {
 			let i = untaggedKeysReferencedInMappings.intersection(octothorpedUntaggedVersions)
 			switch i.count {
-			case 1:
-				let mapped = i.first!
-				let expected = octothorpedUntaggedVersions.last!
-				if mapped != expected {
-					ret.append(.notLatestKeyVersion(currentKey: mapped, expectedKey: expected))
-				}
-				
-			case 2...:
-				ret.append(.multipleKeyVersionsMapped(Array(i)))
-				
-			default: (/*nop*/)
+				case 1:
+					let mapped = i.first!
+					let expected = octothorpedUntaggedVersions.last!
+					if mapped != expected {
+						ret.append(.notLatestKeyVersion(currentKey: mapped, expectedKey: expected))
+					}
+					
+				case 2...:
+					ret.append(.multipleKeyVersionsMapped(Array(i)))
+					
+				default: (/*nop*/)
 			}
 		}
 		
@@ -147,10 +147,12 @@ extension LocFile {
 		return v
 	}
 	
-	/** Groupped RefLoc keys that have the same root, but different variants. For
-	instance:
-	‘hello"gf' and 'hello"gm' have the same 'hello' root, and the 'gf' and 'gm'
-	variants. They’ll be grouped as `['hello': [‘hello"gf', 'hello"gm']]`. */
+	/**
+	 Groupped RefLoc keys that have the same root, but different variants.
+	 
+	 For instance:
+	 'hello"gf' and 'hello"gm' have the same 'hello' root, and the 'gf' and 'gm' variants.
+	 They’ll be grouped as `['hello': [‘hello"gf', 'hello"gm']]`. */
 	public var groupedTaggedRefLocKeys: [LineKey: Set<LineKey>] {
 		if let v = cachedGroupedTaggedRefLocKeys {return v}
 		
@@ -176,12 +178,12 @@ extension LocFile {
 		return v
 	}
 	
-	/** Groupped **untagged** RefLoc keys by versions. For instance: 'hello#2'
-	and 'hello' are two different versions of the 'hello' key. They’ll be grouped
-	as (in this order) `['hello': ['hello', 'hello#2']]`.
-	
-	'hello' and 'hello#1a' are two different keys altogether (1a is not a valid
-	number). */
+	/**
+	 Groupped **untagged** RefLoc keys by versions.
+	 For instance: 'hello#2' and 'hello' are two different versions of the 'hello' key.
+	 They’ll be grouped as (in this order) `['hello': ['hello', 'hello#2']]`.
+	 
+	 'hello' and 'hello#1a' are two different keys altogether (1a is not a valid number). */
 	public var groupedOctothorpedUntaggedRefLocKeys: [LineKey: [LineKey]] {
 		if let v = cachedGroupedOctothorpedUntaggedRefLocKeys {return v}
 		

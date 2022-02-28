@@ -1,10 +1,10 @@
 /*
- * UINavigationUtilities.swift
- * LocMapper App
- *
- * Created by François Lamboley on 7/11/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * UINavigationUtilities.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 7/11/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import AppKit
 

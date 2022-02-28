@@ -1,10 +1,10 @@
 /*
- * LocKeyMappingComponentValueTransforms.swift
- * LocMapper
- *
- * Created by François Lamboley on 2/3/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocKeyMappingComponentValueTransforms.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/3/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -73,11 +73,11 @@ public class LocKeyMappingComponentValueTransforms : LocKeyMappingComponent {
 	
 	override func apply(forLanguage language: String, entries: [LocFile.LineKey: LocFile.LineValue]) throws -> String {
 		switch entries[sourceKey] {
-		case nil:                   throw MappingResolvingError.keyNotFound
-		case .mapping?:             throw MappingResolvingError.mappedToMappedKey
-		case .entries(let values)?:
-			guard let v = values[language] else {throw MappingResolvingError.noValueForLanguage}
-			return try transforms.reduce(v, { try $1.apply(toValue: $0, withLanguage: language) })
+			case nil:                   throw MappingResolvingError.keyNotFound
+			case .mapping?:             throw MappingResolvingError.mappedToMappedKey
+			case .entries(let values)?:
+				guard let v = values[language] else {throw MappingResolvingError.noValueForLanguage}
+				return try transforms.reduce(v, { try $1.apply(toValue: $0, withLanguage: language) })
 		}
 	}
 	

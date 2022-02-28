@@ -1,10 +1,10 @@
 /*
- * KeyVersionsCheckViewController.swift
- * LocMapper Linter
- *
- * Created by François Lamboley on 13/12/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * KeyVersionsCheckViewController.swift
+ * LocMapper Linter
+ *
+ * Created by François Lamboley on 13/12/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import AppKit
 
@@ -21,10 +21,9 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 	@IBOutlet var tableView: NSTableView!
 	
 	/* The following 4 vars are not bound directly from UI to User Defaults
-	 * because we can have multiple KeyVersionsCheckViewController instantiated
-	 * and we don’t want to have the filters change for all controllers at the
-	 * same time. We do however save the value in the User Defaults to have a
-	 * default value which will be the latest filters chosen by the user. */
+	 * because we can have multiple KeyVersionsCheckViewController instantiated
+	 * and we don’t want to have the filters change for all controllers at the same time.
+	 * We do however save the value in the User Defaults to have a default value which will be the latest filters chosen by the user. */
 	
 	@objc dynamic var showMappedLatest = UserDefaults.standard.bool(forKey: "HPN Default Show Mapped Latest") {
 		didSet {
@@ -65,7 +64,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		assert(simplifiedUntaggedKeysReferencedInMappingsByFile == nil)
 		simplifiedUntaggedKeysReferencedInMappingsByFile = [:]
 		
-		/* Let's setup the table view columns */
+		/* Let's setup the table view columns. */
 		for column in tableView.tableColumns {
 			tableView.removeTableColumn(column)
 		}
@@ -89,8 +88,8 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 	}
 	
 	/* *******************************************
-	   MARK: - Table View Data Source and Delegate
-	   ******************************************* */
+	   MARK: - Table View Data Source and Delegate
+	   ******************************************* */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		return reports?.count ?? 0
@@ -106,32 +105,32 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		
 		if let textField = r.viewWithTag(1) as? NSTextField {
 			switch tableColumn.identifier.rawValue {
-			case "__REF":
-				switch reports[row] {
-				case .versionReport(latestRefLocKey: let l, mappedKeys: _):
-					(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = .textColor
-					textField.stringValue = l
-				}
-				
-			default:
-				switch reports[row] {
-				case .versionReport(latestRefLocKey: let l, mappedKeys: let mapped):
-					if let key = mapped[tableColumn.identifier.rawValue] {
-						(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = (key == l ? green : orange)
-						textField.stringValue = key
-					} else {
-						(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = .gray
-						textField.stringValue = "<UNMAPPED>"
+				case "__REF":
+					switch reports[row] {
+						case .versionReport(latestRefLocKey: let l, mappedKeys: _):
+							(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = .textColor
+							textField.stringValue = l
 					}
-				}
+					
+				default:
+					switch reports[row] {
+						case .versionReport(latestRefLocKey: let l, mappedKeys: let mapped):
+							if let key = mapped[tableColumn.identifier.rawValue] {
+								(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = (key == l ? green : orange)
+								textField.stringValue = key
+							} else {
+								(textField.cell as? ColorFixedTextFieldCell)?.expectedTextColor = .gray
+								textField.stringValue = "<UNMAPPED>"
+							}
+					}
 			}
 		}
 		return r
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private enum LoadingState {
 		
@@ -165,8 +164,8 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		queue.addOperation{
 			assert(self.simplifiedGroupedOctothorpedUntaggedRefLocKeys == nil)
 			do {
-				/* We use iOS key type. AFAIK iOS and android keys are the same and
-				 * this should not change. */
+				/* We use iOS key type.
+				 * AFAIK iOS and android keys are the same and this should not change. */
 				let stdRefLoc = try StdRefLocFile(token: PreferencesViewController.accessToken, projectId: PreferencesViewController.projectId, lokaliseToReflocLanguageName: PreferencesViewController.languagesNameMappings, keyType: "ios", excludedTags: PreferencesViewController.excludedTags, logPrefix: nil)
 				let xibRefLoc = try XibRefLocFile(stdRefLoc: stdRefLoc)
 				let stdRefLocFile = LocFile(csvSeparator: ","); stdRefLocFile.mergeRefLocsWithStdRefLocFile(stdRefLoc, mergeStyle: .replace)
@@ -228,14 +227,14 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 		queue.addOperation{
 			var reports = [Report]()
 			for (_, versions) in self.simplifiedGroupedOctothorpedUntaggedRefLocKeys {
-				/* First filter on version count */
+				/* First filter on version count. */
 				guard self.alsoShowOneVersionKeys || versions.count > 1 else {
 					continue
 				}
 				
 				let latestVersion = versions.last!
 				var mapped = [String: String]()
-				/* Let's find which key is mapped (if any) for each input files */
+				/* Let's find which key is mapped (if any) for each input files. */
 				for file in self.filesDescriptions {
 					let referencedKeys = self.simplifiedUntaggedKeysReferencedInMappingsByFile[file]!
 					for version in versions.reversed() {
@@ -244,7 +243,7 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 						}
 					}
 				}
-				/* Let’s apply the remaining filters */
+				/* Let’s apply the remaining filters. */
 				let shouldAppend = (
 					(self.showUnmapped && mapped.count < self.filesDescriptions.count) ||
 					(self.showNotLatestVersion && Set(mapped.values).subtracting([latestVersion]).count > 0) ||
@@ -256,8 +255,8 @@ class KeyVersionsCheckViewController : NSViewController, NSTableViewDataSource, 
 			}
 			reports.sort{
 				switch ($0, $1) {
-				case (.versionReport(latestRefLocKey: let k1, mappedKeys: _), .versionReport(latestRefLocKey: let k2, mappedKeys: _)):
-					return k1 < k2
+					case (.versionReport(latestRefLocKey: let k1, mappedKeys: _), .versionReport(latestRefLocKey: let k2, mappedKeys: _)):
+						return k1 < k2
 				}
 			}
 			

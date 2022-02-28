@@ -1,10 +1,10 @@
 /*
- * ImportKeyStructurePanelController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 7/10/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * ImportKeyStructurePanelController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 7/10/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import AppKit
 
@@ -100,8 +100,8 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 	}
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	@IBAction func handleEnvironmentMenuSelection(sender: AnyObject) {
 		selectedImportType = ImportType(rawValue: popUpButtonEnvironment.selectedTag())!
@@ -115,19 +115,19 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 		csvLocFile.setMetadataValue(textFieldImportedFolderName.stringValue, forKey: metadataKeyForImportedFolderForXcode)
 		
 		switch selectedImportType {
-		case .Xcode:
-			csvLocFile.setMetadataValue(textFieldImportedLanguageName.stringValue, forKey: metadataKeyForImportedLanguageForXcode)
-			csvLocFile.setMetadataValue(importedLanguageNameForAndroid, forKey: metadataKeyForImportedLanguageForAndroid)
-			
-		case .Android:
-			csvLocFile.setMetadataValue(textFieldImportedLanguageName.stringValue, forKey: metadataKeyForImportedLanguageForAndroid)
-			csvLocFile.setMetadataValue(importedLanguageNameForXcode, forKey: metadataKeyForImportedLanguageForXcode)
+			case .Xcode:
+				csvLocFile.setMetadataValue(textFieldImportedLanguageName.stringValue, forKey: metadataKeyForImportedLanguageForXcode)
+				csvLocFile.setMetadataValue(importedLanguageNameForAndroid, forKey: metadataKeyForImportedLanguageForAndroid)
+				
+			case .Android:
+				csvLocFile.setMetadataValue(textFieldImportedLanguageName.stringValue, forKey: metadataKeyForImportedLanguageForAndroid)
+				csvLocFile.setMetadataValue(importedLanguageNameForXcode, forKey: metadataKeyForImportedLanguageForXcode)
 		}
 	}
 	
 	/* ****************************
-	   MARK: - Token Field Delegate
-	   **************************** */
+	   MARK: - Token Field Delegate
+	   **************************** */
 	
 	/* Implementing this method disables the whitespace-trimming behavior. */
 	func tokenField(_ tokenField: NSTokenField, representedObjectForEditing editingString: String) -> Any? {
@@ -135,8 +135,8 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private let viewPadding = CGFloat(9)
 	
@@ -161,38 +161,38 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 		guard selectedImportType != shownImportType else {return}
 		
 		switch shownImportType {
-		case .Xcode:   importedLanguageNameForXcode   = textFieldImportedLanguageName.stringValue
-		case .Android: importedLanguageNameForAndroid = textFieldImportedLanguageName.stringValue
+			case .Xcode:   importedLanguageNameForXcode   = textFieldImportedLanguageName.stringValue
+			case .Android: importedLanguageNameForAndroid = textFieldImportedLanguageName.stringValue
 		}
 		
 		shownImportType = selectedImportType
 		
 		switch selectedImportType {
-		case .Xcode:
-			configureOpenPanelForXcode()
-			
-			textFieldImportedLanguageName.stringValue = importedLanguageNameForXcode
-			
-			gridView.insertRow(at: 1, with: [labelExcludedPaths, tokenFieldExcludedPaths])
-			gridView.insertRow(at: 2, with: [labelImportedFolderName, textFieldImportedFolderName])
-			
-			updateFrameHeight()
-			
-		case .Android:
-			configureOpenPanelForAndroid()
-			
-			textFieldImportedLanguageName.stringValue = importedLanguageNameForAndroid
-			
-			for v in [tokenFieldExcludedPaths, textFieldImportedFolderName] {
-				if let v = v, let row = gridView.cell(for: v)?.row {
-					gridView.removeRow(at: gridView.index(of: row))
+			case .Xcode:
+				configureOpenPanelForXcode()
+				
+				textFieldImportedLanguageName.stringValue = importedLanguageNameForXcode
+				
+				gridView.insertRow(at: 1, with: [labelExcludedPaths, tokenFieldExcludedPaths])
+				gridView.insertRow(at: 2, with: [labelImportedFolderName, textFieldImportedFolderName])
+				
+				updateFrameHeight()
+				
+			case .Android:
+				configureOpenPanelForAndroid()
+				
+				textFieldImportedLanguageName.stringValue = importedLanguageNameForAndroid
+				
+				for v in [tokenFieldExcludedPaths, textFieldImportedFolderName] {
+					if let v = v, let row = gridView.cell(for: v)?.row {
+						gridView.removeRow(at: gridView.index(of: row))
+					}
 				}
-			}
-			for v in [labelExcludedPaths, tokenFieldExcludedPaths, labelImportedFolderName, textFieldImportedFolderName] {
-				v?.removeFromSuperview()
-			}
-			
-			updateFrameHeight()
+				for v in [labelExcludedPaths, tokenFieldExcludedPaths, labelImportedFolderName, textFieldImportedFolderName] {
+					v?.removeFromSuperview()
+				}
+				
+				updateFrameHeight()
 		}
 	}
 	
@@ -213,9 +213,8 @@ class ImportKeyStructurePanelController : NSViewController, NSTokenFieldDelegate
 	private func updateFrameHeight() {
 		openPanel.accessoryView = nil
 		
-		/* Not sure this actually is the correct height we're setting... but it
-		 * seems to be working with this. (We DO have a warning in the logs
-		 * though.) */
+		/* Not sure this actually is the correct height we're setting… but it seems to be working with this.
+		 * (We DO have a warning in the logs though.) */
 		view.frame.size.height = gridView.intrinsicContentSize.height + 2*viewPadding
 		
 		openPanel.accessoryView = view

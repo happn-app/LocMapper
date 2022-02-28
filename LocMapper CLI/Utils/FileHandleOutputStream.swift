@@ -1,12 +1,12 @@
 /*
- * stdstreams.swift
- * LocMapper CLI
- *
- * From https://stackoverflow.com/a/25226794/1152894
- *
- * Created by François Lamboley on 1/6/18.
- * Copyright © 2018 Frizlab. All rights reserved.
- */
+ * stdstreams.swift
+ * LocMapper CLI
+ *
+ * From https://stackoverflow.com/a/25226794
+ *
+ * Created by François Lamboley on 1/6/18.
+ * Copyright © 2018 Frizlab. All rights reserved.
+ */
 
 import Foundation
 
@@ -18,7 +18,7 @@ class FileHandleOutputStream : TextOutputStream {
 	let fileHandle: FileHandle
 	
 	convenience init(forPath path: String) throws {
-		try Data().write(to: URL(fileURLWithPath: path), options: []) /* We do not delete original file if present to keep xattrs... */
+		try Data().write(to: URL(fileURLWithPath: path), options: []) /* We do not delete original file if present to keep xattrs… */
 		guard let fh = FileHandle(forWritingAtPath: path) else {
 			throw NSError(domain: "LocMapperCLIErrDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Cannot open file at path \(path) for writing"])
 		}

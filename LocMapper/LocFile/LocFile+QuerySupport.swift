@@ -1,10 +1,10 @@
 /*
- * LocFile+QuerySupport.swift
- * LocMapper
- *
- * Created by François Lamboley on 2/4/18.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * LocFile+QuerySupport.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 2/4/18.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 
@@ -24,12 +24,10 @@ extension LocFile {
 	public func entryKeys(matchingFilters filters: [Filter]) -> [LineKey] {
 		let stringFilters = filters.compactMap{ filter -> (key: String, content: String)? in
 			if case .string(let str) = filter, !str.isEmpty {
-				/* A string filter is a key and value filter. The two of them should
-				 * be joined with a comma (eg. “value_filter,key_filter”).
-				 * If the string filter does not contain a comma, it is considered
-				 * to be a single value filter. If it has more than one comma,
-				 * everything after the last one is the key filter, the rest is the
-				 * value filter. */
+				/* A string filter is a key and value filter.
+				 * The two of them should be joined with a comma (eg. “value_filter,key_filter”).
+				 * If the string filter does not contain a comma, it is considered to be a single value filter.
+				 * If it has more than one comma, everything after the last one is the key filter, the rest is the value filter. */
 				let keyFilter: String
 				let contentFilter: String
 				let stringComponents = str.components(separatedBy: ",")
@@ -62,8 +60,8 @@ extension LocFile {
 		let showUIPresentable = filters.contains{ $0.isUIPresentableCase }
 		
 		guard
-			(showStateTodoloc || showStateHardCoded || showStateMappedValid || showStateMappedInvalid) &&
-			(showUIHidden || showUIPresentable)
+			((showStateTodoloc || showStateHardCoded || showStateMappedValid || showStateMappedInvalid) &&
+			 (showUIHidden || showUIPresentable))
 		else {return []}
 		
 		return entryKeys.filter{ lineKey -> Bool in
@@ -77,10 +75,9 @@ extension LocFile {
 				guard showUIHidden      || !isUIHidden else {return false}
 			}
 			
-			/* State and string filters (done in the same block to avoid looping on
-			 * entries twice...) */
+			/* State and string filters (done in the same block to avoid looping on entries twice…) */
 			if !stringFilters.isEmpty || !showStateTodoloc || !showStateHardCoded || !showStateMappedValid || !showStateMappedInvalid {
-				/* Let's process the key filters */
+				/* Let's process the key filters. */
 				guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
 					guard !f.key.isEmpty else {return true}
 					guard [lineKey.locKey, lineKey.filename].contains(where: { k -> Bool in
@@ -89,40 +86,40 @@ extension LocFile {
 					return true
 				}) else {return false}
 				
-				/* Now we process the state and the string filters */
+				/* Now we process the state and the string filters. */
 				switch entries[lineKey] {
-				case .entries(let entries)?:
-					/* State filters */
-					guard showStateTodoloc || showStateHardCoded else {return false}
-					let values = languages.compactMap{ entries[$0] }
-					if languages.count != values.count {guard showStateTodoloc   else {return false}}
-					else                               {guard showStateHardCoded else {return false}}
-					/* String filters */
-					guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
-						guard !f.content.isEmpty else {return true}
-						guard values.contains(where: { k -> Bool in
-							return k.range(of: f.content, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+					case .entries(let entries)?:
+						/* State filters. */
+						guard showStateTodoloc || showStateHardCoded else {return false}
+						let values = languages.compactMap{ entries[$0] }
+						if languages.count != values.count {guard showStateTodoloc   else {return false}}
+						else                               {guard showStateHardCoded else {return false}}
+						/* String filters. */
+						guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
+							guard !f.content.isEmpty else {return true}
+							guard values.contains(where: { k -> Bool in
+								return k.range(of: f.content, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+							}) else {return false}
+							return true
 						}) else {return false}
-						return true
-					}) else {return false}
-					
-				case .mapping(let mapping)?:
-					/* State filters */
-					guard showStateMappedValid || showStateMappedInvalid else {return false}
-					let values = languages.compactMap{ try? mapping.apply(forLanguage: $0, entries: entries) }
-					if languages.count != values.count {guard showStateMappedInvalid else {return false}}
-					else                               {guard showStateMappedValid   else {return false}}
-					/* String filters */
-					guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
-						guard !f.content.isEmpty else {return true}
-						guard values.contains(where: { k -> Bool in
-							return k.range(of: f.content, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+						
+					case .mapping(let mapping)?:
+						/* State filters. */
+						guard showStateMappedValid || showStateMappedInvalid else {return false}
+						let values = languages.compactMap{ try? mapping.apply(forLanguage: $0, entries: entries) }
+						if languages.count != values.count {guard showStateMappedInvalid else {return false}}
+						else                               {guard showStateMappedValid   else {return false}}
+						/* String filters. */
+						guard stringFilters.isEmpty || stringFilters.contains(where: { f -> Bool in
+							guard !f.content.isEmpty else {return true}
+							guard values.contains(where: { k -> Bool in
+								return k.range(of: f.content, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) != nil
+							}) else {return false}
+							return true
 						}) else {return false}
-						return true
-					}) else {return false}
-					
-				case nil:
-					guard showStateTodoloc else {return false}
+						
+					case nil:
+						guard showStateTodoloc else {return false}
 				}
 			}
 			
@@ -151,10 +148,10 @@ extension LocFile {
 			return LocFile.todolocToken
 		} catch let error as MappingResolvingError {
 			switch error {
-			case .invalidMapping, .mappedToMappedKey, .invalidXibLocTokens: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
-			case .unknownLanguage:                                          return "!¡!TODOLOC_UNKNOWNLANGUAGE!¡!"
-			case .keyNotFound:                                              return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
-			case .noValueForLanguage:                                       return LocFile.todolocToken
+				case .invalidMapping, .mappedToMappedKey, .invalidXibLocTokens: return "!¡!TODOLOC_INVALIDMAPPING!¡!"
+				case .unknownLanguage:                                          return "!¡!TODOLOC_UNKNOWNLANGUAGE!¡!"
+				case .keyNotFound:                                              return "!¡!TODOLOC_MAPPINGKEYNOTFOUND!¡!"
+				case .noValueForLanguage:                                       return LocFile.todolocToken
 			}
 		} catch {
 			return LocFile.internalLocMapperErrorToken
@@ -164,18 +161,18 @@ extension LocFile {
 	private func resolvedValueForKey(_ key: LineKey, withLanguage language: String) throws -> String {
 		guard let v = entries[key] else {throw ValueResolvingError.keyNotFound}
 		switch v {
-		case .entries(let entries):
-			guard let r = entries[language] else {throw ValueResolvingError.noValueForLanguage}
-			return r
-			
-		case .mapping(let mapping):
-			return try mapping.apply(forLanguage: language, entries: entries)
+			case .entries(let entries):
+				guard let r = entries[language] else {throw ValueResolvingError.noValueForLanguage}
+				return r
+				
+			case .mapping(let mapping):
+				return try mapping.apply(forLanguage: language, entries: entries)
 		}
 	}
 	
 	/* *******************
-	   MARK: - Filter Enum
-	   ******************* */
+	   MARK: - Filter Enum
+	   ******************* */
 	
 	public enum Filter {
 		
@@ -189,39 +186,39 @@ extension LocFile {
 			let substring = String(string.dropFirst())
 			
 			switch first {
-			case "t":
-				switch substring {
-				case "t":  self = .stateTodoloc
-				case "v":  self = .stateHardCodedValues
-				case "mv": self = .stateMappedValid
-				case "mi": self = .stateMappedInvalid
+				case "t":
+					switch substring {
+						case "t":  self = .stateTodoloc
+						case "v":  self = .stateHardCodedValues
+						case "mv": self = .stateMappedValid
+						case "mi": self = .stateMappedInvalid
+						default: return nil
+					}
+					
+				case "u":
+					switch substring {
+						case "p":  self = .uiPresentable
+						case "h":  self = .uiHidden
+						default: return nil
+					}
+					
+				case "s": self = .string(substring)
+				case "e": self = .env(substring)
+					
 				default: return nil
-				}
-				
-			case "u":
-				switch substring {
-				case "p":  self = .uiPresentable
-				case "h":  self = .uiHidden
-				default: return nil
-				}
-				
-			case "s": self = .string(substring)
-			case "e": self = .env(substring)
-				
-			default: return nil
 			}
 		}
 		
 		public func toString() -> String {
 			switch self {
-			case .string(let str):      return "s" + str
-			case .env(let env):         return "e" + env
-			case .uiPresentable:        return "up"
-			case .uiHidden:             return "uh"
-			case .stateTodoloc:         return "tt"
-			case .stateHardCodedValues: return "tv"
-			case .stateMappedValid:     return "tmv"
-			case .stateMappedInvalid:   return "tmi"
+				case .string(let str):      return "s" + str
+				case .env(let env):         return "e" + env
+				case .uiPresentable:        return "up"
+				case .uiHidden:             return "uh"
+				case .stateTodoloc:         return "tt"
+				case .stateHardCodedValues: return "tv"
+				case .stateMappedValid:     return "tmv"
+				case .stateMappedInvalid:   return "tmi"
 			}
 		}
 		

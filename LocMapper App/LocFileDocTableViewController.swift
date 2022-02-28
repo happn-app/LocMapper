@@ -1,10 +1,10 @@
 /*
- * LocFileDocTableViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 12/8/15.
- * Copyright © 2015 happn. All rights reserved.
- */
+ * LocFileDocTableViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 12/8/15.
+ * Copyright © 2015 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -32,10 +32,10 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {noteContentHasChanged()}
@@ -64,17 +64,17 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	}
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
 		switch item.action {
-		case #selector(LocFileDocTableViewController.copy(_:))?:
-			return tableView.selectedRow >= 0
-			
-		default:
-			return false
-//			return super.validateUserInterfaceItem(item)
+			case #selector(LocFileDocTableViewController.copy(_:))?:
+				return tableView.selectedRow >= 0
+				
+			default:
+				return false
+//				return super.validateUserInterfaceItem(item)
 		}
 	}
 	
@@ -98,8 +98,8 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	}
 	
 	/* *****************************************
-	   MARK: - Table View Data Source & Delegate
-	   ***************************************** */
+	   MARK: - Table View Data Source & Delegate
+	   ***************************************** */
 	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		precondition(tableView == self.tableView)
@@ -139,9 +139,9 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 		
 		let color: NSColor
 		switch csvLocFile.lineValueForKey(key) {
-		case .none: color = NSColor.red
-		case .mapping?: color = NSColor.gray
-		case .entries?: color = NSColor.textColor
+			case .none: color = NSColor.red
+			case .mapping?: color = NSColor.gray
+			case .entries?: color = NSColor.textColor
 		}
 		(cell as? HighlightColorTextFieldCell)?.nonHighlightedTextColor = color
 	}
@@ -183,13 +183,10 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	}
 	
 	/* This method is preferred over tableView(_:shouldSelectRow:) says the doc.
-	 * And anyway it is the only way to prevent selection modification (including
-	 * deselection) and allow applying the prevented selection modification after
-	 * the prevention.
-	 * Note: There is a selectionShouldChange(in:) method which is also called
-	 *       when the user deselects stuff, but it does not give the expected new
-	 *       selection, so there is no way to apply the selection after having
-	 *       prevented it. */
+	 * Anyway it is the only way to prevent selection modification (including deselection)
+	 * and allow applying the prevented selection modification after the prevention.
+	 * Note: There is a selectionShouldChange(in:) method which is also called when the user deselects stuff,
+	 *       but it does not give the expected new selection, so there is no way to apply the selection after having prevented it. */
 	func tableView(_ tableView: NSTableView, selectionIndexesForProposedSelection proposedSelectionIndexes: IndexSet) -> IndexSet {
 		guard let handlerCanChangeSelection = handlerCanChangeSelection else {return proposedSelectionIndexes}
 		
@@ -225,23 +222,22 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 				alert.showsSuppressionButton = true
 				alert.beginSheetModal(for: window) { response in
 					switch response {
-					case .alertFirstButtonReturn:
-						updateEntryToManualValues()
-						if let tableColumnIndex = self.tableView.tableColumns.firstIndex(of: tableColumn) {
-							self.tableView.editColumn(tableColumnIndex, row: row, with: nil, select: true)
-						}
-						
-						/* Let's check if the user asked not to be bothered by this
-						 * alert anymore. */
-						if (alert.suppressionButton?.state ?? .off) == .on {
-							AppSettings.shared.showAlertForDiscardingMapping = false
-						}
-						
-					case .alertSecondButtonReturn:
-						(/*nop (cancel)*/)
-						
-					default:
-						NSLog("%@", "Unknown button response \(response)")
+						case .alertFirstButtonReturn:
+							updateEntryToManualValues()
+							if let tableColumnIndex = self.tableView.tableColumns.firstIndex(of: tableColumn) {
+								self.tableView.editColumn(tableColumnIndex, row: row, with: nil, select: true)
+							}
+							
+							/* Let's check if the user asked not to be bothered by this alert anymore. */
+							if (alert.suppressionButton?.state ?? .off) == .on {
+								AppSettings.shared.showAlertForDiscardingMapping = false
+							}
+							
+						case .alertSecondButtonReturn:
+							(/*nop (cancel)*/)
+							
+						default:
+							NSLog("%@", "Unknown button response \(response)")
 					}
 				}
 				return false
@@ -254,7 +250,7 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 		return true
 	}
 	
-	/* If we were view-based... but we're not (cell-based is still faster). */
+	/* If we were view-based… but we're not (cell-based is still faster). */
 //	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
 //		guard let tableColumn = tableColumn else {return nil}
 //		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return nil}
@@ -275,8 +271,8 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 //	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private var tableColumnsCreated = false
 	
@@ -303,9 +299,9 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 			
 			tc.resizingMask = .userResizingMask
 			switch l {
-			case "ENV": tc.width = 66
-			case "KEY": tc.width = 142
-			default:    tc.width = 350
+				case "ENV": tc.width = 66
+				case "KEY": tc.width = 142
+				default:    tc.width = 350
 			}
 			
 			let tfc = HighlightColorTextFieldCell(textCell: "TODOLOC")
@@ -358,9 +354,9 @@ class HighlightColorTextFieldCell : NSTextFieldCell {
 	
 	private func updateTextColor() {
 		switch backgroundStyle {
-		case .raised, .emphasized: textColor = hightlightColor
-		case .lowered, .normal:    textColor = nonHighlightedTextColor
-		@unknown default:          textColor = nonHighlightedTextColor
+			case .raised, .emphasized: textColor = hightlightColor
+			case .lowered, .normal:    textColor = nonHighlightedTextColor
+			@unknown default:          textColor = nonHighlightedTextColor
 		}
 	}
 	

@@ -1,14 +1,14 @@
 /*
- * URLRequest+Utils.swift
- * LocMapper
- *
- * Created by François Lamboley on 05/04/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * URLRequest+Utils.swift
+ * LocMapper
+ *
+ * Created by François Lamboley on 05/04/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import Foundation
 #if canImport(FoundationNetworking)
-	import FoundationNetworking
+import FoundationNetworking
 #endif
 
 

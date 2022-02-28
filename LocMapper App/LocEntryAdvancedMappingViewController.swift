@@ -1,10 +1,10 @@
 /*
- * LocEntryAdvancedMappingViewController.swift
- * LocMapper App
- *
- * Created by François Lamboley on 8/6/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * LocEntryAdvancedMappingViewController.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 8/6/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Cocoa
 
@@ -47,10 +47,10 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 	}
 	
 	/* *********************************************************************
-	   MARK: - Doc Modification Actions & Handlers
-	           Handlers notify the doc object the doc has been modified
-	           Actions are called to notify you of a modification of the doc
-	   ********************************************************************* */
+	   MARK: - Doc Modification Actions & Handlers
+	           Handlers notify the doc object the doc has been modified
+	           Actions are called to notify you of a modification of the doc
+	   ********************************************************************* */
 	
 	override var representedObject: Any? {
 		didSet {
@@ -67,8 +67,8 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 	var handlerNotifyLineValueModification: (() -> Void)?
 	
 	/* ***************
-	   MARK: - Actions
-	   *************** */
+	   MARK: - Actions
+	   *************** */
 	
 	override func discardEditing() {
 		super.discardEditing()
@@ -92,8 +92,8 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 			/* Creating the actual mapping entry */
 			guard
 				let mapping = LocKeyMapping(stringRepresentation: textViewMapping.string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)),
-				mapping.isValid else
-			{
+				mapping.isValid
+			else {
 				throw NSError(domain: errorDomain, code: 1, userInfo: nil)
 			}
 			representedMapping = .mapping(mapping)
@@ -101,7 +101,7 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 		} catch {
 			guard let window = view.window else {NSSound.beep(); return}
 			
-			/* If JSONSerialization sent useful error messages... */
+			/* If JSONSerialization sent useful error messages… */
 //			let alert = NSAlert(error: error)
 //			alert.beginSheetModal(for: window, completionHandler: nil)
 			
@@ -114,16 +114,16 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 	}
 	
 	/* ***********************
-	   MARK: - NSText Delegate
-	   *********************** */
+	   MARK: - NSText Delegate
+	   *********************** */
 	
 	func textDidChange(_ notification: Notification) {
 		dirty = true
 	}
 	
 	/* ***************
-	   MARK: - Private
-	   *************** */
+	   MARK: - Private
+	   *************** */
 	
 	private var internalRepresentedObjectChange = false
 	private var representedMapping: LocFile.LineValue? {
@@ -145,11 +145,11 @@ class LocEntryAdvancedMappingViewController : NSViewController, NSTextDelegate {
 	
 	private func updateTextUIValues() {
 		switch representedMapping {
-		case nil, .entries?:
-			textViewMapping.string = ""
-			
-		case .mapping(let mapping)?:
-			textViewMapping.string = mapping.stringRepresentation(prettyPrint: true)
+			case nil, .entries?:
+				textViewMapping.string = ""
+				
+			case .mapping(let mapping)?:
+				textViewMapping.string = mapping.stringRepresentation(prettyPrint: true)
 		}
 	}
 	

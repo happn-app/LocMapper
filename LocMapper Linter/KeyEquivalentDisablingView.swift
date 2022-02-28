@@ -1,18 +1,18 @@
 /*
- * KeyEquivalentDisablingView.swift
- * LocMapper Linter
- *
- * Created by François Lamboley on 12/12/2018.
- * Copyright © 2018 happn. All rights reserved.
- */
+ * KeyEquivalentDisablingView.swift
+ * LocMapper Linter
+ *
+ * Created by François Lamboley on 12/12/2018.
+ * Copyright © 2018 happn. All rights reserved.
+ */
 
 import AppKit
 
 
 
 /* An extender would be great here to replace this class!
- * Note: An interesting thread with another solution to the same problem:
- *       https://forums.developer.apple.com/thread/78806 */
+ * Note: An interesting thread with another solution to the same problem:
+ *       https://forums.developer.apple.com/thread/78806 */
 class KeyEquivalentDisablingView : NSView {
 	
 	var disableKeyEquivalent = false

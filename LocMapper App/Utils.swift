@@ -1,10 +1,10 @@
 /*
- * Utils.swift
- * LocMapper App
- *
- * Created by François Lamboley on 11/3/16.
- * Copyright © 2016 happn. All rights reserved.
- */
+ * Utils.swift
+ * LocMapper App
+ *
+ * Created by François Lamboley on 11/3/16.
+ * Copyright © 2016 happn. All rights reserved.
+ */
 
 import Cocoa
 

@@ -26,7 +26,7 @@ public struct FilteredDirectoryEnumerator : Sequence, IteratorProtocol {
 	
 	public let pathPrefixes: [String]?
 	public let pathSuffixes: [String]?
-
+	
 	let directoryEnumerator: FileManager.DirectoryEnumerator
 	
 	public init?(url: URL, includedPaths: [String]? = nil, excludedPaths: [String]? = nil, pathPrefixes: [String]? = nil, pathSuffixes: [String]? = nil, fileManager: FileManager = .default) {
