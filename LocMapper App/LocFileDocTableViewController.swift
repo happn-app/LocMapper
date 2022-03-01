@@ -12,7 +12,7 @@ import LocMapper
 
 
 
-class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+class LocFileDocTableViewController : NSViewController, NSUserInterfaceValidations, NSTableViewDataSource, NSTableViewDelegate {
 	
 	@IBOutlet var tableView: NSTableView!
 	
@@ -67,17 +67,6 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 	   MARK: - Actions
 	   *************** */
 	
-	func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
-		switch item.action {
-			case #selector(LocFileDocTableViewController.copy(_:))?:
-				return tableView.selectedRow >= 0
-				
-			default:
-				return false
-//				return super.validateUserInterfaceItem(item)
-		}
-	}
-	
 	@IBAction func copy(_ sender: AnyObject) {
 		guard tableView.selectedRow >= 0 else {NSSound.beep(); return}
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[tableView.selectedRow] else {NSSound.beep(); return}
@@ -95,6 +84,21 @@ class LocFileDocTableViewController : NSViewController, NSTableViewDataSource, N
 		pasteboard.clearContents()
 		pasteboard.setString(val, forType: .string)
 		pasteboard.setString(val, forType: .tabularText)
+	}
+	
+	/* **********************************
+	   MARK: - NSUserInterfaceValidations
+	   ********************************** */
+	
+	func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
+		switch item.action {
+			case #selector(LocFileDocTableViewController.copy(_:))?:
+				return tableView.selectedRow >= 0
+				
+			default:
+				return false
+//				return super.validateUserInterfaceItem(item)
+		}
 	}
 	
 	/* *****************************************
