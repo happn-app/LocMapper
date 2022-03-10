@@ -12,8 +12,8 @@ let package = Package(
 		.library(name: "LocMapper", targets: ["LocMapper"]),
 	],
 	dependencies: [
-		.package(url: "https://github.com/happn-tech/DummyLinuxOSLog.git", from: "1.0.1"),
-		.package(url: "https://github.com/happn-tech/XibLoc.git", from: "0.9.7")
+		.package(url: "https://github.com/happn-app/DummyLinuxOSLog.git", from: "1.0.1"),
+		.package(url: "https://github.com/happn-app/XibLoc.git", from: "0.9.7")
 	],
 	targets: [
 		.systemLibrary(name: "CZlib", path: "CZlib", providers: [.apt(["zlib1g-dev"])]),
