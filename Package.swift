@@ -13,7 +13,7 @@ let package = Package(
 		.executable(name: "locmapper", targets: ["locmapper"])
 	],
 	dependencies: [
-		.package(url: "https://github.com/happn-tech/XibLoc.git", from: "1.0.0"),
+		.package(url: "https://github.com/happn-app/XibLoc.git", from: "1.0.0"),
 		.package(url: "https://github.com/apple/swift-log.git", from: "1.2.0"),
 		.package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.3.0"),
 	],
