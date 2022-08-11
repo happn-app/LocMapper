@@ -78,7 +78,7 @@ public class StdRefLocFile {
 			/* Setting “disable_references” to 0 actually resolves the key references…
 			 * https://docs.lokalise.com/en/articles/1400528-key-referencing */
 			let queryItems = [
-				URLQueryItem(name: "limit", value: "5000"),
+				URLQueryItem(name: "limit", value: "500"),
 				URLQueryItem(name: "page", value: String(page)),
 				URLQueryItem(name: "disable_references", value: "0"),
 				URLQueryItem(name: "include_translations", value: "1")
