@@ -1168,7 +1168,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1191,7 +1191,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1207,7 +1207,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 36;
 				EXECUTABLE_PREFIX = lib;
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1223,7 +1223,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 36;
 				EXECUTABLE_PREFIX = lib;
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1346,7 +1346,7 @@
 				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperCLI";
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
@@ -1365,7 +1365,7 @@
 				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperCLI";
 				PRODUCT_MODULE_NAME = LocMapperCLI;
 				PRODUCT_NAME = locmapper;
@@ -1391,7 +1391,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperApp";
 				PRODUCT_MODULE_NAME = LocMapperApp;
 				PRODUCT_NAME = LocMapper;
@@ -1417,7 +1417,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.3.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperApp";
 				PRODUCT_MODULE_NAME = LocMapperApp;
 				PRODUCT_NAME = LocMapper;
