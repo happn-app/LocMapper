@@ -169,16 +169,20 @@ extension LocFile {
 				if let white = scanner.lm_scanCharacters(from: CharacterSet.whitespacesAndNewlines) {
 					spaces.append(AndroidXMLLocFile.WhiteSpace(white))
 				}
-				if scanner.lm_scanString("<!--") != nil {
+				var error = false
+				while scanner.lm_scanString("<!--") != nil {
 					if let comment = scanner.lm_scanUpToString("-->"), !scanner.isAtEnd {
 						spaces.append(AndroidXMLLocFile.Comment(comment))
 						_ = scanner.lm_scanString("-->")
 						if let white = scanner.lm_scanCharacters(from: CharacterSet.whitespacesAndNewlines) {
 							spaces.append(AndroidXMLLocFile.WhiteSpace(white))
 						}
+					} else {
+						error = true
+						break
 					}
 				}
-				if !scanner.isAtEnd {
+				if error || !scanner.isAtEnd {
 #if canImport(os)
 					Conf.oslog.flatMap{ os_log("Got invalid comment \"%@\"", log: $0, type: .info, entry_key.comment) }
 #endif
