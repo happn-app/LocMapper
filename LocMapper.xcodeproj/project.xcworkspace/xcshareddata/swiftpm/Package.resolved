@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
-        "version" : "1.4.2"
+        "revision" : "6fe203dc33195667ce1759bf0182975e4653ba1c",
+        "version" : "1.4.4"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/happn-app/XibLoc.git",
       "state" : {
-        "revision" : "e3fc0c240c87e9c3549420f16f6e8ee39809cf19",
-        "version" : "1.1.1"
+        "revision" : "1abb69ac28e2a30b997f720ff3b3cdab59d9b1fa",
+        "version" : "1.2.4"
       }
     }
   ],

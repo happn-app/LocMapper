@@ -93,7 +93,7 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 	
 	override func apply(toValue value: String, withLanguage: String) throws -> String {
 		guard let xibLocInfo = Str2StrXibLocInfo(
-			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken, simpleSourceTypeReplacements: [:],
+			defaultPluralityDefinition: PluralityDefinition(matchingNothing: ()), escapeToken: escapeToken, simpleSourceTypeReplacements: [:],
 			orderedReplacements: [MultipleWordsTokens(leftToken: openDelim, interiorToken: middleDelim, rightToken: closeDelim): (gender == .male ? 0 : 1)],
 			pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:],
 			identityReplacement: { $0 }

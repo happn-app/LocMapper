@@ -261,7 +261,7 @@ struct HappnXib2Std {
 	private static func simpleReplacementContent(from xibLocValues: [XibRefLocFile.Language: XibRefLocFile.Value], leftToken: String, rightToken: String, escapeToken: String?) -> String? {
 		var r: String?
 		let numberReplacementNameRetriever = Str2StrXibLocInfo(
-			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
+			defaultPluralityDefinition: PluralityDefinition(matchingNothing: ()), escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [:], orderedReplacements: [:], pluralGroups: [], attributesModifications: [:],
 			simpleReturnTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { r = $0; return "" }],
 			identityReplacement: { $0 }
@@ -285,7 +285,7 @@ private extension XibLocResolvingInfo where SourceType == String, ReturnType == 
 	
 	init(simpleReplacementWithLeftToken leftToken: String, rightToken: String, value: String, escapeToken: String?) {
 		self.init(
-			defaultPluralityDefinition: PluralityDefinition(), escapeToken: escapeToken,
+			defaultPluralityDefinition: PluralityDefinition(matchingNothing: ()), escapeToken: escapeToken,
 			simpleSourceTypeReplacements: [OneWordTokens(leftToken: leftToken, rightToken: rightToken): { _ in value }],
 			orderedReplacements: [:], pluralGroups: [], attributesModifications: [:], simpleReturnTypeReplacements: [:],
 			identityReplacement: { $0 }
