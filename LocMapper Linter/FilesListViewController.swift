@@ -29,7 +29,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 		super.viewDidLoad()
 		
 		if let v = UserDefaults.standard.value(forKey: "FilesDescriptions") as? [Data] {
-			let u = v.map{ NSKeyedUnarchiver.unarchiveObject(with: $0) as? InputFileDescription }
+			let u = v.map{ try? NSKeyedUnarchiver.unarchivedObject(ofClass: InputFileDescription.self, from: $0) }
 			let f = u.compactMap{ $0 }
 			if u.count == f.count {
 				filesDescriptions = f
@@ -164,7 +164,7 @@ class FilesListViewController : NSViewController, NSTableViewDataSource, NSTable
 	
 	private func saveFileList() {
 		let archived = filesDescriptions.map{
-			return NSKeyedArchiver.archivedData(withRootObject: $0)
+			return try? NSKeyedArchiver.archivedData(withRootObject: $0, requiringSecureCoding: true)
 		}
 		UserDefaults.standard.set(archived, forKey: "FilesDescriptions")
 	}
