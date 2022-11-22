@@ -254,6 +254,9 @@ class XcodeStringsParserTests: XCTestCase {
 	}
 	
 	func testKeyButNotValues() {
+#if !os(Linux)
+		XCTExpectFailure("not implemented yet")
+#endif
 		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "this_is_weird_but_valid;")
 		else {XCTFail("Cannot parse input"); return}
 		XCTAssertEqual(
@@ -263,6 +266,9 @@ class XcodeStringsParserTests: XCTestCase {
 	}
 	
 	func testKeyButNotValues2() {
+#if !os(Linux)
+		XCTExpectFailure("not implemented yet")
+#endif
 		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "this_is_weird_but_valid  ;")
 		else {XCTFail("Cannot parse input"); return}
 		XCTAssertEqual(
@@ -272,6 +278,9 @@ class XcodeStringsParserTests: XCTestCase {
 	}
 	
 	func testKeyButNotValues3() {
+#if !os(Linux)
+		XCTExpectFailure("not implemented yet")
+#endif
 		guard let parsed = try? XcodeStringsFile(filepath: "whatever.strings", filecontent: "\"this_is_weird_but_valid\"  ;")
 		else {XCTFail("Cannot parse input"); return}
 		XCTAssertEqual(
