@@ -1,5 +1,5 @@
 /*
-Copyright 2020 happn
+Copyright 2022 happn
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,26 +17,30 @@ import Foundation
 
 import ArgumentParser
 
+import LocMapper
 
 
-struct Experimental : ParsableCommand {
+
+struct GitUnfriendly : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
-		abstract: "Experimental commands. Use with care!",
-		subcommands: [
-			ConvertXibreflocToStdrefloc.self,
-			ConvertStdreflocToXibrefloc.self,
-			
-			UploadXibreflocToLokalise.self,
-			
-			TransformMappings.self,
-			CreateInitialAndroidMappingFromStdRefLoc.self,
-			
-			GitUnfriendly.self
-		]
-	)
+	static var configuration = CommandConfiguration(commandName: "git_unfriendly")
 	
 	@OptionGroup()
 	var csvOptions: CSVOptions
+	
+	@Argument()
+	var filePath: String
+	
+	func run() throws {
+		let csvSeparator = csvOptions.csvSeparator
+		
+		print("Opening LocFile...")
+		let locFile = try LocFile(fromPath: filePath, withCSVSeparator: csvSeparator)
+		locFile.serializationStyle = .csvFriendly
+		print("   Writing LocFile file back...")
+		var stream = try FileHandleOutputStream(forPath: filePath)
+		print(locFile, terminator: "", to: &stream)
+		print("Done")
+	}
 	
 }

@@ -58,6 +58,7 @@
 		7B73DFF92025F74B00CAA391 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
 		7B76AAE52025FD070071B896 /* libLocMapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B4CC6CC2025BCEF0055CB74 /* libLocMapper.a */; };
+		7B786CCE292D36740005C301 /* GitUnfriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B786CCD292D36740005C301 /* GitUnfriendly.swift */; };
 		7B837D821C0EF3DB0020E86B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D811C0EF3DB0020E86B /* AppDelegate.swift */; };
 		7B837D841C0EF3DB0020E86B /* LocEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */; };
 		7B837D861C0EF3DB0020E86B /* LocFileDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B837D851C0EF3DB0020E86B /* LocFileDocument.swift */; };
@@ -210,6 +211,7 @@
 		7B7328CC2576B9AC003FC060 /* LokalisePlural.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokalisePlural.swift; sourceTree = "<group>"; };
 		7B73887620306C0100E56088 /* FileHandleOutputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileHandleOutputStream.swift; sourceTree = "<group>"; };
 		7B74908D1A1600FE0021E10F /* AndroidXMLLocFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidXMLLocFile.swift; sourceTree = "<group>"; };
+		7B786CCD292D36740005C301 /* GitUnfriendly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitUnfriendly.swift; sourceTree = "<group>"; };
 		7B837D7F1C0EF3DB0020E86B /* LocMapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocMapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B837D811C0EF3DB0020E86B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B837D831C0EF3DB0020E86B /* LocEntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocEntryViewController.swift; sourceTree = "<group>"; };
@@ -698,6 +700,7 @@
 				7BB905282480274000E3F5F5 /* UploadXibreflocToLokalise.swift */,
 				7BB9052A2480276800E3F5F5 /* TransformMappings.swift */,
 				7BB9052C248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift */,
+				7B786CCD292D36740005C301 /* GitUnfriendly.swift */,
 			);
 			path = Experimental;
 			sourceTree = "<group>";
@@ -1019,6 +1022,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B786CCE292D36740005C301 /* GitUnfriendly.swift in Sources */,
 				7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */,
 				7BB90527248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift in Sources */,
 				7BB90525248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift in Sources */,
