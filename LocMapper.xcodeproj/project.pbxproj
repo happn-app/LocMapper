@@ -1022,7 +1022,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B786CCE292D36740005C301 /* GitUnfriendly.swift in Sources */,
 				7BB90510247FF70900E3F5F5 /* CommonOptions.swift in Sources */,
 				7BB90527248026F300E3F5F5 /* ConvertStdreflocToXibrefloc.swift in Sources */,
 				7BB90525248026B300E3F5F5 /* ConvertXibreflocToStdrefloc.swift in Sources */,
@@ -1031,6 +1030,7 @@
 				7BB90518248013D500E3F5F5 /* ExportToAndroid.swift in Sources */,
 				7BB9051224800C1C00E3F5F5 /* ExportToXcode.swift in Sources */,
 				7B73887E20306C0100E56088 /* FileHandleOutputStream.swift in Sources */,
+				7B786CCE292D36740005C301 /* GitUnfriendly.swift in Sources */,
 				7BB9051E2480203A00E3F5F5 /* Lint.swift in Sources */,
 				7B6E25A319D4157A001934ED /* main.swift in Sources */,
 				7BB90516248010C500E3F5F5 /* MergeAndroidLocs.swift in Sources */,
