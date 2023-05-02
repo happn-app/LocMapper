@@ -57,8 +57,8 @@ struct LocMapperCLI : ParsableCommand {
 		+ platformSpecificCommands
 	)
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 }
 

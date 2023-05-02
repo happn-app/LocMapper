@@ -47,6 +47,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 			"""
 	)
 	
+	@OptionGroup() var logOptions: LoggingOptions
+	
 	@Option(help: "The paths in which the lproj files are contained (for the source localizations; storyboards/xibs are localized wherever). Required if the code is not skipped.")
 	var localizablesPath: String?
 	
@@ -90,6 +92,8 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 	var tableDefinesToValuesMapping = [String]()
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let languages = parseObsoleteOptionList(self.languages) ?? ["en"]
 		
 		let encoding: String.Encoding

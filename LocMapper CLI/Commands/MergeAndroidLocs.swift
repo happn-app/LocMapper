@@ -28,8 +28,8 @@ struct MergeAndroidLocs : ParsableCommand {
 		abstract: "Merge the strings from an android project in a locmapper file."
 	)
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Option
 	var resFolder = [String]()
@@ -47,6 +47,8 @@ struct MergeAndroidLocs : ParsableCommand {
 	var folderNameToLanguageNameMapping = [String]()
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		let stringsFilenames = parseObsoleteOptionList(self.stringsFilenames) ?? ["strings.xml"]
 		let folderNameToLanguageName = try dictionaryOptionFromArray(folderNameToLanguageNameMapping)

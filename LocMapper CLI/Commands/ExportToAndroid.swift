@@ -28,8 +28,8 @@ struct ExportToAndroid : ParsableCommand {
 		abstract: "Exports the locs from an lcm file in an android project."
 	)
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Option()
 	var stringsFilenames: [String]
@@ -44,6 +44,8 @@ struct ExportToAndroid : ParsableCommand {
 	var folderNameToLanguageNameMapping: [String]
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		let folderNameToLanguageName = try dictionaryOptionFromArray(folderNameToLanguageNameMapping)
 		

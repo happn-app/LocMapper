@@ -32,8 +32,8 @@ struct MergeXcodeLocs : ParsableCommand {
 			"""
 	)
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Option(help: "List of paths to exclude when reading the project.")
 	var excludeList: [String]
@@ -51,6 +51,8 @@ struct MergeXcodeLocs : ParsableCommand {
 	var lprojNameToLanguageNameMapping: [String]
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		
 		let excludeList = parseObsoleteOptionList(self.excludeList) ?? []

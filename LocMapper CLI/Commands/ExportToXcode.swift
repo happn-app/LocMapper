@@ -31,8 +31,8 @@ struct ExportToXcode : ParsableCommand {
 			"""
 	)
 	
-	@OptionGroup
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Option
 	var encoding = "utf16"
@@ -47,6 +47,8 @@ struct ExportToXcode : ParsableCommand {
 	var lprojNameToLanguageNameMapping = [String]()
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		
 		let encoding: String.Encoding

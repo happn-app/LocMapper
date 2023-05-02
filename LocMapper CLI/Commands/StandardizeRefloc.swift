@@ -32,8 +32,8 @@ struct StandardizeRefloc : ParsableCommand {
 			"""
 	)
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Argument()
 	var inputFile: String
@@ -45,6 +45,8 @@ struct StandardizeRefloc : ParsableCommand {
 	var languagesNames: [String]
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		
 		guard !languagesNames.isEmpty else {

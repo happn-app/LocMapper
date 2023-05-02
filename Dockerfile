@@ -20,7 +20,7 @@ RUN swift package resolve
 COPY . .
 
 # Build everything, with optimizations
-RUN swift build --disable-automatic-resolution -c release
+RUN swift build --disable-automatic-resolution -c release -Xswiftc -D -Xswiftc TERMINAL_EMOJI
 
 # Switch to the staging area
 WORKDIR /staging

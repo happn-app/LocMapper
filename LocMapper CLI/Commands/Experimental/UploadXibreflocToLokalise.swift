@@ -32,8 +32,8 @@ struct UploadXibreflocToLokalise : ParsableCommand {
 			"""
 	)
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Argument()
 	var lokalizeReadAndWriteToken: String
@@ -48,6 +48,8 @@ struct UploadXibreflocToLokalise : ParsableCommand {
 	var refLocToLokalizeLanguageNameMapping: [String]
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		let refLocToLokalizeLanguageName = try dictionaryOptionFromArray(refLocToLokalizeLanguageNameMapping)
 		

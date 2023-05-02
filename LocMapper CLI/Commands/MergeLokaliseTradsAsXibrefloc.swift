@@ -28,8 +28,8 @@ struct MergeLokaliseTradsAsXibrefloc : ParsableCommand {
 		abstract: "Fetch ref loc from lokalise and merge them in an lcm file, converted into the XibRefLoc format."
 	)
 	
-	@OptionGroup
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Option
 	var mergeStyle = LocFile.MergeStyle.add
@@ -53,6 +53,8 @@ struct MergeLokaliseTradsAsXibrefloc : ParsableCommand {
 	var lokalizeToRefLocLanguageNameMapping = [String]()
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		let excludedTags = Set(parseObsoleteOptionList(self.excludedTags) ?? [])
 		let lokalizeToRefLocLanguageName = try dictionaryOptionFromArray(lokalizeToRefLocLanguageNameMapping)

@@ -25,13 +25,15 @@ struct GitUnfriendly : ParsableCommand {
 	
 	static var configuration = CommandConfiguration(commandName: "git_unfriendly")
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Argument()
 	var filePath: String
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		
 		print("Opening LocFile...")

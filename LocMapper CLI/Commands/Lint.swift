@@ -23,8 +23,8 @@ import LocMapper
 
 struct Lint : ParsableCommand {
 	
-	@OptionGroup
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Flag
 	var detectUnusedRefloc = false
@@ -33,6 +33,8 @@ struct Lint : ParsableCommand {
 	var inputFile: String
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		
 		func keyToStr(_ k: LocFile.LineKey, withFilename: Bool = true) -> String {

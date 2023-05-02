@@ -25,13 +25,15 @@ struct CreateInitialAndroidMappingFromStdRefLoc : ParsableCommand {
 	
 	static var configuration = CommandConfiguration(commandName: "create_initial_android_mapping_from_std_ref_loc")
 	
-	@OptionGroup()
-	var csvOptions: CSVOptions
+	@OptionGroup() var csvOptions: CSVOptions
+	@OptionGroup() var logOptions: LoggingOptions
 	
 	@Argument()
 	var transformedFilePath: String
 	
 	func run() throws {
+		logOptions.bootstrapLogger()
+		
 		let csvSeparator = csvOptions.csvSeparator
 		
 		print("Creating initial android mappings in LocFile...")
