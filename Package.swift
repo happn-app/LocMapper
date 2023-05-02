@@ -31,7 +31,7 @@ let package = Package(
 			],
 			path: "LocMapper"
 		),
-		.testTarget(name: "LocMapperTests", dependencies: ["LocMapper"]),
+		.testTarget(name: "LocMapperTests", dependencies: ["LocMapper"], exclude: ["Info.plist"]),
 		
 		.executableTarget(
 			name: "locmapper",
@@ -40,7 +40,8 @@ let package = Package(
 				.product(name: "CLTLogger",      package: "CLTLogger"),
 				.target(name: "LocMapper")
 			],
-			path: "LocMapper CLI"
+			path: "LocMapper CLI",
+			exclude: ["locmapper.entitlements"]
 		)
 		/* As an alternative to the two targets above, we can have only one “locmapper” target that compile both folders directly.
 		 * I prefer the lib/executable structure (among other it allows having other targets that uses the LocMapper lib, like the test target for instance),
