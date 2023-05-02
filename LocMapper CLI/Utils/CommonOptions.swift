@@ -53,10 +53,10 @@ struct CSVOptions : ParsableArguments {
 
 struct LoggingOptions : ParsableArguments {
 	
-	@Option(help: "Force using OSLog instead of logging with CLTLogger.")
+	@Flag(help: "Force using OSLog instead of logging with CLTLogger.")
 	var forceOSLog: Bool = false
 	
-	@Option(help: "Log from log level debug instead of info. Only makes sense when logging with CLTLogger")
+	@Flag(help: "Log from log level debug instead of info. Only makes sense when logging with CLTLogger")
 	var verbose: Bool = false
 	
 	func bootstrapLogger() {
