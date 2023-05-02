@@ -26,7 +26,7 @@ extension LocFile {
 					case .fromCSVFile(let url):
 						var ret = [String: String]()
 						let csvString = try String(contentsOf: url)
-						let parser = CSVParser(source: csvString, startOffset: 0, separator: csvSeparator, hasHeader: true, fieldNames: nil)
+						let parser = CSVParser(source: csvString, startOffset: csvString.startIndex, separator: csvSeparator, hasHeader: true, fieldNames: nil)
 						guard let rows = parser.arrayOfParsedRows() else {
 							throw NSError(domain: "LocFile.MappingTransformation.MappingKeySource", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid CSV source: cannot parse CSV"])
 						}

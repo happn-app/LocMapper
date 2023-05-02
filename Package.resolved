@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "clt-logger",
+        "repositoryURL": "https://github.com/xcode-actions/CLTLogger.git",
+        "state": {
+          "branch": null,
+          "revision": "a3e33f58aa30ec9c33f022dd512e00e0663606c1",
+          "version": "0.5.1"
+        }
+      },
+      {
         "package": "swift-argument-parser",
         "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
         "state": {
@@ -15,8 +24,8 @@
         "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {
           "branch": null,
-          "revision": "6fe203dc33195667ce1759bf0182975e4653ba1c",
-          "version": "1.4.4"
+          "revision": "32e8d724467f8fe623624570367e3d50c5638e46",
+          "version": "1.5.2"
         }
       },
       {

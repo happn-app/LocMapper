@@ -35,7 +35,7 @@ public class XibRefLocFile {
 	
 	init(filecontent: String, languages sourceLanguages: [Language], csvSeparator: String = ",") throws {
 		let error = NSError(domain: "XibRefLocFile", code: 1, userInfo: nil)
-		let parser = CSVParser(source: filecontent, startOffset: 0, separator: csvSeparator, hasHeader: true, fieldNames: nil)
+		let parser = CSVParser(source: filecontent, startOffset: filecontent.startIndex, separator: csvSeparator, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
 			throw error
 		}

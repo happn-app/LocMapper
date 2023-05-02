@@ -59,7 +59,7 @@ extension LocFile : TextOutputStreamable {
 			return
 		}
 		
-		let parser = CSVParser(source: filecontent, startOffset: 0, separator: csvSep, hasHeader: true, fieldNames: nil)
+		let parser = CSVParser(source: filecontent, startOffset: filecontent.startIndex, separator: csvSep, hasHeader: true, fieldNames: nil)
 		guard let parsedRows = parser.arrayOfParsedRows() else {
 			throw defaultError
 		}

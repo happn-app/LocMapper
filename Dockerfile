@@ -1,5 +1,5 @@
 # ######### Build Image
-FROM swift:5.4-focal AS builder
+FROM swift:5.5-focal AS builder
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 	&& apt-get -q update \
@@ -30,7 +30,7 @@ RUN cp "$(swift build --package-path /build -c release --show-bin-path)/locmappe
 
 
 # ######### Run Image
-FROM swift:5.4-focal-slim
+FROM swift:5.5-focal-slim
 
 ARG LOCMAPPER_USER_ID=1000
 

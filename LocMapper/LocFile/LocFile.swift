@@ -54,7 +54,7 @@ public class LocFile {
 	}
 	
 	public convenience init(csvSeparator csvSep: String = ",") {
-		self.init(languages: [], entries: [:], metadata: [:], csvSeparator: csvSep, serializationStyle: .csvFriendly)
+		self.init(languages: [], entries: [:], metadata: [String: String](), csvSeparator: csvSep, serializationStyle: .csvFriendly)
 	}
 	
 	/**

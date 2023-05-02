@@ -25,7 +25,7 @@ class CSVParser {
 	
 	private let hasHeader: Bool
 	private let csvString: String
-	private let startOffset: Int
+	private let startOffset: Scanner.Location
 	
 	private let separator: String
 	private let separatorIsSingleChar: Bool
@@ -34,8 +34,8 @@ class CSVParser {
 	private var scanner: Scanner!
 	
 	/* fieldNames is ignored if hasHeader is true */
-	init(source str: String, startOffset offset: Int, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
-		assert(offset < str.count)
+	init(source str: String, startOffset offset: String.Index, separator sep: String, hasHeader header: Bool, fieldNames names: [String]?) {
+		assert(offset < str.endIndex)
 		assert(
 			!sep.isEmpty && sep.range(of: "\"") == nil && sep.rangeOfCharacter(from: CSVParser.newLinesCharacterSet) == nil && sep.unicodeScalars.count == 1,
 			"CSV separator string must not be empty, must contain a single unicode scalar and must not contain the double quote character or newline characters."
@@ -43,7 +43,7 @@ class CSVParser {
 		
 		csvString = str
 		separator = sep
-		startOffset = offset
+		startOffset = .init(index: offset, in: str)
 		
 		var cs = CSVParser.newLinesCharacterSet
 		cs.insert(charactersIn: "\"")
@@ -60,7 +60,7 @@ class CSVParser {
 	func arrayOfParsedRows() -> [[String: String]]? {
 		scanner = Scanner(string: csvString)
 		scanner.charactersToBeSkipped = CharacterSet()
-		scanner.scanLocation = startOffset
+		scanner.lm_scanLocation = startOffset
 		return parseFile()
 	}
 	
@@ -116,7 +116,7 @@ class CSVParser {
 			return nil
 		}
 		if let newlines = parseLineSeparator() {
-			scanner.scanLocation -= newlines.utf16.count
+			scanner.lm_scanLocation = scanner.lm_scanLocation.offset(by: -newlines.count, in: scanner.string)
 			return [:]
 		}
 		
@@ -160,9 +160,9 @@ class CSVParser {
 		}
 		
 		/* Special case: if the current location is immediately followed by a separator, then the field is a valid, empty string. */
-		let currentLocation = scanner.scanLocation
+		let currentLocation = scanner.lm_scanLocation
 		if parseSeparator() != nil || parseLineSeparator() != nil || scanner.isAtEnd {
-			scanner.scanLocation = currentLocation
+			scanner.lm_scanLocation = currentLocation
 			return ""
 		}
 		
@@ -212,7 +212,7 @@ class CSVParser {
 	}
 	
 	private func parseLineSeparator() -> String? {
-		let scanLocation = scanner.scanLocation
+		let scanLocation = scanner.lm_scanLocation
 		guard let matchedNewlines = scanner.lm_scanCharacters(from: CSVParser.newLinesCharacterSet) else {
 			return nil
 		}
@@ -220,9 +220,9 @@ class CSVParser {
 		/* newlines will contains all new lines from scanLocation.
 		 * We only want one new line. */
 		let newlines = matchedNewlines
-		if newlines.hasPrefix("\r\n") {scanner.scanLocation = scanLocation + 2; return "\r\n"}
-		if newlines.hasPrefix("\n")   {scanner.scanLocation = scanLocation + 1; return "\n"}
-		if newlines.hasPrefix("\r")   {scanner.scanLocation = scanLocation + 1; return "\r"}
+		if newlines.hasPrefix("\r\n") {scanner.lm_scanLocation = scanLocation.offset(by: 2, in: scanner.string); return "\r\n"}
+		if newlines.hasPrefix("\n")   {scanner.lm_scanLocation = scanLocation.offset(by: 1, in: scanner.string); return "\n"}
+		if newlines.hasPrefix("\r")   {scanner.lm_scanLocation = scanLocation.offset(by: 1, in: scanner.string); return "\r"}
 #if canImport(os)
 		Conf.oslog.flatMap{ os_log("Unknown new line! oO (%@)", log: $0, type: .error, newlines) }
 #endif
@@ -252,10 +252,10 @@ class CSVParser {
 			}
 			
 			/* Otherwise, we need to consider the case where the first character of the separator is matched but we don't have the full separator. */
-			let location = scanner.scanLocation
+			let location = scanner.lm_scanLocation
 			if let firstCharOfSeparator = scanner.lm_scanString(String(separator.first!)) {
 				if scanner.lm_scanString(String(separator.dropFirst())) != nil {
-					scanner.scanLocation = location
+					scanner.lm_scanLocation = location
 					break
 				}
 				

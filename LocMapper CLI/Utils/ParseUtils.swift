@@ -25,8 +25,8 @@ import LocMapper
  Parses an option list like locmapper did before using Apple’s ArgumentParser.
  
  If the given array only have one element and contains a comma,
- we assume the user has used the obsolete list option format
- and we split the only argument using the comma separator.
+  we assume the user has used the obsolete list option format
+  and we split the only argument using the comma separator.
  
  It is thus impossible when using this method to get an array containing one element that contains a comma.
  We take the risk for now (the previous situation was worse), and might remove this function altogether later. */

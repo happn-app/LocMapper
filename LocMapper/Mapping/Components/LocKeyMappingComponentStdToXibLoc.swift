@@ -67,7 +67,7 @@ class LocKeyMappingComponentStdToXibLoc : LocKeyMappingComponent {
 				"filename": taggedKey.value.filename,
 				"loc_key":  taggedKey.value.locKey,
 				"tags":     taggedKey.tags
-			]
+			] as [String: Any?]
 		}
 		return ["tagged_keys": serializedTaggedKeys]
 	}

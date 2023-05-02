@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -109,6 +109,8 @@
 		7BB9052B2480276800E3F5F5 /* TransformMappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9052A2480276800E3F5F5 /* TransformMappings.swift */; };
 		7BB9052D248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB9052C248027A900E3F5F5 /* CreateInitialAndroidMappingFromStdRefLoc.swift */; };
 		7BC4590220B0BDBA003972E1 /* LocFile+MigrationsSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC4590120B0BDBA003972E1 /* LocFile+MigrationsSupport.swift */; };
+		7BC88C952A01505600230389 /* CLTLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC88C942A01505600230389 /* CLTLogger */; };
+		7BC88C972A01506700230389 /* CLTLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC88C962A01506700230389 /* CLTLogger */; };
 		7BCB27AE1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB27AD1D2D6696005CFEB9 /* AccessoryViewForImportReferenceTranslations.xib */; };
 		7BD9C51321C26B030044D49F /* NoEditOnEnterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD9C51221C26B030044D49F /* NoEditOnEnterTableView.swift */; };
 		7BD9C51521C26E440044D49F /* InputFileDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD9C51421C26E440044D49F /* InputFileDescription.swift */; };
@@ -308,6 +310,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BC88C952A01505600230389 /* CLTLogger in Frameworks */,
 				7B11B55A246B179100257726 /* Logging in Frameworks */,
 				7B588827234F885E0038466E /* XibLoc in Frameworks */,
 			);
@@ -318,6 +321,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B88B9D5247FD65300D48975 /* ArgumentParser in Frameworks */,
+				7BC88C972A01506700230389 /* CLTLogger in Frameworks */,
 				7B76AAE12025FCED0071B896 /* libLocMapper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -788,6 +792,7 @@
 			);
 			name = LocMapper;
 			packageProductDependencies = (
+				7BC88C942A01505600230389 /* CLTLogger */,
 				7B11B559246B179100257726 /* Logging */,
 				7B588826234F885E0038466E /* XibLoc */,
 			);
@@ -811,6 +816,7 @@
 			name = "LocMapper CLI";
 			packageProductDependencies = (
 				7B88B9D4247FD65300D48975 /* ArgumentParser */,
+				7BC88C962A01506700230389 /* CLTLogger */,
 			);
 			productName = Localizer;
 			productReference = 7B6E259F19D4157A001934ED /* locmapper */;
@@ -843,9 +849,10 @@
 		7B6E259719D4157A001934ED /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftMigration = 0710;
 				LastSwiftUpdateCheck = 1010;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = happn;
 				TargetAttributes = {
 					7B15CE1B21C120310016D109 = {
@@ -885,6 +892,7 @@
 			);
 			mainGroup = 7B6E259619D4157A001934ED;
 			packageReferences = (
+				7BC88C932A01505600230389 /* XCRemoteSwiftPackageReference "CLTLogger" */,
 				7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				7B11B558246B179100257726 /* XCRemoteSwiftPackageReference "swift-log" */,
 				7B588825234F885E0038466E /* XCRemoteSwiftPackageReference "XibLoc" */,
@@ -1360,7 +1368,7 @@
 				CURRENT_PROJECT_VERSION = 37;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.3.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperCLI";
 				PRODUCT_MODULE_NAME = LocMapperCLI;
@@ -1380,7 +1388,7 @@
 				CURRENT_PROJECT_VERSION = 37;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.3.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "fr.ftw-and-co.LocMapperCLI";
 				PRODUCT_MODULE_NAME = LocMapperCLI;
@@ -1531,6 +1539,14 @@
 				minimumVersion = 0.1.0;
 			};
 		};
+		7BC88C932A01505600230389 /* XCRemoteSwiftPackageReference "CLTLogger" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xcode-actions/CLTLogger.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1553,6 +1569,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
 			productName = ArgumentParser;
+		};
+		7BC88C942A01505600230389 /* CLTLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7BC88C932A01505600230389 /* XCRemoteSwiftPackageReference "CLTLogger" */;
+			productName = CLTLogger;
+		};
+		7BC88C962A01506700230389 /* CLTLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7BC88C932A01505600230389 /* XCRemoteSwiftPackageReference "CLTLogger" */;
+			productName = CLTLogger;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
