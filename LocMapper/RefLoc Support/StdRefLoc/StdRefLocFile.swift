@@ -114,7 +114,7 @@ public class StdRefLocFile {
 #if canImport(os)
 				Conf.oslog.flatMap{ os_log("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: %@", log: $0, type: .info, keyComponents) }
 #endif
-				Conf.logger?.info("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts. Components: \(keyComponents)")
+				Conf.logger?.info("Got key from Lokalise with more than 2 components. Assuming last one is tags; joining firsts.", metadata: ["components": .array(keyComponents.map{ "\($0)" })])
 			}
 			let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
 			
