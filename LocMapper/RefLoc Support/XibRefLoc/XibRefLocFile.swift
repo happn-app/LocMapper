@@ -62,6 +62,10 @@ public class XibRefLocFile {
 	public init(stdRefLoc: StdRefLocFile) throws {
 		var entriesBuilding = [Key: [Language: Value]]()
 		for (key, taggedValuesPerLanguage) in stdRefLoc.entries {
+#if canImport(os)
+			Conf.oslog.flatMap{ os_log("Processing conversion of new key %@ from std ref loc to xib loc.", log: $0, type: .debug, key) }
+#endif
+			Conf.logger?.debug("Processing conversion of new key from std ref loc to xib loc.", metadata: ["key": "\(key)"])
 			var values = [Language: Value]()
 			for (language, taggedValues) in taggedValuesPerLanguage {
 				values[language] = try Std2Xib.untaggedValue(from: taggedValues, with: language)
