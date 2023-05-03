@@ -212,4 +212,8 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		return value.applying(xibLocInfo: xibLocInfo)
 	}
 	
+	public override var description: String {
+		return "\(Self.self)<\(numberOpenDelim)\(numberCloseDelim)\(pluralOpenDelim)\(pluralMiddleDelim)\(pluralCloseDelim):\(escapeToken ?? ""):\(numberReplacement):\(pluralUnicodeValue.rawValue)>"
+	}
+	
 }

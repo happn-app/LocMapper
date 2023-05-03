@@ -15,14 +15,10 @@ import Logging
 
 
 
-public class LocValueTransformer {
+public class LocValueTransformer : CustomStringConvertible {
 	
 	class var serializedType: String {
 		fatalError("serializedType is abstract.")
-	}
-	
-	public var isValid: Bool {
-		fatalError("isValid is abstract.")
 	}
 	
 	/**
@@ -59,6 +55,10 @@ public class LocValueTransformer {
 		}
 	}
 	
+	public var isValid: Bool {
+		fatalError("isValid is abstract.")
+	}
+	
 	public final func serialize() -> [String: Any?] {
 		var serializedData = self.serializePrivateData()
 		if !(self is LocValueTransformerInvalid) {serializedData["__type"] = type(of: self).serializedType}
@@ -71,6 +71,10 @@ public class LocValueTransformer {
 	
 	func apply(toValue value: String, withLanguage: String) throws -> String {
 		preconditionFailure("This method is abstract")
+	}
+	
+	public var description: String {
+		return "\(Self.self)<\(serializePrivateData())>"
 	}
 	
 }

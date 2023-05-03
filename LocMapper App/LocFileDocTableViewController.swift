@@ -151,7 +151,7 @@ class LocFileDocTableViewController : NSViewController, NSUserInterfaceValidatio
 	}
 	
 	func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-		/* Based on https://gist.github.com/billymeltdown/9084884 */
+		/* Based on <https://gist.github.com/billymeltdown/9084884>. */
 		let minimumHeight = CGFloat(3)
 		guard let csvLocFile = csvLocFile, let key = sortedKeys?[row] else {return minimumHeight}
 		

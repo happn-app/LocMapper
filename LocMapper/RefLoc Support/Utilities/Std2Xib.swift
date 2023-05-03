@@ -26,25 +26,18 @@ enum Std2XibError : Error {
 public struct Std2Xib {
 	
 	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String, allowUniversalPlaceholders: Bool = true) throws -> String {
+		var unused = 0 /* Needed as a var, never modified. */
 		let language = language.lowercased()
 		
-		/* Tags of first value determine how we'll merge the values.
-		 * We do not try and fix invalid values with a different # of/unrelated tags.
-		 * We’ll only print a message in the logs if there are missing tags compared to first value. */
-		guard let firstValue = stdLocValues.first else {return ""}
-		guard firstValue.tags.count > 0 else {return firstValue.value}
-		
-		/* First let's get the transforms and sort them from the first value.
+		/* First let's get all the transforms and dispatch them by type.
 		 * All the transforms will be inverted except for the regexes which are applied forward. */
 		var plurals = [LocValueTransformerPluralVariantPick]()
 		var genders = [LocValueTransformerGenderVariantPick]()
 		var regexes = [LocValueTransformerRegexReplacements]()
 		var orders = [LocValueTransformerOrderedReplacementVariantPick]()
 		var replacements = [LocValueTransformerRegionDelimitersReplacement]()
-		
-		var i = 0
-		for tag in firstValue.tags {
-			let t = try transformer(from: tag, index: &i)
+		for tag in stdLocValues.flatMap(\.tags) {
+			let t = try transformer(from: tag, index: &unused)
 			switch t {
 				case let plural      as LocValueTransformerPluralVariantPick:             plurals.append(plural)
 				case let gender      as LocValueTransformerGenderVariantPick:             genders.append(gender)
@@ -54,6 +47,8 @@ public struct Std2Xib {
 				default: fatalError("Internal Logic Error")
 			}
 		}
+		/* MAYBE TODO: Remove duplicate tags, or even tags that are in the same “tag group” (e.g. same plural def, just not same value).
+		 * In theory, it should still work and just be faster, but we have to test it thoroughly. */
 		
 		/* Next we’ll apply all the replacements transforms (replacement part of the plurals and replacements)
 		 *  and standardize the tags (needed because of the way “applyReverseNonReplacements” works).
@@ -253,9 +248,9 @@ public struct Std2Xib {
 		} else {
 			if taggedStrings.count != 1 {
 #if canImport(os)
-				Conf.oslog.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags...", log: $0, type: .info) }
+				Conf.oslog.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags in tagged strings %@...", log: $0, type: .info, taggedStrings) }
 #endif
-				Conf.logger?.warning("Got more than one tagged string but no plural, gender or order tags...")
+				Conf.logger?.warning("Got more than one tagged string but no plural, gender or order tags...", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" })])
 			}
 			return taggedStrings.first!.value
 		}
@@ -267,9 +262,19 @@ public struct Std2Xib {
 			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders, orders: newOrders))
 		}
 		
+		/* values _should_ always contain at least one element, but it might not if there is an issue with the tags in the ref log.
+		 * For instance, for a key “example” with the following variant tags ["g{₋}m", "g{₋}f, gm", "g{₋}f, gf"],
+		 *  there is obviously an incompatibility, which leads to the values being empty. */
+		guard let refVal = values.first else {
+#if canImport(os)
+			Conf.oslog.flatMap{ os_log("Missing value in tagged strings %@ with tags to match %@; replacing by TODOLOC", log: $0, type: .info, taggedStrings, tagsToMatch) }
+#endif
+			Conf.logger?.warning("Missing value in tagged strings; replacing by TODOLOC.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)"])
+			return "!¡!TODOLOC_MISSING_TAG_VARIANT!¡!"
+		}
+		
 		/* Before implementing <http://www.xmailserver.org/diff2.pdf> let’s do a stupid hack:
 		 *  if all the values are the same, we can simply return this value! */
-		let refVal = values.first! /* Must contain at least one value since tagsToMatch always contains at least one value */
 		guard values.contains(where: { $0 != refVal }) else {
 			return refVal
 		}

@@ -103,4 +103,8 @@ class LocValueTransformerGenderVariantPick : LocValueTransformer {
 		return value.applying(xibLocInfo: xibLocInfo)
 	}
 	
+	public override var description: String {
+		return "\(Self.self)<\(openDelim)\(middleDelim)\(closeDelim):\(escapeToken ?? ""):\(gender.toString())>"
+	}
+	
 }
