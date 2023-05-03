@@ -267,7 +267,7 @@ public struct Std2Xib {
 		 *  there is obviously an incompatibility, which leads to the values being empty. */
 		guard let refVal = values.first else {
 #if canImport(os)
-			Conf.oslog.flatMap{ os_log("Missing value in tagged strings %@ with tags to match %@; replacing by TODOLOC", log: $0, type: .info, taggedStrings, tagsToMatch) }
+			Conf.oslog.flatMap{ os_log("Missing value in tagged strings %@ with tags to match %@; replacing by TODOLOC.", log: $0, type: .info, taggedStrings, tagsToMatch) }
 #endif
 			Conf.logger?.warning("Missing value in tagged strings; replacing by TODOLOC.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)"])
 			return "!¡!TODOLOC_MISSING_TAG_VARIANT!¡!"
@@ -282,6 +282,12 @@ public struct Std2Xib {
 		var first = true
 		var ret = openDelim
 		for v in values {
+			if v.isEmpty {
+#if canImport(os)
+				Conf.oslog.flatMap{ os_log("Suspicious empty value in tagged strings %@ with tags to match %@.", log: $0, taggedStrings, tagsToMatch) }
+#endif
+				Conf.logger?.notice("Suspicious empty value found.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)"])
+			}
 			if !first {ret += middleDelim}
 			ret += Set([openDelim, middleDelim, closeDelim]).reduce(v, { $0.replacingOccurrences(of: $1, with: "~" + $1) })
 			first = false
