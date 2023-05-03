@@ -25,7 +25,7 @@ enum Std2XibError : Error {
 
 public struct Std2Xib {
 	
-	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String, allowUniversalPlaceholders: Bool = true) throws -> String {
+	public static func untaggedValue(from stdLocValues: [TaggedString], with language: String, keyForLogs: String? = nil) throws -> String {
 		var unused = 0 /* Needed as a var, never modified. */
 		let language = language.lowercased()
 		
@@ -95,7 +95,7 @@ public struct Std2Xib {
 		}
 		
 		/* Finally, let's merge the strings in one. */
-		return try applyReverseNonReplacements(from: standardizedTagsNoReplacementsStdLocValues, with: language, plurals: plurals, genders: genders, orders: orders)
+		return try applyReverseNonReplacements(from: standardizedTagsNoReplacementsStdLocValues, with: language, plurals: plurals, genders: genders, orders: orders, keyForLogs: keyForLogs)
 	}
 	
 	/* The returned transformer, when there is a replacement, will contain the **prefix** of the replacement only. */
@@ -174,7 +174,7 @@ public struct Std2Xib {
 		}
 	}
 	
-	private static func applyReverseNonReplacements(from taggedStrings: [TaggedString], with language: String, plurals: [LocValueTransformerPluralVariantPick], genders: [LocValueTransformerGenderVariantPick], orders: [LocValueTransformerOrderedReplacementVariantPick]) throws -> String {
+	private static func applyReverseNonReplacements(from taggedStrings: [TaggedString], with language: String, plurals: [LocValueTransformerPluralVariantPick], genders: [LocValueTransformerGenderVariantPick], orders: [LocValueTransformerOrderedReplacementVariantPick], keyForLogs: String?) throws -> String {
 		assert(taggedStrings.count > 0)
 		
 		let openDelim: String
@@ -248,9 +248,9 @@ public struct Std2Xib {
 		} else {
 			if taggedStrings.count != 1 {
 #if canImport(os)
-				Conf.oslog.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags in tagged strings %@...", log: $0, type: .info, taggedStrings) }
+				Conf.oslog.flatMap{ os_log("Got more than one tagged string but no plural, gender or order tags in tagged strings %@ (key is %@)...", log: $0, type: .info, taggedStrings, keyForLogs ?? "unknown") }
 #endif
-				Conf.logger?.warning("Got more than one tagged string but no plural, gender or order tags...", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" })])
+				Conf.logger?.warning("Got more than one tagged string but no plural, gender or order tags...", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "key": keyForLogs.flatMap{ "\($0)" }].compactMapValues{ $0 })
 			}
 			return taggedStrings.first!.value
 		}
@@ -259,7 +259,7 @@ public struct Std2Xib {
 		for t in tagsToMatch {
 			let matchingTaggedStrings = taggedStrings.filter{ $0.tags.contains(t) }
 			guard matchingTaggedStrings.count > 0 else {continue}
-			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders, orders: newOrders))
+			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders, orders: newOrders, keyForLogs: keyForLogs))
 		}
 		
 		/* values _should_ always contain at least one element, but it might not if there is an issue with the tags in the ref log.
@@ -267,9 +267,9 @@ public struct Std2Xib {
 		 *  there is obviously an incompatibility, which leads to the values being empty. */
 		guard let refVal = values.first else {
 #if canImport(os)
-			Conf.oslog.flatMap{ os_log("Missing value in tagged strings %@ with tags to match %@; replacing by TODOLOC.", log: $0, type: .info, taggedStrings, tagsToMatch) }
+			Conf.oslog.flatMap{ os_log("Missing value in tagged strings %@ with tags to match %@ (key is %@); replacing by TODOLOC.", log: $0, type: .info, taggedStrings, tagsToMatch, keyForLogs ?? "unknown") }
 #endif
-			Conf.logger?.warning("Missing value in tagged strings; replacing by TODOLOC.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)"])
+			Conf.logger?.warning("Missing value in tagged strings; replacing by TODOLOC.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)", "key": keyForLogs.flatMap{ "\($0)" }].compactMapValues{ $0 })
 			return "!¡!TODOLOC_MISSING_TAG_VARIANT!¡!"
 		}
 		
@@ -284,9 +284,9 @@ public struct Std2Xib {
 		for v in values {
 			if v.isEmpty {
 #if canImport(os)
-				Conf.oslog.flatMap{ os_log("Suspicious empty value in tagged strings %@ with tags to match %@.", log: $0, taggedStrings, tagsToMatch) }
+				Conf.oslog.flatMap{ os_log("Suspicious empty value in tagged strings %@ with tags to match %@ (key is %@).", log: $0, taggedStrings, tagsToMatch, keyForLogs ?? "unknown") }
 #endif
-				Conf.logger?.notice("Suspicious empty value found.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)"])
+				Conf.logger?.notice("Suspicious empty value found.", metadata: ["tagged_strings": .array(taggedStrings.map{ "\($0)" }), "matched_tags": "\(tagsToMatch)", "key": keyForLogs.flatMap{ "\($0)" }].compactMapValues{ $0 })
 			}
 			if !first {ret += middleDelim}
 			ret += Set([openDelim, middleDelim, closeDelim]).reduce(v, { $0.replacingOccurrences(of: $1, with: "~" + $1) })

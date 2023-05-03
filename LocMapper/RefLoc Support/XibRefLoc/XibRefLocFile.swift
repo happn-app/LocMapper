@@ -68,7 +68,7 @@ public class XibRefLocFile {
 			Conf.logger?.debug("Processing conversion of new key from std ref loc to xib loc.", metadata: ["key": "\(key)"])
 			var values = [Language: Value]()
 			for (language, taggedValues) in taggedValuesPerLanguage {
-				values[language] = try Std2Xib.untaggedValue(from: taggedValues, with: language)
+				values[language] = try Std2Xib.untaggedValue(from: taggedValues, with: language, keyForLogs: key)
 			}
 			entriesBuilding[key] = values
 		}
