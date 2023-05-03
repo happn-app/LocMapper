@@ -15,10 +15,10 @@ import Logging
 
 
 /* strings files are, in essence, old-style plist files.
- * FYI: https://pewpewthespells.com/blog/dangers_of_ascii_plists.html
+ * FYI: <https://pewpewthespells.com/blog/dangers_of_ascii_plists.html>
  *      -> Xcode reads those old-style plists as Unicode, but original parser read them as ASCII, with support for Unicode with \Uxxxx,
- *         but not more than four numbers were read after the “U”.
- *         https://opensource.apple.com/source/CF/CF-1153.18/CFOldStylePList.c
+ *          but not more than four numbers were read after the “U”.
+ *         <https://opensource.apple.com/source/CF/CF-1153.18/CFOldStylePList.c>
  *         PropertyListSerialization does serialize as Unicode though.
  * From the CFOldStylePList.c file, we get:
  *    #define isValidUnquotedStringCharacter(x) (((x) >= 'a' && (x) <= 'z') || ((x) >= 'A' && (x) <= 'Z') || ((x) >= '0' && (x) <= '9') || (x) == '_' || (x) == '$' || (x) == '/' || (x) == ':' || (x) == '.' || (x) == '-')

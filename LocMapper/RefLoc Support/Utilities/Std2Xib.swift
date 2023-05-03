@@ -55,8 +55,8 @@ public struct Std2Xib {
 			}
 		}
 		
-		/* Next we’ll apply all the replacements transforms (replacement part of the plurals and replacements) and
-		 * standardize the tags (needed because of the way “applyReverseNonReplacements” works).
+		/* Next we’ll apply all the replacements transforms (replacement part of the plurals and replacements)
+		 *  and standardize the tags (needed because of the way “applyReverseNonReplacements” works).
 		 * Note: We do not escape the escape tokens, they are assumed to already be escaped if needed in the source document.
 		 *       It would be good (TODO) to have a tag that could toggle this behavior. */
 		var standardizedTagsNoReplacementsStdLocValues = stdLocValues
@@ -267,8 +267,8 @@ public struct Std2Xib {
 			values.append(try applyReverseNonReplacements(from: matchingTaggedStrings, with: language, plurals: newPlurals, genders: newGenders, orders: newOrders))
 		}
 		
-		/* Before implementing http://www.xmailserver.org/diff2.pdf let’s do a stupid hack:
-		 * if all the values are the same, we can simply return this value! */
+		/* Before implementing <http://www.xmailserver.org/diff2.pdf> let’s do a stupid hack:
+		 *  if all the values are the same, we can simply return this value! */
 		let refVal = values.first! /* Must contain at least one value since tagsToMatch always contains at least one value */
 		guard values.contains(where: { $0 != refVal }) else {
 			return refVal

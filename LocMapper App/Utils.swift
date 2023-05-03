@@ -30,7 +30,7 @@ class Utils {
 	}
 	
 	static func setTextView(_ textView: NSTextView, enabled: Bool) {
-		/* Straight from https://developer.apple.com/library/content/qa/qa1461/_index.html */
+		/* Straight from <https://developer.apple.com/library/content/qa/qa1461/_index.html>. */
 		textView.isSelectable = enabled
 		textView.isEditable = enabled
 		textView.textColor = (enabled ? .controlTextColor : .disabledControlTextColor)

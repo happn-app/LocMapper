@@ -17,7 +17,7 @@ import Foundation
 
 
 
-/* There are some properties that have been ignored because deemed not useful */
+/* There are some properties that have been ignored because deemed not useful. */
 struct LokaliseKey : Codable {
 	
 	var keyId: Int

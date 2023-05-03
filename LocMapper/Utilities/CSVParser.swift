@@ -6,9 +6,9 @@
  * Copyright (c) 2014 happn. All rights reserved.
  */
 
-/* Credits to Matt Gallagher from which this class comes from
- * http://projectswithlove.com/projects/CSVImporter.zip
- * http://www.cocoawithlove.com/2009/11/writing-parser-using-nsscanner-csv.html */
+/* Credits to Matt Gallagher from which most of this class comes from
+ *  <http://projectswithlove.com/projects/CSVImporter.zip>
+ *  <http://www.cocoawithlove.com/2009/11/writing-parser-using-nsscanner-csv.html> */
 
 import Foundation
 #if canImport(os)

@@ -26,7 +26,7 @@ extension LocFile {
 		switch mergeStyle {
 			case .add: (/*nop*/)
 			case .replace:
-				/* Remove all previous StdRefLoc entries */
+				/* Remove all previous StdRefLoc entries. */
 				for key in entries.keys {
 					guard key.env == "StdRefLoc" else {continue}
 					entries.removeValue(forKey: key)
@@ -60,12 +60,12 @@ extension LocFile {
 		do {
 			var stream = try FileHandleOutputStream(forPath: path)
 			
-			/* Printing header */
+			/* Printing header. */
 			print("KEY".csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)
 			for l in languages {print(csvSeparator + l.csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)}
 			print("", to: &stream)
 			
-			/* Printing values */
+			/* Printing values. */
 			for k in entryKeys.sorted() {
 				guard k.env == "StdRefLoc" else {continue}
 				print(k.locKey.csvCellValueWithSeparator(csvSeparator), terminator: "", to: &stream)

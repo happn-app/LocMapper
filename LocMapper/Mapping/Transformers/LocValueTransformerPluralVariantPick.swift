@@ -129,8 +129,8 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		]
 	}
 	
-	/* https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
-	 * https://www.unicode.org/reports/tr35/tr35-numbers.html#Operands
+	/* <https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html>
+	 * <https://www.unicode.org/reports/tr35/tr35-numbers.html#Operands>
 	 *
 	 * Remember to update applyReverseNonReplacements in the Std2Xib file when updating this language list.
 	 *
