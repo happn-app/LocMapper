@@ -108,7 +108,7 @@ public class StdRefLocFile {
 				continue
 			}
 			
-			/* Processing key from Lokalise */
+			/* Processing key from Lokalise. */
 			let keyComponents = keyName.components(separatedBy: " - ")
 			if keyComponents.count > 2 {
 #if canImport(os)
@@ -118,14 +118,14 @@ public class StdRefLocFile {
 			}
 			let stdRefLocKey = keyComponents[0..<max(1, keyComponents.endIndex-1)].joined(separator: " - ")
 			
-			/* Processing tags from Lokalise */
+			/* Processing tags from Lokalise. */
 			let processedTags = tags.compactMap{ tag -> String? in
 				guard tag.hasPrefix("lcm:") else {return nil}
 				let tag = String(tag.dropFirst(4))
 				return tagMapping[tag] ?? tag
 			}
 			
-			/* Processing value from Lokalise */
+			/* Processing value from Lokalise. */
 			for translation in key.translations {
 				guard let refLocLanguage = lokaliseToReflocLanguageName[translation.languageIso] else {
 #if canImport(os)
