@@ -80,7 +80,7 @@ public class XibRefLocFile {
 	public func exportToLokalise(token: String, projectId: String, reflocToLokaliseLanguageName: [String: String], takeSnapshot: Bool, logPrefix: String?) throws {
 		let batchSize = 7
 		
-		let baseURL = URL(string: "https://api.lokalise.co/api/")!
+		let baseURL = URL(string: "https://api.lokalise.com/api/")!
 		let baseQueryItems = [
 			URLQueryItem(name: "api_token", value: token),
 			URLQueryItem(name: "id", value: projectId)
