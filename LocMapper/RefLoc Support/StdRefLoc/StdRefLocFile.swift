@@ -55,7 +55,7 @@ public class StdRefLocFile {
 	public init(token: String, projectId: String, lokaliseToReflocLanguageName: [String: String], keyType: String, excludedTags: Set<String> = Set(), logPrefix: String?) throws {
 		let decoder = JSONDecoder()
 		decoder.keyDecodingStrategy = .convertFromSnakeCase
-		let baseURL = URL(string: "https://api.lokalise.co/api2/")!
+		let baseURL = URL(string: "https://api.lokalise.com/api2/")!
 		let tagMapping = [
 			"male_other": "gm",
 			"female_other": "gf",
