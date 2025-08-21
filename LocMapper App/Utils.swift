@@ -13,7 +13,7 @@ import XibLoc
 
 
 
-class Utils {
+enum Utils {
 	
 	static let lineKeyStrTemplate = NSLocalizedString("key description", comment: "Template for converting a LineKey object to a string.")
 	
@@ -29,6 +29,7 @@ class Utils {
 		)
 	}
 	
+	@MainActor
 	static func setTextView(_ textView: NSTextView, enabled: Bool) {
 		/* Straight from <https://developer.apple.com/library/content/qa/qa1461/_index.html>. */
 		textView.isSelectable = enabled

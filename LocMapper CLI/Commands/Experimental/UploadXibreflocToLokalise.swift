@@ -23,7 +23,7 @@ import LocMapper
 
 struct UploadXibreflocToLokalise : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "upload_xibrefloc_to_lokalise",
 		abstract: "Upload a Xib Ref Loc file to lokalise.",
 		discussion: """

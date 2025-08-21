@@ -12,7 +12,7 @@ import Foundation
 
 class InputFileDescription : NSObject, NSSecureCoding {
 	
-	static var supportsSecureCoding: Bool = true
+	static let supportsSecureCoding: Bool = true
 	
 	/* Raw value is tag in menu. */
 	enum RefLocType : Int {

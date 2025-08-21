@@ -23,7 +23,7 @@ import LocMapper
 
 struct GitUnfriendly : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(commandName: "git_unfriendly")
+	static let configuration = CommandConfiguration(commandName: "git_unfriendly")
 	
 	@OptionGroup var csvOptions: CSVOptions
 	@OptionGroup var logOptions: LoggingOptions

@@ -23,7 +23,7 @@ import LocMapper
 
 struct TransformMappings : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(commandName: "transform_mappings")
+	static let configuration = CommandConfiguration(commandName: "transform_mappings")
 	
 	@OptionGroup var csvOptions: CSVOptions
 	@OptionGroup var logOptions: LoggingOptions

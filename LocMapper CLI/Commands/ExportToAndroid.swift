@@ -23,7 +23,7 @@ import LocMapper
 
 struct ExportToAndroid : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "export_to_android",
 		abstract: "Exports the locs from an lcm file in an android project."
 	)

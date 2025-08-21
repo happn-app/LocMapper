@@ -12,7 +12,7 @@ import Foundation
 
 
 
-class FileHandleOutputStream : TextOutputStream {
+final class FileHandleOutputStream : TextOutputStream, Sendable {
 	
 	let closeOnDeinit: Bool
 	let fileHandle: FileHandle
@@ -35,11 +35,11 @@ class FileHandleOutputStream : TextOutputStream {
 	}
 	
 	func write(_ string: String) {
-		fileHandle.write(Data(string.utf8))
+		_ = try? fileHandle.write(contentsOf: Data(string.utf8))
 	}
 	
 }
 
-
-var stdoutStream = FileHandleOutputStream(fh: FileHandle.standardOutput)
-var stderrStream = FileHandleOutputStream(fh: FileHandle.standardError)
+/* TODO: Verify this is safe (it probably is? worst case scenario we get interleaved writes in the output AFAICT). */
+nonisolated(unsafe) var stdoutStream = FileHandleOutputStream(fh: FileHandle.standardOutput)
+nonisolated(unsafe) var stderrStream = FileHandleOutputStream(fh: FileHandle.standardError)

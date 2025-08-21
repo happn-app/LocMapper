@@ -21,7 +21,7 @@ import ArgumentParser
 
 struct Experimental : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		abstract: "Experimental commands. Use with care!",
 		subcommands: [
 			ConvertXibreflocToStdrefloc.self,

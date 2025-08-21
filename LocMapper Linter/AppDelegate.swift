@@ -10,8 +10,8 @@ import Cocoa
 
 
 
-@NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+@main
+final class AppDelegate : NSObject, NSApplicationDelegate {
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
 		/* Registering default user defaults. */

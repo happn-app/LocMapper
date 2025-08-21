@@ -23,7 +23,7 @@ import LocMapper
 
 struct CreateInitialAndroidMappingFromStdRefLoc : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(commandName: "create_initial_android_mapping_from_std_ref_loc")
+	static let configuration = CommandConfiguration(commandName: "create_initial_android_mapping_from_std_ref_loc")
 	
 	@OptionGroup var csvOptions: CSVOptions
 	@OptionGroup var logOptions: LoggingOptions

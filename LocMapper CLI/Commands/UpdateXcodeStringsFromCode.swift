@@ -17,6 +17,7 @@ import Foundation
 import os.log
 
 import ArgumentParser
+import GlobalConfModule
 
 import LocMapper
 
@@ -32,7 +33,7 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		
 	}
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "update_xcode_strings_from_code",
 		abstract: "Analyse the code in the Xcode project and updates the strings file accordingly.",
 		discussion: """
@@ -132,9 +133,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		defer {
 			if (try? fm.removeItem(at: runLockURL)) == nil {
 #if canImport(os)
-				LocMapperConfig.oslog.flatMap{ os_log("Cannot remove update lock. Please manually remove file at path “%{public}@”.", log: $0, type: .default, runLockURL.path) }
+				Conf[\.locMapper.oslog].flatMap{ os_log("Cannot remove update lock. Please manually remove file at path “%{public}@”.", log: $0, type: .default, runLockURL.path) }
 #endif
-				LocMapperConfig.logger?.warning("Cannot remove update lock. Please manually remove file at path “\(runLockURL.path)”.")
+				Conf[\.locMapper.logger]?.warning("Cannot remove update lock. Please manually remove file at path “\(runLockURL.path)”.")
 			}
 		}
 		
@@ -142,9 +143,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		
 		let projectCloneRootURL = fm.temporaryDirectory.appendingPathComponent(projectRootURL.lastPathComponent + "_" + UUID().uuidString, isDirectory: true)
 #if canImport(os)
-		LocMapperConfig.oslog.flatMap{ os_log("Copying relevant project files to temporary location “%{public}@”…", log: $0, type: .info, String(describing: projectCloneRootURL)) }
+		Conf[\.locMapper.oslog].flatMap{ os_log("Copying relevant project files to temporary location “%{public}@”…", log: $0, type: .info, String(describing: projectCloneRootURL)) }
 #endif
-		LocMapperConfig.logger?.info("Copying relevant project files to temporary location…", metadata: ["location": "\(projectCloneRootURL)"])
+		Conf[\.locMapper.logger]?.info("Copying relevant project files to temporary location…", metadata: ["location": "\(projectCloneRootURL)"])
 		
 		try fm.createDirectory(at: projectCloneRootURL, withIntermediateDirectories: true, attributes: nil)
 		defer {_ = try? fm.removeItem(at: projectCloneRootURL)} /* We don’t really care if the delete fails… */
@@ -167,9 +168,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		/* *** Finding and treating storyboard and xib files. *** */
 		if !skipStoryboardsAndXibs {
 #if canImport(os)
-			LocMapperConfig.oslog.flatMap{ os_log("Treating storyboards and xibs…", log: $0, type: .info) }
+			Conf[\.locMapper.oslog].flatMap{ os_log("Treating storyboards and xibs…", log: $0, type: .info) }
 #endif
-			LocMapperConfig.logger?.info("Treating storyboards and xibs…")
+			Conf[\.locMapper.logger]?.info("Treating storyboards and xibs…")
 			
 			guard let dirEnumeratorForStoryboardsAndXibs = FilteredDirectoryEnumerator(url: projectCloneRootURL, pathSuffixes: [".storyboard", ".xib"], fileManager: fm) else {
 				throw UpdateError(message: "Cannot enumerate files at path \(projectCloneRootURL.path)")
@@ -181,9 +182,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 				guard parentFolderName == "Base.lproj" else {
 					if !isURL(xibURL, containedInPathsList: unlocalizedXibsPaths, rootURL: projectCloneRootURL) {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("File “%{public}@” does not seem to be localized.", log: $0, type: .info, xibURL.relativePath) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("File “%{public}@” does not seem to be localized.", log: $0, type: .info, xibURL.relativePath) }
 #endif
-						LocMapperConfig.logger?.notice("File does not seem to be localized.", metadata: ["relative_path": "\(xibURL.relativePath)"])
+						Conf[\.locMapper.logger]?.notice("File does not seem to be localized.", metadata: ["relative_path": "\(xibURL.relativePath)"])
 					}
 					continue
 				}
@@ -198,9 +199,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					if fm.fileExists(atPath: tempDestinationStringsURL.path) {
 						guard let stringsFile = try? XcodeStringsFile(fromPath: tempDestinationStringsURL.relativePath, relativeToProjectPath: projectCloneRootURL.path) else {
 #if canImport(os)
-							LocMapperConfig.oslog.flatMap{ os_log("Cannot read strings file at path “%{public}@”. Skipping this file.", log: $0, type: .default, tempDestinationStringsURL.relativePath) }
+							Conf[\.locMapper.oslog].flatMap{ os_log("Cannot read strings file at path “%{public}@”. Skipping this file.", log: $0, type: .default, tempDestinationStringsURL.relativePath) }
 #endif
-							LocMapperConfig.logger?.warning("Failed parsing file; skipping it.", metadata: ["relative_path": "\(tempDestinationStringsURL.relativePath)"])
+							Conf[\.locMapper.logger]?.warning("Failed parsing file; skipping it.", metadata: ["relative_path": "\(tempDestinationStringsURL.relativePath)"])
 							continue
 						}
 						originalParsedStringsFile = stringsFile
@@ -214,17 +215,17 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					let exitCode = finishedProcess(launchPath: "/usr/bin/ibtool", arguments: ["--export-strings-file", temporaryStringsFileURL.path, xibURL.path])
 					guard exitCode == 0 else {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("ibtool failed producing strings file for “%{public}@” (language was %{public}@). Skipping this file.", log: $0, type: .default, xibURL.relativePath, language) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("ibtool failed producing strings file for “%{public}@” (language was %{public}@). Skipping this file.", log: $0, type: .default, xibURL.relativePath, language) }
 #endif
-						LocMapperConfig.logger?.warning("ibtool failed producing strings file from storyboard or xib. Skipping it.", metadata: ["relative_path": "\(xibURL.relativePath)", "language": "\(language)"])
+						Conf[\.locMapper.logger]?.warning("ibtool failed producing strings file from storyboard or xib. Skipping it.", metadata: ["relative_path": "\(xibURL.relativePath)", "language": "\(language)"])
 						continue
 					}
 					/* Now reading the newly produced strings file. */
 					guard let newParsedStringsFile = try? XcodeStringsFile(fromPath: temporaryStringsFileURL.path, relativeToProjectPath: "/") else {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Cannot read strings file generated by ibtool for “%{public}@” (language was %{public}@). Skipping this file.", log: $0, type: .default, xibURL.relativePath, language) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("Cannot read strings file generated by ibtool for “%{public}@” (language was %{public}@). Skipping this file.", log: $0, type: .default, xibURL.relativePath, language) }
 #endif
-						LocMapperConfig.logger?.warning("Cannot read strings file generated by ibtool from storyboard or xib. Skipping it.", metadata: ["relative_path": "\(xibURL.relativePath)", "language": "\(language)"])
+						Conf[\.locMapper.logger]?.warning("Cannot read strings file generated by ibtool from storyboard or xib. Skipping it.", metadata: ["relative_path": "\(xibURL.relativePath)", "language": "\(language)"])
 						continue
 					}
 					/* Now we merge the two strings files (if we have a previous one). */
@@ -238,9 +239,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 			for unlocalizedXibsPath in unlocalizedXibsPaths {
 				if !allStoryboardsAndXibs.contains(URL(fileURLWithPath: unlocalizedXibsPath, relativeTo: projectCloneRootURL)) {
 #if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Storyboard or xib “%{public}@” that is marked as unlocalized does not exist.", log: $0, type: .info, unlocalizedXibsPath) }
+					Conf[\.locMapper.oslog].flatMap{ os_log("Storyboard or xib “%{public}@” that is marked as unlocalized does not exist.", log: $0, type: .info, unlocalizedXibsPath) }
 #endif
-					LocMapperConfig.logger?.notice("Storyboard or xib that is marked as unlocalized does not exist.", metadata: ["path": "\(unlocalizedXibsPath)"])
+					Conf[\.locMapper.logger]?.notice("Storyboard or xib that is marked as unlocalized does not exist.", metadata: ["path": "\(unlocalizedXibsPath)"])
 				}
 			}
 		}
@@ -248,9 +249,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 		/* *** Treating code. *** */
 		if !skipCode, let localizablesPath = localizablesPath {
 #if canImport(os)
-			LocMapperConfig.oslog.flatMap{ os_log("Treating code…", log: $0, type: .info) }
+			Conf[\.locMapper.oslog].flatMap{ os_log("Treating code…", log: $0, type: .info) }
 #endif
-			LocMapperConfig.logger?.info("Treating code…")
+			Conf[\.locMapper.logger]?.info("Treating code…")
 			
 			guard let dirEnumeratorForCode = FilteredDirectoryEnumerator(url: projectCloneRootURL, pathSuffixes: [".swift", ".m", ".mm", ".c", ".cpp"], fileManager: fm) else {
 				throw UpdateError(message: "Cannot enumerate files at path \(projectCloneRootURL.path)")
@@ -296,9 +297,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					genstringsStringsfiles[stringsfile.relativePath] = try XcodeStringsFile(fromPath: stringsfile.path, relativeToProjectPath: "/")
 				} catch {
 #if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("genstrings generated a strings file (%{public}@) whose parsing failed. Ignoring this file. Error was %{public}@.", log: $0, type: .default, stringsfile.relativePath, String(describing: error)) }
+					Conf[\.locMapper.oslog].flatMap{ os_log("genstrings generated a strings file (%{public}@) whose parsing failed. Ignoring this file. Error was %{public}@.", log: $0, type: .default, stringsfile.relativePath, String(describing: error)) }
 #endif
-					LocMapperConfig.logger?.warning("Cannot read strings file generated by genstrings from storyboard or xib. Skipping it.", metadata: ["relative_path": "\(stringsfile.relativePath)", "error": "\(error)"])
+					Conf[\.locMapper.logger]?.warning("Cannot read strings file generated by genstrings from storyboard or xib. Skipping it.", metadata: ["relative_path": "\(stringsfile.relativePath)", "error": "\(error)"])
 				}
 			}
 			/* Merge the strings we got from genstrings and the ones we already had. */
@@ -309,9 +310,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 				try fm.createDirectory(at: lprojURL, withIntermediateDirectories: true, attributes: nil)
 				guard let dirEnumerator = FilteredDirectoryEnumerator(url: lprojURL, pathSuffixes: [".strings"], fileManager: fm) else {
 #if canImport(os)
-					LocMapperConfig.oslog.flatMap{ os_log("Cannot enumerate files at path “%{public}”; ignoring files in this folder.", log: $0, type: .default, lprojURL.relativePath) }
+					Conf[\.locMapper.oslog].flatMap{ os_log("Cannot enumerate files at path “%{public}”; ignoring files in this folder.", log: $0, type: .default, lprojURL.relativePath) }
 #endif
-					LocMapperConfig.logger?.warning("Cannot enumerate files in a folder; skipping it.", metadata: ["relative_path": "\(lprojURL.relativePath)"])
+					Conf[\.locMapper.logger]?.warning("Cannot enumerate files in a folder; skipping it.", metadata: ["relative_path": "\(lprojURL.relativePath)"])
 					continue
 				}
 				genstringsFilesAllLanguages.formUnion(genstringsStringsfiles.map{ lprojURL.appendingPathComponent($0.key).relativePath })
@@ -324,9 +325,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					guard let newStringsfile = genstringsStringsfiles[stringsfile.relativePath] else {
 						if !isURL(stringsfileURLRelativeToProject, containedInPathsList: unusedStringsfilesPaths, rootURL: projectCloneRootURL) {
 #if canImport(os)
-							LocMapperConfig.oslog.flatMap{ os_log("File “%{public}@” does not seem to be used in the project (language is %{public}%).", log: $0, type: .info, stringsfileURLRelativeToProject.relativePath, language) }
+							Conf[\.locMapper.oslog].flatMap{ os_log("File “%{public}@” does not seem to be used in the project (language is %{public}%).", log: $0, type: .info, stringsfileURLRelativeToProject.relativePath, language) }
 #endif
-							LocMapperConfig.logger?.notice("File does not seem to be used in the project.", metadata: ["relative_path": "\(stringsfileURLRelativeToProject.relativePath)", "language": "\(language)"])
+							Conf[\.locMapper.logger]?.notice("File does not seem to be used in the project.", metadata: ["relative_path": "\(stringsfileURLRelativeToProject.relativePath)", "language": "\(language)"])
 						}
 						continue
 					}
@@ -336,9 +337,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 						parsedStringsfile = try XcodeStringsFile(fromPath: stringsfile.path, relativeToProjectPath: "/")
 					} catch {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Failed parsing strings file (%{public}@) in project. Error was %{public}@.", log: $0, type: .default, stringsfileURLRelativeToProject.relativePath, String(describing: error)) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("Failed parsing strings file (%{public}@) in project. Error was %{public}@.", log: $0, type: .default, stringsfileURLRelativeToProject.relativePath, String(describing: error)) }
 #endif
-						LocMapperConfig.logger?.warning("Failed parsing strings file in project. Skipping it.", metadata: ["relative_path": "\(stringsfileURLRelativeToProject.relativePath)", "error": "\(error)"])
+						Conf[\.locMapper.logger]?.warning("Failed parsing strings file in project. Skipping it.", metadata: ["relative_path": "\(stringsfileURLRelativeToProject.relativePath)", "error": "\(error)"])
 						continue
 					}
 					
@@ -347,9 +348,9 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 					try writeXcodeStringsFile(mergedStringsfile, at: URL(fileURLWithPath: stringsfileURLRelativeToProject.relativePath, relativeTo: projectRootURL), encoding: encoding, fileManager: fm)
 					for obsoleteKey in (obsoleteKeys ?? []) {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Found seemingly obsolete key “%{public}@” in file (%{public}@).", log: $0, type: .info, obsoleteKey, stringsfileURLRelativeToProject.relativePath) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("Found seemingly obsolete key “%{public}@” in file (%{public}@).", log: $0, type: .info, obsoleteKey, stringsfileURLRelativeToProject.relativePath) }
 #endif
-						LocMapperConfig.logger?.notice("Found seemingly obsolete key in strings file.", metadata: ["relative_path": "\(stringsfileURLRelativeToProject.relativePath)", "key": "\(obsoleteKey)"])
+						Conf[\.locMapper.logger]?.notice("Found seemingly obsolete key in strings file.", metadata: ["relative_path": "\(stringsfileURLRelativeToProject.relativePath)", "key": "\(obsoleteKey)"])
 					}
 				}
 				for (stringsfileName, parsedFile) in genstringsStringsfiles.filter({ !foundStringsfile.contains($0.key) }) {
@@ -359,14 +360,14 @@ struct UpdateXcodeStringsFromCode : ParsableCommand {
 				for unusedStringsfilesPath in unusedStringsfilesPaths {
 					if genstringsFilesAllLanguages.contains(unusedStringsfilesPath) {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Strings file “%{public}@” that is marked as unused has been generated by genstrings (language is %{public}@).", log: $0, type: .info, unusedStringsfilesPath, language) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("Strings file “%{public}@” that is marked as unused has been generated by genstrings (language is %{public}@).", log: $0, type: .info, unusedStringsfilesPath, language) }
 #endif
-						LocMapperConfig.logger?.notice("Strings file that is marked as unused has been generated by genstrings.", metadata: ["path": "\(unusedStringsfilesPath)", "language": "\(language)"])
+						Conf[\.locMapper.logger]?.notice("Strings file that is marked as unused has been generated by genstrings.", metadata: ["path": "\(unusedStringsfilesPath)", "language": "\(language)"])
 					} else if !(allFoundStringsfile.contains(unusedStringsfilesPath)) {
 #if canImport(os)
-						LocMapperConfig.oslog.flatMap{ os_log("Strings file “%{public}@” that is marked as unused does not exist (language is %{public}@).", log: $0, type: .info, unusedStringsfilesPath, language) }
+						Conf[\.locMapper.oslog].flatMap{ os_log("Strings file “%{public}@” that is marked as unused does not exist (language is %{public}@).", log: $0, type: .info, unusedStringsfilesPath, language) }
 #endif
-						LocMapperConfig.logger?.notice("Strings file that is marked as unused does not exist.", metadata: ["path": "\(unusedStringsfilesPath)", "language": "\(language)"])
+						Conf[\.locMapper.logger]?.notice("Strings file that is marked as unused does not exist.", metadata: ["path": "\(unusedStringsfilesPath)", "language": "\(language)"])
 					}
 				}
 			}

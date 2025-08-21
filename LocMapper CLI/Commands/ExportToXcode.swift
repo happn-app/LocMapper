@@ -23,7 +23,7 @@ import LocMapper
 
 struct ExportToXcode : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "export_to_xcode",
 		abstract: "Exports the locs from an lcm file in an Xcode project.",
 		discussion: """

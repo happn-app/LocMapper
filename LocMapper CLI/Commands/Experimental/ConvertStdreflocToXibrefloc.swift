@@ -23,7 +23,7 @@ import LocMapper
 
 struct ConvertStdreflocToXibrefloc : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "convert_stdrefloc_to_xibrefloc",
 		abstract: "Does the inverse of convert_xibrefloc_to_stdrefloc."
 	)

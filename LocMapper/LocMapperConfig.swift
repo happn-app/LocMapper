@@ -11,23 +11,35 @@ import Foundation
 import os.log
 #endif
 
+import GlobalConfModule
 import Logging
 
 
 
-public enum LocMapperConfig {
-	
-#if canImport(os)
-	public static var oslog: OSLog? = .default
-#endif
-	public static var logger: Logging.Logger? = {
-#if canImport(os)
-		return nil
+public extension ConfKeys {
+	/* LocMapper conf namespace declaration. */
+	struct LocMapper {}
+	var locMapper: LocMapper {LocMapper()}
+}
+
+
+extension ConfKeys.LocMapper {
+
+#if canImport(OSLog)
+	#declareConfKey("oslog",  OSLog?         .self, defaultValue: OSLog(subsystem: "me.frizlab.LocMapper", category: "Main"))
+	#declareConfKey("logger", Logging.Logger?.self, defaultValue: nil)
 #else
-		return Logger(label: "com.happn.LocMapper")
+	#declareConfKey("logger", Logging.Logger?.self, defaultValue: .init(label: "me.frizlab.LocMapper"))
 #endif
-	}()
 	
 }
 
-typealias Conf = LocMapperConfig
+
+extension Conf {
+	
+#if canImport(os)
+	#declareConfAccessor(\.locMapper.oslog,  OSLog?         .self)
+#endif
+	#declareConfAccessor(\.locMapper.logger, Logging.Logger?.self)
+	
+}

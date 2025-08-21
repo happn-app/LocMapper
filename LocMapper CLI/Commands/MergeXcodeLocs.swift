@@ -23,7 +23,7 @@ import LocMapper
 
 struct MergeXcodeLocs : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "merge_xcode_locs", /* Default name (if let unspecified) would be "merge-xcode-locs", but previous versions had underscores, not dashes. */
 		abstract: "Merge the strings from an Xcode project in a locmapper file.",
 		discussion: """

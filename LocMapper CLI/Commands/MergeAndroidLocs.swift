@@ -23,7 +23,7 @@ import LocMapper
 
 struct MergeAndroidLocs : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "merge_android_locs",
 		abstract: "Merge the strings from an android project in a locmapper file."
 	)

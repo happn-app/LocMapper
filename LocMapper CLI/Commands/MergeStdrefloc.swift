@@ -23,7 +23,7 @@ import LocMapper
 
 struct MergeStdrefloc : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "merge_stdrefloc",
 		abstract: "Get ref loc from a given source and merge them in an lcm file, optionally converting them into the XibRefLoc format before merge."
 	)

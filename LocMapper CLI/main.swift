@@ -16,7 +16,7 @@ import LocMapper
 
 struct LocMapperCLI : ParsableCommand {
 	
-	static var version = "41" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */
+	static let version = "41" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */
 	
 	/**
 	 This _only_ works in a debug build on macOS. */
@@ -30,12 +30,12 @@ struct LocMapperCLI : ParsableCommand {
 	}
 	
 #if os(macOS)
-	static var platformSpecificCommands: [ParsableCommand.Type] = [UpdateXcodeStringsFromCode.self]
+	static let platformSpecificCommands: [ParsableCommand.Type] = [UpdateXcodeStringsFromCode.self]
 #else
-	static var platformSpecificCommands: [ParsableCommand.Type] = []
+	static let platformSpecificCommands: [ParsableCommand.Type] = []
 #endif
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "locmapper",
 		abstract: "A utility for working w/ LocMapper (*.lcm) files.",
 		version: dynVersion ?? version,

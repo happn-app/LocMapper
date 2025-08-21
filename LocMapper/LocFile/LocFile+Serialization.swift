@@ -16,6 +16,7 @@ import zlib
 import CZlib
 #endif
 
+import GlobalConfModule
 import Logging
 
 

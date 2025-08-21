@@ -19,6 +19,7 @@ import os.log
 #endif
 
 import ArgumentParser
+import GlobalConfModule
 import Logging
 import CLTLogger
 
@@ -68,14 +69,14 @@ struct LoggingOptions : ParsableArguments {
 		}, metadataProvider: nil)
 #if canImport(os)
 		if forceOSLog {
-			LocMapperConfig.oslog = .init(subsystem: "com.happn.LocMapper", category: "")
-			LocMapperConfig.logger = nil
+			Conf.setRootValue(.init(subsystem: "com.happn.LocMapper", category: ""), for: \.locMapper.oslog)
+			Conf.setRootValue(nil,                                                   for: \.locMapper.logger)
 		} else {
-			LocMapperConfig.oslog = nil
-			LocMapperConfig.logger = Logger(label: "com.happn.LocMapper")
+			Conf.setRootValue(nil,                                  for: \.locMapper.oslog)
+			Conf.setRootValue(Logger(label: "com.happn.LocMapper"), for: \.locMapper.logger)
 		}
 #else
-		LocMapperConfig.logger = Logger(label: "com.happn.LocMapper")
+		Conf.setRootValue(Logger(label: "com.happn.LocMapper"), for: \.locMapper.logger)
 #endif
 	}
 	

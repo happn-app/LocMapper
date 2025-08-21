@@ -23,7 +23,7 @@ import LocMapper
 
 struct StandardizeRefloc : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "standardize_refloc",
 		abstract: "Takes a Xib or Std RefLoc file and “standardizes” it.",
 		discussion: """

@@ -23,7 +23,7 @@ import LocMapper
 
 struct ConvertXibreflocToStdrefloc : ParsableCommand {
 	
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "convert_xibrefloc_to_stdrefloc",
 		abstract: "Take a XibLoc-styled RefLoc (with tokens for plurals, gender, etc.) and convert it to a more usual format (one key per plural/gender/etc. variations)."
 	)

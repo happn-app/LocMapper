@@ -10,14 +10,12 @@ import Foundation
 
 
 
-class AppSettings {
+struct AppSettings : Sendable {
 	
 	/* We don't have a Service architecture */
 	static let shared = AppSettings()
 	
-	/* Let's disable direct instantiation of this class */
-	private init() {
-	}
+	private init() {}
 	
 	func registerDefaultSettings() {
 		/* Registering default user defaults */
@@ -41,25 +39,25 @@ class AppSettings {
 	   ************************** */
 	
 	var showAlertForDiscardingMapping: Bool {
-		get {return ud.bool(forKey: SettingsKey.showAlertForDiscardingMapping.rawValue)}
-		set {ud.set(newValue, forKey: SettingsKey.showAlertForDiscardingMapping.rawValue)}
+		            get {ud.bool(forKey: SettingsKey.showAlertForDiscardingMapping.rawValue)}
+		nonmutating set {ud.set(newValue, forKey: SettingsKey.showAlertForDiscardingMapping.rawValue)}
 	}
 	
 	var showAlertForTabChangeDiscardMappingEdition: Bool {
-		get {return ud.bool(forKey: SettingsKey.showAlertForTabChangeDiscardMappingEdition.rawValue)}
-		set {ud.set(newValue, forKey: SettingsKey.showAlertForTabChangeDiscardMappingEdition.rawValue)}
+		            get {ud.bool(forKey: SettingsKey.showAlertForTabChangeDiscardMappingEdition.rawValue)}
+		nonmutating set {ud.set(newValue, forKey: SettingsKey.showAlertForTabChangeDiscardMappingEdition.rawValue)}
 	}
 	
 	var showAlertForSelectionChangeDiscardMappingEdition: Bool {
-		get {return ud.bool(forKey: SettingsKey.showAlertForSelectionChangeDiscardMappingEdition.rawValue)}
-		set {ud.set(newValue, forKey: SettingsKey.showAlertForSelectionChangeDiscardMappingEdition.rawValue)}
+		            get {ud.bool(forKey: SettingsKey.showAlertForSelectionChangeDiscardMappingEdition.rawValue)}
+		nonmutating set {ud.set(newValue, forKey: SettingsKey.showAlertForSelectionChangeDiscardMappingEdition.rawValue)}
 	}
 	
 	/* ***************
 	   MARK: - Private
 	   *************** */
 	
-	private let ud = UserDefaults.standard
+	private var ud: UserDefaults {UserDefaults.standard}
 	
 	private enum SettingsKey : String {
 		case showAlertForDiscardingMapping = "HC Show Alert for Discarding Mapping"

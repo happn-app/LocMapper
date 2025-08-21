@@ -15,11 +15,12 @@ import Foundation
 import os.log
 #endif
 
+import GlobalConfModule
 import Logging
 
 
 
-class CSVParser {
+final class CSVParser {
 	
 	private(set) var fieldNames: [String]
 	
@@ -64,7 +65,7 @@ class CSVParser {
 		return parseFile()
 	}
 	
-	private static var newLinesCharacterSet = CharacterSet(charactersIn: "\n\r")
+	private static let newLinesCharacterSet = CharacterSet(charactersIn: "\n\r")
 	
 	private func parseFile() -> [[String: String]]? {
 		if hasHeader {

@@ -24,7 +24,7 @@ extension LocMapperCLI {
 	
 	struct Help : ParsableCommand {
 		
-		static var configuration = CommandConfiguration(abstract: "Show help information (obsolete usage).")
+		static let configuration = CommandConfiguration(abstract: "Show help information (obsolete usage).")
 		
 		func run() throws {
 			LocMapperCLI.main(["--help"])
@@ -34,7 +34,7 @@ extension LocMapperCLI {
 	
 	struct Version : ParsableCommand {
 		
-		static var configuration = CommandConfiguration(abstract: "Show the version (obsolete usage).")
+		static let configuration = CommandConfiguration(abstract: "Show the version (obsolete usage).")
 		
 		func run() throws {
 			LocMapperCLI.main(["--version"])
