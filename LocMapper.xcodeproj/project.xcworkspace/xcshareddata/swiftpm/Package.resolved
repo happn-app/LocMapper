@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "safeglobal",
+      "identity" : "globalconfmodule",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Frizlab/SafeGlobal.git",
+      "location" : "https://github.com/Frizlab/GlobalConfModule.git",
       "state" : {
-        "revision" : "aed1d6c7db070320e0d8e332c29bddfabb26e414",
-        "version" : "0.3.0"
+        "revision" : "72729262a37078faa9978c2c5accd5adbaedb4ee",
+        "version" : "0.4.3"
       }
     },
     {
@@ -33,17 +33,26 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "e97a6fcb1ab07462881ac165fdbb37f067e205d5",
-        "version" : "1.5.4"
+        "revision" : "ce592ae52f982c847a4efc0dd881cc9eb32d29f2",
+        "version" : "1.6.4"
+      }
+    },
+    {
+      "identity" : "swift-service-context",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-service-context.git",
+      "state" : {
+        "revision" : "1983448fefc717a2bc2ebde5490fe99873c5b8a6",
+        "version" : "1.2.1"
       }
     },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "303e5c5c36d6a558407d364878df131c3546fad8",
-        "version" : "510.0.2"
+        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
+        "version" : "601.0.1"
       }
     },
     {
@@ -51,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Frizlab/XibLoc.git",
       "state" : {
-        "revision" : "dd9372c902d04e4559b469da9bdaf0de3ae21fb5",
-        "version" : "1.3.1"
+        "revision" : "e85a5179bdd93e017473182d76b33af1f176e6bd",
+        "version" : "1.5.1-beta.2"
       }
     }
   ],
