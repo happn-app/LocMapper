@@ -1,12 +1,13 @@
 {
+  "originHash" : "cd163a8fc5008dca4552f4d63252c778e15d2758eab784eb1c1182f1f1665631",
   "pins" : [
     {
       "identity" : "cltlogger",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/xcode-actions/CLTLogger.git",
       "state" : {
-        "revision" : "a3e33f58aa30ec9c33f022dd512e00e0663606c1",
-        "version" : "0.5.1"
+        "revision" : "d2d2be799fde3e564f6f2c35b708403bf609a0fb",
+        "version" : "0.9.0"
       }
     },
     {
@@ -23,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
-        "version" : "1.5.2"
+        "revision" : "ce592ae52f982c847a4efc0dd881cc9eb32d29f2",
+        "version" : "1.6.4"
       }
     },
     {
@@ -32,10 +33,10 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/happn-app/XibLoc.git",
       "state" : {
-        "revision" : "1abb69ac28e2a30b997f720ff3b3cdab59d9b1fa",
-        "version" : "1.2.4"
+        "branch" : "fix/adding_swiftui_library",
+        "revision" : "748c2e0357cfa72bb06d812bcb6b698b4205ccf0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

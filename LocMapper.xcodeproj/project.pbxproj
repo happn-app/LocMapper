@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -124,6 +124,7 @@
 		7BFE55221DCFD33A00C25B35 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE55211DCFD33A00C25B35 /* AppSettings.swift */; };
 		7BFE5577208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */; };
 		7BFE558C208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFE558B208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift */; };
+		890FA6462E9FE36700A5E0E9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 890FA6452E9FE36700A5E0E9 /* SwiftUI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -287,6 +288,7 @@
 		7BFE55211DCFD33A00C25B35 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		7BFE5576208F2F7100AF52E3 /* LocValueTransformerRegexReplacements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerRegexReplacements.swift; sourceTree = "<group>"; };
 		7BFE558B208F4E2B00AF52E3 /* LocValueTransformerOrderedReplacementVariantPick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocValueTransformerOrderedReplacementVariantPick.swift; sourceTree = "<group>"; };
+		890FA6452E9FE36700A5E0E9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,6 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B76AAE52025FD070071B896 /* libLocMapper.a in Frameworks */,
+				890FA6462E9FE36700A5E0E9 /* SwiftUI.framework in Frameworks */,
 				7B58882B234F89430038466E /* XibLoc in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -341,6 +344,7 @@
 		7B11A5721F51AE7B0064549D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				890FA6452E9FE36700A5E0E9 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1527,8 +1531,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/happn-app/XibLoc.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				branch = fix/adding_swiftui_library;
+				kind = branch;
 			};
 		};
 		7B88B9D3247FD65300D48975 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
