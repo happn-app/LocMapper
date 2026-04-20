@@ -1,0 +1,44 @@
+site_name: LocMapper
+theme:
+  features:
+  - search.suggest
+  - search.highlight
+  name: material
+plugins:
+- search
+- tags
+- techdocs-core
+markdown_extensions:
+- pymdownx.highlight:
+    anchor_linenums: true
+    line_spans: __span
+    pygments_lang_class: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.superfences
+- pymdownx.arithmatex
+- pymdownx.b64
+- pymdownx.betterem
+- pymdownx.blocks.admonition
+- pymdownx.blocks.definition
+- pymdownx.blocks.details
+- pymdownx.blocks.html
+- pymdownx.blocks.tab
+- pymdownx.caret
+- pymdownx.critic
+- pymdownx.details
+- pymdownx.emoji
+- pymdownx.escapeall
+- pymdownx.extra
+- pymdownx.highlight
+- pymdownx.keys
+- pymdownx.magiclink
+- pymdownx.mark
+- pymdownx.pathconverter
+- pymdownx.progressbar
+- toc:
+    permalink: '#'
+- admonition
+- attr_list
+- md_in_html
+- pymdownx.blocks.caption: {}

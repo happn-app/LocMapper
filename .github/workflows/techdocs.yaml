@@ -1,0 +1,37 @@
+name: Publish TechDocs Site
+on:
+  workflow_dispatch:
+    inputs: {}
+  push:
+    branches:
+    - master
+    paths:
+    - docs/**
+    - mkdocs.yml
+    - .github/workflows/techdocs.yaml
+jobs:
+  publish-techdocs-site:
+    runs-on: arc-runner-techdocs
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6.0.2
+    - name: Generate docs site
+      run: techdocs-cli generate --no-docker --verbose
+    - name: Generate Google Application Credentials
+      env:
+        GCP_GITHUB_SA_CREDENTIALS: ${{ secrets.GCP_GITHUB_SA_CREDENTIALS }}
+      run: |2
+
+        echo "${GCP_GITHUB_SA_CREDENTIALS}" > ./gcp-github-sa-credentials.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp-github-sa-credentials.json" >> $GITHUB_ENV
+    - name: Publish docs site
+      run: |2
+
+        techdocs-cli publish \
+            --publisher-type googleGcs \
+            --gcsBucketRootPath tech-docs \
+            --storage-name 1e42-tools-backstage \
+            --entity default/Component/LocMapper
+    - name: Clean up Google Application Credentials
+      if: always()
+      run: "rm -f $GOOGLE_APPLICATION_CREDENTIALS\n"

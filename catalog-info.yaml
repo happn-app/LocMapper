@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: LocMapper
+  namespace: default
+  annotations:
+    github.com/project-slug: happn-app/LocMapper
+    backstage.io/techdocs-ref: dir:.
+  labels:
+    language: swift
+    build_tool: xcode
+spec:
+  type: library
+  lifecycle: production
+  owner: apple
