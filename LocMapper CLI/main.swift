@@ -16,7 +16,7 @@ import LocMapper
 
 struct LocMapperCLI : ParsableCommand {
 	
-	static var version = "39" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */
+	static var version = "40" /* Do not remove this token, it is used by a script: __VERSION_LINE_TOKEN__ */
 	
 	/**
 	 This _only_ works in a debug build on macOS. */
