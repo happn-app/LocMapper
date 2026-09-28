@@ -164,7 +164,7 @@ class LocValueTransformerPluralVariantPick : LocValueTransformer {
 		if Set(["chinese", "japanese", "thai"]).contains(where: { language.range(of: $0) != nil }) {
 			pluralityDefinition = PluralityDefinition(string: "(*)")
 			n = (pluralUnicodeValue == .other ? 1 : nil)
-		} else if Set(["danish", "dutch", "english", "french", "german", "greek", "hindi", "hungarian", "italian", "norwegian", "portuguese", "spanish", "swedish", "telugu", "turkish"]).contains(where: { language.range(of: $0) != nil }) {
+		} else if Set(["danish", "dutch", "english", "french", "german", "greek", "hindi", "hungarian", "italian", "norwegian", "portuguese", "spanish", "swedish", "telugu", "turkish", "arabic"]).contains(where: { language.range(of: $0) != nil }) {
 			/* Technically, for French, Hindi and Brazilian Portuguese, the plurality definition is "(0:1)(*)",
 			 * but as we use 1 and 2 for the values of n,
 			 * we don't care about the difference in the 0 case for these two languages! */
