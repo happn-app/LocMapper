@@ -10,12 +10,12 @@ let package = Package(
 	],
 	products: [
 		.library(name: "LocMapper", targets: ["LocMapper"]),
-		.executable(name: "locmapper", targets: ["locmapper"])
+		.executable(name: "locmapper", targets: ["LocMapperCLI"])
 	],
 	dependencies: [
 		.package(url: "https://github.com/apple/swift-log.git", from: "1.2.0"),
 		.package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.3.0"),
-		.package(url: "https://github.com/happn-app/XibLoc.git", from: "1.0.0"),
+		.package(url: "https://github.com/happn-app/XibLoc.git", from: "1.4.1"),
 		.package(url: "https://github.com/xcode-actions/CLTLogger.git", from: "0.5.1")
 	],
 	targets: [
@@ -34,7 +34,7 @@ let package = Package(
 		.testTarget(name: "LocMapperTests", dependencies: ["LocMapper"], exclude: ["Info.plist"]),
 		
 		.executableTarget(
-			name: "locmapper",
+			name: "LocMapperCLI",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 				.product(name: "CLTLogger",      package: "CLTLogger"),
